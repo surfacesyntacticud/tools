@@ -1,0 +1,23 @@
+package chained_conj {
+  rule r {
+    pattern {
+      H -[conj]-> X1;
+      e: H -[conj]-> X2;
+      X1 << X2;
+    }
+    without {
+      H -[conj]-> X;
+      X1 << X; X << X2;
+    }
+    without {
+      H -[conj]-> X;
+      X2 << X;
+    }
+    commands {
+      del_edge e;
+      add_edge X1 -[conj]-> X2;
+    }
+  }
+}
+
+strat main { Onf (chained_conj) }
