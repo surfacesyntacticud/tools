@@ -25,15 +25,54 @@ package case_dep{
 		pattern {
 		e:H-[case]->X1;
 		}
-		
+
 		commands {
 		del_edge e;
 		add_edge X1-[dep]-> H;
 		shift_in H==>X1;
 		shift_out H=[punct|cc|conj]=>X1;
 		}
-	
+
 	}
 }
 
-strat main { Seq(Onf (chained_conj),Onf (case_dep))}
+package amalgam {
+  rule amalgam (feature $prep, $det, $amalgam) {
+    pattern {
+      P [phon= $prep];
+      D [phon= $det];
+      P < D;
+    }
+    commands {
+      del_node D;
+      P.phon = $amalgam;
+    }
+  }
+#BEGIN
+à#le#au
+à#les#aux
+#END
+}
+
+package amalgam_file {
+  rule amalgam (feature $prep, $det, $amalgam; file "lexicons/amal.lex") {
+    pattern {
+      P [phon= $prep];
+      D [phon= $det];
+      P < D;
+    }
+    commands {
+      del_node D;
+      P.phon = $amalgam;
+    }
+  }
+}
+
+
+
+strat main { Seq(
+  Onf (chained_conj),
+  Onf (case_dep),
+  Onf (amalgam_file),
+)
+}
