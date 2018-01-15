@@ -20,4 +20,20 @@ package chained_conj {
   }
 }
 
-strat main { Onf (chained_conj) }
+package case_dep{
+	rule r{
+		pattern {
+		e:H-[case]->X1;
+		}
+		
+		commands {
+		del_edge e;
+		add_edge X1-[dep]-> H;
+		shift_in H==>X1;
+		shift_out H=[punct|cc|conj]=>X1;
+		}
+	
+	}
+}
+
+strat main { Seq(Onf (chained_conj),Onf (case_dep))}
