@@ -39,13 +39,16 @@ package case_dep{
 package amalgam {
   rule amalgam (feature $prep, $det, $amalgam) {
     pattern {
-      P [phon= $prep];
-      D [phon= $det];
+      P [cat=PREP, phon= $prep];
+      D [cat=DET, phon= $det];
       P < D;
     }
     commands {
       del_node D;
       P.phon = $amalgam;
+      % The two next commands are needed to ensure correct CoNLLU output (without the x-y line for amalgam)
+      del_feat P._UD_mw_fusion;
+      del_feat P._UD_mw_span;
     }
   }
 #BEGIN
@@ -57,13 +60,16 @@ package amalgam {
 package amalgam_file {
   rule amalgam (feature $prep, $det, $amalgam; file "lexicons/amal.lex") {
     pattern {
-      P [phon= $prep];
-      D [phon= $det];
+      P [cat=PREP, phon= $prep];
+      D [cat=DET, phon= $det];
       P < D;
     }
     commands {
       del_node D;
       P.phon = $amalgam;
+      % The two next commands are needed to ensure correct CoNLLU output (without the x-y line for amalgam)
+      del_feat P._UD_mw_fusion;
+      del_feat P._UD_mw_span;
     }
   }
 }
