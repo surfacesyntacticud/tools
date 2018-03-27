@@ -1,5 +1,5 @@
-package chained_conj {
-  rule r {
+package chained_relations {
+  rule conj {
     pattern {
       H -[conj]-> X1;
       e: H -[conj]-> X2;
@@ -18,67 +18,117 @@ package chained_conj {
       add_edge X1 -[conj]-> X2;
     }
   }
+
+  rule fixed {
+    pattern {
+      H -[fixed]-> X1;
+      e: H -[fixed]-> X2;
+      X1 << X2;
+    }
+    without {
+      H -[fixed]-> X;
+      X1 << X; X << X2;
+    }
+    without {
+      H -[fixed]-> X;
+      X2 << X;
+    }
+    commands {
+      del_edge e;
+      add_edge X1 -[fixed]-> X2;
+    }
+  }
+
+  rule flat_name {
+    pattern {
+      H -[flat:name]-> X1;
+      e: H -[flat:name]-> X2;
+      X1 << X2;
+    }
+    without {
+      H -[flat:name]-> X;
+      X1 << X; X << X2;
+    }
+    without {
+      H -[flat:name]-> X;
+      X2 << X;
+    }
+    commands {
+      del_edge e;
+      add_edge X1 -[flat:name]-> X2;
+    }
+  }
+
 }
 
 package case_dep{
-	rule r{
-		pattern {
-		e:H-[case]->X1;
-		}
+  rule r{
+    pattern {
+    e:H-[case]->X1;
+    }
 
-		commands {
-		del_edge e;
-		add_edge X1-[dep]-> H;
-		shift_in H==>X1;
-		shift_out H=[punct|cc|conj]=>X1;
-		}
+    commands {
+    del_edge e;
+    add_edge X1-[dep]-> H;
+    shift_in H==>X1;
+    shift_out H=[punct|cc|conj]=>X1;
+    }
 
-	}
+  }
 }
 
 package amalgam {
-  rule amalgam (feature $prep, $det, $amalgam) {
+  rule prep_det (feature $prep, $det, $amalgam) {
     pattern {
-      P [cat=PREP, phon= $prep];
+      P [cat=ADP, phon= $prep];
       D [cat=DET, phon= $det];
       P < D;
     }
     commands {
       del_node D;
       P.phon = $amalgam;
-      % The two next commands are needed to ensure correct CoNLLU output (without the x-y line for amalgam)
+      % The three next commands are needed to ensure correct CoNLLU output (without the x-y line for amalgam)
       del_feat P._UD_mw_fusion;
       del_feat P._UD_mw_span;
+      del_feat P._UD_MISC_SpaceAfter;
     }
   }
 #BEGIN
 à#le#au
 à#les#aux
+de#le#du
+de#les#des
+#END
+
+  rule prep_pro (feature $prep, $pron, $amalgam) {
+    pattern {
+      PREP [cat=ADP, phon= $prep];
+      PRON [cat=PRON, phon= $pron];
+      PREP < PRON;
+    }
+    commands {
+      del_node PRON;
+      PREP.phon = $amalgam;
+      % The three next commands are needed to ensure correct CoNLLU output (without the x-y line for amalgam)
+      del_feat PREP._UD_mw_fusion;
+      del_feat PREP._UD_mw_span;
+      del_feat PREP._UD_MISC_SpaceAfter;
+    }
+  }
+#BEGIN
+à#lequel#auquel
+à#lesquels#auxquels
+à#lesquelles#auxquelles
+de#lequel#duquel
+de#lesquelles#desquelles
 #END
 }
 
-package amalgam_file {
-  rule amalgam (feature $prep, $det, $amalgam; file "lexicons/amal.lex") {
-    pattern {
-      P [cat=PREP, phon= $prep];
-      D [cat=DET, phon= $det];
-      P < D;
-    }
-    commands {
-      del_node D;
-      P.phon = $amalgam;
-      % The two next commands are needed to ensure correct CoNLLU output (without the x-y line for amalgam)
-      del_feat P._UD_mw_fusion;
-      del_feat P._UD_mw_span;
-    }
-  }
-}
 
-
-
-strat main { Seq(
-  Onf (chained_conj),
-  Onf (case_dep),
-  Onf (amalgam_file),
-)
+strat main {
+  Seq (
+    Onf (chained_relations),
+    Onf (case_dep),
+    Onf (amalgam),
+  )
 }
