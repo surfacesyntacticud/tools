@@ -61,8 +61,84 @@ package chained_relations {
 
 }
 
-package case_dep{
-  rule r{
+package aux {
+  rule aux {
+    pattern {
+      V [cat=VERB]; AUX [cat=AUX];
+      e:V -[aux]-> AUX; AUX << V;
+    }
+    without {
+      V -[aux|aux:pass|aux:caus|cop]-> AUX2;
+      AUX << AUX2; AUX2 << V;
+    }
+    commands {
+      del_edge e;
+      add_edge AUX -[xcomp:aux]-> V;
+      AUX.cat=VERB;
+      shift_in V ==> AUX;
+      shift_out V =[aux|aux:pass|aux:caus|cop|nsubj|nsubj:pass|punct|conj|cc|root]=> AUX;
+    }
+  }
+
+  rule cop {
+    pattern {
+      V [cat=VERB]; AUX [cat=AUX];
+      e:V -[cop]-> AUX; AUX << V;
+    }
+    without {
+      V -[aux|aux:pass|aux:caus|cop]-> AUX2;
+      AUX << AUX2; AUX2 << V;
+    }
+    commands {
+      del_edge e;
+      add_edge AUX -[xcomp:cop]-> V;
+      AUX.cat=VERB;
+      shift_in V ==> AUX;
+      shift_out V =[aux|aux:pass|aux:caus|cop|nsubj|nsubj:pass|punct|conj|cc|root]=> AUX;
+    }
+  }
+
+  rule auxpass {
+    pattern {
+      V [cat=VERB]; AUX [cat=AUX];
+      e:V -[aux:pass]-> AUX; AUX << V;
+    }
+    without {
+      V -[aux|aux:pass|aux:caus|cop]-> AUX2;
+      AUX << AUX2; AUX2 << V;
+    }
+    commands {
+      del_edge e;
+      add_edge AUX -[xcomp:pass]-> V;
+      AUX.cat=VERB;
+      shift_in V ==> AUX;
+      shift_out V =[aux|aux:pass|aux:caus|cop|nsubj|nsubj:pass|punct|conj|cc|root]=> AUX;
+    }
+  }
+
+  rule auxcaus {
+    pattern {
+      V [cat=VERB]; AUX [cat=AUX];
+      e:V -[aux:caus]-> AUX; AUX << V;
+    }
+    without {
+      V -[aux|aux:pass|aux:caus|cop]-> AUX2;
+      AUX << AUX2; AUX2 << V;
+    }
+    commands {
+      del_edge e;
+      add_edge AUX -[xcomp:caus]-> V;
+      AUX.cat=VERB;
+      shift_in V ==> AUX;
+      shift_out V =[aux|aux:pass|aux:caus|cop|nsubj|nsubj:pass|punct|conj|cc|root]=> AUX;
+    }
+  }
+
+
+}
+
+package reverse{
+  rule case{
     pattern {
     e:H-[case]->X1;
     }
@@ -71,10 +147,23 @@ package case_dep{
     del_edge e;
     add_edge X1-[dep]-> H;
     shift_in H==>X1;
-    shift_out H=[punct|cc|conj]=>X1;
+    shift_out H=[^det|aux|aux:pass|nsubj|obj]=>X1;
+    }
+  }
+
+  rule mark{
+    pattern {
+    e:H-[mark]->X1;
     }
 
+    commands {
+    del_edge e;
+    add_edge X1-[dep]-> H;
+    shift_in H==>X1;
+    shift_out H=[^det|aux|aux:pass|nsubj|obj]=>X1;
+    }
   }
+
 }
 
 package amalgam {
@@ -128,7 +217,8 @@ de#lesquelles#desquelles
 strat main {
   Seq (
     Onf (chained_relations),
-    Onf (case_dep),
+    Onf (reverse),
+    Onf (aux),
     Onf (amalgam),
   )
 }

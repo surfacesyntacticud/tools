@@ -1,0 +1,177 @@
+package fixed {
+  rule det_complex {
+    pattern {
+      ADV [cat=ADV]; ADP [cat=ADP]; NOUN[cat=NOUN];
+      dep:ADV -[dep]-> ADP; comp:ADP -[comp]-> NOUN
+  }
+    commands {
+      del_edge dep; del_edge comp;
+      add_edge ADV -[fixed]-> ADP;
+      add_edge NOUN -[det]-> ADV;
+      shift_in ADV ==> NOUN;
+    }
+  }
+}
+
+package reverse {
+  rule cop {
+    pattern { e:V -[comp:cop]-> C }
+    commands {
+      del_edge e;
+      shift_in V ==> C;
+      shift_out V =[aux|cop|subj]=> C; % TODO: shift_out
+      add_edge C -[cop]-> V;
+      V.cat=AUX
+    }
+  }
+
+  rule aux {
+    pattern { e:V -[comp:aux]-> C }
+    without { * -[comp:aux|comp:pass]-> V }
+    commands {
+      del_edge e;
+      shift_in V ==> C;
+      shift_out V =[aux|cop|subj]=> C; % TODO: shift_out
+      add_edge C -[aux]-> V;
+      V.cat=AUX
+    }
+  }
+
+  rule pass {
+    pattern { e:V -[comp:pass]-> C }
+    without { * -[comp:aux|comp:pass]-> V }
+    commands {
+      del_edge e;
+      shift_in V ==> C;
+      shift_out V =[aux|cop|subj]=> C; % TODO: shift_out
+      add_edge C -[aux:pass]-> V;
+      V.cat=AUX
+    }
+  }
+
+  rule caus {
+    pattern { e:V -[comp:caus]-> C }
+    without { * -[comp:aux|comp:pass]-> V }
+    without { V -[comp:obj]-> * }
+    commands {
+      del_edge e;
+      shift_in V ==> C;
+      shift_out V =[aux|cop|subj]=> C; % TODO: shift_out
+      add_edge C -[aux:caus]-> V;
+      V.cat=AUX
+    }
+  }
+
+  rule caus_obj_agent {
+    pattern { e:V -[comp:caus]-> C; obj: V -[comp:obj]-> O; }
+    without { * -[comp:aux|comp:pass]-> V }
+    commands {
+      del_edge e;
+      del_edge obj;
+      shift_in V ==> C;
+      shift_out V =[aux|cop|subj]=> C; % TODO: shift_out
+      add_edge C -[aux:caus]-> V;
+      add_edge C -[obj:agent]-> O;
+      V.cat=AUX
+    }
+  }
+
+  rule case {
+    pattern { e:P -[comp]-> C; P [cat=ADP] }
+    commands {
+      del_edge e;
+      shift_in P ==> C;
+      % TODO: shift_out
+      add_edge C -[case]-> P;
+    }
+  }
+
+  rule mark {
+    pattern { e:P -[comp]-> C; P [cat=SCONJ] }
+    commands {
+      del_edge e;
+      shift_in P ==> C;
+      % TODO: shift_out
+      add_edge C -[mark]-> P;
+    }
+  }
+
+}
+
+package subj {
+  rule nsubj {
+    pattern { e:N -[subj]-> M; M[cat <> VERB] }
+    without { N -[aux:pass]-> * }
+    commands { del_edge e; add_edge N -[nsubj]-> M }
+  }
+
+  rule nsubj_pass {
+    pattern { e:N -[subj]-> M; M[cat <> VERB];  N -[aux:pass]-> * }
+    commands { del_edge e; add_edge N -[nsubj:pass]-> M }
+  }
+
+  rule csubj {
+    pattern { e:N -[subj]-> M; M[cat = VERB] }
+    commands { del_edge e; add_edge N -[csubj]-> M }
+  }
+
+  rule csubj_pass {
+    pattern { e:N -[subj]-> M; M[cat = VERB];  N -[aux:pass]-> * }
+    commands { del_edge e; add_edge N -[csubj:pass]-> M }
+  }
+}
+
+package comp {
+  rule ccomp {
+    pattern { e:N -[comp:obj|comp:obl]-> M; M[cat = VERB];  }
+    commands { del_edge e; add_edge N -[ccomp]-> M }
+  }
+
+  rule obj {
+    pattern { e:N -[comp:obj]-> M; M[cat <> VERB];  }
+    commands { del_edge e; add_edge N -[obj]-> M }
+  }
+
+  rule obj_lvc {
+    pattern { e:N -[comp:lvc]-> M;  }
+    commands { del_edge e; add_edge N -[obj:lvc]-> M }
+  }
+
+  rule iobj {
+    pattern { e:N -[comp:obl]-> M; }
+    without { M -[case]-> * }
+    commands { del_edge e; add_edge N -[iobj]-> M }
+  }
+
+  rule obl_arg {
+    pattern { e:N -[comp:obl]-> M; M -[case]-> * }
+    commands { del_edge e; add_edge N -[obl:arg]-> M }
+  }
+
+  rule xcomp {
+    pattern { e:N -[comp:rais]-> M }
+    commands { del_edge e; add_edge N -[xcomp]-> M }
+  }
+}
+
+package mod {
+  rule amod {
+    pattern { e:N -[mod]-> M; M[cat=ADJ] }
+    commands { del_edge e; add_edge N -[amod]-> M }
+  }
+
+  rule advmod {
+    pattern { e:N -[mod]-> M; M[cat=ADV] }
+    commands { del_edge e; add_edge N -[advmod]-> M }
+  }
+}
+
+strat main {
+  Seq (
+    Onf (fixed),
+    Onf (reverse),
+    Onf (subj),
+    Onf (comp),
+    Onf (mod),
+  )
+}
