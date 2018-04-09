@@ -19,7 +19,8 @@ package reverse {
     commands {
       del_edge e;
       shift_in V ==> C;
-      shift_out V =[aux|cop|subj]=> C; % TODO: shift_out
+%      shift_out V =[aux|cop|subj|mod]=> C; % TODO: shift_out
+      shift_out V ==> C; % TODO: shift_out
       add_edge C -[cop]-> V;
       V.cat=AUX
     }
@@ -31,7 +32,8 @@ package reverse {
     commands {
       del_edge e;
       shift_in V ==> C;
-      shift_out V =[aux|cop|subj]=> C; % TODO: shift_out
+%      shift_out V =[aux|cop|subj|mod]=> C; % TODO: shift_out
+      shift_out V ==> C; % TODO: shift_out
       add_edge C -[aux]-> V;
       V.cat=AUX
     }
@@ -43,7 +45,8 @@ package reverse {
     commands {
       del_edge e;
       shift_in V ==> C;
-      shift_out V =[aux|cop|subj]=> C; % TODO: shift_out
+%      shift_out V =[aux|cop|subj|mod]=> C; % TODO: shift_out
+      shift_out V ==> C; % TODO: shift_out
       add_edge C -[aux:pass]-> V;
       V.cat=AUX
     }
@@ -56,7 +59,8 @@ package reverse {
     commands {
       del_edge e;
       shift_in V ==> C;
-      shift_out V =[aux|cop|subj]=> C; % TODO: shift_out
+%      shift_out V =[aux|cop|subj|mod]=> C; % TODO: shift_out
+      shift_out V ==> C; % TODO: shift_out
       add_edge C -[aux:caus]-> V;
       V.cat=AUX
     }
@@ -69,7 +73,8 @@ package reverse {
       del_edge e;
       del_edge obj;
       shift_in V ==> C;
-      shift_out V =[aux|cop|subj]=> C; % TODO: shift_out
+%      shift_out V =[aux|cop|subj|mod]=> C; % TODO: shift_out
+      shift_out V ==> C; % TODO: shift_out
       add_edge C -[aux:caus]-> V;
       add_edge C -[obj:agent]-> O;
       V.cat=AUX
@@ -77,21 +82,31 @@ package reverse {
   }
 
   rule case {
-    pattern { e:P -[comp]-> C; P [cat=ADP] }
+    pattern { e:P -[comp]-> C; P [cat=ADP]; C[cat<>VERB] }
     commands {
       del_edge e;
       shift_in P ==> C;
-      % TODO: shift_out
+      shift_out P ==> C;  % TODO: refine shift_out
       add_edge C -[case]-> P;
     }
   }
 
-  rule mark {
+  rule mark_adp {
+    pattern { e:P -[comp]-> C; P [cat=ADP]; C[cat=VERB] }
+    commands {
+      del_edge e;
+      shift_in P ==> C;
+      shift_out P ==> C;  % TODO: refine shift_out
+      add_edge C -[mark]-> P;
+    }
+  }
+
+  rule mark_sconj {
     pattern { e:P -[comp]-> C; P [cat=SCONJ] }
     commands {
       del_edge e;
       shift_in P ==> C;
-      % TODO: shift_out
+      shift_out P ==> C;  % TODO: refine shift_out
       add_edge C -[mark]-> P;
     }
   }
@@ -127,6 +142,12 @@ package comp {
     commands { del_edge e; add_edge N -[ccomp]-> M }
   }
 
+  rule iobj {
+    pattern { e:N -[comp:obl]-> M; M[cat <> VERB]; }
+    without { M -[case]-> * }
+    commands { del_edge e; add_edge N -[iobj]-> M }
+  }
+
   rule obj {
     pattern { e:N -[comp:obj]-> M; M[cat <> VERB];  }
     commands { del_edge e; add_edge N -[obj]-> M }
@@ -135,12 +156,6 @@ package comp {
   rule obj_lvc {
     pattern { e:N -[comp:lvc]-> M;  }
     commands { del_edge e; add_edge N -[obj:lvc]-> M }
-  }
-
-  rule iobj {
-    pattern { e:N -[comp:obl]-> M; }
-    without { M -[case]-> * }
-    commands { del_edge e; add_edge N -[iobj]-> M }
   }
 
   rule obl_arg {
@@ -152,6 +167,11 @@ package comp {
     pattern { e:N -[comp:rais]-> M }
     commands { del_edge e; add_edge N -[xcomp]-> M }
   }
+
+  rule obl_agent {
+    pattern { e:N -[comp:agent]-> M }
+    commands { del_edge e; add_edge N -[obl:agent]-> M }
+  }
 }
 
 package mod {
@@ -160,9 +180,44 @@ package mod {
     commands { del_edge e; add_edge N -[amod]-> M }
   }
 
+  rule nummod {
+    pattern { e:N -[mod]-> M; M[cat=NUM] }
+    commands { del_edge e; add_edge N -[nummod]-> M }
+  }
+
+%TODO --> cop GSD-train-2019
+  rule acl {
+    pattern { e:N -[mod]-> M; N[cat <> VERB]; M[cat=VERB] }
+    commands { del_edge e; add_edge N -[acl]-> M }
+  }
+
+  rule advcl {
+    pattern { e:N -[mod]-> M; N [cat=VERB];M[cat=VERB] }
+    commands { del_edge e; add_edge N -[advcl]-> M }
+  }
+
   rule advmod {
     pattern { e:N -[mod]-> M; M[cat=ADV] }
     commands { del_edge e; add_edge N -[advmod]-> M }
+  }
+
+  rule nmod {
+    pattern { e:N -[dep]-> M; N[cat=NOUN|PRON|PROPN]; M[cat=NOUN|PRON|PROPN] }
+    commands { del_edge e; add_edge N -[nmod]-> M }
+  }
+}
+
+rule conj {
+  pattern {
+    H -[conj]-> N1;
+    e: N1 -[conj]-> N2;
+  }
+  without {
+    * -[conj]-> H;
+  }
+  commands {
+    del_edge e;
+    add_edge H -[conj]-> N2;
   }
 }
 
@@ -173,5 +228,6 @@ strat main {
     Onf (subj),
     Onf (comp),
     Onf (mod),
+    Onf (conj),
   )
 }
