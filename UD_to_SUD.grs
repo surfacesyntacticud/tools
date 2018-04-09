@@ -73,7 +73,7 @@ package aux {
     }
     commands {
       del_edge e;
-      add_edge AUX -[xcomp:aux]-> V;
+      add_edge AUX -[comp:aux]-> V;
       AUX.cat=VERB;
       shift_in V ==> AUX;
       shift_out V =[aux|aux:pass|aux:caus|cop|nsubj|nsubj:pass|punct|conj|cc|root]=> AUX;
@@ -82,7 +82,7 @@ package aux {
 
   rule cop {
     pattern {
-      V [cat=VERB]; AUX [cat=AUX];
+      V []; AUX [cat=AUX];
       e:V -[cop]-> AUX; AUX << V;
     }
     without {
@@ -91,7 +91,7 @@ package aux {
     }
     commands {
       del_edge e;
-      add_edge AUX -[xcomp:cop]-> V;
+      add_edge AUX -[comp:cop]-> V;
       AUX.cat=VERB;
       shift_in V ==> AUX;
       shift_out V =[aux|aux:pass|aux:caus|cop|nsubj|nsubj:pass|punct|conj|cc|root]=> AUX;
@@ -109,7 +109,7 @@ package aux {
     }
     commands {
       del_edge e;
-      add_edge AUX -[xcomp:pass]-> V;
+      add_edge AUX -[comp:pass]-> V;
       AUX.cat=VERB;
       shift_in V ==> AUX;
       shift_out V =[aux|aux:pass|aux:caus|cop|nsubj|nsubj:pass|punct|conj|cc|root]=> AUX;
@@ -127,15 +127,54 @@ package aux {
     }
     commands {
       del_edge e;
-      add_edge AUX -[xcomp:caus]-> V;
+      add_edge AUX -[comp:caus]-> V;
       AUX.cat=VERB;
       shift_in V ==> AUX;
       shift_out V =[aux|aux:pass|aux:caus|cop|nsubj|nsubj:pass|punct|conj|cc|root]=> AUX;
     }
   }
+}
 
+package relations {
+  rule mod {
+    pattern { e:M -[amod|advmod|nummod|acl|advcl]-> N; }
+    commands { del_edge e; add_edge M -[mod]-> N }
+  }
+  rule dep {
+    pattern { e:M -[nmod]-> N; }
+    commands { del_edge e; add_edge M -[mod]-> N }
+  }
+  rule subj {
+    pattern { e:M -[nsubj|nsubj:pass|csubj|csubj:pass]-> N; }
+    commands { del_edge e; add_edge M -[subj]-> N }
+  }
+  rule comp_obj {
+    pattern { e:M -[obj|ccomp]-> N; }
+    commands { del_edge e; add_edge M -[comp:obj]-> N }
+  }
+  rule comp_obj_caus {
+    pattern { e:M -[obj:agent]-> N; }
+    commands { del_edge e; add_edge M -[comp:obj]-> N }
+  }
+  rule comp_obl {
+    pattern { e:M -[obl:arg|iobj]-> N; }
+    commands { del_edge e; add_edge M -[comp:obl]-> N }
+  }
+  rule comp_agent {
+    pattern { e:M -[obl:agent]-> N; }
+    commands { del_edge e; add_edge M -[comp:agent]-> N }
+  }
+  rule comp_rais {
+    pattern { e:M -[xcomp]-> N; }
+    commands { del_edge e; add_edge M -[comp:rais]-> N }
+  }
+  rule dep { % in GSD, obl are not all subtyped
+    pattern { e:M -[obl]-> N; }
+    commands { del_edge e; add_edge M -[dep]-> N }
+  }
 
 }
+
 
 package reverse{
   rule case{
@@ -145,9 +184,9 @@ package reverse{
 
     commands {
     del_edge e;
-    add_edge X1-[dep]-> H;
+    add_edge X1-[comp]-> H;
     shift_in H==>X1;
-    shift_out H=[^det|aux|aux:pass|nsubj|obj]=>X1;
+    shift_out H=[^det|aux|aux:pass|nsubj|obj|appos|punct|flat:name|nmod]=>X1;
     }
   }
 
@@ -158,12 +197,11 @@ package reverse{
 
     commands {
     del_edge e;
-    add_edge X1-[dep]-> H;
+    add_edge X1-[comp]-> H;
     shift_in H==>X1;
-    shift_out H=[^det|aux|aux:pass|nsubj|obj]=>X1;
+    shift_out H=[^det|aux|aux:pass|nsubj|obj|obl:mod|obl:arg]=>X1;
     }
   }
-
 }
 
 package amalgam {
@@ -219,6 +257,7 @@ strat main {
     Onf (chained_relations),
     Onf (reverse),
     Onf (aux),
-    Onf (amalgam),
+    Onf (relations),
+%    Onf (amalgam),
   )
 }
