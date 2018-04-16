@@ -130,12 +130,16 @@ package aux {
       add_edge AUX -[comp:caus]-> V;
       AUX.cat=VERB;
       shift_in V ==> AUX;
-      shift_out V =[aux|aux:pass|aux:caus|cop|nsubj|nsubj:pass|punct|conj|cc|root]=> AUX;
+      shift_out V =[aux|aux:pass|aux:caus|cop|nsubj|nsubj:pass|punct|conj|cc|root|obj:agent]=> AUX;
     }
   }
 }
 
 package relations {
+  rule comp_lvc {
+    pattern { e:M -[obj:lvc]-> N; }
+    commands { del_edge e; add_edge M -[comp:lvc]-> N }
+  }
   rule mod {
     pattern { e:M -[amod|advmod|nummod|acl|advcl]-> N; }
     commands { del_edge e; add_edge M -[mod]-> N }
@@ -149,8 +153,12 @@ package relations {
     commands { del_edge e; add_edge M -[subj]-> N }
   }
   rule comp_obj {
-    pattern { e:M -[obj|ccomp]-> N; }
+    pattern { e:M -[obj|ccomp]-> N; N[cat <> ADP]; }
     commands { del_edge e; add_edge M -[comp:obj]-> N }
+  }
+  rule ccomp_comp_obl {
+    pattern { e:M -[obj|ccomp]-> N; N[cat = ADP]; }
+    commands { del_edge e; add_edge M -[comp:obl]-> N }
   }
   rule comp_obj_caus {
     pattern { e:M -[obj:agent]-> N; }
