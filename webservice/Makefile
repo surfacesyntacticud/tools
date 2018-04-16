@@ -14,5 +14,5 @@ start:
 	ssh guillaum@grew.lchn.fr 'nohup webservice/sud2ud_server.py > /home/guillaum/webservice/std.out 2> /home/guillaum/webservice/std.err < /dev/null &'
 
 curl:
-	curl -X POST -d @./one.conll http://sud2ud.grew.fr
+	curl -X POST --data-binary @./one.conll http://sud2ud.grew.fr
 

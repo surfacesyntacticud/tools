@@ -4,36 +4,29 @@ import urlparse
 import SocketServer
 from BaseHTTPServer import BaseHTTPRequestHandler
 
-data = '{ x: "toto"}'
+dir = "/home/guillaum/webservice/"
 
-def some_function():
-    print "some_function got called"
+def uniqid():
+    from time import time
+    return hex(int(time()*10000000))[2:]
+
 class MyHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.send_header('Content-type', 'application/json')
-        self.end_headers()
-        self.wfile.write(json.dumps(data))
-
     def do_POST(self):
-        print "got post!!"
         content_len = int(self.headers.getheader('content-length', 0))
-        print (content_len)
         post_body = self.rfile.read(content_len)
-        print (len (post_body))
-        print ("---------------------------------------------")
-        print (post_body)
-        print ("---------------------------------------------")
 
-        xxx = urlparse.parse_qs(post_body)
-        print (xxx)
-        #test_data = json.loads(post_body)
-        #print "post_body(%s)" % (test_data)
+        id=uniqid()
+        sud_file = dir+id+".sud.conll"
+        f = open(sud_file, 'w')
+        f.write(post_body)
+        f.close()
+
+        subprocess.run(["wc", sud_file, ">", "xxx"]) # Run command
+
         self.send_response(200)
         self.send_header('Content-type', 'text/plain')
         self.end_headers()
-        #self.wfile.write(json.dumps(data))
-        self.wfile.write("1\tle\til")
+        self.wfile.write("1\tle\til\n")
 
 
 httpd = SocketServer.TCPServer(("", 8080), MyHandler)
