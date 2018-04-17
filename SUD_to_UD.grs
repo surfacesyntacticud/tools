@@ -16,6 +16,7 @@ package fixed {
 package reverse {
   rule cop {
     pattern { e:V -[comp:cop]-> C }
+    without { * -[comp]-> V } % apply cop later
     commands {
       del_edge e;
       shift_in V ==> C;
@@ -231,3 +232,15 @@ strat main {
     Onf (conj),
   )
 }
+
+strat full {
+  Seq (
+    Iter (fixed),
+    Iter (reverse),
+    Iter (subj),
+    Iter (comp),
+    Iter (mod),
+    Iter (conj),
+  )
+}
+
