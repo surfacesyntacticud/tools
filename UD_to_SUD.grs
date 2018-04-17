@@ -58,7 +58,13 @@ package chained_relations {
       add_edge X1 -[flat:name]-> X2;
     }
   }
+}
 
+package neg {
+  rule r {
+    pattern { e:V -[advmod]-> A; A[Polarity=Neg] }
+    commands { del_edge e; add_edge V -[advmod:neg]-> A; }
+  }
 }
 
 package aux {
@@ -76,7 +82,7 @@ package aux {
       add_edge AUX -[comp:aux]-> V;
       AUX.cat=VERB;
       shift_in V ==> AUX;
-      shift_out V =[aux|aux:pass|aux:caus|cop|nsubj|nsubj:pass|punct|conj|cc|root]=> AUX;
+      shift_out V =[aux|aux:pass|aux:caus|cop|nsubj|nsubj:pass|punct|conj|cc|root|mark|case|advmod:neg]=> AUX;
     }
   }
 
@@ -94,7 +100,7 @@ package aux {
       add_edge AUX -[comp:cop]-> V;
       AUX.cat=VERB;
       shift_in V ==> AUX;
-      shift_out V =[aux|aux:pass|aux:caus|cop|nsubj|nsubj:pass|punct|conj|cc|root]=> AUX;
+      shift_out V =[aux|aux:pass|aux:caus|cop|nsubj|nsubj:pass|punct|conj|cc|root|mark|advmod:neg]=> AUX;
     }
   }
 
@@ -112,7 +118,7 @@ package aux {
       add_edge AUX -[comp:pass]-> V;
       AUX.cat=VERB;
       shift_in V ==> AUX;
-      shift_out V =[aux|aux:pass|aux:caus|cop|nsubj|nsubj:pass|punct|conj|cc|root]=> AUX;
+      shift_out V =[aux|aux:pass|aux:caus|cop|nsubj|nsubj:pass|punct|conj|cc|root|mark|case|advmod:neg]=> AUX;
     }
   }
 
@@ -130,7 +136,7 @@ package aux {
       add_edge AUX -[comp:caus]-> V;
       AUX.cat=VERB;
       shift_in V ==> AUX;
-      shift_out V =[aux|aux:pass|aux:caus|cop|nsubj|nsubj:pass|punct|conj|cc|root|obj:agent]=> AUX;
+      shift_out V =[aux|aux:pass|aux:caus|cop|nsubj|nsubj:pass|punct|conj|cc|root|obj:agent|advmod:neg]=> AUX;
     }
   }
 }
@@ -141,11 +147,15 @@ package relations {
     commands { del_edge e; add_edge M -[comp:lvc]-> N }
   }
   rule mod {
-    pattern { e:M -[amod|advmod|nummod|acl|advcl]-> N; }
+    pattern { e:M -[amod|advmod|advmod:neg|nummod|acl|advcl]-> N; }
     commands { del_edge e; add_edge M -[mod]-> N }
   }
-  rule dep {
-    pattern { e:M -[nmod]-> N; }
+  rule nmod_dep {
+    pattern { e:M -[nmod]-> N; M [cat=NOUN]}
+    commands { del_edge e; add_edge M -[dep]-> N }
+  }
+  rule nmod_mod {
+    pattern { e:M -[nmod]-> N; M [cat<>NOUN]}
     commands { del_edge e; add_edge M -[mod]-> N }
   }
   rule subj {
@@ -185,29 +195,25 @@ package relations {
 
 
 package reverse{
-  rule case{
-    pattern {
-    e:H-[case]->X1;
-    }
-
+  rule left_case{
+    pattern { e:H-[case]->X1; X1 << H; }
+    without { H-[mark|case]->X2; X1 << X2 }
     commands {
     del_edge e;
     add_edge X1-[comp]-> H;
     shift_in H==>X1;
-    shift_out H=[^det|aux|aux:pass|nsubj|obj|appos|punct|flat:name|nmod]=>X1;
+    shift_out H=[^det|aux|aux:pass|nsubj|obj|appos|punct|flat:name|nmod|nummod|comp|amod]=>X1;
     }
   }
 
-  rule mark{
-    pattern {
-    e:H-[mark]->X1;
-    }
-
+  rule left_mark{
+    pattern { e:H-[mark]->X1; X1 << H }
+    without { H-[mark|case]->X2; X1 << X2 }
     commands {
     del_edge e;
     add_edge X1-[comp]-> H;
     shift_in H==>X1;
-    shift_out H=[^det|aux|aux:pass|nsubj|obj|obl:mod|obl:arg]=>X1;
+    shift_out H=[^det|comp|comp:aux|comp:cop|aux:pass|nsubj|nsubj:pass|obj|obl:mod|obl:arg]=>X1;
     }
   }
 }
@@ -263,9 +269,21 @@ de#lesquelles#desquelles
 strat main {
   Seq (
     Onf (chained_relations),
-    Onf (reverse),
+    Onf (neg),
     Onf (aux),
+    Onf (reverse),
     Onf (relations),
+%    Onf (amalgam),
+  )
+}
+
+strat full {
+  Seq (
+    Iter (chained_relations),
+    Onf (neg), % trivially confluent
+    Iter (aux),
+    Iter (reverse),
+    Iter (relations),
 %    Onf (amalgam),
   )
 }

@@ -160,39 +160,47 @@
 # section = Negation
 # sent_id = one_aux_neg
 1	il	_	PRON	_	_	3	subj	_	_
-2	n'	_	ADV	_	_	3	mod	_	_
+2	n'	_	ADV	_	Polarity=Neg	3	mod	_	_
 3	est	_	VERB	_	_	0	root	_	_
-4	pas	_	ADV	_	_	3	mod	_	_
+4	pas	_	ADV	_	Polarity=Neg	3	mod	_	_
 5	venu	_	VERB	_	_	3	comp:aux	_	_
 
 # sent_id = one_pass_neg
 1	il	_	PRON	_	_	3	subj	_	_
-2	n'	_	ADV	_	_	3	mod	_	_
+2	n'	_	ADV	_	Polarity=Neg	3	mod	_	_
 3	est	_	VERB	_	_	0	root	_	_
-4	pas	_	ADV	_	_	3	mod	_	_
+4	pas	_	ADV	_	Polarity=Neg	3	mod	_	_
 5	mordu	_	VERB	_	_	3	comp:pass	_	_
 
 # sent_id = aux_and_pass_neg
 1	il	_	PRON	_	_	3	subj	_	_
-2	n'	_	ADV	_	_	3	mod	_	_
+2	n'	_	ADV	_	Polarity=Neg	3	mod	_	_
 3	a	_	VERB	_	_	0	root	_	_
-4	pas	_	ADV	_	_	3	mod	_	_
+4	pas	_	ADV	_	Polarity=Neg	3	mod	_	_
 5	été	_	VERB	_	_	3	comp:aux	_	_
 6	mordu	_	VERB	_	_	5	comp:pass	_	_
 
+# sent_id = aux_mark
+1	dès	_	ADP	_	_	0	root	_	_
+2	que	_	SCONJ	_	_	1	comp	_	_
+3	tu	_	PRON	_	_	4	subj	_	_
+4	auras	_	VERB	_	_	2	comp	_	_
+5	été	_	VERB	_	_	4	comp:aux	_	_
+6	contacté	_	VERB	_	_	5	comp:pass	_	_
+
 # sent_id = Europar.550_00040
 # text = Je pense vraiment qu'il convient d'être extrêmement prudent.
-1	Je	il	PRON	_	n=s|p=1|s=suj	2	subj	_	_
-2	pense	penser	VERB	_	m=ind|n=s|p=1|t=pst	0	root	_	_
+1	Je	il	PRON	_	_	2	subj	_	_
+2	pense	penser	VERB	_	_	0	root	_	_
 3	vraiment	vraiment	ADV	_	_	2	mod	_	_
-4	qu'	que	SCONJ	_	s=s	2	comp:obj	_	_
-5	il	il	PRON	_	g=m|n=s|p=3	6	subj	_	_
-6	convient	convenir	VERB	_	m=ind|n=s|p=3|t=pst	4	comp	_	_
+4	qu'	que	SCONJ	_	_	2	comp:obj	_	_
+5	il	il	PRON	_	_	6	subj	_	_
+6	convient	convenir	VERB	_	_	4	comp	_	_
 7	d'	de	ADP	_	_	6	comp:obj	_	_
-8	être	être	VERB	_	m=inf	7	comp	_	_
+8	être	être	VERB	_	_	7	comp	_	_
 9	extrêmement	extrêmement	ADV	_	_	10	mod	_	_
-10	prudent	prudent	ADJ	_	g=m|n=s|s=qual	8	comp:cop	_	_
-11	.	.	PUNCT	_	s=s	2	punct	_	_
+10	prudent	prudent	ADJ	_	_	8	comp:cop	_	_
+11	.	.	PUNCT	_	_	2	punct	_	_
 
 # sent_id = fr-ud-train_09696
 # text = Il est composé de quatre étoiles non clairement identifiées.
@@ -211,7 +219,7 @@
 # text = Les Britanniques sont également approchés pour intervenir mais sans réelle insistance.
 1	Les	le	DET	_	Definite=Def|Gender=Masc|Number=Plur|PronType=Art	2	det	_	_
 2	Britanniques	britannique	NOUN	_	Gender=Masc|Number=Plur	3	subj	_	_
-3	sont	être	AUX	_	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	_
+3	sont	être	VERB	_	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	_
 4	également	également	ADV	_	_	5	mod	_	_
 5	approchés	approcher	VERB	_	Gender=Masc|Number=Plur|Tense=Past|VerbForm=Part	3	comp:aux	_	_
 6	pour	pour	ADP	_	_	5	mod	_	_

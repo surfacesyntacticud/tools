@@ -84,6 +84,7 @@ package reverse {
 
   rule case {
     pattern { e:P -[comp]-> C; P [cat=ADP]; C[cat<>VERB] }
+    without { C -[comp]-> * }
     commands {
       del_edge e;
       shift_in P ==> C;
@@ -104,6 +105,7 @@ package reverse {
 
   rule mark_sconj {
     pattern { e:P -[comp]-> C; P [cat=SCONJ] }
+    without { C -[comp]-> * }
     commands {
       del_edge e;
       shift_in P ==> C;

@@ -17,20 +17,32 @@ ud:
 	grew_dev transform -grs SUD_to_UD.grs -i sud.conll -o _ud_conv.conll
 	opendiff ud.conll _ud_conv.conll
 
+full_ud:
+	grew_dev transform -grs SUD_to_UD.grs -strat full -i sud.conll -o _ud_full_conv.conll
+
 gui_ud:
 	grew_dev gui -grs SUD_to_UD.grs -i sud.conll
 
 gui_sud:
 	grew_dev gui -grs UD_to_SUD.grs -i ud.conll
 
-draw_ud:
-	grew_dev transform -grs SUD_to_UD.grs -i sud.conll -o _ud_conv.conll
-	rm -rf _sud
-	splitter sud.conll _sud
-	find _sud -name "*.conll" -type f -print | sed "s/.conll$$//" | xargs -I {} make "{}.svg"
-	rm -rf _ud_conv
-	splitter _ud_conv.conll _ud_conv
-	find _ud_conv -name "*.conll" -type f -print | sed "s/.conll$$//" | xargs -I {} make "{}.svg"
+draw:
+	rm -rf _sud_gold
+	splitter sud.conll _sud_gold
+	find _sud_gold -name "*.conll" -type f -print | sed "s/.conll$$//" | xargs -I {} make "{}.svg"
+	grew_dev transform -grs SUD_to_UD.grs -i sud.conll -o _ud.conll
+	rm -rf _ud_auto
+	splitter _ud.conll _ud_auto
+	# ----
+	rm -rf _ud_gold
+	splitter ud.conll _ud_gold
+	find _ud_gold -name "*.conll" -type f -print | sed "s/.conll$$//" | xargs -I {} make "{}.svg"
+	grew_dev transform -grs UD_to_SUD.grs -i ud.conll -o _sud.conll
+	rm -rf _sud_auto
+	splitter _sud.conll _sud_auto
+	# ----
+	dep_diff -d1 _sud_gold -d2 _sud_auto -svg _sud_diff
+	dep_diff -d1 _ud_gold -d2 _ud_auto -svg _ud_diff
 
 gsd_sud:
 	grew_dev transform -grs UD_to_SUD.grs -i UD_French-GSD/fr_gsd-ud-dev.conllu -o _fr_gsd-ud-dev.sud.conllu
