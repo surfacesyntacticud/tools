@@ -1,10 +1,13 @@
 #!/usr/bin/python
+import subprocess
 import json
 import urlparse
 import SocketServer
 from BaseHTTPServer import BaseHTTPRequestHandler
 
 dir = "/home/guillaum/webservice/"
+grew = "/home/guillaum/.opam/last/bin/grew"
+grs = "/home/guillaum/webservice/SUD/SUD_to_UD.grs"
 
 def uniqid():
     from time import time
@@ -17,16 +20,19 @@ class MyHandler(BaseHTTPRequestHandler):
 
         id=uniqid()
         sud_file = dir+id+".sud.conll"
+        ud_file = dir+id+".ud.conll"
         f = open(sud_file, 'w')
         f.write(post_body)
         f.close()
 
-        subprocess.run(["wc", sud_file, ">", "xxx"]) # Run command
+        subprocess.call([grew, "transform", "-grs", grs, "-i", sud_file, "-o", ud_file])
 
         self.send_response(200)
         self.send_header('Content-type', 'text/plain')
         self.end_headers()
-        self.wfile.write("1\tle\til\n")
+
+        file = open(ud_file, "r")
+        self.wfile.write(file.read())
 
 
 httpd = SocketServer.TCPServer(("", 8080), MyHandler)
