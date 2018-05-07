@@ -57,3 +57,9 @@ clean:
 .conll.svg:
 	dep2pict $< $@
 
+ja:
+	grew_dev transform -grs UD_to_SUD.grs -i ja_ud.conll -o _ja_sud_conv.conll
+
+ja_gui:
+	grew_dev gui -grs UD_to_SUD.grs -i ja_ud.conll
+
