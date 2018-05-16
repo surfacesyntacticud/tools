@@ -221,15 +221,15 @@ package relations {
     commands { del_edge e; add_edge M -[comp:lvc]-> N }
   }
   rule mod {
-    pattern { e:M -[amod|advmod|advmod:neg|nummod|acl|advcl]-> N; }
+    pattern { e:M -[amod|advmod|advmod:neg|nummod|acl|advcl|obl:mod]-> N; }
     commands { del_edge e; add_edge M -[mod]-> N }
   }
   rule nmod_dep {
-    pattern { e:M -[nmod]-> N; M [cat=NOUN]}
+    pattern { e:M -[nmod]-> N; M [cat=SYM|NUM|NOUN|PRON|PROPN]}
     commands { del_edge e; add_edge M -[dep]-> N }
   }
   rule nmod_mod {
-    pattern { e:M -[nmod]-> N; M [cat<>NOUN]}
+    pattern { e:M -[nmod]-> N; M [cat<>SYM|NUM|NOUN|PRON|PROPN]}
     commands { del_edge e; add_edge M -[mod]-> N }
   }
   rule subj {
@@ -287,7 +287,7 @@ package reverse{
     del_edge e;
     add_edge X1-[comp]-> H;
     shift_in H==>X1;
-    shift_out H=[^det|comp|comp:aux|comp:cop|aux:pass|nsubj|nsubj:pass|obj|obl:mod|obl:arg]=>X1;
+    shift_out H=[^det|comp|comp:aux|comp:cop|comp:pass|aux:pass|nsubj|nsubj:pass|obj|obl:mod|obl:arg|obl]=>X1;
     }
   }
 

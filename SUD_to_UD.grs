@@ -1,14 +1,58 @@
-package fixed {
-  rule det_complex {
-    pattern {
-      ADV [cat=ADV]; ADP [cat=ADP]; NOUN[cat=NOUN];
-      dep:ADV -[dep]-> ADP; comp:ADP -[comp]-> NOUN
+package init {
+  rule mwepos {
+    pattern { N [cat, mwepos, !init_cat]}
+    commands { N.init_cat=N.cat; N.cat = N.mwepos; }
   }
+
+  rule seq {
+    pattern { N [cat, _MISC_MWEPOS, !init_cat]}
+    commands { N.init_cat=N.cat; N.cat = N._MISC_MWEPOS; }
+  }
+
+  rule date {
+    pattern { N [cat=NUM, !save_cat]; M -> N; M[lemma=en]; }
+    commands { N.save_cat=N.cat; N.cat = NOUN; }
+  }
+}
+
+package final {
+  rule mwepos {
+    pattern { N [init_cat, cat]}
+    commands { N.cat = N.init_cat; del_feat N.init_cat; }
+  }
+
+  rule date {
+    pattern { N [save_cat]; }
+    commands { N.cat=N.save_cat; del_feat N.save_cat; }
+  }
+}
+
+package unchained_relations {
+  rule flat_name {
+    pattern {
+      H -[flat:name]-> N1;
+      e: N1 -[flat:name]-> N2;
+    }
+    without {
+      * -[flat:name]-> H;
+    }
     commands {
-      del_edge dep; del_edge comp;
-      add_edge ADV -[fixed]-> ADP;
-      add_edge NOUN -[det]-> ADV;
-      shift_in ADV ==> NOUN;
+      del_edge e;
+      add_edge H -[flat:name]-> N2;
+    }
+  }
+
+  rule fixed {
+    pattern {
+      H -[fixed]-> N1;
+      e: N1 -[fixed]-> N2;
+    }
+    without {
+      * -[fixed]-> H;
+    }
+    commands {
+      del_edge e;
+      add_edge H -[fixed]-> N2;
     }
   }
 }
@@ -21,7 +65,7 @@ package reverse {
       del_edge e;
       shift_in V ==> C;
 %      shift_out V =[aux|cop|subj|mod]=> C; % TODO: shift_out
-      shift_out V ==> C; % TODO: shift_out
+      shift_out V =[^fixed]=> C; % TODO: shift_out
       add_edge C -[cop]-> V;
       V.cat=AUX
     }
@@ -34,7 +78,7 @@ package reverse {
       del_edge e;
       shift_in V ==> C;
 %      shift_out V =[aux|cop|subj|mod]=> C; % TODO: shift_out
-      shift_out V ==> C; % TODO: shift_out
+      shift_out V =[^fixed]=> C; % TODO: shift_out
       add_edge C -[aux]-> V;
       V.cat=AUX
     }
@@ -47,7 +91,7 @@ package reverse {
       del_edge e;
       shift_in V ==> C;
 %      shift_out V =[aux|cop|subj|mod]=> C; % TODO: shift_out
-      shift_out V ==> C; % TODO: shift_out
+      shift_out V =[^fixed]=> C; % TODO: shift_out
       add_edge C -[aux:pass]-> V;
       V.cat=AUX
     }
@@ -61,7 +105,7 @@ package reverse {
       del_edge e;
       shift_in V ==> C;
 %      shift_out V =[aux|cop|subj|mod]=> C; % TODO: shift_out
-      shift_out V ==> C; % TODO: shift_out
+      shift_out V =[^fixed]=> C; % TODO: shift_out
       add_edge C -[aux:caus]-> V;
       V.cat=AUX
     }
@@ -75,7 +119,7 @@ package reverse {
       del_edge obj;
       shift_in V ==> C;
 %      shift_out V =[aux|cop|subj|mod]=> C; % TODO: shift_out
-      shift_out V ==> C; % TODO: shift_out
+      shift_out V =[^fixed]=> C; % TODO: shift_out
       add_edge C -[aux:caus]-> V;
       add_edge C -[obj:agent]-> O;
       V.cat=AUX
@@ -88,7 +132,7 @@ package reverse {
     commands {
       del_edge e;
       shift_in P ==> C;
-      shift_out P ==> C;  % TODO: refine shift_out
+      shift_out P =[^fixed]=> C;  % TODO: refine shift_out
       add_edge C -[case]-> P;
     }
   }
@@ -98,7 +142,7 @@ package reverse {
     commands {
       del_edge e;
       shift_in P ==> C;
-      shift_out P ==> C;  % TODO: refine shift_out
+      shift_out P =[^fixed]=> C;  % TODO: refine shift_out
       add_edge C -[mark]-> P;
     }
   }
@@ -109,7 +153,7 @@ package reverse {
     commands {
       del_edge e;
       shift_in P ==> C;
-      shift_out P ==> C;  % TODO: refine shift_out
+      shift_out P =[^fixed|discourse]=> C;  % TODO: refine shift_out
       add_edge C -[mark]-> P;
     }
   }
@@ -145,6 +189,11 @@ package comp {
     commands { del_edge e; add_edge N -[ccomp]-> M }
   }
 
+  rule ccomp_cop {
+    pattern { e:N -[comp:obj|comp:obl]-> M; M -[cop]-> C;  }
+    commands { del_edge e; add_edge N -[ccomp]-> M }
+  }
+
   rule iobj {
     pattern { e:N -[comp:obl]-> M; M[cat <> VERB]; }
     without { M -[case]-> * }
@@ -153,6 +202,7 @@ package comp {
 
   rule obj {
     pattern { e:N -[comp:obj]-> M; M[cat <> VERB];  }
+    without { M -[cop]-> C; }
     commands { del_edge e; add_edge N -[obj]-> M }
   }
 
@@ -179,8 +229,13 @@ package comp {
 
 package mod {
   rule amod {
-    pattern { e:N -[mod]-> M; M[cat=ADJ] }
+    pattern { e:N -[mod]-> M; N[cat<>VERB]; M[cat=ADJ] }
     commands { del_edge e; add_edge N -[amod]-> M }
+  }
+
+  rule advmod_adj {
+    pattern { e:N -[mod]-> M; N[cat=VERB]; M[cat=ADJ] }
+    commands { del_edge e; add_edge N -[advmod]-> M }
   }
 
   rule nummod {
@@ -190,25 +245,50 @@ package mod {
 
 %TODO --> cop GSD-train-2019
   rule acl {
-    pattern { e:N -[mod]-> M; N[cat <> VERB]; M[cat=VERB] }
+    pattern { e:N -[mod]-> M; N[cat <> ADJ|VERB]; M[cat=VERB] }
     commands { del_edge e; add_edge N -[acl]-> M }
   }
 
   rule advcl {
-    pattern { e:N -[mod]-> M; N [cat=VERB];M[cat=VERB] }
+    pattern { e:N -[mod]-> M; N [cat = ADJ|VERB]; M[cat=VERB] }
     commands { del_edge e; add_edge N -[advcl]-> M }
   }
 
+  rule obl_mod {
+    pattern { e:N -[mod]-> M; N [cat=VERB]; M[cat=NOUN|PRON|PROPN] }
+    commands { del_edge e; add_edge N -[obl:mod]-> M }
+  }
+
+  rule obl_mod_cop {
+    pattern { e:N -[mod]-> M; N [cat<>VERB]; N -[cop]-> C; M[cat=NOUN|PRON|PROPN] }
+    commands { del_edge e; add_edge N -[obl:mod]-> M }
+  }
+
   rule advmod {
-    pattern { e:N -[mod]-> M; M[cat=ADV] }
+    pattern { e:N -[mod]-> M; M[cat=ADV|PART] }
     commands { del_edge e; add_edge N -[advmod]-> M }
   }
 
   rule nmod {
-    pattern { e:N -[dep]-> M; N[cat=NOUN|PRON|PROPN]; M[cat=NOUN|PRON|PROPN] }
+    pattern { e:N -[dep]-> M; N[cat=SYM|NUM|NOUN|PRON|PROPN]; M[cat=SYM|NUM|NOUN|PRON|PROPN] }
     commands { del_edge e; add_edge N -[nmod]-> M }
   }
 }
+
+package dep {
+  rule month {
+    pattern { e:M -[dep]-> N; M [lemma="janvier"|"février"|"mars"|"avril"|"mai"|"juin"|"juillet"|"août"|"septembre"|"octobre"|"novembre"|"décembre"]}
+    commands { del_edge e; add_edge M -[nmod]-> N }
+
+  }
+
+  rule obl { % in GSD, obl are not all subtyped
+    pattern { e:M -[dep]-> N; M [lemma <> "janvier"|"février"|"mars"|"avril"|"mai"|"juin"|"juillet"|"août"|"septembre"|"octobre"|"novembre"|"décembre"] }
+    commands { del_edge e; add_edge M -[obl]-> N }
+  }
+}
+
+
 
 rule conj {
   pattern {
@@ -226,23 +306,29 @@ rule conj {
 
 strat main {
   Seq (
-    Onf (fixed),
+    Onf (init),
+    Onf (unchained_relations),
     Onf (reverse),
     Onf (subj),
     Onf (comp),
     Onf (mod),
+    Onf (dep),
     Onf (conj),
+    Onf (final),
   )
 }
 
 strat full {
   Seq (
-    Iter (fixed),
+    Iter (init),
+    Iter (unchained_relations),
     Iter (reverse),
     Iter (subj),
     Iter (comp),
     Iter (mod),
+    Iter (dep),
     Iter (conj),
+    Iter (final),
   )
 }
 
