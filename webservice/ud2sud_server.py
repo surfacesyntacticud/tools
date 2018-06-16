@@ -35,7 +35,7 @@ class MyHandler(BaseHTTPRequestHandler):
         self.send_header('Content-type', 'text/plain')
         self.end_headers()
 
-        file = open(ud_file, "r")
+        file = open(sud_file, "r")
         self.wfile.write(file.read())
 
 httpd = SocketServer.TCPServer(("", 8181), MyHandler)
