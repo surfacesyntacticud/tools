@@ -70,7 +70,7 @@ package neg {
 package aux_left {
   rule aux {
     pattern {
-      V [cat=VERB]; AUX [cat=AUX];
+      V []; AUX [cat=AUX];
       e:V -[aux]-> AUX; AUX << V;
     }
     without {
@@ -106,7 +106,7 @@ package aux_left {
 
   rule auxpass {
     pattern {
-      V [cat=VERB]; AUX [cat=AUX];
+      V []; AUX [cat=AUX];
       e:V -[aux:pass]-> AUX; AUX << V;
     }
     without {
@@ -124,7 +124,7 @@ package aux_left {
 
   rule auxcaus {
     pattern {
-      V [cat=VERB]; AUX [cat=AUX];
+      V []; AUX [cat=AUX];
       e:V -[aux:caus]-> AUX; AUX << V;
     }
     without {
@@ -144,7 +144,7 @@ package aux_left {
 package aux_right {
   rule aux {
     pattern {
-      V [cat=VERB]; AUX [cat=AUX];
+      V []; AUX [cat=AUX];
       e:V -[aux]-> AUX; AUX >> V;
     }
     without {
@@ -180,7 +180,7 @@ package aux_right {
 
   rule auxpass {
     pattern {
-      V [cat=VERB]; AUX [cat=AUX];
+      V []; AUX [cat=AUX];
       e:V -[aux:pass]-> AUX; AUX >> V;
     }
     without {
@@ -198,7 +198,7 @@ package aux_right {
 
   rule auxcaus {
     pattern {
-      V [cat=VERB]; AUX [cat=AUX];
+      V []; AUX [cat=AUX];
       e:V -[aux:caus]-> AUX; AUX >> V;
     }
     without {
