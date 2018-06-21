@@ -1,0 +1,56 @@
+package fixed_del{
+  rule prep_noun(feature $prep, $noun){
+    pattern {
+      PREP[cat=PREP,phon=$prep];
+      N[cat=NOUN,phon=$noun];
+      fixed_rel: PREP -[fixed]-> N
+    }
+    commands {
+      del_edge fixed_rel; shift PREP ==> N;
+      add_edge N -[case]-> PREP
+    }
+  }
+#BEGIN
+en#général
+en#masse
+en#moyenne
+en#particulier
+en#principe
+en#priorité
+en#revanche
+en#référence
+en#somme
+en#trombe
+en#vrai
+#END
+
+  rule tout_en{
+    pattern {
+      ADV[cat=ADV,phon=tout];
+      PREP[cat=PREP,phon=en];
+      fixed_rel: ADV -[fixed]-> PREP;
+      mark_rel: V -[mark]-> ADV
+    }
+    commands {
+      del_edge fixed_rel;del_edge mark_rel;
+      add_edge V -[mark]-> PREP;
+      add_edge V -[advmod]-> ADV
+    }
+  }
+
+  rule prep_que{
+    pattern {
+      PREP[cat=ADV,phon="après"|avant|depuis|"dès"|pendant|pour|sans];
+      QUE[cat=SCONJ,phon=que];
+      fixed_rel: PREP -[fixed]-> QUE;
+      mark_rel: V -[mark]-> PREP
+      }
+    commands {
+      del_edge fixed_rel;del_edge mark_rel;
+      add_edge V -[mark]-> PREP;
+      add_edge V -[mark]-> QUE
+    }
+  }
+
+}
+strat main { Onf (fixed_del) }
