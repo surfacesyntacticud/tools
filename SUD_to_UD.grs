@@ -48,148 +48,6 @@ package unchained_relations {
   }
 }
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-package subj {
-  rule nsubj {
-    pattern { e:N -[subj]-> M; M[cat <> VERB] }
-    without { N -[aux:pass]-> * }
-    commands { del_edge e; add_edge N -[nsubj]-> M }
-  }
-
-  rule nsubj_pass {
-    pattern { e:N -[subj]-> M; M[cat <> VERB];  N -[aux:pass]-> * }
-    commands { del_edge e; add_edge N -[nsubj:pass]-> M }
-  }
-
-  rule csubj {
-    pattern { e:N -[subj]-> M; M[cat = VERB] }
-    commands { del_edge e; add_edge N -[csubj]-> M }
-  }
-
-  rule csubj_pass {
-    pattern { e:N -[subj]-> M; M[cat = VERB];  N -[aux:pass]-> * }
-    commands { del_edge e; add_edge N -[csubj:pass]-> M }
-  }
-}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-package comp {
-  rule ccomp {
-    pattern { e:N -[comp:obj|comp:obl]-> M; M[cat = VERB];  }
-    commands { del_edge e; add_edge N -[ccomp]-> M }
-  }
-
-  rule ccomp_cop {
-    pattern { e:N -[comp:obj|comp:obl]-> M; M -[cop]-> C;  }
-    commands { del_edge e; add_edge N -[ccomp]-> M }
-  }
-
-  rule iobj {
-    pattern { e:N -[comp:obl]-> M; M[cat <> VERB]; }
-    without { M -[case]-> * }
-    commands { del_edge e; add_edge N -[iobj]-> M }
-  }
-
-  rule obj {
-    pattern { e:N -[comp:obj]-> M; M[cat <> VERB];  }
-    without { M -[cop]-> C; }
-    commands { del_edge e; add_edge N -[obj]-> M }
-  }
-
-  rule obj_lvc {
-    pattern { e:N -[comp:lvc]-> M;  }
-    commands { del_edge e; add_edge N -[obj:lvc]-> M }
-  }
-
-  rule obl_arg {
-    pattern { e:N -[comp:obl]-> M; M -[case]-> * }
-    commands { del_edge e; add_edge N -[obl:arg]-> M }
-  }
-
-  rule xcomp {
-    pattern { e:N -[comp:rais]-> M }
-    commands { del_edge e; add_edge N -[xcomp]-> M }
-  }
-
-  rule obl_agent {
-    pattern { e:N -[comp:agent]-> M }
-    commands { del_edge e; add_edge N -[obl:agent]-> M }
-  }
-}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-package mod {
-  rule amod {
-    pattern { e:N -[mod]-> M; N[cat<>VERB]; M[cat=ADJ] }
-    commands { del_edge e; add_edge N -[amod]-> M }
-  }
-
-  % rule advmod_adj {
-  %   pattern { e:N -[mod]-> M; N[cat=VERB]; M[cat=ADJ] }
-  %   without { M -[cop]-> *}
-  %   commands { del_edge e; add_edge N -[advmod]-> M }
-  % }
-
-  rule nummod {
-    pattern { N[cat=NOUN|PRON|SYM]; e:N -[det|mod]-> M; M[cat=NUM] }
-    commands { del_edge e; add_edge N -[nummod]-> M }
-  }
-
-%TODO --> cop GSD-train-2019
-  rule acl {
-    pattern { e:N -[mod]-> M; N[cat <> ADJ|VERB]; M[cat=VERB] }
-    without {M -> PROREL; PROREL[PronType=Rel] }
-    commands { del_edge e; add_edge N -[acl]-> M }
-  }
-
-  rule aclrel {
-    pattern { e:N -[mod]-> M; N[cat <> ADJ|VERB]; M -> PROREL; PROREL[PronType=Rel] }
-    commands { del_edge e; add_edge N -[acl:relcl]-> M }
-  }
-  rule advcl {
-    pattern { e:N -[mod]-> M; N [cat = ADJ|VERB]; M[cat=ADJ|VERB] }
-    commands { del_edge e; add_edge N -[advcl]-> M }
-  }
-
-  rule obl_mod {
-    pattern { e:N -[mod]-> M; N [cat=ADJ|VERB]; M[cat=NOUN|PRON|PROPN|NUM|SYM] }
-    without{M[cat=PRON,lemma="où"]}
-    commands { del_edge e; add_edge N -[obl:mod]-> M }
-  }
-
-  rule obl_mod_cop {
-    pattern { e:N -[mod]-> M; N [cat<>ADJ|VERB]; N -[cop]-> C; M[cat=NOUN|PRON|PROPN] }
-    commands { del_edge e; add_edge N -[obl:mod]-> M }
-  }
-
-  rule advmod {
-    pattern { e:N -[mod]-> M; M[cat=ADV|PART|PRON] }
-    without { M[cat=PRON,lemma <> "où"]}
-    commands { del_edge e; add_edge N -[advmod]-> M }
-  }
-
-  rule nmod {
-    pattern { e:N -[dep]-> M; N[cat=SYM|NUM|NOUN|PRON|PROPN|X]; M[cat=SYM|NUM|NOUN|PRON|PROPN|X] }
-    commands { del_edge e; add_edge N -[nmod]-> M }
-  }
-}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-package dep {
-  rule month {
-    pattern { e:M -[dep]-> N; M [lemma="janvier"|"février"|"mars"|"avril"|"mai"|"juin"|"juillet"|"août"|"septembre"|"octobre"|"novembre"|"décembre"]}
-    commands { del_edge e; add_edge M -[nmod]-> N }
-
-  }
-
-  rule obl { % in GSD, obl are not all subtyped
-    pattern { e:M -[dep]-> N; M [lemma <> "janvier"|"février"|"mars"|"avril"|"mai"|"juin"|"juillet"|"août"|"septembre"|"octobre"|"novembre"|"décembre"] }
-    commands { del_edge e; add_edge M -[obl]-> N }
-  }
-}
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 package reverse {
 
@@ -281,6 +139,163 @@ package reverse {
   }
 
 }
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+package subj {
+  rule nsubj {
+    pattern { e:N -[subj]-> M; M[cat <> VERB] }
+    without { N -[aux:pass]-> * }
+    commands { del_edge e; add_edge N -[nsubj]-> M }
+  }
+
+  rule nsubj_pass {
+    pattern { e:N -[subj]-> M; M[cat <> VERB];  N -[aux:pass]-> * }
+    commands { del_edge e; add_edge N -[nsubj:pass]-> M }
+  }
+
+  rule csubj {
+    pattern { e:N -[subj]-> M; M[cat = VERB] }
+    commands { del_edge e; add_edge N -[csubj]-> M }
+  }
+
+  rule csubj_pass {
+    pattern { e:N -[subj]-> M; M[cat = VERB];  N -[aux:pass]-> * }
+    commands { del_edge e; add_edge N -[csubj:pass]-> M }
+  }
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+package comp {
+  rule ccomp {
+    pattern { e:N -[comp:obj|comp:obl]-> M; M[cat = VERB];  }
+    commands { del_edge e; add_edge N -[ccomp]-> M }
+  }
+
+  rule ccomp_cop {
+    pattern { e:N -[comp:obj|comp:obl]-> M; M -[cop]-> C;  }
+    commands { del_edge e; add_edge N -[ccomp]-> M }
+  }
+
+  rule iobj {
+    pattern { e:N -[comp:obl]-> M; M[cat = PRON]; }
+    without { M -[case]-> * }
+    commands { del_edge e; add_edge N -[iobj]-> M }
+  }
+
+  rule obj {
+    pattern { e:N -[comp:obj]-> M; M[cat <> VERB];  }
+    without { M -[cop]-> C; }
+    commands { del_edge e; add_edge N -[obj]-> M }
+  }
+
+  rule obj_lvc {
+    pattern { e:N -[comp:lvc]-> M;  }
+    commands { del_edge e; add_edge N -[obj:lvc]-> M }
+  }
+
+  rule obl_arg {
+    pattern { e:N -[comp:obl]-> M; M -[case]-> * }
+    commands { del_edge e; add_edge N -[obl:arg]-> M }
+  }
+
+  rule obl_arg-adv {
+    pattern { e:N -[comp:obl]-> M; M [cat=ADV] }
+    commands { del_edge e; add_edge N -[obl:arg]-> M }
+  }
+  
+  rule xcomp {
+    pattern { e:N -[comp:rais]-> M }
+    commands { del_edge e; add_edge N -[xcomp]-> M }
+  }
+
+  rule obl_agent {
+    pattern { e:N -[comp:agent]-> M }
+    commands { del_edge e; add_edge N -[obl:agent]-> M }
+  }
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+package mod {
+  rule amod {
+    pattern { e:N -[mod]-> M; N[cat<>VERB]; M[cat=ADJ] }
+    commands { del_edge e; add_edge N -[amod]-> M }
+  }
+
+  % rule advmod_adj {
+  %   pattern { e:N -[mod]-> M; N[cat=VERB]; M[cat=ADJ] }
+  %   without { M -[cop]-> *}
+  %   commands { del_edge e; add_edge N -[advmod]-> M }
+  % }
+
+  rule nummod {
+    pattern { N[cat=NOUN|PRON|SYM|NUM]; e:N -[det|mod]-> M; M[cat=NUM] }
+    commands { del_edge e; add_edge N -[nummod]-> M }
+  }
+
+%TODO --> cop GSD-train-2019
+  rule acl {
+    pattern { e:N -[mod]-> M; N[cat <> ADJ|VERB]; M[cat=VERB] }
+    without { M -> PROREL; PROREL[PronType=Rel] }
+    without {  M -> N1; N1[cat=NOUN|NUM|PRON|SYMB|VERB]; N1 -> PROREL; PROREL[PronType=Rel] }
+    commands { del_edge e; add_edge N -[acl]-> M }
+  }
+
+  rule aclrel1 {
+    pattern { e:N -[mod]-> M; M -> PROREL; PROREL[PronType=Rel] }
+    commands { del_edge e; add_edge N -[acl:relcl]-> M }
+  }
+  
+  rule aclrel2 {
+    pattern {
+      e:N -[mod]-> M; M[cat=VERB];
+      M -> N1; N1[cat=NOUN|NUM|PRON|SYMB|VERB]; N1 -> PROREL; PROREL[PronType=Rel] }
+    commands { del_edge e; add_edge N -[acl:relcl]-> M }
+  }
+  
+  rule advcl {
+    pattern { e:N -[mod]-> M; N [cat = ADJ|VERB]; M[cat=ADJ|VERB] }
+    commands { del_edge e; add_edge N -[advcl]-> M }
+  }
+
+  rule obl_mod {
+    pattern { e:N -[mod]-> M; N [cat=ADJ|VERB]; M[cat=NOUN|PRON|PROPN|NUM|SYM] }
+    without{M[cat=PRON,lemma="où"]}
+    commands { del_edge e; add_edge N -[obl:mod]-> M }
+  }
+
+  rule obl_mod_cop {
+    pattern { e:N -[mod]-> M; N [cat<>ADJ|VERB]; N -[cop]-> C; M[cat=NOUN|PRON|PROPN] }
+    commands { del_edge e; add_edge N -[obl:mod]-> M }
+  }
+
+  rule advmod {
+    pattern { e:N -[mod]-> M; M[cat=ADV|PART|PRON] }
+    without { M[cat=PRON,lemma <> "où"]}
+    commands { del_edge e; add_edge N -[advmod]-> M }
+  }
+
+  rule nmod {
+    pattern { e:N -[dep]-> M; N[cat=SYM|NUM|NOUN|PRON|PROPN|X]; M[cat=SYM|NUM|NOUN|PRON|PROPN|X] }
+    commands { del_edge e; add_edge N -[nmod]-> M }
+  }
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+package dep {
+  rule month {
+    pattern { e:M -[dep]-> N; M [lemma="janvier"|"février"|"mars"|"avril"|"mai"|"juin"|"juillet"|"août"|"septembre"|"octobre"|"novembre"|"décembre"]}
+    commands { del_edge e; add_edge M -[nmod]-> N }
+
+  }
+
+  rule obl { % in GSD, obl are not all subtyped
+    pattern { e:M -[dep]-> N; M [lemma <> "janvier"|"février"|"mars"|"avril"|"mai"|"juin"|"juillet"|"août"|"septembre"|"octobre"|"novembre"|"décembre"] }
+    commands { del_edge e; add_edge M -[obl]-> N }
+  }
+}
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   rule cop {

@@ -70,8 +70,8 @@ package neg {
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-package aux_left {
-  rule aux {
+package aux {
+  rule aux_left {
     pattern {
       V []; AUX [cat=AUX];
       e:V -[aux]-> AUX; AUX << V;
@@ -89,7 +89,7 @@ package aux_left {
     }
   }
 
-  rule cop {
+  rule cop_left {
     pattern {
       V []; AUX [cat=AUX];
       e:V -[cop]-> AUX; AUX << V;
@@ -103,11 +103,12 @@ package aux_left {
       add_edge AUX -[comp:cop]-> V;
       AUX.cat=VERB;
       shift_in V ==> AUX;
-      shift_out V =[advcl|aux|aux:pass|aux:caus|cop|nsubj|nsubj:pass|punct|conj|cc|root|mark|advmod:neg]=> AUX;
+      shift_out V =[^ acl|acl:relcl|amod|det|case|nmod|nummod|obl:arg]=> AUX;
+%      shift_out V =[advcl|aux|aux:pass|aux:caus|cop|nsubj|nsubj:pass|punct|conj|cc|root|mark|advmod:neg]=> AUX;
     }
   }
 
-  rule auxpass {
+  rule auxpass_left {
     pattern {
       V []; AUX [cat=AUX];
       e:V -[aux:pass]-> AUX; AUX << V;
@@ -125,7 +126,7 @@ package aux_left {
     }
   }
 
-  rule auxcaus {
+  rule auxcaus_left {
     pattern {
       V []; AUX [cat=AUX];
       e:V -[aux:caus]-> AUX; AUX << V;
@@ -142,18 +143,15 @@ package aux_left {
       shift_out V =[aux|aux:pass|aux:caus|cop|nsubj|nsubj:pass|punct|conj|cc|root|obj:agent|advmod:neg]=> AUX;
     }
   }
-}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-package aux_right {
-  rule aux {
+  
+  rule aux_right {
     pattern {
       V []; AUX [cat=AUX];
       e:V -[aux]-> AUX; AUX >> V;
     }
     without {
       V -[aux|aux:pass|aux:caus|cop]-> AUX2;
-      AUX >> AUX2; AUX2 >> V;
+      AUX2 >> AUX; AUX2 >> V;
     }
     commands {
       del_edge e;
@@ -164,32 +162,33 @@ package aux_right {
     }
   }
 
-  rule cop {
+  rule cop_right {
     pattern {
       V []; AUX [cat=AUX];
       e:V -[cop]-> AUX; AUX >> V;
     }
     without {
       V -[aux|aux:pass|aux:caus|cop]-> AUX2;
-      AUX >> AUX2; AUX2 >> V;
+      AUX2 >> AUX; AUX2 >> V;
     }
     commands {
       del_edge e;
       add_edge AUX -[comp:cop]-> V;
       AUX.cat=VERB;
       shift_in V ==> AUX;
-      shift_out V =[aux|aux:pass|aux:caus|cop|nsubj|nsubj:pass|punct|conj|cc|root|mark|advmod:neg]=> AUX;
+      shift_out V =[^ acl|acl:relcl|amod|det|case|nmod|nummod|obl:arg]=> AUX;
+%      shift_out V =[aux|aux:pass|aux:caus|cop|nsubj|nsubj:pass|punct|conj|cc|root|mark|advmod:neg]=> AUX;
     }
   }
 
-  rule auxpass {
+  rule auxpass_right {
     pattern {
       V []; AUX [cat=AUX];
       e:V -[aux:pass]-> AUX; AUX >> V;
     }
     without {
       V -[aux|aux:pass|aux:caus|cop]-> AUX2;
-      AUX >> AUX2; AUX2 >> V;
+      AUX2 >> AUX; AUX2 >> V;
     }
     commands {
       del_edge e;
@@ -200,14 +199,14 @@ package aux_right {
     }
   }
 
-  rule auxcaus {
+  rule auxcaus_right {
     pattern {
       V []; AUX [cat=AUX];
       e:V -[aux:caus]-> AUX; AUX >> V;
     }
     without {
       V -[aux|aux:pass|aux:caus|cop]-> AUX2;
-      AUX >> AUX2; AUX2 >> V;
+      AUX2 >> AUX; AUX2 >> V;
     }
     commands {
       del_edge e;
@@ -278,9 +277,41 @@ package reverse{
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 package relations {
+  rule ccomp_comp_obl {
+    pattern { e:M -[obj|ccomp]-> N; N[cat = ADP]; }
+    commands { del_edge e; add_edge M -[comp:obl]-> N }
+  }
+  rule comp_agent {
+    pattern { e:M -[obl:agent]-> N; }
+    commands { del_edge e; add_edge M -[comp:agent]-> N }
+  }
+  rule comp_cleft {
+    pattern { e:M -[advcl:cleft]-> N; }
+    commands { del_edge e; add_edge M -[comp:cleft]-> N }
+  }
   rule comp_lvc {
     pattern { e:M -[obj:lvc]-> N; }
     commands { del_edge e; add_edge M -[comp:lvc]-> N }
+  }
+  rule comp_obj {
+    pattern { e:M -[obj|ccomp]-> N; N[cat <> ADP]; }
+    commands { del_edge e; add_edge M -[comp:obj]-> N }
+  }
+  rule comp_obj_caus {
+    pattern { e:M -[obj:agent]-> N; }
+    commands { del_edge e; add_edge M -[comp:obj]-> N }
+  }
+  rule comp_obl {
+    pattern { e:M -[obl:arg|iobj]-> N; }
+    commands { del_edge e; add_edge M -[comp:obl]-> N }
+  }
+  rule comp_rais {
+    pattern { e:M -[xcomp]-> N; }
+    commands { del_edge e; add_edge M -[comp:rais]-> N }
+  }
+  rule dep { % in GSD, obl are not all subtyped
+    pattern { e:M -[obl]-> N; }
+    commands { del_edge e; add_edge M -[dep]-> N }
   }
   rule mod {
     pattern { e:M -[amod|advmod|advmod:neg|acl|acl:relcl|advcl|obl:mod|nummod]-> N; }
@@ -299,34 +330,6 @@ package relations {
     pattern { e:M -[nsubj|nsubj:pass|csubj|csubj:pass]-> N; }
     commands { del_edge e; add_edge M -[subj]-> N }
   }
-  rule comp_obj {
-    pattern { e:M -[obj|ccomp]-> N; N[cat <> ADP]; }
-    commands { del_edge e; add_edge M -[comp:obj]-> N }
-  }
-  rule ccomp_comp_obl {
-    pattern { e:M -[obj|ccomp]-> N; N[cat = ADP]; }
-    commands { del_edge e; add_edge M -[comp:obl]-> N }
-  }
-  rule comp_obj_caus {
-    pattern { e:M -[obj:agent]-> N; }
-    commands { del_edge e; add_edge M -[comp:obj]-> N }
-  }
-  rule comp_obl {
-    pattern { e:M -[obl:arg|iobj]-> N; }
-    commands { del_edge e; add_edge M -[comp:obl]-> N }
-  }
-  rule comp_agent {
-    pattern { e:M -[obl:agent]-> N; }
-    commands { del_edge e; add_edge M -[comp:agent]-> N }
-  }
-  rule comp_rais {
-    pattern { e:M -[xcomp]-> N; }
-    commands { del_edge e; add_edge M -[comp:rais]-> N }
-  }
-  rule dep { % in GSD, obl are not all subtyped
-    pattern { e:M -[obl]-> N; }
-    commands { del_edge e; add_edge M -[dep]-> N }
-  }
 
 }
 
@@ -338,6 +341,7 @@ package raise_gov{
       G -> D; D >> G; MOD << G;
       mod_rel:D -[mod]-> MOD
     }
+    without { MOD [lemma = "où"]}
     commands {
       del_edge mod_rel;
       add_edge G -[mod]-> MOD
@@ -346,6 +350,95 @@ package raise_gov{
 
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+package fail_label{
+
+  rule FAIL_acl{
+    pattern{e: G -[acl]-> D}
+    commands{del_edge e; add_edge G -[FAIL_acl]-> D}
+  }
+  
+  rule FAIL_advcl{
+    pattern{e: G -[advcl]-> D}
+    commands{del_edge e; add_edge G -[FAIL_advcl]-> D}
+  }
+  
+  rule FAIL_advmod{
+    pattern{e: G -[advmod]-> D}
+    commands{del_edge e; add_edge G -[FAIL_advmod]-> D}
+  }
+  
+  rule FAIL_amod{
+    pattern{e: G -[amod]-> D}
+    commands{del_edge e; add_edge G -[FAIL_amod]-> D}
+  }
+  
+  rule FAIL_aux{
+    pattern{e: G -[aux]-> D}
+    commands{del_edge e; add_edge G -[FAIL_aux]-> D}
+  }
+  
+  rule FAIL_case{
+    pattern{e: G -[case]-> D}
+    commands{del_edge e; add_edge G -[FAIL_case]-> D}
+  }
+  
+  rule FAIL_ccomp{
+    pattern{e: G -[ccomp]-> D}
+    commands{del_edge e; add_edge G -[FAIL_ccomp]-> D}
+  }
+  
+  rule FAIL_cop{
+    pattern{e: G -[cop]-> D}
+    commands{del_edge e; add_edge G -[FAIL_cop]-> D}
+  }
+  
+  rule FAIL_csubj{
+    pattern{e: G -[csubj]-> D}
+    commands{del_edge e; add_edge G -[FAIL_csubj]-> D}
+  }
+  
+  rule FAIL_iobj{
+    pattern{e: G -[iobj]-> D}
+    commands{del_edge e; add_edge G -[FAIL_iobj]-> D}
+  }
+  
+  rule FAIL_mark{
+    pattern{e: G -[mark]-> D}
+    commands{del_edge e; add_edge G -[FAIL_mark]-> D}
+  }
+  
+  rule FAIL_nmod{
+    pattern{e: G -[nmod]-> D}
+    commands{del_edge e; add_edge G -[FAIL_nmod]-> D}
+  }
+  
+  rule FAIL_nsubj{
+    pattern{e: G -[nsubj]-> D}
+    commands{del_edge e; add_edge G -[FAIL_nsubj]-> D}
+  }
+  
+  rule FAIL_nummod{
+    pattern{e: G -[nummod]-> D}
+    commands{del_edge e; add_edge G -[FAIL_nummod]-> D}
+  }
+  
+  rule FAIL_obj{
+    pattern{e: G -[obj]-> D}
+    commands{del_edge e; add_edge G -[FAIL_obj]-> D}
+  }
+  
+  rule FAIL_obl{
+    pattern{e: G -[obl]-> D}
+    commands{del_edge e; add_edge G -[FAIL_obl]-> D}
+  }
+  
+  rule FAIL_xcomp{
+    pattern{e: G -[xcomp]-> D}
+    commands{del_edge e; add_edge G -[FAIL_xcomp]-> D}
+  }
+  
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 package amalgam {
@@ -401,11 +494,12 @@ strat main {
   Seq (
     Onf (chained_relations),
     Onf (neg),
-    Onf (aux_left), Onf (aux_right),
+    Onf (aux),
     Onf (reverse),
     Onf (nummod_det), % fr-ud-test_00049 : les 8 premiers épisodes
     Onf (relations),
     Onf (raise_gov),
+    Onf (fail_label),
 %    Onf (amalgam),
   )
 }
