@@ -143,7 +143,7 @@ package aux {
       shift_out V =[aux|aux:pass|aux:caus|cop|nsubj|nsubj:pass|punct|conj|cc|root|obj:agent|advmod:neg]=> AUX;
     }
   }
-  
+
   rule aux_right {
     pattern {
       V []; AUX [cat=AUX];
@@ -239,7 +239,7 @@ package reverse{
     del_edge e;
     add_edge X1-[comp]-> H;
     shift_in H==>X1;
-   % shift_out H=[^advcl|det|comp|comp:aux|comp:cop|comp:pass|aux:pass|nsubj|nsubj:pass|obj|obl:mod|obl:arg|obl]=>X1;
+    shift_out H=[cc]=>X1;
     }
   }
 
@@ -317,7 +317,7 @@ package relations {
     pattern { e:M -[amod|advmod|advmod:neg|acl|acl:relcl|advcl|obl:mod|nummod]-> N; }
     commands { del_edge e; add_edge M -[mod]-> N }
   }
-  
+
   rule nmod_dep {
     pattern { e:M -[nmod]-> N; M [cat=SYM|NUM|NOUN|PRON|PROPN]}
     commands { del_edge e; add_edge M -[dep]-> N }
@@ -357,87 +357,87 @@ package fail_label{
     pattern{e: G -[acl]-> D}
     commands{del_edge e; add_edge G -[FAIL_acl]-> D}
   }
-  
+
   rule FAIL_advcl{
     pattern{e: G -[advcl]-> D}
     commands{del_edge e; add_edge G -[FAIL_advcl]-> D}
   }
-  
+
   rule FAIL_advmod{
     pattern{e: G -[advmod]-> D}
     commands{del_edge e; add_edge G -[FAIL_advmod]-> D}
   }
-  
+
   rule FAIL_amod{
     pattern{e: G -[amod]-> D}
     commands{del_edge e; add_edge G -[FAIL_amod]-> D}
   }
-  
+
   rule FAIL_aux{
     pattern{e: G -[aux]-> D}
     commands{del_edge e; add_edge G -[FAIL_aux]-> D}
   }
-  
+
   rule FAIL_case{
     pattern{e: G -[case]-> D}
     commands{del_edge e; add_edge G -[FAIL_case]-> D}
   }
-  
+
   rule FAIL_ccomp{
     pattern{e: G -[ccomp]-> D}
     commands{del_edge e; add_edge G -[FAIL_ccomp]-> D}
   }
-  
+
   rule FAIL_cop{
     pattern{e: G -[cop]-> D}
     commands{del_edge e; add_edge G -[FAIL_cop]-> D}
   }
-  
+
   rule FAIL_csubj{
     pattern{e: G -[csubj]-> D}
     commands{del_edge e; add_edge G -[FAIL_csubj]-> D}
   }
-  
+
   rule FAIL_iobj{
     pattern{e: G -[iobj]-> D}
     commands{del_edge e; add_edge G -[FAIL_iobj]-> D}
   }
-  
+
   rule FAIL_mark{
     pattern{e: G -[mark]-> D}
     commands{del_edge e; add_edge G -[FAIL_mark]-> D}
   }
-  
+
   rule FAIL_nmod{
     pattern{e: G -[nmod]-> D}
     commands{del_edge e; add_edge G -[FAIL_nmod]-> D}
   }
-  
+
   rule FAIL_nsubj{
     pattern{e: G -[nsubj]-> D}
     commands{del_edge e; add_edge G -[FAIL_nsubj]-> D}
   }
-  
+
   rule FAIL_nummod{
     pattern{e: G -[nummod]-> D}
     commands{del_edge e; add_edge G -[FAIL_nummod]-> D}
   }
-  
+
   rule FAIL_obj{
     pattern{e: G -[obj]-> D}
     commands{del_edge e; add_edge G -[FAIL_obj]-> D}
   }
-  
+
   rule FAIL_obl{
     pattern{e: G -[obl]-> D}
     commands{del_edge e; add_edge G -[FAIL_obl]-> D}
   }
-  
+
   rule FAIL_xcomp{
     pattern{e: G -[xcomp]-> D}
     commands{del_edge e; add_edge G -[FAIL_xcomp]-> D}
   }
-  
+
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

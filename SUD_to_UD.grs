@@ -58,7 +58,7 @@ package reverse {
       del_edge e;
       shift_in V ==> C;
 %      shift_out V =[aux|cop|subj|mod]=> C; % TODO: shift_out
-      shift_out V =[^fixed]=> C; % TODO: shift_out
+      shift_out V =[^fixed|conj:dicto]=> C; % TODO: shift_out
       add_edge C -[aux]-> V;
       V.cat=AUX
     }
@@ -71,7 +71,7 @@ package reverse {
       del_edge e;
       shift_in V ==> C;
 %      shift_out V =[aux|cop|subj|mod]=> C; % TODO: shift_out
-      shift_out V =[^fixed]=> C; % TODO: shift_out
+      shift_out V =[^fixed|conj:dicto]=> C; % TODO: shift_out
       add_edge C -[aux:pass]-> V;
       V.cat=AUX
     }
@@ -85,7 +85,7 @@ package reverse {
       del_edge e;
       shift_in V ==> C;
 %      shift_out V =[aux|cop|subj|mod]=> C; % TODO: shift_out
-      shift_out V =[^fixed]=> C; % TODO: shift_out
+      shift_out V =[^fixed|conj:dicto]=> C; % TODO: shift_out
       add_edge C -[aux:caus]-> V;
       V.cat=AUX
     }
@@ -99,7 +99,7 @@ package reverse {
       del_edge obj;
       shift_in V ==> C;
 %      shift_out V =[aux|cop|subj|mod]=> C; % TODO: shift_out
-      shift_out V =[^fixed]=> C; % TODO: shift_out
+      shift_out V =[^fixed|conj:dicto]=> C; % TODO: shift_out
       add_edge C -[aux:caus]-> V;
       add_edge C -[obj:agent]-> O;
       V.cat=AUX
@@ -112,7 +112,7 @@ package reverse {
     commands {
       del_edge e;
       shift_in P ==> C;
-      shift_out P =[^fixed]=> C;  % TODO: refine shift_out
+      shift_out P =[^fixed|conj:dicto]=> C;  % TODO: refine shift_out
       add_edge C -[case]-> P;
     }
   }
@@ -122,7 +122,7 @@ package reverse {
     commands {
       del_edge e;
       shift_in P ==> C;
-      shift_out P =[^fixed]=> C;  % TODO: refine shift_out
+      shift_out P =[^fixed|conj:dicto]=> C;  % TODO: refine shift_out
       add_edge C -[mark]-> P;
     }
   }
@@ -203,7 +203,7 @@ package comp {
     pattern { e:N -[comp:obl]-> M; M [cat=ADV] }
     commands { del_edge e; add_edge N -[obl:arg]-> M }
   }
-  
+
   rule xcomp {
     pattern { e:N -[comp:rais]-> M }
     commands { del_edge e; add_edge N -[xcomp]-> M }
@@ -245,14 +245,14 @@ package mod {
     pattern { e:N -[mod]-> M; M -> PROREL; PROREL[PronType=Rel] }
     commands { del_edge e; add_edge N -[acl:relcl]-> M }
   }
-  
+
   rule aclrel2 {
     pattern {
       e:N -[mod]-> M; M[cat=VERB];
       M -> N1; N1[cat=NOUN|NUM|PRON|SYMB|VERB]; N1 -> PROREL; PROREL[PronType=Rel] }
     commands { del_edge e; add_edge N -[acl:relcl]-> M }
   }
-  
+
   rule advcl {
     pattern { e:N -[mod]-> M; N [cat = ADJ|VERB]; M[cat=ADJ|VERB] }
     commands { del_edge e; add_edge N -[advcl]-> M }
@@ -305,7 +305,7 @@ package dep {
       del_edge e;
       shift_in V ==> C;
 %      shift_out V =[aux|cop|subj|mod]=> C; % TODO: shift_out
-      shift_out V =[^fixed]=> C; % TODO: shift_out
+      shift_out V =[^fixed|conj:dicto]=> C; % TODO: shift_out
       add_edge C -[cop]-> V;
       V.cat=AUX
     }
