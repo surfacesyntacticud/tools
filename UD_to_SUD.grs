@@ -1,3 +1,54 @@
+package SUDPOS {
+  rule amod {
+    pattern { X -[amod]-> Y }
+    without { Y [upos=ADJ] }
+    without { Y [_MISC_MWEPOS=ADJ] }
+    without { Y [_MISC_SUDPOS] }
+    commands { Y._MISC_SUDPOS = ADJ}
+  }
+
+  rule advmod {
+    pattern { X -[advmod]-> Y }
+    without { Y [upos=ADV] }
+    without { Y [_MISC_MWEPOS=ADV] }
+    without { Y [_MISC_SUDPOS] }
+    commands { Y._MISC_SUDPOS = ADV}
+  }
+
+  rule cop {
+    pattern { X -[cop]-> Y }
+    without { Y [upos=AUX] }
+    without { Y [_MISC_MWEPOS=AUX] }
+    without { Y [_MISC_SUDPOS] }
+    commands { Y._MISC_SUDPOS = AUX}
+  }
+
+  rule aux {
+    pattern { X -[aux]-> Y }
+    without { Y [upos=AUX] }
+    without { Y [_MISC_MWEPOS=AUX] }
+    without { Y [_MISC_SUDPOS] }
+    commands { Y._MISC_SUDPOS = AUX}
+  }
+
+  rule nsubj {
+    pattern { X -[nsubj]-> Y }
+    without { Y [upos=NOUN|PROPN|PRON] }
+    without { Y [_MISC_MWEPOS=NOUN|PROPN|PRON] }
+    without { Y [_MISC_SUDPOS] }
+    commands { Y._MISC_SUDPOS = NOUN}
+  }
+
+  rule csubj {
+    pattern { X -[csubj]-> Y }
+    without { Y [upos=VERB] }
+    without { Y [_MISC_MWEPOS=VERB] }
+    without { Y [_MISC_SUDPOS] }
+    commands { Y._MISC_SUDPOS = VERB}
+  }
+}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 package chained_relations {
   rule conj {
@@ -492,6 +543,7 @@ de#lesquelles#desquelles
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 strat main {
   Seq (
+    Onf (SUDPOS),
     Onf (chained_relations),
     Onf (neg),
     Onf (aux),
