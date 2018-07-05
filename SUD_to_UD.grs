@@ -282,6 +282,11 @@ package mod {
 %    commands { del_edge e; add_edge N -[advmod]-> M }
 %  }
 
+  rule advmod {
+    pattern { e:N -[mod]-> M; M[cat=ADV|PART|PRON] }
+    commands { del_edge e; add_edge N -[advmod]-> M }
+  }
+
   rule nmod {
     pattern { e:N -[dep]-> M; N[cat=SYM|NUM|NOUN|PRON|PROPN|X]; M[cat=SYM|NUM|NOUN|PRON|PROPN|X] }
     commands { del_edge e; add_edge N -[nmod]-> M }
