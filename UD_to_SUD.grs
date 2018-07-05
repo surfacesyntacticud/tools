@@ -309,9 +309,9 @@ package relations {
     pattern { e:M -[xcomp]-> N; }
     commands { del_edge e; add_edge M -[comp:rais]-> N }
   }
-  rule dep { % in GSD, obl are not all subtyped
+  rule dep_obl { % in GSD, obl are not all subtyped
     pattern { e:M -[obl]-> N; }
-    commands { del_edge e; add_edge M -[dep]-> N }
+    commands { del_edge e; add_edge M -[dep:obl]-> N }
   }
   rule mod {
     pattern { e:M -[amod|advmod|advmod:neg|acl|acl:relcl|advcl|obl:mod|nummod]-> N; }

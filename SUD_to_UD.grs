@@ -297,7 +297,7 @@ package mod {
 package dep {
 
   rule obl { % in GSD, obl are not all subtyped
-    pattern { e:M -[dep]-> N }
+    pattern { e:M -[dep:obl]-> N }
     commands { del_edge e; add_edge M -[obl]-> N }
   }
 
