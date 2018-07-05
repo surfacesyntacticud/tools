@@ -1,19 +1,19 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 package init {
-  rule mwepos {
-    pattern { N [cat, mwepos, !init_cat]}
-    commands { N.init_cat=N.cat; N.cat = N.mwepos; }
+%  rule mwepos {
+%    pattern { N [cat, mwepos, !token_upos]}
+%    commands { N.token_upos=N.cat; N.cat = N.mwepos; }
+%  }
+
+  rule MWEPOS {
+    pattern { N [cat, _MISC_MWEPOS, !token_upos]}
+    commands { N.token_upos=N.cat; N.cat = N._MISC_MWEPOS; }
   }
 
-  rule seq {
-    pattern { N [cat, _MISC_MWEPOS, !init_cat]}
-    commands { N.init_cat=N.cat; N.cat = N._MISC_MWEPOS; }
-  }
-
-  rule date {
-    pattern { N [cat=NUM, !save_cat]; M -> N; M[lemma=en]; }
-    commands { N.save_cat=N.cat; N.cat = NOUN; }
-  }
+%  rule date {
+%    pattern { N [cat=NUM, !save_cat]; M -> N; M[lemma=en]; }
+%    commands { N.save_cat=N.cat; N.cat = NOUN; }
+%  }
 }
 
 
@@ -258,22 +258,29 @@ package mod {
     commands { del_edge e; add_edge N -[advcl]-> M }
   }
 
-  rule obl_mod {
-    pattern { e:N -[mod]-> M; N [cat=ADJ|VERB]; M[cat=NOUN|PRON|PROPN|NUM|SYM] }
-    without{M[cat=PRON,lemma="où"]}
-    commands { del_edge e; add_edge N -[obl:mod]-> M }
-  }
 
   rule obl_mod_cop {
     pattern { e:N -[mod]-> M; N [cat<>ADJ|VERB]; N -[cop]-> C; M[cat=NOUN|PRON|PROPN] }
     commands { del_edge e; add_edge N -[obl:mod]-> M }
   }
 
-  rule advmod {
-    pattern { e:N -[mod]-> M; M[cat=ADV|PART|PRON] }
-    without { M[cat=PRON,lemma <> "où"]}
-    commands { del_edge e; add_edge N -[advmod]-> M }
+  rule obl_mod {
+    pattern { e:N -[mod]-> M; N [cat=ADJ|VERB]; M[cat=NOUN|PRON|PROPN|NUM|SYM] }
+    commands { del_edge e; add_edge N -[obl:mod]-> M }
   }
+
+% ---- French refinement of the previous rule ----
+%  rule obl_mod {
+%    pattern { e:N -[mod]-> M; N [cat=ADJ|VERB]; M[cat=NOUN|PRON|PROPN|NUM|SYM] }
+%    without{M[cat=PRON,lemma="où"]}
+%    commands { del_edge e; add_edge N -[obl:mod]-> M }
+%  }
+%
+%  rule advmod {
+%    pattern { e:N -[mod]-> M; M[cat=ADV|PART|PRON] }
+%    without { M[cat=PRON,lemma <> "où"]}
+%    commands { del_edge e; add_edge N -[advmod]-> M }
+%  }
 
   rule nmod {
     pattern { e:N -[dep]-> M; N[cat=SYM|NUM|NOUN|PRON|PROPN|X]; M[cat=SYM|NUM|NOUN|PRON|PROPN|X] }
@@ -283,16 +290,25 @@ package mod {
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 package dep {
-  rule month {
-    pattern { e:M -[dep]-> N; M [lemma="janvier"|"février"|"mars"|"avril"|"mai"|"juin"|"juillet"|"août"|"septembre"|"octobre"|"novembre"|"décembre"]}
-    commands { del_edge e; add_edge M -[nmod]-> N }
-
-  }
 
   rule obl { % in GSD, obl are not all subtyped
-    pattern { e:M -[dep]-> N; M [lemma <> "janvier"|"février"|"mars"|"avril"|"mai"|"juin"|"juillet"|"août"|"septembre"|"octobre"|"novembre"|"décembre"] }
+    pattern { e:M -[dep]-> N }
     commands { del_edge e; add_edge M -[obl]-> N }
   }
+
+% ---- French refinement of the previous rule ----
+%  rule month {
+%    pattern { e:M -[dep]-> N; M [lemma="janvier"|"février"|"mars"|"avril"|"mai"|"juin"|"juillet"|"août"|"septembre"|"octobre"|"novembre"|"décembre"]}
+%    commands { del_edge e; add_edge M -[nmod]-> N }
+%
+%  }
+%
+%  rule obl { % in GSD, obl are not all subtyped
+%    pattern { e:M -[dep]-> N; M [lemma <> "janvier"|"février"|"mars"|"avril"|"mai"|"juin"|"juillet"|"août"|"septembre"|"octobre"|"novembre"|"décembre"] }
+%    commands { del_edge e; add_edge M -[obl]-> N }
+%  }
+
+
 }
 
 
@@ -329,8 +345,8 @@ rule conj {
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 package final {
   rule mwepos {
-    pattern { N [init_cat, cat]}
-    commands { N.cat = N.init_cat; del_feat N.init_cat; }
+    pattern { N [token_upos, cat]}
+    commands { N.cat = N.token_upos; del_feat N.token_upos; }
   }
 
   rule date {
@@ -355,17 +371,4 @@ strat main {
   )
 }
 
-strat full {
-  Seq (
-    Iter (init),
-    Iter (unchained_relations),
-    Iter (reverse),
-    Iter (subj),
-    Iter (comp),
-    Iter (mod),
-    Iter (dep),
-    Iter (conj),
-    Iter (final),
-  )
-}
 
