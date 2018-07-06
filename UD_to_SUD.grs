@@ -124,7 +124,7 @@ package neg {
 package reverse {
   rule aux_left {
     pattern {
-      V []; AUX [cat=AUX];
+      V []; AUX [];
       e:V -[aux]-> AUX; AUX << V;
     }
     without {
@@ -142,7 +142,7 @@ package reverse {
 
   rule cop_left {
     pattern {
-      V []; AUX [cat=AUX];
+      V []; AUX [];
       e:V -[cop]-> AUX; AUX << V;
     }
     without {
@@ -161,7 +161,7 @@ package reverse {
 
   rule auxpass_left {
     pattern {
-      V []; AUX [cat=AUX];
+      V []; AUX [];
       e:V -[aux:pass]-> AUX; AUX << V;
     }
     without {
@@ -179,7 +179,7 @@ package reverse {
 
   rule auxcaus_left {
     pattern {
-      V []; AUX [cat=AUX];
+      V []; AUX [];
       e:V -[aux:caus]-> AUX; AUX << V;
     }
     without {
@@ -197,7 +197,7 @@ package reverse {
 
   rule aux_right {
     pattern {
-      V []; AUX [cat=AUX];
+      V []; AUX [];
       e:V -[aux]-> AUX; V << AUX;
     }
     without {
@@ -215,7 +215,7 @@ package reverse {
 
   rule cop_right {
     pattern {
-      V []; AUX [cat=AUX];
+      V []; AUX [];
       e:V -[cop]-> AUX; V << AUX;
     }
     without {
@@ -227,14 +227,14 @@ package reverse {
       add_edge AUX -[comp:cop]-> V;
       AUX.cat=VERB;
       shift_in V ==> AUX;
-      shift_out V =[^acl|acl:relcl|amod|det|case|nmod|nummod|obl:arg|comp]=> AUX;
+      shift_out V =[^acl|acl:relcl|amod|det|case|nmod|nummod|obl:arg|comp|comp:aux|comp:cop]=> AUX;
 %      shift_out V =[aux|aux:pass|aux:caus|cop|nsubj|nsubj:pass|punct|conj|cc|root|mark|advmod:neg]=> AUX;
     }
   }
 
   rule auxpass_right {
     pattern {
-      V []; AUX [cat=AUX];
+      V []; AUX [];
       e:V -[aux:pass]-> AUX; V << AUX;
     }
     without {
@@ -252,7 +252,7 @@ package reverse {
 
   rule auxcaus_right {
     pattern {
-      V []; AUX [cat=AUX];
+      V []; AUX [];
       e:V -[aux:caus]-> AUX; V << AUX;
     }
     without {

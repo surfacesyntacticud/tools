@@ -111,7 +111,7 @@ package reverse {
   }
 
   rule case {
-    pattern { e:P -[comp]-> C; P [cat=ADP]; C[cat<>VERB] }
+    pattern { e:P -[comp]-> C; P [cat=ADP|PART]; C[cat<>VERB] }
     without { C -[comp]-> * }
     commands {
       del_edge e;
@@ -122,7 +122,7 @@ package reverse {
   }
 
   rule mark_adp {
-    pattern { e:P -[comp]-> C; P [cat=ADP]; C[cat=VERB] }
+    pattern { e:P -[comp]-> C; P [cat=ADP|PART]; C[cat=VERB] }
     commands {
       del_edge e;
       shift_in P ==> C;
