@@ -24,7 +24,7 @@ package SUDPOS {
   }
 
   rule aux {
-    pattern { X -[aux]-> Y }
+    pattern { X -[re"aux.*"]-> Y }
     without { Y [upos=AUX] }
     without { Y [_MISC_MWEPOS=AUX] }
     without { Y [_MISC_SUDPOS] }
@@ -32,7 +32,7 @@ package SUDPOS {
   }
 
   rule nsubj {
-    pattern { X -[nsubj]-> Y }
+    pattern { X -[re"nsubj.*"]-> Y }
     without { Y [upos=NOUN|PROPN|PRON] }
     without { Y [_MISC_MWEPOS=NOUN|PROPN|PRON] }
     without { Y [_MISC_SUDPOS] }
@@ -40,7 +40,7 @@ package SUDPOS {
   }
 
   rule csubj {
-    pattern { X -[csubj]-> Y }
+    pattern { X -[re"csubj.*"]-> Y }
     without { Y [upos=VERB] }
     without { Y [_MISC_MWEPOS=VERB] }
     without { Y [_MISC_SUDPOS] }
@@ -539,7 +539,6 @@ de#lesquelles#desquelles
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 strat main {
   Seq (
-    Onf (SUDPOS),
     Onf (chained_relations),
     Onf (neg),
     Onf (reverse),
@@ -549,6 +548,10 @@ strat main {
     Onf (fail_label),
 %    Onf (amalgam),
   )
+}
+
+strat sudpos {
+  Seq (Onf (SUDPOS), main)
 }
 
 strat full {
