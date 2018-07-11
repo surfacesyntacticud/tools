@@ -136,7 +136,7 @@ package reverse {
       add_edge AUX -[comp:aux]-> V;
       AUX.cat=VERB;
       shift_in V ==> AUX;
-      shift_out V =[advcl|aux|aux:pass|aux:caus|cop|nsubj|nsubj:pass|punct|conj|cc|root|mark|case|advmod:neg]=> AUX;
+      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case|nsubj|nsubj:pass|punct|conj|cc|root|advmod:neg|advcl]=> AUX;
     }
   }
 
@@ -154,7 +154,7 @@ package reverse {
       add_edge AUX -[comp:cop]-> V;
       AUX.cat=VERB;
       shift_in V ==> AUX;
-      shift_out V =[^ acl|acl:relcl|amod|det|case|nmod|nummod|obl:arg]=> AUX;
+      shift_out V =[^acl|acl:relcl|amod|det|case|nmod|nummod|obl:arg]=> AUX;
 %      shift_out V =[advcl|aux|aux:pass|aux:caus|cop|nsubj|nsubj:pass|punct|conj|cc|root|mark|advmod:neg]=> AUX;
     }
   }
@@ -540,27 +540,15 @@ de#lesquelles#desquelles
 strat main {
   Seq (
     Onf (chained_relations),
-    Onf (neg),
+%    Onf (neg),
     Onf (reverse),
-    Onf (nummod_det), % fr-ud-test_00049 : les 8 premiers épisodes
+%    Onf (nummod_det), % fr-ud-test_00049 : les 8 premiers épisodes
     Onf (relations),
-    Onf (raise_gov),
+%    Onf (raise_gov),
     Onf (fail_label),
-%    Onf (amalgam),
   )
 }
 
 strat sudpos {
   Seq (Onf (SUDPOS), main)
-}
-
-strat full {
-  Seq (
-    Iter (chained_relations),
-    Onf (neg), % trivially confluent
-    Iter (aux_left), Iter (aux_right),
-    Iter (reverse),
-    Iter (relations),
-%    Onf (amalgam),
-  )
 }
