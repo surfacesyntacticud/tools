@@ -136,7 +136,8 @@ package reverse {
       add_edge AUX -[comp:aux]-> V;
       AUX.cat=VERB;
       shift_in V ==> AUX;
-      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case|nsubj|nsubj:pass|punct|conj|cc|root|advmod:neg|advcl]=> AUX;
+      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
+      shift_out V =[nsubj|nsubj:pass|csubj|csubj:pass|conj|cc|root]=> AUX;
     }
   }
 
@@ -154,8 +155,8 @@ package reverse {
       add_edge AUX -[comp:cop]-> V;
       AUX.cat=VERB;
       shift_in V ==> AUX;
-      shift_out V =[^acl|acl:relcl|amod|det|case|nmod|nummod|obl:arg]=> AUX;
-%      shift_out V =[advcl|aux|aux:pass|aux:caus|cop|nsubj|nsubj:pass|punct|conj|cc|root|mark|advmod:neg]=> AUX;
+      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
+      shift_out V =[nsubj|nsubj:pass|csubj|csubj:pass|conj|cc|root]=> AUX;
     }
   }
 
@@ -173,7 +174,8 @@ package reverse {
       add_edge AUX -[comp:pass]-> V;
       AUX.cat=VERB;
       shift_in V ==> AUX;
-      shift_out V =[aux|aux:pass|aux:caus|cop|nsubj|nsubj:pass|punct|conj|cc|root|mark|case|advmod:neg]=> AUX;
+      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
+      shift_out V =[nsubj|nsubj:pass|csubj|csubj:pass|conj|cc|root]=> AUX;
     }
   }
 
@@ -191,7 +193,8 @@ package reverse {
       add_edge AUX -[comp:caus]-> V;
       AUX.cat=VERB;
       shift_in V ==> AUX;
-      shift_out V =[aux|aux:pass|aux:caus|cop|nsubj|nsubj:pass|punct|conj|cc|root|obj:agent|advmod:neg]=> AUX;
+      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
+      shift_out V =[nsubj|nsubj:pass|csubj|csubj:pass|conj|cc|root]=> AUX;
     }
   }
 
@@ -209,7 +212,8 @@ package reverse {
       add_edge AUX -[comp:aux]-> V;
       AUX.cat=VERB;
       shift_in V ==> AUX;
-      shift_out V =[obl|aux|aux:pass|aux:caus|cop|nsubj|nsubj:pass|punct|conj|cc|root|mark|case|advmod:neg]=> AUX;
+      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
+      shift_out V =[nsubj|nsubj:pass|csubj|csubj:pass|conj|cc|root]=> AUX;
     }
   }
 
@@ -227,8 +231,8 @@ package reverse {
       add_edge AUX -[comp:cop]-> V;
       AUX.cat=VERB;
       shift_in V ==> AUX;
-      shift_out V =[^acl|acl:relcl|amod|det|case|nmod|nummod|obl:arg|comp|comp:aux|comp:cop]=> AUX;
-%      shift_out V =[aux|aux:pass|aux:caus|cop|nsubj|nsubj:pass|punct|conj|cc|root|mark|advmod:neg]=> AUX;
+      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
+      shift_out V =[nsubj|nsubj:pass|csubj|csubj:pass|conj|cc|root]=> AUX;
     }
   }
 
@@ -246,7 +250,8 @@ package reverse {
       add_edge AUX -[comp:pass]-> V;
       AUX.cat=VERB;
       shift_in V ==> AUX;
-      shift_out V =[aux|aux:pass|aux:caus|cop|nsubj|nsubj:pass|punct|conj|cc|root|mark|case|advmod:neg]=> AUX;
+      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
+      shift_out V =[nsubj|nsubj:pass|csubj|csubj:pass|conj|cc|root]=> AUX;
     }
   }
 
@@ -264,7 +269,8 @@ package reverse {
       add_edge AUX -[comp:caus]-> V;
       AUX.cat=VERB;
       shift_in V ==> AUX;
-      shift_out V =[aux|aux:pass|aux:caus|cop|nsubj|nsubj:pass|punct|conj|cc|root|obj:agent|advmod:neg]=> AUX;
+      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
+      shift_out V =[nsubj|nsubj:pass|csubj|csubj:pass|conj|cc|root]=> AUX;
     }
   }
 
@@ -275,7 +281,8 @@ package reverse {
     del_edge e;
     add_edge X1-[comp]-> H;
     shift_in H==>X1;
-    %shift_out H=[^det|aux|aux:pass|nsubj|obj|appos|punct|flat:name|nmod|nummod|comp|amod]=>X1;
+    shift_out H =[aux|aux:pass|aux:caus|cop|mark|case]=> X1;
+    shift_out H =[conj|cc|root]=> X1;
     }
   }
 
@@ -286,7 +293,8 @@ package reverse {
     del_edge e;
     add_edge X1-[comp]-> H;
     shift_in H==>X1;
-    shift_out H=[cc]=>X1;
+    shift_out H =[aux|aux:pass|aux:caus|cop|mark|case]=> X1;
+    shift_out H =[conj|cc|root]=> X1;
     }
   }
 
@@ -297,7 +305,8 @@ package reverse {
     del_edge e;
     add_edge X1-[comp]-> H;
     shift_in H==>X1;
-    shift_out H=[^det|aux|aux:pass|nsubj|obj|appos|punct|flat:name|nmod|nummod|comp|comp:aux|amod]=>X1;
+    shift_out H =[aux|aux:pass|aux:caus|cop|mark|case]=> X1;
+    shift_out H =[conj|cc|root]=> X1;
     }
   }
 
@@ -308,7 +317,8 @@ package reverse {
     del_edge e;
     add_edge X1-[comp]-> H;
     shift_in H==>X1;
-    shift_out H=[^det|comp|comp:aux|comp:cop|aux:pass|obj|obl:mod|obl:arg]=>X1;
+    shift_out H =[aux|aux:pass|aux:caus|cop|mark|case]=> X1;
+    shift_out H =[conj|cc|root]=> X1;
     }
   }
 }
