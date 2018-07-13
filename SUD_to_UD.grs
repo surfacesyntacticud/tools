@@ -10,9 +10,9 @@ package init {
     commands { N.token_upos=N.cat; N.cat = N._MISC_MWEPOS; }
   }
 
-  rule SUDPOS {
-    pattern { N [cat, _MISC_SUDPOS, !_MISC_MWEPOS, !token_upos]}
-    commands { N.token_upos=N.cat; N.cat = N._MISC_SUDPOS; del_feat N._MISC_SUDPOS }
+  rule UDPOS {
+    pattern { N [cat, _MISC_UDPOS, !_MISC_MWEPOS, !token_upos]}
+    commands { N.token_upos=N.cat; N.cat = N._MISC_UDPOS; del_feat N._MISC_UDPOS }
   }
 %  rule date {
 %    pattern { N [cat=NUM, !save_cat]; M -> N; M[lemma=en]; }

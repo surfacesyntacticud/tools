@@ -1,50 +1,50 @@
-package SUDPOS {
+package UDPOS {
   rule amod {
     pattern { X -[amod]-> Y }
     without { Y [upos=ADJ] }
     without { Y [_MISC_MWEPOS=ADJ] }
-    without { Y [_MISC_SUDPOS] }
-    commands { Y._MISC_SUDPOS = ADJ}
+    without { Y [_MISC_UDPOS] }
+    commands { Y._MISC_UDPOS = ADJ}
   }
 
   rule advmod {
     pattern { X -[advmod]-> Y }
     without { Y [upos=ADV] }
     without { Y [_MISC_MWEPOS=ADV] }
-    without { Y [_MISC_SUDPOS] }
-    commands { Y._MISC_SUDPOS = ADV}
+    without { Y [_MISC_UDPOS] }
+    commands { Y._MISC_UDPOS = ADV}
   }
 
   rule cop {
     pattern { X -[cop]-> Y }
     without { Y [upos=AUX] }
     without { Y [_MISC_MWEPOS=AUX] }
-    without { Y [_MISC_SUDPOS] }
-    commands { Y._MISC_SUDPOS = AUX}
+    without { Y [_MISC_UDPOS] }
+    commands { Y._MISC_UDPOS = AUX}
   }
 
   rule aux {
     pattern { X -[re"aux.*"]-> Y }
     without { Y [upos=AUX] }
     without { Y [_MISC_MWEPOS=AUX] }
-    without { Y [_MISC_SUDPOS] }
-    commands { Y._MISC_SUDPOS = AUX}
+    without { Y [_MISC_UDPOS] }
+    commands { Y._MISC_UDPOS = AUX}
   }
 
   rule nsubj {
     pattern { X -[re"nsubj.*"]-> Y }
     without { Y [upos=NOUN|PROPN|PRON] }
     without { Y [_MISC_MWEPOS=NOUN|PROPN|PRON] }
-    without { Y [_MISC_SUDPOS] }
-    commands { Y._MISC_SUDPOS = NOUN}
+    without { Y [_MISC_UDPOS] }
+    commands { Y._MISC_UDPOS = NOUN}
   }
 
   rule csubj {
     pattern { X -[re"csubj.*"]-> Y }
     without { Y [upos=VERB] }
     without { Y [_MISC_MWEPOS=VERB] }
-    without { Y [_MISC_SUDPOS] }
-    commands { Y._MISC_SUDPOS = VERB}
+    without { Y [_MISC_UDPOS] }
+    commands { Y._MISC_UDPOS = VERB}
   }
 }
 
@@ -560,5 +560,11 @@ strat main {
 }
 
 strat sudpos {
-  Seq (Onf (SUDPOS), main)
+  Seq (
+    Onf (chained_relations),
+    Onf (reverse),
+    Onf (UDPOS),
+    Onf (relations),
+    Onf (fail_label),
+  )
 }
