@@ -1,18 +1,18 @@
-package UDPOS {
-  rule amod {
-    pattern { X -[amod]-> Y }
-    without { Y [upos=ADJ] }
-    without { Y [_MISC_MWEPOS=ADJ] }
+package UDPOS_init {
+  rule case {
+    pattern { X -[case]-> Y }
+    without { Y [upos=ADP|PART] }
+    without { Y [_MISC_MWEPOS=ADP|PART] }
     without { Y [_MISC_UDPOS] }
-    commands { Y._MISC_UDPOS = ADJ}
+    commands { Y._MISC_UDPOS = ADP} % real value should be "ADP|PART"
   }
 
-  rule advmod {
-    pattern { X -[advmod]-> Y }
-    without { Y [upos=ADV] }
-    without { Y [_MISC_MWEPOS=ADV] }
+  rule mark {
+    pattern { X -[mark]-> Y }
+    without { Y [upos=ADP|SCONJ] }
+    without { Y [_MISC_MWEPOS=ADP|SCONJ] }
     without { Y [_MISC_UDPOS] }
-    commands { Y._MISC_UDPOS = ADV}
+    commands { Y._MISC_UDPOS = ADP} % real value should be "ADP|SCONJ"
   }
 
   rule cop {
@@ -30,6 +30,24 @@ package UDPOS {
     without { Y [_MISC_UDPOS] }
     commands { Y._MISC_UDPOS = AUX}
   }
+}
+
+package UDPOS_after_reverse {
+  rule amod {
+    pattern { X -[amod]-> Y }
+    without { Y [upos=ADJ] }
+    without { Y [_MISC_MWEPOS=ADJ] }
+    without { Y [_MISC_UDPOS] }
+    commands { Y._MISC_UDPOS = ADJ}
+  }
+
+  rule advmod {
+    pattern { X -[advmod]-> Y }
+    without { Y [upos=ADV] }
+    without { Y [_MISC_MWEPOS=ADV] }
+    without { Y [_MISC_UDPOS] }
+    commands { Y._MISC_UDPOS = ADV}
+  }
 
   rule nsubj {
     pattern { X -[re"nsubj.*"]-> Y }
@@ -45,6 +63,14 @@ package UDPOS {
     without { Y [_MISC_MWEPOS=VERB] }
     without { Y [_MISC_UDPOS] }
     commands { Y._MISC_UDPOS = VERB}
+  }
+
+  rule acl_advcl {
+    pattern { X -[acl|advcl]-> Y }
+    without { Y [upos=VERB|ADJ] }
+    without { Y [_MISC_MWEPOS=VERB|ADJ] }
+    without { Y [_MISC_UDPOS] }
+    commands { Y._MISC_UDPOS = VERB} % real value should be "VERB|ADJ"
   }
 }
 
@@ -559,11 +585,12 @@ strat main {
   )
 }
 
-strat sudpos {
+strat udpos {
   Seq (
+    Onf (UDPOS_init),
     Onf (chained_relations),
     Onf (reverse),
-    Onf (UDPOS),
+    Onf (UDPOS_after_reverse),
     Onf (relations),
     Onf (fail_label),
   )
