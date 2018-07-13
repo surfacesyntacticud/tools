@@ -6,38 +6,38 @@ doc:
 	@echo "gui_ud:  run GUI on SUD_to_UD conversion"
 	@echo "gui_sud: run GUI on UD_to_SUD conversion"
 	@echo ""
-	@echo "draw_ud: convert sud.conll into _ud_conv.conll and build figures"
+	@echo "draw:    run both convertion build figures"
 	@echo "----------------------------------------------------------------"
 
 sud:
-	grew_dev transform -grs UD_to_SUD.grs -i ud.conll -o _sud_conv.conll
+	grew transform -grs UD_to_SUD.grs -i ud.conll -o _sud_conv.conll
 	opendiff sud.conll _sud_conv.conll
 
 ud:
-	grew_dev transform -grs SUD_to_UD.grs -i sud.conll -o _ud_conv.conll
+	grew transform -grs SUD_to_UD.grs -i sud.conll -o _ud_conv.conll
 	opendiff ud.conll _ud_conv.conll
 
 full_ud:
-	grew_dev transform -grs SUD_to_UD.grs -strat full -i sud.conll -o _ud_full_conv.conll
+	grew transform -grs SUD_to_UD.grs -strat full -i sud.conll -o _ud_full_conv.conll
 
 gui_ud:
-	grew_dev gui -grs SUD_to_UD.grs -i sud.conll
+	grew gui -grs SUD_to_UD.grs -i sud.conll
 
 gui_sud:
-	grew_dev gui -grs UD_to_SUD.grs -i ud.conll
+	grew gui -grs UD_to_SUD.grs -i ud.conll
 
 draw:
 	rm -rf _sud_gold
 	splitter sud.conll _sud_gold
 	find _sud_gold -name "*.conll" -type f -print | sed "s/.conll$$//" | xargs -I {} make "{}.svg"
-	grew_dev transform -grs SUD_to_UD.grs -i sud.conll -o _ud.conll
+	grew transform -grs SUD_to_UD.grs -i sud.conll -o _ud.conll
 	rm -rf _ud_auto
 	splitter _ud.conll _ud_auto
 	# ----
 	rm -rf _ud_gold
 	splitter ud.conll _ud_gold
 	find _ud_gold -name "*.conll" -type f -print | sed "s/.conll$$//" | xargs -I {} make "{}.svg"
-	grew_dev transform -grs UD_to_SUD.grs -i ud.conll -o _sud.conll
+	grew transform -grs UD_to_SUD.grs -i ud.conll -o _sud.conll
 	rm -rf _sud_auto
 	splitter _sud.conll _sud_auto
 	# ----
@@ -45,9 +45,9 @@ draw:
 	dep_diff -d1 _ud_gold -d2 _ud_auto -svg _ud_diff
 
 gsd_sud:
-	grew_dev transform -grs UD_to_SUD.grs -i UD_French-GSD/fr_gsd-ud-dev.conllu -o _fr_gsd-ud-dev.sud.conllu
-	grew_dev transform -grs UD_to_SUD.grs -i UD_French-GSD/fr_gsd-ud-test.conllu -o _fr_gsd-ud-test.sud.conllu
-	grew_dev transform -grs UD_to_SUD.grs -i UD_French-GSD/fr_gsd-ud-train.conllu -o _fr_gsd-ud-train.sud.conllu
+	grew transform -grs UD_to_SUD.grs -i UD_French-GSD/fr_gsd-ud-dev.conllu -o _fr_gsd-ud-dev.sud.conllu
+	grew transform -grs UD_to_SUD.grs -i UD_French-GSD/fr_gsd-ud-test.conllu -o _fr_gsd-ud-test.sud.conllu
+	grew transform -grs UD_to_SUD.grs -i UD_French-GSD/fr_gsd-ud-train.conllu -o _fr_gsd-ud-train.sud.conllu
 
 clean:
 	rm -rf _*
@@ -58,8 +58,8 @@ clean:
 	dep2pict $< $@
 
 ja:
-	grew_dev transform -grs UD_to_SUD.grs -i ja_ud.conll -o _ja_sud_conv.conll
+	grew transform -grs UD_to_SUD.grs -i ja_ud.conll -o _ja_sud_conv.conll
 
 ja_gui:
-	grew_dev gui -grs UD_to_SUD.grs -i ja_ud.conll
+	grew gui -grs UD_to_SUD.grs -i ja_ud.conll
 

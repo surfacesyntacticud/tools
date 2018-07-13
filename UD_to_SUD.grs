@@ -394,25 +394,28 @@ package relations {
   }
   rule dep_obl { % in GSD, obl are not all subtyped
     pattern { e:M -[obl]-> N; }
-    commands { del_edge e; add_edge M -[dep:obl]-> N }
+    commands { del_edge e; add_edge M -[dep_SUD]-> N }
   }
   rule mod {
-    pattern { e:M -[amod|advmod|advmod:neg|acl|acl:relcl|advcl|obl:mod|nummod]-> N; }
-    commands { del_edge e; add_edge M -[mod]-> N }
-  }
-
-  rule nmod_dep {
-    pattern { e:M -[nmod]-> N; M [cat=SYM|NUM|NOUN|PRON|PROPN]}
-    commands { del_edge e; add_edge M -[dep]-> N }
-  }
-  rule nmod_mod {
-    pattern { e:M -[nmod]-> N; M [cat<>SYM|NUM|NOUN|PRON|PROPN]}
+    pattern { e:M -[advmod|advmod:neg|advcl|obl:mod]-> N; }
     commands { del_edge e; add_edge M -[mod]-> N }
   }
   rule subj {
     pattern { e:M -[nsubj|nsubj:pass|csubj|csubj:pass]-> N; }
     commands { del_edge e; add_edge M -[subj]-> N }
   }
+  rule nmod_dep {
+    pattern { e:M -[acl|acl:relcl|amod|nmod|nummod]-> N; M [cat=SYM|NUM|NOUN|PRON|PROPN]}
+    commands { del_edge e; add_edge M -[dep_SUD]-> N }
+  }
+
+% backoff rule
+%  rule nmod_mod {
+%    pattern { e:M -[acl|acl:relcl|amod|nmod|nummod]-> N; M [cat<>SYM|NUM|NOUN|PRON|PROPN]}
+%    commands { del_edge e; add_edge M -[mod]-> N }
+%  }
+
+
 
 }
 

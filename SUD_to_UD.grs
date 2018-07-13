@@ -222,7 +222,7 @@ package comp {
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 package mod {
   rule amod {
-    pattern { e:N -[mod]-> M; N[cat<>VERB]; M[cat=ADJ] }
+    pattern { e:N -[dep_SUD]-> M; N[cat=SYM|NUM|NOUN|PRON|PROPN]; M[cat=ADJ] }
     commands { del_edge e; add_edge N -[amod]-> M }
   }
 
@@ -233,27 +233,27 @@ package mod {
   % }
 
   rule nummod {
-    pattern { N[cat=NOUN|PRON|SYM|NUM]; e:N -[det|mod]-> M; M[cat=NUM] }
+    pattern { e:N -[dep_SUD]-> M; N[cat=SYM|NUM|NOUN|PRON|PROPN]; M[cat=NUM] }
     commands { del_edge e; add_edge N -[nummod]-> M }
   }
 
 %TODO --> cop GSD-train-2019
   rule acl {
-    pattern { e:N -[mod]-> M; N[cat <> ADJ|VERB]; M[cat=VERB] }
+    pattern { e:N -[dep_SUD]-> M; N[cat=SYM|NUM|NOUN|PRON|PROPN]; M[cat=VERB] }
     without { M -> PROREL; PROREL[PronType=Rel] }
     without {  M -> N1; N1[cat=NOUN|NUM|PRON|SYMB|VERB]; N1 -> PROREL; PROREL[PronType=Rel] }
     commands { del_edge e; add_edge N -[acl]-> M }
   }
 
   rule aclrel1 {
-    pattern { e:N -[mod]-> M; M -> PROREL; PROREL[PronType=Rel] }
+    pattern { e:N -[dep_SUD]-> M; N[cat=SYM|NUM|NOUN|PRON|PROPN]; M -> PROREL; PROREL[PronType=Rel] }
     commands { del_edge e; add_edge N -[acl:relcl]-> M }
   }
 
   rule aclrel2 {
     pattern {
-      e:N -[mod]-> M; M[cat=VERB];
-      M -> N1; N1[cat=NOUN|NUM|PRON|SYMB|VERB]; N1 -> PROREL; PROREL[PronType=Rel] }
+      e:N -[dep_SUD]-> M; N[cat=SYM|NUM|NOUN|PRON|PROPN]; M[cat=VERB];
+      M -> N1; N1[cat=SYM|NUM|NOUN|PRON|PROPN]; N1 -> PROREL; PROREL[PronType=Rel] }
     commands { del_edge e; add_edge N -[acl:relcl]-> M }
   }
 
@@ -292,16 +292,16 @@ package mod {
   }
 
   rule nmod {
-    pattern { e:N -[dep]-> M; N[cat=SYM|NUM|NOUN|PRON|PROPN|X]; M[cat=SYM|NUM|NOUN|PRON|PROPN|X] }
+    pattern { e:N -[dep_SUD]-> M; N[cat=SYM|NUM|NOUN|PRON|PROPN|X]; M[cat=SYM|NOUN|PRON|PROPN|X] }
     commands { del_edge e; add_edge N -[nmod]-> M }
   }
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-package dep {
+package dep_SUD {
 
   rule obl { % in GSD, obl are not all subtyped
-    pattern { e:M -[dep:obl]-> N }
+    pattern { e:M -[dep_SUD]-> N }
     commands { del_edge e; add_edge M -[obl]-> N }
   }
 
@@ -373,7 +373,7 @@ strat main {
     Onf (subj),
     Onf (comp),
     Onf (mod),
-    Onf (dep),
+    Onf (dep_SUD),
     Onf (cop),
     Onf (conj),
     Onf (final),
