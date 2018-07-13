@@ -32,6 +32,7 @@ en#outre#ADP
 en#outre#ADV
 en#plus#ADV
 en#tout#ADV
+encore#que#SCONJ
 entre#autre#ADV
 et#caetera#CCONJ
 et#pas#CCONJ
@@ -49,6 +50,7 @@ ou#bien#CCONJ
 par#ailleurs#ADV
 par#conséquent#ADV
 par#contre#ADV
+par#exemple#ADV
 parce#que#ADP
 peu#après#ADP
 peu#un#DET
@@ -64,4 +66,5 @@ tandis#que#ADP
 tant#que#SCONJ
 un#peu#ADV
 vis-à-vis#de#ADP
+vu#que#SCONJ
 y#comprendre#ADP

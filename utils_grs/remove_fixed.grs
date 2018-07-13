@@ -1,8 +1,77 @@
 package fixed_del{
-  rule prep_noun(feature $prep, $noun){
+
+  rule adv_de_nom(feature $adv){
     pattern {
-      PREP[cat=PREP,phon=$prep];
-      N[cat=NOUN,phon=$noun];
+      PRED[cat=ADJ|VERB];
+      NOM[cat<>VERB];
+      ADV[cat=ADV,_MISC_mwepos,lemma=$adv];
+      e1: PRED -[obl:mod]-> NOM;
+      e2: NOM -[case]-> ADV;
+      DE[cat=ADP,lemma=de];
+      fixed_rel: ADV -[fixed]-> DE;
+    }
+    commands {
+      del_edge fixed_rel; del_edge e1; del_edge e2;
+      del_feat ADV._MISC_mwepos;
+      add_edge PRED -[advmod]-> ADV;
+      add_edge NOM -[case]-> DE; add_edge ADV -[obl:arg]-> NOM
+    }
+  }
+#BEGIN
+auprès
+au-delà
+près
+#END
+
+  rule adv_de_inf(feature $adv){
+    pattern {
+      PRED[cat=ADJ|VERB];
+      INF[cat=VERB,VerbForm=Inf];
+      ADV[cat=ADV,_MISC_mwepos,lemma=$adv];
+      e1: PRED -[advcl]-> INF;
+      e2: INF -[mark]-> ADV;
+      DE[cat=ADP,lemma=de];
+      fixed_rel: ADV -[fixed]-> DE;
+    }
+    commands {
+      del_edge fixed_rel; del_edge e1; del_edge e2;
+      del_feat ADV._MISC_mwepos;
+      add_edge PRED -[advmod]-> ADV;
+      add_edge INF -[mark]-> DE; add_edge ADV -[ccomp]-> INF
+    }
+  }
+#BEGIN
+afin
+au-delà
+près
+#END
+
+  rule adv_que(feature $adv){
+    pattern {
+      PRED[cat=ADJ|VERB];
+      V[cat=VERB];
+      ADV[cat=ADV,lemma=$adv,_MISC_mwepos];
+      e1: PRED -[advcl]-> V;
+      e2: V -[mark]-> ADV;
+      QUE[cat=SCONJ,lemma=que];
+      fixed_rel: ADV -[fixed]-> QUE
+    }
+    commands {
+      del_edge fixed_rel; del_edge e1; del_edge e2;
+      del_feat ADV._MISC_mwepos;
+      add_edge PRED -[advmod]-> ADV;
+      add_edge V -[mark]-> QUE; add_edge ADV -[ccomp]-> V
+    }
+  }
+#BEGIN
+afin
+avant
+#END
+
+  rule prep_noun(feature $prep, $obj){
+    pattern {
+      PREP[cat=ADP,phon=$prep];
+      N[cat=ADJ|NOUN,phon=$obj];
       fixed_rel: PREP -[fixed]-> N
     }
     commands {
@@ -11,6 +80,7 @@ package fixed_del{
     }
   }
 #BEGIN
+à#merveille
 en#général
 en#masse
 en#moyenne
@@ -26,8 +96,8 @@ en#vrai
 
   rule tout_en{
     pattern {
-      ADV[cat=ADV,phon=tout];
-      PREP[cat=PREP,phon=en];
+      ADV[cat=ADV,phon=tout|Tout];
+      PREP[cat=ADP,phon=en];
       fixed_rel: ADV -[fixed]-> PREP;
       mark_rel: V -[mark]-> ADV
     }

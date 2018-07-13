@@ -20,6 +20,7 @@ en#plus#de#ADP
 en#raison#de#ADP
 en#raison#de#ADP
 en#tant#que#ADP
+en#tout#cas#ADV
 le#plupart#de#ADV
 mettre#à#part#ADP
 pas#grand#chose#PRON
