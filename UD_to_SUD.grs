@@ -32,6 +32,7 @@ package UDPOS_init {
   }
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 package UDPOS_after_reverse {
   rule amod {
     pattern { X -[amod]-> Y }
@@ -74,8 +75,84 @@ package UDPOS_after_reverse {
   }
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Move the dependents of a conjunction from the left conjunct to the right conjunct. Dependencies ADVCL, ADVMOD, APPOS, CCOMP, CONJ, DEP, DISCOURSE, PARATAXIS and PUNCT are not moved.
+package minimize_conj_dep{
+
+  rule min_acl{
+    pattern{C1 -[conj]-> C2; e:C1 -[acl]-> D; C2 << D}
+    without{C1 -[conj]-> C; C2 << C}
+    commands{del_edge e; add_edge C2 -[acl]-> D}
+  }
+  
+  rule min_aclrelcl{
+    pattern{C1 -[conj]-> C2; e:C1 -[acl:relcl]-> D; C2 << D}
+    without{C1 -[conj]-> C; C2 << C}
+    commands{del_edge e; add_edge C2 -[acl:relcl]-> D}
+  }
+
+  rule min_amod{
+    pattern{C1 -[conj]-> C2; e:C1 -[amod]-> D; C2 << D}
+    without{C1 -[conj]-> C; C2 << C}
+    commands{del_edge e; add_edge C2 -[amod]-> D}
+  }
+  
+  rule min_flatname{
+    pattern{C1 -[conj]-> C2; e:C1 -[flat:name]-> D; C2 << D}
+    without{C1 -[conj]-> C; C2 << C}
+    commands{del_edge e; add_edge C2 -[flat:name]-> D}
+  }
+  
+  rule min_nmod{
+    pattern{C1 -[conj]-> C2; e:C1 -[nmod]-> D; C2 << D}
+    without{C1 -[conj]-> C; C2 << C}
+    commands{del_edge e; add_edge C2 -[nmod]-> D}
+  }
+  
+  rule min_nsubj{
+    pattern{C1 -[conj]-> C2; e:C1 -[nsubj]-> D; C2 << D}
+    without{C1 -[conj]-> C; C2 << C}
+    commands{del_edge e; add_edge C2 -[nsubj]-> D}
+  }
+  
+  rule min_nummod{
+    pattern{C1 -[conj]-> C2; e:C1 -[nummod]-> D; C2 << D}
+    without{C1 -[conj]-> C; C2 << C}
+    commands{del_edge e; add_edge C2 -[nummod]-> D}
+  }
+  rule min_obj{
+    pattern{C1 -[conj]-> C2; e:C1 -[obj]-> D; C2 << D}
+    without{C1 -[conj]-> C; C2 << C}
+    commands{del_edge e; add_edge C2 -[obj]-> D}
+  }
+  
+  rule min_obl{
+    pattern{C1 -[conj]-> C2; e:C1 -[obl]-> D; C2 << D}
+    without{C1 -[conj]-> C; C2 << C}
+    commands{del_edge e; add_edge C2 -[obl]-> D}
+  }
+
+  rule min_oblagent{
+    pattern{C1 -[conj]-> C2; e:C1 -[obl:agent]-> D; C2 << D}
+    without{C1 -[conj]-> C; C2 << C}
+    commands{del_edge e; add_edge C2 -[obl:agent]-> D}
+  }
+
+  rule min_oblarg{
+    pattern{C1 -[conj]-> C2; e:C1 -[obl:arg]-> D; C2 << D}
+    without{C1 -[conj]-> C; C2 << C}
+    commands{del_edge e; add_edge C2 -[obl:arg]-> D}
+  }
+  rule min_oblmod{
+    pattern{C1 -[conj]-> C2; e:C1 -[obl:mod]-> D; C2 << D}
+    without{C1 -[conj]-> C; C2 << C}
+    commands{del_edge e; add_edge C2 -[obl:mod]-> D}
+  }
+
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Dependencies of type CONJ, FIXED and FLAT:NAME grouped into a bouquet are reorganized into a chain.
 package chained_relations {
   rule conj {
     pattern {
@@ -138,21 +215,30 @@ package chained_relations {
   }
 }
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-package neg {
-  rule r {
-    pattern { e:V -[advmod]-> A; A[Polarity=Neg] }
-    commands { del_edge e; add_edge V -[advmod:neg]-> A; }
-  }
-}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 package reverse {
-  rule aux_left {
-    pattern {
-      V []; AUX [];
-      e:V -[aux]-> AUX; AUX << V;
+  rule left_aux {
+    pattern {e:V -[aux]-> AUX; AUX << V}
+    without {
+      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
+      AUX << AUX2; AUX2 << V;
     }
+    without{ V -[conj]-> *}
+    commands {
+      del_edge e;
+      add_edge AUX -[comp:aux]-> V;
+      AUX.cat=VERB;
+      shift_in V ==> AUX;
+      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
+      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
+    }
+  }
+
+  rule left_aux_conj1 {
+    pattern {e:V -[aux]-> AUX; AUX << V; V -[conj]-> V1}
+    without{ V1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2; AUX2 << V1}
+    without{ V1 -[comp:aux|comp:caus|comp:cop|comp:pass]-> *}
     without {
       V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
       AUX << AUX2; AUX2 << V;
@@ -163,15 +249,53 @@ package reverse {
       AUX.cat=VERB;
       shift_in V ==> AUX;
       shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
-      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|conj|cc|punct|root]=> AUX;
+      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
+    }
+  }
+  
+  rule left_aux_conj2 {
+    pattern {
+      e1:V -[aux]-> AUX; AUX << V;
+      e2:V -[conj]-> V1;
+      V1 -[comp:aux|comp:caus|comp:cop|comp:pass]-> *
+    }
+   without{ V1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2; AUX2 << V1}
+   without {
+      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
+      AUX << AUX2; AUX2 << V;
+    }
+    commands {
+      del_edge e1;  del_edge e2;
+      add_edge AUX -[comp:aux]-> V;
+      add_edge AUX -[conj]-> V1;
+      AUX.cat=VERB;
+      shift_in V ==> AUX;
+      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
+      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
+    }
+  }
+  
+  rule left_cop {
+    pattern {e:V -[cop]-> AUX; AUX << V}
+    without {
+      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
+      AUX << AUX2; AUX2 << V;
+    }
+    without{ V -[conj]-> *}
+    commands {
+      del_edge e;
+      add_edge AUX -[comp:cop]-> V;
+      AUX.cat=VERB;
+      shift_in V ==> AUX;
+      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
+      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
     }
   }
 
-  rule cop_left {
-    pattern {
-      V []; AUX [];
-      e:V -[cop]-> AUX; AUX << V;
-    }
+  rule left_cop_conj1 {
+    pattern {e:V -[cop]-> AUX; AUX << V;V -[conj]-> V1}
+    without{ V1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2; AUX2 << V1}
+    without{ V1 -[comp:aux|comp:caus|comp:cop|comp:pass]-> *}
     without {
       V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
       AUX << AUX2; AUX2 << V;
@@ -182,15 +306,53 @@ package reverse {
       AUX.cat=VERB;
       shift_in V ==> AUX;
       shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
-      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|conj|cc|punct|root]=> AUX;
+      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
     }
   }
 
-  rule auxpass_left {
+  rule left_cop_conj2 {
     pattern {
-      V []; AUX [];
-      e:V -[aux:pass]-> AUX; AUX << V;
+      e1:V -[cop]-> AUX; AUX << V;
+      e2:V -[conj]-> V1;
+      V1 -[comp:aux|comp:caus|comp:cop|comp:pass]-> *
     }
+   without{ V1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2; AUX2 << V1}
+    without {
+      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
+      AUX << AUX2; AUX2 << V;
+    }
+    commands {
+      del_edge e1;  del_edge e2;
+      add_edge AUX -[comp:cop]-> V;
+      add_edge AUX -[conj]-> V1;
+      AUX.cat=VERB;
+      shift_in V ==> AUX;
+      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
+      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
+    }
+  }
+  
+  rule left_auxpass {
+    pattern {e:V -[aux:pass]-> AUX; AUX << V}
+    without {
+      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
+      AUX << AUX2; AUX2 << V;
+    }
+    without{ V -[conj]-> *}
+    commands {
+      del_edge e;
+      add_edge AUX -[comp:pass]-> V;
+      AUX.cat=VERB;
+      shift_in V ==> AUX;
+      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
+      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
+    }
+  }
+
+  rule left_auxpass_conj1 {
+    pattern {e:V -[aux:pass]-> AUX; AUX << V; V -[conj]-> V1}
+    without{ V1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2; AUX2 << V1}
+    without{ V1 -[comp:aux|comp:caus|comp:cop|comp:pass]-> *}
     without {
       V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
       AUX << AUX2; AUX2 << V;
@@ -201,15 +363,53 @@ package reverse {
       AUX.cat=VERB;
       shift_in V ==> AUX;
       shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
-      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|conj|cc|punct|root]=> AUX;
+      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
+    }
+  }
+  
+  rule left_auxpass_conj2 {
+    pattern {
+      e1:V -[aux:pass]-> AUX; AUX << V;
+      e2:V -[conj]-> V1;
+      V1 -[comp:aux|comp:caus|comp:cop|comp:pass]-> *
+    }
+   without{ V1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2; AUX2 << V1}
+   without {
+      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
+      AUX << AUX2; AUX2 << V;
+    }
+    commands {
+      del_edge e1;  del_edge e2;
+      add_edge AUX -[comp:pass]-> V;
+      add_edge AUX -[conj]-> V1;
+      AUX.cat=VERB;
+      shift_in V ==> AUX;
+      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
+      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
+    }
+  }
+ 
+  rule left_auxcaus {
+    pattern {e:V -[aux:caus]-> AUX; AUX << V}
+    without {
+      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
+      AUX << AUX2; AUX2 << V;
+    }
+    without{ V -[conj]-> *}
+    commands {
+      del_edge e;
+      add_edge AUX -[comp:caus]-> V;
+      AUX.cat=VERB;
+      shift_in V ==> AUX;
+      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
+      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
     }
   }
 
-  rule auxcaus_left {
-    pattern {
-      V []; AUX [];
-      e:V -[aux:caus]-> AUX; AUX << V;
-    }
+  rule left_auxcaus_conj1 {
+    pattern {e:V -[aux:caus]-> AUX; AUX << V; V -[conj]-> V1}
+    without{ V1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2; AUX2 << V1}
+    without{ V1 -[comp:aux|comp:caus|comp:cop|comp:pass]-> *}
     without {
       V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
       AUX << AUX2; AUX2 << V;
@@ -220,18 +420,56 @@ package reverse {
       AUX.cat=VERB;
       shift_in V ==> AUX;
       shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
-      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|conj|cc|punct|root]=> AUX;
+      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
+    }
+  }
+  
+  rule left_auxcaus_conj2 {
+    pattern {
+      e1:V -[aux:caus]-> AUX; AUX << V;
+      e2:V -[conj]-> V1;
+      V1 -[comp:aux|comp:caus|comp:cop|comp:pass]-> *
+    }
+   without{ V1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2; AUX2 << V1}
+   without {
+      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
+      AUX << AUX2; AUX2 << V;
+    }
+    commands {
+      del_edge e1;  del_edge e2;
+      add_edge AUX -[comp:caus]-> V;
+      add_edge AUX -[conj]-> V1;
+      AUX.cat=VERB;
+      shift_in V ==> AUX;
+      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
+      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
     }
   }
 
-  rule aux_right {
-    pattern {
-      V []; AUX [];
-      e:V -[aux]-> AUX; V << AUX;
-    }
+   rule right_aux {
+    pattern {e:V -[aux]-> AUX; AUX >> V}
     without {
       V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
-      V << AUX2; AUX2 << AUX;
+      AUX >> AUX2; AUX2 >> V;
+    }
+    without{ V -[conj]-> *}
+    commands {
+      del_edge e;
+      add_edge AUX -[comp:aux]-> V;
+      AUX.cat=VERB;
+      shift_in V ==> AUX;
+      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
+      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
+    }
+  }
+
+  rule right_aux_conj1 {
+    pattern {e:V -[aux]-> AUX; AUX >> V; V -[conj]-> V1}
+    without{ V1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2; AUX2 << V1}
+    without{ V1 -[comp:aux|comp:caus|comp:cop|comp:pass]-> *}
+    without {
+      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
+      AUX >> AUX2; AUX2 >> V;
     }
     commands {
       del_edge e;
@@ -239,18 +477,56 @@ package reverse {
       AUX.cat=VERB;
       shift_in V ==> AUX;
       shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
-      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|conj|cc|punct|root]=> AUX;
+      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
+    }
+  }
+  
+  rule right_aux_conj2 {
+    pattern {
+      e1:V -[aux]-> AUX; AUX >> V;
+      e2:V -[conj]-> V1;
+      V1 -[comp:aux|comp:caus|comp:cop|comp:pass]-> *
+    }
+   without{ V1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2; AUX2 << V1}
+   without {
+      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
+      AUX >> AUX2; AUX2 >> V;
+    }
+    commands {
+      del_edge e1;  del_edge e2;
+      add_edge AUX -[comp:aux]-> V;
+      add_edge AUX -[conj]-> V1;
+      AUX.cat=VERB;
+      shift_in V ==> AUX;
+      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
+      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
+    }
+  }
+  
+  rule right_cop {
+    pattern {e:V -[cop]-> AUX; AUX >> V}
+    without {
+      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
+      AUX >> AUX2; AUX2 >> V;
+    }
+    without{ V -[conj]-> *}
+    commands {
+      del_edge e;
+      add_edge AUX -[comp:cop]-> V;
+      AUX.cat=VERB;
+      shift_in V ==> AUX;
+      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
+      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
     }
   }
 
-  rule cop_right {
-    pattern {
-      V []; AUX [];
-      e:V -[cop]-> AUX; V << AUX;
-    }
+  rule right_cop_conj1 {
+    pattern {e:V -[cop]-> AUX; AUX >> V;V -[conj]-> V1}
+    without{ V1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2; AUX2 << V1}
+    without{ V1 -[comp:aux|comp:caus|comp:cop|comp:pass]-> *}
     without {
       V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
-      V << AUX2; AUX2 << AUX;
+      AUX >> AUX2; AUX2 >> V;
     }
     commands {
       del_edge e;
@@ -258,18 +534,56 @@ package reverse {
       AUX.cat=VERB;
       shift_in V ==> AUX;
       shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
-      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|conj|cc|punct|root]=> AUX;
+      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
     }
   }
 
-  rule auxpass_right {
+  rule right_cop_conj2 {
     pattern {
-      V []; AUX [];
-      e:V -[aux:pass]-> AUX; V << AUX;
+      e1:V -[cop]-> AUX; AUX >> V;
+      e2:V -[conj]-> V1;
+      V1 -[comp:aux|comp:caus|comp:cop|comp:pass]-> *
     }
+   without{ V1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2; AUX2 << V1}
     without {
       V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
-      V << AUX2; AUX2 << AUX;
+      AUX >> AUX2; AUX2 >> V;
+    }
+    commands {
+      del_edge e1;  del_edge e2;
+      add_edge AUX -[comp:cop]-> V;
+      add_edge AUX -[conj]-> V1;
+      AUX.cat=VERB;
+      shift_in V ==> AUX;
+      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
+      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
+    }
+  }
+  
+  rule right_auxpass {
+    pattern {e:V -[aux:pass]-> AUX; AUX >> V}
+    without {
+      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
+      AUX >> AUX2; AUX2 >> V;
+    }
+    without{ V -[conj]-> *}
+    commands {
+      del_edge e;
+      add_edge AUX -[comp:pass]-> V;
+      AUX.cat=VERB;
+      shift_in V ==> AUX;
+      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
+      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
+    }
+  }
+
+  rule right_auxpass_conj1 {
+    pattern {e:V -[aux:pass]-> AUX; AUX >> V; V -[conj]-> V1}
+    without{ V1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2; AUX2 << V1}
+    without{ V1 -[comp:aux|comp:caus|comp:cop|comp:pass]-> *}
+    without {
+      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
+      AUX >> AUX2; AUX2 >> V;
     }
     commands {
       del_edge e;
@@ -277,18 +591,56 @@ package reverse {
       AUX.cat=VERB;
       shift_in V ==> AUX;
       shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
-      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|conj|cc|punct|root]=> AUX;
+      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
+    }
+  }
+  
+  rule right_auxpass_conj2 {
+    pattern {
+      e1:V -[aux:pass]-> AUX; AUX >> V;
+      e2:V -[conj]-> V1;
+      V1 -[comp:aux|comp:caus|comp:cop|comp:pass]-> *
+    }
+   without{ V1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2; AUX2 << V1}
+   without {
+      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
+      AUX >> AUX2; AUX2 >> V;
+    }
+    commands {
+      del_edge e1;  del_edge e2;
+      add_edge AUX -[comp:pass]-> V;
+      add_edge AUX -[conj]-> V1;
+      AUX.cat=VERB;
+      shift_in V ==> AUX;
+      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
+      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
+    }
+  }
+ 
+  rule right_auxcaus {
+    pattern {e:V -[aux:caus]-> AUX; AUX >> V}
+    without {
+      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
+      AUX >> AUX2; AUX2 >> V;
+    }
+    without{ V -[conj]-> *}
+    commands {
+      del_edge e;
+      add_edge AUX -[comp:caus]-> V;
+      AUX.cat=VERB;
+      shift_in V ==> AUX;
+      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
+      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
     }
   }
 
-  rule auxcaus_right {
-    pattern {
-      V []; AUX [];
-      e:V -[aux:caus]-> AUX; V << AUX;
-    }
+  rule right_auxcaus_conj1 {
+    pattern {e:V -[aux:caus]-> AUX; AUX >> V; V -[conj]-> V1}
+    without{ V1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2; AUX2 << V1}
+    without{ V1 -[comp:aux|comp:caus|comp:cop|comp:pass]-> *}
     without {
       V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
-      V << AUX2; AUX2 << AUX;
+      AUX >> AUX2; AUX2 >> V;
     }
     commands {
       del_edge e;
@@ -296,7 +648,29 @@ package reverse {
       AUX.cat=VERB;
       shift_in V ==> AUX;
       shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
-      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|conj|cc|punct|root]=> AUX;
+      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
+    }
+  }
+  
+  rule right_auxcaus_conj2 {
+    pattern {
+      e1:V -[aux:caus]-> AUX; AUX >> V;
+      e2:V -[conj]-> V1;
+      V1 -[comp:aux|comp:caus|comp:cop|comp:pass]-> *
+    }
+   without{ V1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2; AUX2 << V1}
+   without {
+      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
+      AUX >> AUX2; AUX2 >> V;
+    }
+    commands {
+      del_edge e1;  del_edge e2;
+      add_edge AUX -[comp:caus]-> V;
+      add_edge AUX -[conj]-> V1;
+      AUX.cat=VERB;
+      shift_in V ==> AUX;
+      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
+      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
     }
   }
 
@@ -578,8 +952,8 @@ de#lesquelles#desquelles
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 strat main {
   Seq (
+    Onf (minimize_conj_dep),
     Onf (chained_relations),
-%    Onf (neg),
     Onf (reverse),
 %    Onf (nummod_det), % fr-ud-test_00049 : les 8 premiers épisodes
     Onf (relations),
@@ -591,6 +965,7 @@ strat main {
 strat udpos {
   Seq (
     Onf (UDPOS_init),
+    Onf (minimize_conj_dep),
     Onf (chained_relations),
     Onf (reverse),
     Onf (UDPOS_after_reverse),
