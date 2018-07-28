@@ -5,3 +5,4 @@
 de#plus#en#plus#ADV
 jusque#à#ce#que#ADP
 on#ne#pouvoir#plus#ADV
+tout#à#le#mieux#ADV

@@ -15,7 +15,7 @@ avant#de#ADP
 à#travers#ADP
 beaucoup#de#DET
 bien#entendre#ADV
-bien#que#ADP
+bien#que#SCONJ
 bien#sûr#ADV
 comme#si#ADP
 de#abord#ADV
@@ -28,10 +28,12 @@ de#par#ADP
 de#plus#ADV
 en#effet#ADV
 en#fait#ADV
-en#outre#ADP
 en#outre#ADV
+en#outre#ADV
+en#plein#ADV
 en#plus#ADV
 en#tout#ADV
+en#vue#ADV
 encore#que#SCONJ
 entre#autre#ADV
 et#caetera#CCONJ
@@ -42,6 +44,7 @@ et#également#CCONJ
 face#à#ADP
 grâce#à#ADP
 hors#de#ADP
+jusque#à#ADP
 loin#de#ADP
 lors#de#ADP
 mais#également#CCONJ
@@ -60,6 +63,7 @@ plus#de#ADV
 près#de#ADP
 quand#même#ADV
 quant#à#ADP
+quelque#chose#PRON
 quelque#un#ADPRON
 suite#à#ADP
 tandis#que#ADP

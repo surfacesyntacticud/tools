@@ -217,466 +217,256 @@ package chained_relations {
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For the auxiliaries, the rule of starting with the closest dependent does not work in the cases of extraposition of the predicate.
+% Ex: fr-ud-test_00067-  ... ce que nous avons été ...
+% The rule that works in all cases is based on an order between types of auxiliaries : cop < tense auxiliairy and passive auxiliary < tense auxiliary.
+% The change of head for auxiliary relations must be processed together with the change of heads for case and mark relations. The rule is to start with the old dependent that is the closest to the old head while taking the order between types of auxiliaries into account.
+% Ex: Il a été en retard ce matin. (case < cop < aux)
+% Ex : Il part sans avoir été malade un seul jour. (cop < aux < mark)
 package reverse {
-  rule left_aux {
-    pattern {e:V -[aux]-> AUX; AUX << V}
-    without {
-      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
-      AUX << AUX2; AUX2 << V;
-    }
-    without{ V -[conj]-> *}
+  rule aux {
+    pattern {e:P -[aux]-> AUX}
+    without { P-[mark]->X; AUX << X ; X << P} % Il a semblé que Marie arrivait.
+    without { P-[mark]->X; AUX >> X ; X >> P}
+    without {P -[aux|aux:pass|aux:caus|cop]-> AUX2}
+    without{ P -[conj]-> *}
     commands {
       del_edge e;
-      add_edge AUX -[comp:aux]-> V;
+      add_edge AUX -[comp:aux]-> P;
       AUX.cat=VERB;
-      shift_in V ==> AUX;
-      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
-      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
+      shift_in P ==> AUX;
+      shift_out P =[mark]=> AUX;
+      shift_out P =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
     }
   }
 
-  rule left_aux_conj1 {
-    pattern {e:V -[aux]-> AUX; AUX << V; V -[conj]-> V1}
-    without{ V1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2; AUX2 << V1}
-    without{ V1 -[comp:aux|comp:caus|comp:cop|comp:pass]-> *}
-    without {
-      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
-      AUX << AUX2; AUX2 << V;
-    }
+  rule aux_conj1 {
+    pattern {e:P -[aux]-> AUX; P -[conj]-> P1}
+    without { P-[mark]->X; AUX << X ; X << P}
+    without { P-[mark]->X; AUX >> X ; X >> P}
+    without {P -[aux|aux:pass|aux:caus|cop]-> AUX2 }
+    without{ P1[VerbForm]; AUX.VerbForm = P1.VerbForm}
     commands {
       del_edge e;
-      add_edge AUX -[comp:aux]-> V;
+      add_edge AUX -[comp:aux]-> P;
       AUX.cat=VERB;
-      shift_in V ==> AUX;
-      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
-      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
+      shift_in P ==> AUX;
+      shift_out P =[mark]=> AUX;
+      shift_out P =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
     }
   }
   
-  rule left_aux_conj2 {
+  rule aux_conj2 {
     pattern {
-      e1:V -[aux]-> AUX; AUX << V;
-      e2:V -[conj]-> V1;
-      V1 -[comp:aux|comp:caus|comp:cop|comp:pass]-> *
+      e1:P -[aux]-> AUX; e2:P -[conj]-> P1;
+      P1[VerbForm]; AUX.VerbForm = P1.VerbForm
     }
-   without{ V1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2; AUX2 << V1}
-   without {
-      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
-      AUX << AUX2; AUX2 << V;
-    }
+    without { P-[mark]->X; AUX << X ; X << P}
+    without { P-[mark]->X; AUX >> X ; X >> P}
+    without {P -[aux|aux:pass|aux:caus|cop]-> AUX2}
     commands {
       del_edge e1;  del_edge e2;
-      add_edge AUX -[comp:aux]-> V;
-      add_edge AUX -[conj]-> V1;
+      add_edge AUX -[comp:aux]-> P;
+      add_edge AUX -[conj]-> P1;
       AUX.cat=VERB;
-      shift_in V ==> AUX;
-      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
-      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
+      shift_in P ==> AUX;
+      shift_out P =[mark]=> AUX;
+      shift_out P =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
     }
   }
   
-  rule left_cop {
-    pattern {e:V -[cop]-> AUX; AUX << V}
-    without {
-      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
-      AUX << AUX2; AUX2 << V;
-    }
-    without{ V -[conj]-> *}
+  rule cop {
+    pattern {e:P -[cop]-> AUX}
+    without { P-[mark]->X; AUX << X ; X << P}
+    without { P-[mark]->X; AUX >> X ; X >> P}
+    without{ P -[conj]-> *}
     commands {
       del_edge e;
-      add_edge AUX -[comp:cop]-> V;
+      add_edge AUX -[comp:cop]-> P;
       AUX.cat=VERB;
-      shift_in V ==> AUX;
-      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
-      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
+      shift_in P ==> AUX;
+      shift_out P =[aux|mark]=> AUX;
+      shift_out P =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
     }
   }
 
-  rule left_cop_conj1 {
-    pattern {e:V -[cop]-> AUX; AUX << V;V -[conj]-> V1}
-    without{ V1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2; AUX2 << V1}
-    without{ V1 -[comp:aux|comp:caus|comp:cop|comp:pass]-> *}
-    without {
-      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
-      AUX << AUX2; AUX2 << V;
-    }
+  rule cop_conj1 {
+    pattern {e:P -[cop]-> AUX;P -[conj]-> P1}
+    without { P-[mark]->X; AUX << X ; X << P}
+    without { P-[mark]->X; AUX >> X ; X >> P}
+    without{ P1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2}
+    without{ P1[VerbForm]; AUX.VerbForm = P1.VerbForm}
     commands {
       del_edge e;
-      add_edge AUX -[comp:cop]-> V;
+      add_edge AUX -[comp:cop]-> P;
       AUX.cat=VERB;
-      shift_in V ==> AUX;
-      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
-      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
+      shift_in P ==> AUX;
+      shift_out P =[aux|mark]=> AUX;
+      shift_out P =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
     }
   }
 
-  rule left_cop_conj2 {
+  rule cop_conj2 {
     pattern {
-      e1:V -[cop]-> AUX; AUX << V;
-      e2:V -[conj]-> V1;
-      V1 -[comp:aux|comp:caus|comp:cop|comp:pass]-> *
+      e1:P -[cop]-> AUX; e2:P -[conj]-> P1;
+      P1[VerbForm]; AUX.VerbForm = P1.VerbForm
     }
-   without{ V1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2; AUX2 << V1}
-    without {
-      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
-      AUX << AUX2; AUX2 << V;
-    }
+    without { P-[mark]->X; AUX << X ; X << P}
+    without { P-[mark]->X; AUX >> X ; X >> P}
+    without{ P1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2}
     commands {
       del_edge e1;  del_edge e2;
-      add_edge AUX -[comp:cop]-> V;
-      add_edge AUX -[conj]-> V1;
+      add_edge AUX -[comp:cop]-> P;
+      add_edge AUX -[conj]-> P1;
       AUX.cat=VERB;
-      shift_in V ==> AUX;
-      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
-      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
+      shift_in P ==> AUX;
+      shift_out P =[aux|mark]=> AUX;
+      shift_out P =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
     }
   }
   
-  rule left_auxpass {
-    pattern {e:V -[aux:pass]-> AUX; AUX << V}
-    without {
-      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
-      AUX << AUX2; AUX2 << V;
-    }
-    without{ V -[conj]-> *}
+  rule auxpass {
+    pattern {e:P -[aux:pass]-> AUX}
+    without{ P -[conj]-> *}
     commands {
       del_edge e;
-      add_edge AUX -[comp:pass]-> V;
+      add_edge AUX -[comp:pass]-> P;
       AUX.cat=VERB;
-      shift_in V ==> AUX;
-      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
-      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
+      shift_in P ==> AUX;
+      shift_out P =[aux|mark]=> AUX;
+      shift_out P =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
     }
   }
 
-  rule left_auxpass_conj1 {
-    pattern {e:V -[aux:pass]-> AUX; AUX << V; V -[conj]-> V1}
-    without{ V1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2; AUX2 << V1}
-    without{ V1 -[comp:aux|comp:caus|comp:cop|comp:pass]-> *}
-    without {
-      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
-      AUX << AUX2; AUX2 << V;
-    }
+  rule auxpass_conj1 {
+    pattern {e:P -[aux:pass]-> AUX; P -[conj]-> P1}
+    without{ P1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2}
+    without{ P1[VerbForm]; AUX.VerbForm = P1.VerbForm}
     commands {
       del_edge e;
-      add_edge AUX -[comp:pass]-> V;
+      add_edge AUX -[comp:pass]-> P;
       AUX.cat=VERB;
-      shift_in V ==> AUX;
-      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
-      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
+      shift_in P ==> AUX;
+      shift_out P =[aux|mark]=> AUX;
+      shift_out P =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
     }
   }
   
-  rule left_auxpass_conj2 {
+  rule auxpass_conj2 {
     pattern {
-      e1:V -[aux:pass]-> AUX; AUX << V;
-      e2:V -[conj]-> V1;
-      V1 -[comp:aux|comp:caus|comp:cop|comp:pass]-> *
+      e1:P -[aux:pass]-> AUX; e2:P -[conj]-> P1;
+      P1[VerbForm]; AUX.VerbForm = P1.VerbForm
     }
-   without{ V1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2; AUX2 << V1}
-   without {
-      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
-      AUX << AUX2; AUX2 << V;
-    }
+    without{ P1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2}
     commands {
       del_edge e1;  del_edge e2;
-      add_edge AUX -[comp:pass]-> V;
-      add_edge AUX -[conj]-> V1;
+      add_edge AUX -[comp:pass]-> P;
+      add_edge AUX -[conj]-> P1;
       AUX.cat=VERB;
-      shift_in V ==> AUX;
-      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
-      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
+      shift_in P ==> AUX;
+      shift_out P =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
+      shift_out P =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
     }
   }
  
-  rule left_auxcaus {
-    pattern {e:V -[aux:caus]-> AUX; AUX << V}
-    without {
-      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
-      AUX << AUX2; AUX2 << V;
-    }
-    without{ V -[conj]-> *}
+  rule auxcaus {
+    pattern {e:P -[aux:caus]-> AUX}
+    without{ P -[conj]-> *}
     commands {
       del_edge e;
-      add_edge AUX -[comp:caus]-> V;
+      add_edge AUX -[comp:caus]-> P;
       AUX.cat=VERB;
-      shift_in V ==> AUX;
-      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
-      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
+      shift_in P ==> AUX;
+      shift_out P =[aux|mark]=> AUX;
+      shift_out P =[obj:agent|obl:agent]=> AUX;
+      shift_out P =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
     }
   }
 
-  rule left_auxcaus_conj1 {
-    pattern {e:V -[aux:caus]-> AUX; AUX << V; V -[conj]-> V1}
-    without{ V1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2; AUX2 << V1}
-    without{ V1 -[comp:aux|comp:caus|comp:cop|comp:pass]-> *}
-    without {
-      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
-      AUX << AUX2; AUX2 << V;
-    }
+  rule auxcaus_conj1 {
+    pattern {e:P -[aux:caus]-> AUX; P -[conj]-> P1}
+    without{ P1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2}
+    without{ P1[VerbForm]; AUX.VerbForm = P1.VerbForm}
     commands {
       del_edge e;
-      add_edge AUX -[comp:caus]-> V;
+      add_edge AUX -[comp:caus]-> P;
       AUX.cat=VERB;
-      shift_in V ==> AUX;
-      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
-      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
+      shift_in P ==> AUX;
+      shift_out P =[aux|mark]=> AUX;
+      shift_out P =[obj:agent|obl:agent]=> AUX;
+      shift_out P =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
     }
   }
   
-  rule left_auxcaus_conj2 {
+  rule auxcaus_conj2 {
     pattern {
-      e1:V -[aux:caus]-> AUX; AUX << V;
-      e2:V -[conj]-> V1;
-      V1 -[comp:aux|comp:caus|comp:cop|comp:pass]-> *
+      e1:P -[aux:caus]-> AUX; AUX << P;
+      e2:P -[conj]-> P1;
+      P1[VerbForm]; AUX.VerbForm = P1.VerbForm
     }
-   without{ V1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2; AUX2 << V1}
-   without {
-      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
-      AUX << AUX2; AUX2 << V;
-    }
+   without{ P1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2}
     commands {
       del_edge e1;  del_edge e2;
-      add_edge AUX -[comp:caus]-> V;
-      add_edge AUX -[conj]-> V1;
+      add_edge AUX -[comp:caus]-> P;
+      add_edge AUX -[conj]-> P1;
       AUX.cat=VERB;
-      shift_in V ==> AUX;
-      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
-      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
+      shift_in P ==> AUX;
+      shift_out P =[aux|mark]=> AUX;
+      shift_out P =[obj:agent|obl:agent]=> AUX;
+      shift_out P =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
     }
   }
 
-   rule right_aux {
-    pattern {e:V -[aux]-> AUX; AUX >> V}
-    without {
-      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
-      AUX >> AUX2; AUX2 >> V;
-    }
-    without{ V -[conj]-> *}
+  rule case{
+    pattern { e:H-[case]->X1}
+    without { H-[aux|aux:pass|aux:caus|cop|mark|case]->X2; X1 << X2 ; X2 << H}
+    without { H-[aux|aux:pass|aux:caus|cop|mark|case]->X2; X1 >> X2 ; X2 >> H}
+    without{H -[conj]-> *}
     commands {
       del_edge e;
-      add_edge AUX -[comp:aux]-> V;
-      AUX.cat=VERB;
-      shift_in V ==> AUX;
-      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
-      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
+      add_edge X1-[comp]-> H;
+      shift_in H==>X1;
+      shift_out H =[aux|aux:pass|aux:caus|cop|mark|case]=> X1;
+      shift_out H =[advcl|cc|csubj|nsubj|punct|root]=> X1;
     }
   }
 
-  rule right_aux_conj1 {
-    pattern {e:V -[aux]-> AUX; AUX >> V; V -[conj]-> V1}
-    without{ V1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2; AUX2 >> V1}
-    without{ V1 -[comp:aux|comp:caus|comp:cop|comp:pass]-> *}
-    without {
-      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
-      AUX >> AUX2; AUX2 >> V;
-    }
+  rule case_conj1{
+    pattern { e:H-[case]->X1; H -[conj]-> H1}
+    without { H-[aux|aux:pass|aux:caus|cop|mark|case]->X2; X1 << X2 ; X2 << H}
+    without { H-[aux|aux:pass|aux:caus|cop|mark|case]->X2; X1 >> X2 ; X2 >> H}
+    without {H1 -[aux|aux:pass|aux:caus|cop|mark|case]-> FUNCT; FUNCT << H1}
+    without{ H1[cat=ADP|SCONJ]; H1 -[comp]-> *}
     commands {
       del_edge e;
-      add_edge AUX -[comp:aux]-> V;
-      AUX.cat=VERB;
-      shift_in V ==> AUX;
-      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
-      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
+      add_edge X1-[comp]-> H;
+      shift_in H==>X1;
+      shift_out H =[aux|aux:pass|aux:caus|cop|mark|case]=> X1;
+      shift_out H =[advcl|cc|csubj|nsubj|punct|root]=> X1;
     }
   }
   
-  rule right_aux_conj2 {
+  rule case_conj2{
     pattern {
-      e1:V -[aux]-> AUX; AUX >> V;
-      e2:V -[conj]-> V1;
-      V1 -[comp:aux|comp:caus|comp:cop|comp:pass]-> *
+      e1:H-[case]->X1; e2: H -[conj]-> H1;
+      H1[cat=ADP|SCONJ]; H1 -[comp]-> *
     }
-   without{ V1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2; AUX2 >> V1}
-   without {
-      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
-      AUX >> AUX2; AUX2 >> V;
-    }
+    without { H-[aux|aux:pass|aux:caus|cop|mark|case]->X2; X1 << X2 ; X2 << H}
+    without { H-[aux|aux:pass|aux:caus|cop|mark|case]->X2; X1 >> X2 ; X2 >> H}
+    without {H1 -[aux|aux:pass|aux:caus|cop|mark|case]-> FUNCT; FUNCT << H1}
     commands {
-      del_edge e1;  del_edge e2;
-      add_edge AUX -[comp:aux]-> V;
-      add_edge AUX -[conj]-> V1;
-      AUX.cat=VERB;
-      shift_in V ==> AUX;
-      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
-      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
-    }
-  }
-  
-  rule right_cop {
-    pattern {e:V -[cop]-> AUX; AUX >> V}
-    without {
-      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
-      AUX >> AUX2; AUX2 >> V;
-    }
-    without{ V -[conj]-> *}
-    commands {
-      del_edge e;
-      add_edge AUX -[comp:cop]-> V;
-      AUX.cat=VERB;
-      shift_in V ==> AUX;
-      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
-      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
+      del_edge e1; del_edge e2;
+      add_edge X1-[comp]-> H; add_edge X1 -[conj]-> H1;
+      shift_in H==>X1;
+      shift_out H =[aux|aux:pass|aux:caus|cop|mark|case]=> X1;
+      shift_out H =[advcl|cc|csubj|nsubj|punct|root]=> X1;
     }
   }
 
-  rule right_cop_conj1 {
-    pattern {e:V -[cop]-> AUX; AUX >> V;V -[conj]-> V1}
-    without{ V1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2; AUX2 >> V1}
-    without{ V1 -[comp:aux|comp:caus|comp:cop|comp:pass]-> *}
-    without {
-      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
-      AUX >> AUX2; AUX2 >> V;
-    }
-    commands {
-      del_edge e;
-      add_edge AUX -[comp:cop]-> V;
-      AUX.cat=VERB;
-      shift_in V ==> AUX;
-      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
-      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
-    }
-  }
-
-  rule right_cop_conj2 {
-    pattern {
-      e1:V -[cop]-> AUX; AUX >> V;
-      e2:V -[conj]-> V1;
-      V1 -[comp:aux|comp:caus|comp:cop|comp:pass]-> *
-    }
-   without{ V1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2; AUX2 >> V1}
-    without {
-      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
-      AUX >> AUX2; AUX2 >> V;
-    }
-    commands {
-      del_edge e1;  del_edge e2;
-      add_edge AUX -[comp:cop]-> V;
-      add_edge AUX -[conj]-> V1;
-      AUX.cat=VERB;
-      shift_in V ==> AUX;
-      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
-      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
-    }
-  }
-  
-  rule right_auxpass {
-    pattern {e:V -[aux:pass]-> AUX; AUX >> V}
-    without {
-      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
-      AUX >> AUX2; AUX2 >> V;
-    }
-    without{ V -[conj]-> *}
-    commands {
-      del_edge e;
-      add_edge AUX -[comp:pass]-> V;
-      AUX.cat=VERB;
-      shift_in V ==> AUX;
-      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
-      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
-    }
-  }
-
-  rule right_auxpass_conj1 {
-    pattern {e:V -[aux:pass]-> AUX; AUX >> V; V -[conj]-> V1}
-    without{ V1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2; AUX2 >> V1}
-    without{ V1 -[comp:aux|comp:caus|comp:cop|comp:pass]-> *}
-    without {
-      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
-      AUX >> AUX2; AUX2 >> V;
-    }
-    commands {
-      del_edge e;
-      add_edge AUX -[comp:pass]-> V;
-      AUX.cat=VERB;
-      shift_in V ==> AUX;
-      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
-      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
-    }
-  }
-  
-  rule right_auxpass_conj2 {
-    pattern {
-      e1:V -[aux:pass]-> AUX; AUX >> V;
-      e2:V -[conj]-> V1;
-      V1 -[comp:aux|comp:caus|comp:cop|comp:pass]-> *
-    }
-   without{ V1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2; AUX2 >> V1}
-   without {
-      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
-      AUX >> AUX2; AUX2 >> V;
-    }
-    commands {
-      del_edge e1;  del_edge e2;
-      add_edge AUX -[comp:pass]-> V;
-      add_edge AUX -[conj]-> V1;
-      AUX.cat=VERB;
-      shift_in V ==> AUX;
-      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
-      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
-    }
-  }
- 
-  rule right_auxcaus {
-    pattern {e:V -[aux:caus]-> AUX; AUX >> V}
-    without {
-      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
-      AUX >> AUX2; AUX2 >> V;
-    }
-    without{ V -[conj]-> *}
-    commands {
-      del_edge e;
-      add_edge AUX -[comp:caus]-> V;
-      AUX.cat=VERB;
-      shift_in V ==> AUX;
-      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
-      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
-    }
-  }
-
-  rule right_auxcaus_conj1 {
-    pattern {e:V -[aux:caus]-> AUX; AUX >> V; V -[conj]-> V1}
-    without{ V1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2; AUX2 >> V1}
-    without{ V1 -[comp:aux|comp:caus|comp:cop|comp:pass]-> *}
-    without {
-      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
-      AUX >> AUX2; AUX2 >> V;
-    }
-    commands {
-      del_edge e;
-      add_edge AUX -[comp:caus]-> V;
-      AUX.cat=VERB;
-      shift_in V ==> AUX;
-      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
-      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
-    }
-  }
-  
-  rule right_auxcaus_conj2 {
-    pattern {
-      e1:V -[aux:caus]-> AUX; AUX >> V;
-      e2:V -[conj]-> V1;
-      V1 -[comp:aux|comp:caus|comp:cop|comp:pass]-> *
-    }
-   without{ V1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2; AUX2 >> V1}
-   without {
-      V -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2;
-      AUX >> AUX2; AUX2 >> V;
-    }
-    commands {
-      del_edge e1;  del_edge e2;
-      add_edge AUX -[comp:caus]-> V;
-      add_edge AUX -[conj]-> V1;
-      AUX.cat=VERB;
-      shift_in V ==> AUX;
-      shift_out V =[aux|aux:pass|aux:caus|cop|mark|case]=> AUX;
-      shift_out V =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
-    }
-  }
-
-  rule left_case-mark{
-    pattern { e:H-[case|mark]->X1; X1 << H; }
-    without { H-[aux|aux:pass|aux:caus|cop|mark|case]->X2; X1 << X2 }
+  rule mark{
+    pattern { e:H-[mark]->X1}
+    without { H-[aux|aux:pass|aux:caus|cop|mark|case]->X2; X1 << X2 ; X2 << H}
+    without { H-[aux|aux:pass|aux:caus|cop|mark|case]->X2; X1 >> X2 ; X2 >> H}
     without{H -[conj]-> *}
     commands {
       del_edge e;
@@ -687,9 +477,10 @@ package reverse {
     }
   }
 
-  rule left_case-mark_conj1{
-    pattern { e:H-[case|mark]->X1; X1 << H; H -[conj]-> H1}
-    without { H-[aux|aux:pass|aux:caus|cop|mark|case]->X2; X1 << X2 }
+  rule mark_conj1{
+    pattern { e:H-[mark]->X1; H -[conj]-> H1}
+    without { H-[aux|aux:pass|aux:caus|cop|mark|case]->X2; X1 << X2 ; X2 << H}
+    without { H-[aux|aux:pass|aux:caus|cop|mark|case]->X2; X1 >> X2 ; X2 >> H}
     without {H1 -[aux|aux:pass|aux:caus|cop|mark|case]-> FUNCT; FUNCT << H1}
     without{ H1[cat=ADP|SCONJ]; H1 -[comp]-> *}
     commands {
@@ -701,12 +492,13 @@ package reverse {
     }
   }
   
-  rule left_case-mark_conj2{
+  rule mark_conj2{
     pattern {
-      e1:H-[case|mark]->X1; X1 << H; e2: H -[conj]-> H1;
+      e1:H-[mark]->X1; e2: H -[conj]-> H1;
       H1[cat=ADP|SCONJ]; H1 -[comp]-> *
     }
-    without { H-[aux|aux:pass|aux:caus|cop|mark|case]->X2; X1 << X2 }
+    without { H-[aux|aux:pass|aux:caus|cop|mark|case]->X2; X1 << X2 ; X2 << H}
+    without { H-[aux|aux:pass|aux:caus|cop|mark|case]->X2; X1 >> X2 ; X2 >> H}
     without {H1 -[aux|aux:pass|aux:caus|cop|mark|case]-> FUNCT; FUNCT << H1}
     commands {
       del_edge e1; del_edge e2;
@@ -717,117 +509,93 @@ package reverse {
     }
   }
 
-  rule right_case-mark{
-    pattern { e:H-[case|mark]->X1; X1 >> H; }
-    without { H-[aux|aux:pass|aux:caus|cop|mark|case]->X2; X1 >> X2 }
-    without{H -[conj]-> *}
-    commands {
-      del_edge e;
-      add_edge X1-[comp]-> H;
-      shift_in H==>X1;
-      shift_out H =[aux|aux:pass|aux:caus|cop|mark|case]=> X1;
-      shift_out H =[cc|punct|root]=> X1;
-    }
-  }
-
-  rule right_case-mark_conj1{
-    pattern { e:H-[case|mark]->X1; X1 >> H; H -[conj]-> H1}
-    without { H-[aux|aux:pass|aux:caus|cop|mark|case]->X2; X1 >> X2 }
-    without {H1 -[aux|aux:pass|aux:caus|cop|mark|case]-> FUNCT; FUNCT >> H1}
-    without{ H1[cat=ADP|SCONJ]; H1 -[comp]-> *}
-    commands {
-      del_edge e;
-      add_edge X1-[comp]-> H;
-      shift_in H==>X1;
-      shift_out H =[aux|aux:pass|aux:caus|cop|mark|case]=> X1;
-      shift_out H =[cc|punct|root]=> X1;
-    }
-  }
-  
-  rule right_case-mark_conj2{
-    pattern {
-      e1:H-[case|mark]->X1; X1 >> H; e2: H -[conj]-> H1;
-      H1[cat=ADP|SCONJ]; H1 -[comp]-> *
-    }
-    without { H-[aux|aux:pass|aux:caus|cop|mark|case]->X2; X1 >> X2 }
-    without {H1 -[aux|aux:pass|aux:caus|cop|mark|case]-> FUNCT; FUNCT >> H1}
-    commands {
-      del_edge e1; del_edge e2;
-      add_edge X1-[comp]-> H; add_edge X1 -[conj]-> H1;
-      shift_in H==>X1;
-      shift_out H =[aux|aux:pass|aux:caus|cop|mark|case]=> X1;
-      shift_out H =[cc|punct|root]=> X1;
-    }
-  }
 }
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  rule FR_nummod_det {
-    pattern { e:M -[nummod]-> N; }
-    without { M -[det]-> *}
-    without { M[cat=ADJ]; * -[amod|mod]-> M}
-    commands { del_edge e; add_edge M -[det]-> N }
+package FR_nummod{
+  % rule nummod_mod1 {
+  %   pattern { e:H -[nummod]-> N; H -[det]-> * }
+  %   commands { del_edge e; add_edge H -[mod]-> N }
+  % }
+  
+  % rule nummod_mod2 {
+  %   pattern { e:H -[nummod]-> N; H << N}
+  %   commands { del_edge e; add_edge H -[mod]-> N }
+  % }
+  
+  % rule nummod_mod3 {
+  %   pattern { e:H -[nummod]-> N;  H[cat=ADJ]; * -[amod|mod]-> H}
+  %   without { H -[det]-> *}
+  %   commands { del_edge e; add_edge H -[mod]-> N }
+  % }
+  
+  rule nummod_det {
+    pattern { e:H -[nummod]-> N; N << H}
+    without { H -[det]-> *}
+    without{ * -[det]-> H}
+    without { H[cat=ADJ]; * -[amod|mod]-> H}
+    commands { del_edge e; add_edge H -[det]-> N }
   }
+
+}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 package relations {
   rule ccomp_comp_obl {
-    pattern { e:M -[obj|ccomp]-> N; N[cat = ADP]; }
-    commands { del_edge e; add_edge M -[comp:obl]-> N }
+    pattern { e:H -[obj|ccomp]-> C; C[cat = ADP]; }
+    commands { del_edge e; add_edge H -[comp:obl]-> C }
   }
   rule comp_agent {
-    pattern { e:M -[obl:agent]-> N; }
-    commands { del_edge e; add_edge M -[comp:agent]-> N }
+    pattern { e:H -[obl:agent]-> C; }
+    commands { del_edge e; add_edge H -[comp:agent]-> C }
   }
   rule comp_cleft {
-    pattern { e:M -[advcl:cleft]-> N; }
-    commands { del_edge e; add_edge M -[comp:cleft]-> N }
+    pattern { e:H -[advcl:cleft]-> C; }
+    commands { del_edge e; add_edge H -[comp:cleft]-> C }
   }
   rule comp_lvc {
-    pattern { e:M -[obj:lvc]-> N; }
-    commands { del_edge e; add_edge M -[comp:lvc]-> N }
+    pattern { e:H -[obj:lvc]-> C; }
+    commands { del_edge e; add_edge H -[comp:lvc]-> C }
   }
   rule comp_obj {
-    pattern { e:M -[obj|ccomp]-> N; N[cat <> ADP]; }
-    commands { del_edge e; add_edge M -[comp:obj]-> N }
+    pattern { e:H -[obj|obj:agent|ccomp]-> C; C[cat <> ADP]; }
+    commands { del_edge e; add_edge H -[comp:obj]-> C }
   }
   rule comp_obj_caus {
-    pattern { e:M -[obj:agent]-> N; }
-    commands { del_edge e; add_edge M -[comp:obj]-> N }
+    pattern { e:H -[obj:agent]-> C; A -[comp:caus]-> H}
+    commands { del_edge e; add_edge A -[comp:obj]-> C }
   }
   rule comp_obl {
-    pattern { e:M -[obl:arg|iobj]-> N; }
-    commands { del_edge e; add_edge M -[comp:obl]-> N }
+    pattern { e:H -[obl:arg|iobj]-> C; }
+    commands { del_edge e; add_edge H -[comp:obl]-> C }
   }
   rule comp_rais {
-    pattern { e:M -[xcomp]-> N; }
-    commands { del_edge e; add_edge M -[comp:rais]-> N }
+    pattern { e:H -[xcomp]-> C; }
+    commands { del_edge e; add_edge H -[comp:rais]-> C }
   }
-  rule dep_obl { % in GSD, obl are not all subtyped
-    pattern { e:M -[obl]-> N; }
-    commands { del_edge e; add_edge M -[dep_SUD]-> N }
+  rule dep { % in GSD, obl are not all subtyped
+    pattern { e:H -[obl]-> C; }
+    commands { del_edge e; add_edge H -[dep_SUD]-> C }
   }
   rule mod {
-    pattern { e:M -[advmod|advmod:neg|advcl|obl:mod]-> N; }
-    commands { del_edge e; add_edge M -[mod]-> N }
+    pattern { e:H -[advmod|advmod:neg|advcl|obl:mod]-> C; }
+    commands { del_edge e; add_edge H -[mod]-> C }
   }
   rule subj {
-    pattern { e:M -[nsubj|nsubj:pass|csubj|csubj:pass]-> N; }
-    commands { del_edge e; add_edge M -[subj]-> N }
+    pattern { e:H -[nsubj|nsubj:pass|csubj|csubj:pass]-> C}
+    commands { del_edge e; add_edge H -[subj]-> C }
   }
   rule nmod_dep {
-    pattern { e:M -[acl|acl:relcl|amod|nmod|nummod]-> N; M [cat=SYM|NUM|NOUN|PRON|PROPN]}
-    commands { del_edge e; add_edge M -[dep_SUD]-> N }
+    pattern { e:H -[acl|acl:relcl|amod|nmod|nummod]-> C}
+    commands { del_edge e; add_edge H -[dep_SUD]-> C }
   }
-
-% backoff rule
-%  rule nmod_mod {
-%    pattern { e:M -[acl|acl:relcl|amod|nmod|nummod]-> N; M [cat<>SYM|NUM|NOUN|PRON|PROPN]}
-%    commands { del_edge e; add_edge M -[mod]-> N }
-%  }
-
-
+  
+  rule nummod_dep {
+    pattern { e:H -[nummod]-> N}
+    commands { del_edge e; add_edge H -[dep_SUD]-> N }
+  }
 
 }
 
@@ -839,7 +607,7 @@ package raise_gov{
       G -> D; D >> G; MOD << G;
       mod_rel:D -[mod]-> MOD
     }
-%    without { MOD [lemma = "où"]}  French specificity
+    without { MOD [PronType=Rel]} 
     commands {
       del_edge mod_rel;
       add_edge G -[mod]-> MOD
@@ -847,6 +615,7 @@ package raise_gov{
   }
 
 }
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 package fail_label{
@@ -993,9 +762,9 @@ strat main {
     Onf (minimize_conj_dep),
     Onf (chained_relations),
     Onf (reverse),
-%    Onf (FR_nummod_det), % fr-ud-test_00049 : les 8 premiers épisodes
+    Onf (FR_nummod),
     Onf (relations),
-%    Onf (raise_gov),
+    Onf (raise_gov),
     Onf (fail_label),
   )
 }

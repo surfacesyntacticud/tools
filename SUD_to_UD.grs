@@ -1,9 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 package init {
-%  rule mwepos {
-%    pattern { N [cat, mwepos, !token_upos]}
-%    commands { N.token_upos=N.cat; N.cat = N.mwepos; }
-%  }
 
   rule MWEPOS {
     pattern { N [cat, _MISC_MWEPOS, !token_upos]}
@@ -14,11 +10,16 @@ package init {
     pattern { N [cat, _MISC_UDPOS, !_MISC_MWEPOS, !token_upos]}
     commands { N.token_upos=N.cat; N.cat = N._MISC_UDPOS; del_feat N._MISC_UDPOS }
   }
-%  rule date {
-%    pattern { N [cat=NUM, !save_cat]; M -> N; M[lemma=en]; }
-%    commands { N.save_cat=N.cat; N.cat = NOUN; }
-%  }
 }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  rule FR_cat_translate (feature $lemma,$cat,@newcat){
+    pattern{W[cat=$cat,lemma=$lemma]}
+    commands{W.initcat=W.cat; W.cat=@newcat;}
+  }
+#BEGIN
+où#PRON##ADV
+#END
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -53,62 +54,7 @@ package unchained_relations {
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-package reverse {
-
-  rule aux {
-    pattern { e:V -[comp:aux]-> C }
-    without { * -[comp:aux|comp:pass]-> V }
-    commands {
-      del_edge e;
-      shift_in V ==> C;
-%      shift_out V =[aux|cop|subj|mod]=> C; % TODO: shift_out
-      shift_out V =[^fixed|conj:dicto]=> C; % TODO: shift_out
-      add_edge C -[aux]-> V;
-      V.cat=AUX
-    }
-  }
-
-  rule pass {
-    pattern { e:V -[comp:pass]-> C }
-    without { * -[comp:aux|comp:pass]-> V }
-    commands {
-      del_edge e;
-      shift_in V ==> C;
-%      shift_out V =[aux|cop|subj|mod]=> C; % TODO: shift_out
-      shift_out V =[^fixed|conj:dicto]=> C; % TODO: shift_out
-      add_edge C -[aux:pass]-> V;
-      V.cat=AUX
-    }
-  }
-
-  rule caus {
-    pattern { e:V -[comp:caus]-> C }
-    without { * -[comp:aux|comp:pass]-> V }
-    without { V -[comp:obj]-> * }
-    commands {
-      del_edge e;
-      shift_in V ==> C;
-%      shift_out V =[aux|cop|subj|mod]=> C; % TODO: shift_out
-      shift_out V =[^fixed|conj:dicto]=> C; % TODO: shift_out
-      add_edge C -[aux:caus]-> V;
-      V.cat=AUX
-    }
-  }
-
-  rule caus_obj_agent {
-    pattern { e:V -[comp:caus]-> C; obj: V -[comp:obj]-> O; }
-    without { * -[comp:aux|comp:pass]-> V }
-    commands {
-      del_edge e;
-      del_edge obj;
-      shift_in V ==> C;
-%      shift_out V =[aux|cop|subj|mod]=> C; % TODO: shift_out
-      shift_out V =[^fixed|conj:dicto]=> C; % TODO: shift_out
-      add_edge C -[aux:caus]-> V;
-      add_edge C -[obj:agent]-> O;
-      V.cat=AUX
-    }
-  }
+package reverse_case_mark {
 
   rule case {
     pattern { e:P -[comp]-> C; P [cat=ADP|PART]; C[cat<>VERB] }
@@ -148,163 +94,167 @@ package reverse {
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 package subj {
   rule nsubj {
-    pattern { e:N -[subj]-> M; M[cat <> VERB] }
-    without { N -[aux:pass]-> * }
-    commands { del_edge e; add_edge N -[nsubj]-> M }
+    pattern { e:V -[subj]-> S; S[cat <> AUX|VERB] }
+    without { V -[comp:pass]-> * }
+    without { V -[comp:aux]-> V1; V1 -[comp:pass]-> * }
+    commands { del_edge e; add_edge V -[nsubj]-> S }
   }
 
-  rule nsubj_pass {
-    pattern { e:N -[subj]-> M; M[cat <> VERB];  N -[aux:pass]-> * }
-    commands { del_edge e; add_edge N -[nsubj:pass]-> M }
+  rule nsubj_pass1 {
+    pattern { e:V -[subj]-> S; S[cat <> AUX|VERB];  V -[comp:pass]-> * }
+    commands { del_edge e; add_edge V -[nsubj:pass]-> S }
   }
 
+  rule nsubj_pass2 {
+    pattern {
+      e:V -[subj]-> S; S[cat <> AUX|VERB];
+      V -[comp:aux]-> V1; V1 -[comp:pass]-> * }
+    commands { del_edge e; add_edge V -[nsubj:pass]-> S }
+  }
   rule csubj {
-    pattern { e:N -[subj]-> M; M[cat = VERB] }
-    commands { del_edge e; add_edge N -[csubj]-> M }
+    pattern { e:V -[subj]-> S; S[cat = AUX|VERB] }
+    without { V -[comp:pass]-> * }
+    without { V -[comp:aux]-> V1; V1 -[comp:pass]-> * }
+    commands { del_edge e; add_edge V -[csubj]-> S }
   }
 
-  rule csubj_pass {
-    pattern { e:N -[subj]-> M; M[cat = VERB];  N -[aux:pass]-> * }
-    commands { del_edge e; add_edge N -[csubj:pass]-> M }
+  rule csubj_pass1 {
+    pattern { e:V -[subj]-> S; S[cat = AUX|VERB];  V -[comp:pass]-> * }
+    commands { del_edge e; add_edge V -[csubj:pass]-> S }
+  }
+  
+  rule csubj_pass2 {
+    pattern {
+      e:V -[subj]-> S; S[cat = AUX|VERB];
+      V -[comp:aux]-> V1; V1 -[comp:pass]-> * }
+    commands { del_edge e; add_edge V -[csubj:pass]-> S }
   }
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-package comp {
-  rule ccomp {
-    pattern { e:N -[comp:obj|comp:obl]-> M; M[cat = VERB];  }
-    commands { del_edge e; add_edge N -[ccomp]-> M }
+  rule det_nummod{
+    pattern{ e: H -[det]-> N; N[cat=NUM]}
+    commands{ del_edge e; add_edge H -[nummod]-> N}
   }
 
-  rule ccomp_cop {
-    pattern { e:N -[comp:obj|comp:obl]-> M; M -[cop]-> C;  }
-    commands { del_edge e; add_edge N -[ccomp]-> M }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+package comp {
+  rule advclcleft {
+    pattern { e:P -[comp:cleft]-> A}
+    commands { del_edge e; add_edge P -[advcl:cleft]-> A }
   }
+
+  rule ccomp {
+    pattern { e:P -[comp:obj|comp:obl]-> A; A[cat = VERB];  }
+    commands { del_edge e; add_edge P -[ccomp]-> A }
+  }
+
 
   rule iobj {
-    pattern { e:N -[comp:obl]-> M; M[cat = PRON]; }
-    without { M -[case]-> * }
-    commands { del_edge e; add_edge N -[iobj]-> M }
+    pattern { e:P -[comp:obl]-> A; A[cat = PRON]; }
+    without { A -[case]-> * }
+    commands { del_edge e; add_edge P -[iobj]-> A }
   }
 
   rule obj {
-    pattern { e:N -[comp:obj]-> M; M[cat <> VERB];  }
-    without { M -[cop]-> C; }
-    commands { del_edge e; add_edge N -[obj]-> M }
+    pattern { e:P -[comp:obj]-> A; A[cat <> VERB];  }
+    without { A -[cop]-> C; }
+    commands { del_edge e; add_edge P -[obj]-> A }
   }
 
   rule obj_lvc {
-    pattern { e:N -[comp:lvc]-> M;  }
-    commands { del_edge e; add_edge N -[obj:lvc]-> M }
+    pattern { e:P -[comp:lvc]-> A;  }
+    commands { del_edge e; add_edge P -[obj:lvc]-> A }
   }
 
   rule obl_arg {
-    pattern { e:N -[comp:obl]-> M; M -[case]-> * }
-    commands { del_edge e; add_edge N -[obl:arg]-> M }
+    pattern { e:P -[comp:obl]-> A; A -[case]-> * }
+    commands { del_edge e; add_edge P -[obl:arg]-> A }
+  }
+  
+  rule obl_arg_noun {
+    pattern { e:P -[comp:obl]-> A; A[cat=NOUN] }
+    without { A -[case]-> *}
+    commands { del_edge e; add_edge P -[obl:arg]-> A }
   }
 
   rule obl_arg-adv {
-    pattern { e:N -[comp:obl]-> M; M [cat=ADV] }
-    commands { del_edge e; add_edge N -[obl:arg]-> M }
+    pattern { e:P -[comp:obl]-> A; A [cat=ADV] }
+    commands { del_edge e; add_edge P -[obl:arg]-> A }
   }
 
   rule xcomp {
-    pattern { e:N -[comp:rais]-> M }
-    commands { del_edge e; add_edge N -[xcomp]-> M }
+    pattern { e:P -[comp:rais]-> A }
+    commands { del_edge e; add_edge P -[xcomp]-> A }
   }
 
   rule obl_agent {
-    pattern { e:N -[comp:agent]-> M }
-    commands { del_edge e; add_edge N -[obl:agent]-> M }
+    pattern { e:P -[comp:agent]-> A }
+    commands { del_edge e; add_edge P -[obl:agent]-> A }
   }
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+package FR_mod {
+
+  rule advmod {
+    pattern { e:N -[mod]-> M; M[cat=PRON, lemma="où"] }
+    commands { del_edge e; add_edge N -[advmod]-> M }
+  }
+
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 package mod {
-  rule amod {
-    pattern { e:N -[dep_SUD]-> M; N[cat=SYM|NUM|NOUN|PRON|PROPN]; M[cat=ADJ] }
-    commands { del_edge e; add_edge N -[amod]-> M }
-  }
-
-  % rule advmod_adj {
-  %   pattern { e:N -[mod]-> M; N[cat=VERB]; M[cat=ADJ] }
-  %   without { M -[cop]-> *}
-  %   commands { del_edge e; add_edge N -[advmod]-> M }
-  % }
-
-  rule nummod {
-    pattern { e:N -[dep_SUD]-> M; N[cat=SYM|NUM|NOUN|PRON|PROPN]; M[cat=NUM] }
-    commands { del_edge e; add_edge N -[nummod]-> M }
-  }
-
-%TODO --> cop GSD-train-2019
-  rule acl {
-    pattern { e:N -[dep_SUD]-> M; N[cat=SYM|NUM|NOUN|PRON|PROPN]; M[cat=VERB] }
-    without { M -> PROREL; PROREL[PronType=Rel] }
-    without {  M -> N1; N1[cat=NOUN|NUM|PRON|SYMB|VERB]; N1 -> PROREL; PROREL[PronType=Rel] }
-    commands { del_edge e; add_edge N -[acl]-> M }
-  }
-
-  rule aclrel1 {
-    pattern { e:N -[dep_SUD]-> M; N[cat=SYM|NUM|NOUN|PRON|PROPN]; M -> PROREL; PROREL[PronType=Rel] }
-    commands { del_edge e; add_edge N -[acl:relcl]-> M }
-  }
-
-  rule aclrel2 {
-    pattern {
-      e:N -[dep_SUD]-> M; N[cat=SYM|NUM|NOUN|PRON|PROPN]; M[cat=VERB];
-      M -> N1; N1[cat=SYM|NUM|NOUN|PRON|PROPN]; N1 -> PROREL; PROREL[PronType=Rel] }
-    commands { del_edge e; add_edge N -[acl:relcl]-> M }
-  }
-
   rule advcl {
-    pattern { e:N -[mod]-> M; N [cat = ADJ|VERB]; M[cat=ADJ|VERB] }
+    pattern { e:N -[mod]-> M; M[cat=ADJ|VERB] }
+    without{ M[cat=ADJ]; M -[case]-> *}
     commands { del_edge e; add_edge N -[advcl]-> M }
   }
-
-
-  rule obl_mod_cop {
-    pattern { e:N -[mod]-> M; N [cat<>ADJ|VERB]; N -[cop]-> C; M[cat=NOUN|PRON|PROPN] }
-    commands { del_edge e; add_edge N -[obl:mod]-> M }
-  }
-
-  rule obl_mod {
-    pattern { e:N -[mod]-> M; N [cat=ADJ|VERB]; M[cat=NOUN|PRON|PROPN|NUM|SYM] }
-    commands { del_edge e; add_edge N -[obl:mod]-> M }
-  }
-
-% ---- French refinement of the previous rule ----
-%  rule obl_mod {
-%    pattern { e:N -[mod]-> M; N [cat=ADJ|VERB]; M[cat=NOUN|PRON|PROPN|NUM|SYM] }
-%    without{M[cat=PRON,lemma="où"]}
-%    commands { del_edge e; add_edge N -[obl:mod]-> M }
-%  }
-%
-%  rule advmod {
-%    pattern { e:N -[mod]-> M; M[cat=ADV|PART|PRON] }
-%    without { M[cat=PRON,lemma <> "où"]}
-%    commands { del_edge e; add_edge N -[advmod]-> M }
-%  }
-
+  
   rule advmod {
-    pattern { e:N -[mod]-> M; M[cat=ADV|PART|PRON] }
+    pattern { e:N -[mod]-> M; M[cat=ADV|PART] }
+    without{ M -[case|mark]-> *}
     commands { del_edge e; add_edge N -[advmod]-> M }
   }
 
-  rule nmod {
-    pattern { e:N -[dep_SUD]-> M; N[cat=SYM|NUM|NOUN|PRON|PROPN|X]; M[cat=SYM|NOUN|PRON|PROPN|X] }
-    commands { del_edge e; add_edge N -[nmod]-> M }
+  rule oblmod {
+    pattern { e:N -[mod]-> M; M[cat=NOUN|NUM|PRON|PROPN|SYM] }
+    commands { del_edge e; add_edge N -[obl:mod]-> M }
   }
+  
+  rule oblmod_case {
+    pattern { e:N -[mod]-> M; M[cat=ADJ|ADV]; M -[case]-> * }
+    commands { del_edge e; add_edge N -[obl:mod]-> M }
+  }
+
 }
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-package dep_SUD {
 
-  rule obl { % in GSD, obl are not all subtyped
-    pattern { e:M -[dep_SUD]-> N }
-    commands { del_edge e; add_edge M -[obl]-> N }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+package FR_dep_SUD {
+  rule advmod{
+    pattern{ e:H -[dep_SUD]-> D; H[cat=NOUN|PRON|PROPN|NUM|SYM|X]; D[cat=ADV]; H << D }
+    without{D -[case]-> *}
+    commands { del_edge e; add_edge H -[amod]-> D }
+  }
+  
+  rule nmod_num {
+    pattern { e:H -[dep_SUD]-> D; H[cat=NOUN|PRON|PROPN|NUM|SYM|X]; D[cat=NUM]; H << D }
+    without{H[lemma=heure]}
+    commands { del_edge e; add_edge H -[nmod]-> D }
+  }
+ 
+  rule nummod{
+    pattern { e:H -[dep_SUD]-> D; H[cat=ADJ]; D[cat=NUM]; D << H }
+    without{D -[case]-> *}
+    commands { del_edge e; add_edge H -[nummod]-> D }
   }
 
+  rule obl_num{
+    pattern { e:H -[dep_SUD]-> D; H[cat=ADJ|ADV|VERB]; D[cat=NUM]; H << D ; D -[case]-> *}
+    commands { del_edge e; add_edge H -[obl]-> D }
+  }
 % ---- French refinement of the previous rule ----
 %  rule month {
 %    pattern { e:M -[dep]-> N; M [lemma="janvier"|"février"|"mars"|"avril"|"mai"|"juin"|"juillet"|"août"|"septembre"|"octobre"|"novembre"|"décembre"]}
@@ -317,12 +267,113 @@ package dep_SUD {
 %    commands { del_edge e; add_edge M -[obl]-> N }
 %  }
 
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+package dep_SUD {
+  rule acl {
+    pattern { e:N -[dep_SUD]-> M; N[cat=SYM|NUM|NOUN|PRON|PROPN]; M[cat=VERB,VerbForm=Part|Inf] }
+    commands { del_edge e; add_edge N -[acl]-> M }
+  }
+
+  rule aclrel {
+    pattern { e:N -[dep_SUD]-> M; N[cat=SYM|NUM|NOUN|PRON|PROPN]; M[cat=VERB,VerbForm=Fin]  }
+    commands { del_edge e; add_edge N -[acl:relcl]-> M }
+  }
+  
+  rule amod {
+    pattern { e:N -[dep_SUD]-> M; N[cat=SYM|NUM|NOUN|PRON|PROPN]; M[cat=ADJ] }
+    without{ M -[case]-> *}
+    commands { del_edge e; add_edge N -[amod]-> M }
+  }
+
+  rule nummod {
+    pattern { e:N -[dep_SUD]-> M; N[cat=ADJ|NUM|NOUN|PRON|PROPN|SYM]; M[cat=NUM]}
+    without{ M -[case]-> *}
+    commands { del_edge e; add_edge N -[nummod]-> M }
+  }
+
+  rule nmod {
+    pattern {
+      e:N -[dep_SUD]-> M; N[cat=SYM|NUM|NOUN|PRON|PROPN|X];
+      M[cat=SYM|NOUN|PRON|PROPN|X]
+    }
+    without{ M -[case]-> *}
+    commands { del_edge e; add_edge N -[nmod]-> M }
+  }
+
+  rule nmod_case {
+    pattern {
+      e:N -[dep_SUD]-> M; N[cat=SYM|NUM|NOUN|PRON|PROPN|X];
+      M[cat=ADJ|ADV|NOUN|NUM|PRON|PROPN|SYM|X]; M -[case]-> *
+    }
+    commands { del_edge e; add_edge N -[nmod]-> M }
+  }
+
+  rule obl { % in GSD, obl are not all subtyped
+    pattern { e:M -[dep_SUD]-> N; M[cat=ADJ|ADV|VERB|AUX]}
+    commands { del_edge e; add_edge M -[obl]-> N }
+  }
 
 }
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+package reverse_aux_cop {
+  rule aux {
+    pattern { e:V -[comp:aux]-> C }
+    without { * -[comp:aux|comp:pass]-> V }
+    commands {
+      del_edge e;
+      shift_in V ==> C;
+%      shift_out V =[aux|cop|subj|mod]=> C; % TODO: shift_out
+      shift_out V =[^fixed|conj:dicto]=> C; % TODO: shift_out
+      add_edge C -[aux]-> V;
+      V.cat=AUX
+    }
+  }
+
+  rule pass {
+    pattern { e:V -[comp:pass]-> C }
+    without { * -[comp:aux|comp:pass]-> V }
+    commands {
+      del_edge e;
+      shift_in V ==> C;
+%      shift_out V =[aux|cop|subj|mod]=> C; % TODO: shift_out
+      shift_out V =[^fixed|conj:dicto]=> C; % TODO: shift_out
+      add_edge C -[aux:pass]-> V;
+      V.cat=AUX
+    }
+  }
+
+  rule caus {
+    pattern { e:V -[comp:caus]-> C }
+    without { * -[comp:aux|comp:pass]-> V }
+    without { V -[obj]-> * }
+    commands {
+      del_edge e;
+      shift_in V ==> C;
+%      shift_out V =[aux|cop|subj|mod]=> C; % TODO: shift_out
+      shift_out V =[^fixed|conj:dicto]=> C; % TODO: shift_out
+      add_edge C -[aux:caus]-> V;
+      V.cat=AUX
+    }
+  }
+
+  rule caus_obj_agent {
+    pattern { e:V -[comp:caus]-> C; obj: V -[obj]-> O; }
+    without { * -[comp:aux|comp:pass]-> V }
+    commands {
+      del_edge e;
+      del_edge obj;
+      shift_in V ==> C;
+%      shift_out V =[aux|cop|subj|mod]=> C; % TODO: shift_out
+      shift_out V =[^fixed|conj:dicto]=> C; % TODO: shift_out
+      add_edge C -[aux:caus]-> V;
+      add_edge C -[obj:agent]-> O;
+      V.cat=AUX
+    }
+  }
   rule cop {
     pattern { e:V -[comp:cop]-> C }
     without { * -[comp]-> V } % apply cop later
@@ -335,6 +386,8 @@ package dep_SUD {
       V.cat=AUX
     }
   }
+
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 rule conj {
@@ -358,23 +411,28 @@ package final {
     commands { N.cat = N.token_upos; del_feat N.token_upos; }
   }
 
-%  rule date {
-%    pattern { N [save_cat]; }
-%    commands { N.cat=N.save_cat; del_feat N.save_cat; }
-%  }
+  rule cat_recover{
+    pattern{W[initcat]}
+    commands{W.cat=W.initcat; del_feat W.initcat}
+  }
+
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 strat main {
   Seq (
     Onf (init),
+    Onf (FR_cat_translate),
     Onf (unchained_relations),
-    Onf (reverse),
+    Onf (reverse_case_mark),
     Onf (subj),
+    Onf (det_nummod),
     Onf (comp),
+    Onf (FR_mod),
     Onf (mod),
+    Onf (FR_dep_SUD),
     Onf (dep_SUD),
-    Onf (cop),
+    Onf (reverse_aux_cop),
     Onf (conj),
     Onf (final),
   )

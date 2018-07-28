@@ -15,6 +15,7 @@ de#autre#part#ADV
 de#sorte#que#ADP
 de#tout#façon#ADV
 en#ce#moment#ADV
+en#le#occurrence#ADV
 en#matière#de#ADP
 en#plus#de#ADP
 en#raison#de#ADP
