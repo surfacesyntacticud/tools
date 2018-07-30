@@ -511,25 +511,8 @@ package reverse {
 
 }
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-package FR_nummod{
-  % rule nummod_mod1 {
-  %   pattern { e:H -[nummod]-> N; H -[det]-> * }
-  %   commands { del_edge e; add_edge H -[mod]-> N }
-  % }
-  
-  % rule nummod_mod2 {
-  %   pattern { e:H -[nummod]-> N; H << N}
-  %   commands { del_edge e; add_edge H -[mod]-> N }
-  % }
-  
-  % rule nummod_mod3 {
-  %   pattern { e:H -[nummod]-> N;  H[cat=ADJ]; * -[amod|mod]-> H}
-  %   without { H -[det]-> *}
-  %   commands { del_edge e; add_edge H -[mod]-> N }
-  % }
-  
+package FR_nummod{  
   rule nummod_det {
     pattern { e:H -[nummod]-> N; N << H}
     without { H -[det]-> *}
@@ -539,7 +522,6 @@ package FR_nummod{
   }
 
 }
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 package relations {
@@ -759,7 +741,7 @@ de#lesquelles#desquelles
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 strat main {
   Seq (
-    Onf (minimize_conj_dep),
+    %Onf (minimize_conj_dep),
     Onf (chained_relations),
     Onf (reverse),
     Onf (FR_nummod),
@@ -775,8 +757,10 @@ strat udpos {
     Onf (minimize_conj_dep),
     Onf (chained_relations),
     Onf (reverse),
+    Onf (FR_nummod),
     Onf (UDPOS_after_reverse),
     Onf (relations),
+    Onf (raise_gov),
     Onf (fail_label),
   )
 }

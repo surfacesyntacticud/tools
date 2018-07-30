@@ -9,6 +9,7 @@ ainsi#de#suite#ADV
 à#le#moins#ADV
 à#le#plus#ADV
 à#partir#de#ADP
+à#peu#près#ADV
 bel#et#bien#ADV
 de#autant#que#ADP
 de#autre#part#ADV
@@ -26,6 +27,7 @@ le#plupart#de#ADV
 mettre#à#part#ADP
 pas#grand#chose#PRON
 peu#à#peu#ADV
+si#bien#que#SCONJ
 tout#de#abord#ADP
 tout#de#même#ADV
 un#peu#de#DET
