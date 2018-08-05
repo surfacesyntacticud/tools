@@ -155,63 +155,24 @@ package minimize_conj_dep{
 % Dependencies of type CONJ, FIXED and FLAT:NAME grouped into a bouquet are reorganized into a chain.
 package chained_relations {
   rule conj {
-    pattern {
-      H -[conj]-> X1;
-      e: H -[conj]-> X2;
-      X1 << X2;
-    }
-    without {
-      H -[conj]-> X;
-      X1 << X; X << X2;
-    }
-    without {
-      H -[conj]-> X;
-      X2 << X;
-    }
-    commands {
-      del_edge e;
-      add_edge X1 -[conj]-> X2;
-    }
+    pattern {H -[conj]-> D1;e: H -[conj]-> D2;D1 << D2}
+    without {H -[conj]-> D;D1 << D; D << D2}
+    without {H -[conj]-> D;D2 << D}
+    commands {del_edge e;add_edge D1 -[conj]-> D2}
   }
 
   rule fixed {
-    pattern {
-      H -[fixed]-> X1;
-      e: H -[fixed]-> X2;
-      X1 << X2;
-    }
-    without {
-      H -[fixed]-> X;
-      X1 << X; X << X2;
-    }
-    without {
-      H -[fixed]-> X;
-      X2 << X;
-    }
-    commands {
-      del_edge e;
-      add_edge X1 -[fixed]-> X2;
-    }
+    pattern {H -[fixed]-> D1;e: H -[fixed]-> D2;D1 << D2}
+    without {H -[fixed]-> D;D1 << D; D << D2}
+    without {H -[fixed]-> D;D2 << D;}
+    commands {del_edge e;add_edge D1 -[fixed]-> D2}
   }
 
   rule flat_name {
-    pattern {
-      H -[flat:name]-> X1;
-      e: H -[flat:name]-> X2;
-      X1 << X2;
-    }
-    without {
-      H -[flat:name]-> X;
-      X1 << X; X << X2;
-    }
-    without {
-      H -[flat:name]-> X;
-      X2 << X;
-    }
-    commands {
-      del_edge e;
-      add_edge X1 -[flat:name]-> X2;
-    }
+    pattern {H -[flat:name]-> D1;e: H -[flat:name]-> D2;D1 << D2}
+    without {H -[flat:name]-> D;D1 << D; D << D2}
+    without {H -[flat:name]-> D;D2 << D}
+    commands {del_edge e;add_edge D1 -[flat:name]-> D2}
   }
 }
 
@@ -223,7 +184,7 @@ package chained_relations {
 % The change of head for auxiliary relations must be processed together with the change of heads for case and mark relations. The rule is to start with the old dependent that is the closest to the old head while taking the order between types of auxiliaries into account.
 % Ex: Il a été en retard ce matin. (case < cop < aux)
 % Ex : Il part sans avoir été malade un seul jour. (cop < aux < mark)
-package reverse {
+package head_reverse {
   rule aux {
     pattern {e:P -[aux]-> AUX}
     without { P-[mark]->X; AUX << X ; X << P} % Il a semblé que Marie arrivait.
@@ -275,56 +236,7 @@ package reverse {
     }
   }
   
-  rule cop {
-    pattern {e:P -[cop]-> AUX}
-    without { P-[mark]->X; AUX << X ; X << P}
-    without { P-[mark]->X; AUX >> X ; X >> P}
-    without{ P -[conj]-> *}
-    commands {
-      del_edge e;
-      add_edge AUX -[comp:cop]-> P;
-      AUX.cat=VERB;
-      shift_in P ==> AUX;
-      shift_out P =[aux|mark]=> AUX;
-      shift_out P =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
-    }
-  }
-
-  rule cop_conj1 {
-    pattern {e:P -[cop]-> AUX;P -[conj]-> P1}
-    without { P-[mark]->X; AUX << X ; X << P}
-    without { P-[mark]->X; AUX >> X ; X >> P}
-    without{ P1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2}
-    without{ P1[VerbForm]; AUX.VerbForm = P1.VerbForm}
-    commands {
-      del_edge e;
-      add_edge AUX -[comp:cop]-> P;
-      AUX.cat=VERB;
-      shift_in P ==> AUX;
-      shift_out P =[aux|mark]=> AUX;
-      shift_out P =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
-    }
-  }
-
-  rule cop_conj2 {
-    pattern {
-      e1:P -[cop]-> AUX; e2:P -[conj]-> P1;
-      P1[VerbForm]; AUX.VerbForm = P1.VerbForm
-    }
-    without { P-[mark]->X; AUX << X ; X << P}
-    without { P-[mark]->X; AUX >> X ; X >> P}
-    without{ P1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2}
-    commands {
-      del_edge e1;  del_edge e2;
-      add_edge AUX -[comp:cop]-> P;
-      add_edge AUX -[conj]-> P1;
-      AUX.cat=VERB;
-      shift_in P ==> AUX;
-      shift_out P =[aux|mark]=> AUX;
-      shift_out P =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
-    }
-  }
-  
+ 
   rule auxpass {
     pattern {e:P -[aux:pass]-> AUX}
     without{ P -[conj]-> *}
@@ -416,7 +328,56 @@ package reverse {
       shift_out P =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
     }
   }
+  rule cop {
+    pattern {e:P -[cop]-> AUX}
+    without { P-[mark]->X; AUX << X ; X << P}
+    without { P-[mark]->X; AUX >> X ; X >> P}
+    without{ P -[conj]-> *}
+    commands {
+      del_edge e;
+      add_edge AUX -[comp:cop]-> P;
+      AUX.cat=VERB;
+      shift_in P ==> AUX;
+      shift_out P =[aux|mark]=> AUX;
+      shift_out P =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
+    }
+  }
 
+  rule cop_conj1 {
+    pattern {e:P -[cop]-> AUX;P -[conj]-> P1}
+    without { P-[mark]->X; AUX << X ; X << P}
+    without { P-[mark]->X; AUX >> X ; X >> P}
+    without{ P1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2}
+    without{ P1[VerbForm]; AUX.VerbForm = P1.VerbForm}
+    commands {
+      del_edge e;
+      add_edge AUX -[comp:cop]-> P;
+      AUX.cat=VERB;
+      shift_in P ==> AUX;
+      shift_out P =[aux|mark]=> AUX;
+      shift_out P =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
+    }
+  }
+
+  rule cop_conj2 {
+    pattern {
+      e1:P -[cop]-> AUX; e2:P -[conj]-> P1;
+      P1[VerbForm]; AUX.VerbForm = P1.VerbForm
+    }
+    without { P-[mark]->X; AUX << X ; X << P}
+    without { P-[mark]->X; AUX >> X ; X >> P}
+    without{ P1 -[aux|aux:pass|aux:caus|cop|mark|case]-> AUX2}
+    commands {
+      del_edge e1;  del_edge e2;
+      add_edge AUX -[comp:cop]-> P;
+      add_edge AUX -[conj]-> P1;
+      AUX.cat=VERB;
+      shift_in P ==> AUX;
+      shift_out P =[aux|mark]=> AUX;
+      shift_out P =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
+    }
+  }
+ 
   rule case{
     pattern { e:H-[case]->X1}
     without { H-[aux|aux:pass|aux:caus|cop|mark|case]->X2; X1 << X2 ; X2 << H}
@@ -743,7 +704,7 @@ strat main {
   Seq (
     %Onf (minimize_conj_dep),
     Onf (chained_relations),
-    Onf (reverse),
+    Onf (head_reverse),
     Onf (FR_nummod),
     Onf (relations),
     Onf (raise_gov),
@@ -756,7 +717,7 @@ strat udpos {
     Onf (UDPOS_init),
     Onf (minimize_conj_dep),
     Onf (chained_relations),
-    Onf (reverse),
+    Onf (head_reverse),
     Onf (FR_nummod),
     Onf (UDPOS_after_reverse),
     Onf (relations),
