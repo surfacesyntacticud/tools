@@ -10,23 +10,31 @@ package init {
     pattern { N [cat, _MISC_UDPOS, !_MISC_MWEPOS, !token_upos]}
     commands { N.token_upos=N.cat; N.cat = N._MISC_UDPOS; del_feat N._MISC_UDPOS }
   }
-  
+
+% Feature "nom" is used to deal with all nominals in a uniform way.
   rule nom_noun{
     pattern{N[cat=NOUN|PRON|PROPN|SYM|X,!nom]}
     commands{N.nom=y}
   }
-    
+
+  rule nom_det{
+    pattern{N[cat<>NOUN|PRON|PROPN|SYM|X,!nom]; N -[det]-> *}
+    commands{N.nom=y}
+  }
+
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 package FR_init {
-  rule nom_non_noun{
-    pattern{N[cat<>NOUN|PRON|PROPN|SYM|X,!nom]; N -[det]-> *}
-    without{N0[cat=NOUN|PRON]; N0 -[dep_SUD]-> N}% exclusion of attributive superlatives
-    without{ N -[cop]-> *}% exclusion of predicative complement superlatives 
-    commands{N.nom=y}
+% All adjectives or verbs that are attributive of nouns are considered as non nominals.
+  rule attr_det{
+    pattern{
+      N0[cat=NOUN|PRON]; N0 -[dep_SUD]-> N;
+      N[cat=ADJ|VERB,nom]; N -[det]-> *}
+    commands{del_feat N.nom}
   }
 
+% All numerals that are not modifiers or determiners are considered as nominals.
   rule nom_num{
     pattern{N[cat=NUM,!nom]}
     without{H -[det|mod]-> N; N << H}
@@ -36,35 +44,48 @@ package FR_init {
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Dependencies of type FLAT_NAME, FIXED or CONJ that are chained are reorganized into bouquets.
 package unchained_relations {
   rule flat_name {
-    pattern {
-      H -[flat:name]-> N1;
-      e: N1 -[flat:name]-> N2;
-    }
-    without {
-      * -[flat:name]-> H;
-    }
-    commands {
-      del_edge e;
-      add_edge H -[flat:name]-> N2;
-    }
+    pattern {H -[flat:name]-> D1;e: D1 -[flat:name]-> D2; }
+    without {* -[flat:name]-> H;}
+    commands {del_edge e;add_edge H -[flat:name]-> D2;}
   }
 
   rule fixed {
+    pattern {H -[fixed]-> D1;e: D1 -[fixed]-> D2;}
+    without {* -[fixed]-> H;}
+    commands {del_edge e;add_edge H -[fixed]-> D2;}
+  }
+
+% The second conjunct has neither subject nor determiner.
+  rule conj {
+    pattern {H -[conj]-> D1;e: D1 -[conj]-> D2}
+    without{ D1 -[det|subj]-> *}
+    without{ H -[conj]-> X; D1 << X; X << D2}
+    commands {del_edge e;add_edge H -[conj]-> D2}
+  }
+
+% The second and the third conjuncts have a determiner.
+  rule conj_det {
     pattern {
-      H -[fixed]-> N1;
-      e: N1 -[fixed]-> N2;
+      H -[conj]-> D1;e: D1 -[conj]-> D2;
+      D1 -[det]-> *; D2 -[det]-> *
     }
-    without {
-      * -[fixed]-> H;
+    without{ H -[conj]-> X; D1 << X; X << D2}
+    commands {del_edge e;add_edge H -[conj]-> D2}
+  }
+
+% The second and the third conjuncts have a subject.
+  rule conj_subj {
+    pattern {
+      H -[conj]-> D1;e: D1 -[conj]-> D2;
+      D1 -[subj]-> *; D2 -[subj]-> *
     }
-    commands {
-      del_edge e;
-      add_edge H -[fixed]-> N2;
-    }
+    commands {del_edge e;add_edge H -[conj]-> D2}
   }
 }
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 package reverse_case_mark {
@@ -434,21 +455,6 @@ package reverse_aux_cop {
 
 }
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% A revoir (partage des sujets, auxiliaires, prépositions, conjonctions : fr-ud-dev_00966)
-rule conj {
-  pattern {
-    H -[conj]-> N1;
-    e: N1 -[conj]-> N2;
-  }
-  without {
-    * -[conj]-> H;
-  }
-  commands {
-    del_edge e;
-    add_edge H -[conj]-> N2;
-  }
-}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 package final {
@@ -469,7 +475,7 @@ strat main {
   Seq (
     Onf (init),
     Onf (FR_init),
-    Onf (unchained_relations),
+    Onf (unchained_relations), % For CONJ relations, chains must be transformed into bouquets before head changes because of conditions on the presence of prepostions, conjunctions and auxiliaries.
     Onf (reverse_case_mark),
     Onf (subj),
     Onf (det_nummod),
@@ -479,7 +485,6 @@ strat main {
     Onf (FR_dep_SUD),
     Onf (dep_SUD),
     Onf (reverse_aux_cop),
-    Onf (conj),
     Onf (final),
   )
 }
