@@ -92,7 +92,6 @@ package head_reverse {
     commands {
       del_edge e;
       add_edge AUX -[comp:aux]-> P;
-      AUX.cat=VERB;
       shift_in P ==> AUX;
       shift_out P =[mark]=> AUX;
       shift_out P =[comp]=> AUX;
@@ -106,7 +105,6 @@ package head_reverse {
     commands {
       del_edge e;
       add_edge AUX -[comp:pass]-> P;
-      AUX.cat=VERB;
       shift_in P ==> AUX;
       shift_out P =[aux|mark]=> AUX;
       shift_out P =[comp]=> AUX;
@@ -119,7 +117,6 @@ package head_reverse {
     commands {
       del_edge e;
       add_edge AUX -[comp:caus]-> P;
-      AUX.cat=VERB;
       shift_in P ==> AUX;
       shift_out P =[aux|mark]=> AUX;
       shift_out P =[obj:agent|obl:agent]=> AUX;
@@ -134,7 +131,6 @@ package head_reverse {
     commands {
       del_edge e;
       add_edge AUX -[comp:cop]-> P;
-      AUX.cat=VERB;
       shift_in P ==> AUX;
       shift_out P =[aux|mark]=> AUX;
       shift_out P =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
@@ -436,7 +432,7 @@ package fail_label{
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 strat main {
   Seq (
-    %Onf (minimize_conj_dep),
+    Onf (minimize_conj_dep),
     Onf (head_reverse),
     Onf (relations),
     Onf (gov_rise),% Package GOV_RISE must follow package HEAD_REVERSE because it corrects some wrong consequences of head changes.
