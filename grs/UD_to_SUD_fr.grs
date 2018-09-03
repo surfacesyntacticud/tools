@@ -1,3 +1,80 @@
+package UDPOS_init {
+  rule case {
+    pattern { X -[case]-> Y }
+    without { Y [upos=ADP|PART] }
+    without { Y [_MISC_MWEPOS=ADP|PART] }
+    without { Y [_MISC_UDPOS] }
+    commands { Y._MISC_UDPOS = ADP} % real value should be "ADP|PART"
+  }
+
+  rule mark {
+    pattern { X -[mark]-> Y }
+    without { Y [upos=ADP|SCONJ] }
+    without { Y [_MISC_MWEPOS=ADP|SCONJ] }
+    without { Y [_MISC_UDPOS] }
+    commands { Y._MISC_UDPOS = ADP} % real value should be "ADP|SCONJ"
+  }
+
+  rule cop {
+    pattern { X -[cop]-> Y }
+    without { Y [upos=AUX] }
+    without { Y [_MISC_MWEPOS=AUX] }
+    without { Y [_MISC_UDPOS] }
+    commands { Y._MISC_UDPOS = AUX}
+  }
+
+  rule aux {
+    pattern { X -[re"aux.*"]-> Y }
+    without { Y [upos=AUX] }
+    without { Y [_MISC_MWEPOS=AUX] }
+    without { Y [_MISC_UDPOS] }
+    commands { Y._MISC_UDPOS = AUX}
+  }
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+package UDPOS_after_reverse {
+  rule amod {
+    pattern { X -[amod]-> Y }
+    without { Y [upos=ADJ] }
+    without { Y [_MISC_MWEPOS=ADJ] }
+    without { Y [_MISC_UDPOS] }
+    commands { Y._MISC_UDPOS = ADJ}
+  }
+
+  rule advmod {
+    pattern { X -[advmod]-> Y }
+    without { Y [upos=ADV] }
+    without { Y [_MISC_MWEPOS=ADV] }
+    without { Y [_MISC_UDPOS] }
+    commands { Y._MISC_UDPOS = ADV}
+  }
+
+  rule nsubj {
+    pattern { X -[re"nsubj.*"]-> Y }
+    without { Y [upos=NOUN|PROPN|PRON] }
+    without { Y [_MISC_MWEPOS=NOUN|PROPN|PRON] }
+    without { Y [_MISC_UDPOS] }
+    commands { Y._MISC_UDPOS = NOUN}
+  }
+
+  rule csubj {
+    pattern { X -[re"csubj.*"]-> Y }
+    without { Y [upos=VERB] }
+    without { Y [_MISC_MWEPOS=VERB] }
+    without { Y [_MISC_UDPOS] }
+    commands { Y._MISC_UDPOS = VERB}
+  }
+
+  rule acl_advcl {
+    pattern { X -[acl|advcl]-> Y }
+    without { Y [upos=VERB|ADJ] }
+    without { Y [_MISC_MWEPOS=VERB|ADJ] }
+    without { Y [_MISC_UDPOS] }
+    commands { Y._MISC_UDPOS = VERB} % real value should be "VERB|ADJ"
+  }
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Move the dependents of a conjunction from the left conjunct to the right conjunct. Dependencies ADVCL, ADVMOD, APPOS, CCOMP, CONJ, DEP, DISCOURSE, PARATAXIS and PUNCT are not moved.
 package minimize_conj_dep{
@@ -7,7 +84,7 @@ package minimize_conj_dep{
     without{C1 -[conj]-> C; C2 << C}
     commands{del_edge e; add_edge C2 -[acl]-> D}
   }
-
+  
   rule min_aclrelcl{
     pattern{C1 -[conj]-> C2; e:C1 -[acl:relcl]-> D; C2 << D}
     without{C1 -[conj]-> C; C2 << C}
@@ -19,25 +96,25 @@ package minimize_conj_dep{
     without{C1 -[conj]-> C; C2 << C}
     commands{del_edge e; add_edge C2 -[amod]-> D}
   }
-
+  
   rule min_flatname{
     pattern{C1 -[conj]-> C2; e:C1 -[flat:name]-> D; C2 << D}
     without{C1 -[conj]-> C; C2 << C}
     commands{del_edge e; add_edge C2 -[flat:name]-> D}
   }
-
+  
   rule min_nmod{
     pattern{C1 -[conj]-> C2; e:C1 -[nmod]-> D; C2 << D}
     without{C1 -[conj]-> C; C2 << C}
     commands{del_edge e; add_edge C2 -[nmod]-> D}
   }
-
+  
   rule min_nsubj{
     pattern{C1 -[conj]-> C2; e:C1 -[nsubj]-> D; C2 << D}
     without{C1 -[conj]-> C; C2 << C}
     commands{del_edge e; add_edge C2 -[nsubj]-> D}
   }
-
+  
   rule min_nummod{
     pattern{C1 -[conj]-> C2; e:C1 -[nummod]-> D; C2 << D}
     without{C1 -[conj]-> C; C2 << C}
@@ -48,7 +125,7 @@ package minimize_conj_dep{
     without{C1 -[conj]-> C; C2 << C}
     commands{del_edge e; add_edge C2 -[obj]-> D}
   }
-
+  
   rule min_obl{
     pattern{C1 -[conj]-> C2; e:C1 -[obl]-> D; C2 << D}
     without{C1 -[conj]-> C; C2 << C}
@@ -86,9 +163,9 @@ package minimize_conj_dep{
 package head_reverse {
   rule aux {
     pattern {e:P -[aux]-> AUX}
-    without { P-[mark|aux]->X; AUX << X ; X << P} % Il a semblé que Marie arrivait.
-    without { P-[mark|aux]->X; AUX >> X ; X >> P}
-    without {P -[aux:pass|aux:caus|cop]-> AUX2}
+    without { P-[mark]->X; AUX << X ; X << P} % Il a semblé que Marie arrivait.
+    without { P-[mark]->X; AUX >> X ; X >> P}
+    without {P -[aux|aux:pass|aux:caus|cop]-> AUX2}
     commands {
       del_edge e;
       add_edge AUX -[comp:aux]-> P;
@@ -96,7 +173,6 @@ package head_reverse {
       shift_in P ==> AUX;
       shift_out P =[mark]=> AUX;
       shift_out P =[comp]=> AUX;
-      shift_out P =[aux]=> AUX;
       shift_out P =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
     }
   }
@@ -113,7 +189,7 @@ package head_reverse {
       shift_out P =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
     }
   }
-
+ 
   rule auxcaus {
     pattern {e:P -[aux:caus]-> AUX}
     commands {
@@ -167,7 +243,7 @@ package head_reverse {
       shift_out H =[advcl|cc|csubj|nsubj|punct|root]=> X1;
     }
   }
-
+  
   rule mark{
     pattern { e:H-[mark]->X1}
     without { H-[aux|aux:pass|aux:caus|cop|mark|case]->X2; X1 << X2 ; X2 << H}
@@ -199,6 +275,40 @@ package head_reverse {
 
 }
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+package FR_relations {
+  rule adj_compobl_ccomp (feature $adj,$mood; file "lexicons/adj_with_deobj_fin-verb.lp") {
+    pattern {
+      H[cat=ADJ,lemma=$adj]; e:H -[ccomp]-> C;
+      C[cat=SCONJ,lemma=que]}
+    commands { del_edge e; add_edge H -[comp:obl]-> C }
+  }
+  
+  rule verb_compobl_ccomp (feature $verb,$mood; file "lexicons/verb_with_deobj_fin-verb.lp") {
+    pattern {
+      H[cat=VERB,lemma=$verb]; e:H -[ccomp]-> C;
+      C[cat=SCONJ,lemma=que]}
+    commands { del_edge e; add_edge H -[comp:obl]-> C }
+  }
+
+  rule verb_aff_compobl_ccomp (feature $aff,$verb,$mood; file "lexicons/aff_verb_with_deobj_fin-verb.lp") {
+    pattern {
+      H[cat=VERB,lemma=$verb]; e:H -[ccomp]-> C;
+      C[cat=SCONJ,lemma=que];
+      AFF[cat=PRON, lemma=$aff]; H -[expl]-> AFF}
+    commands { del_edge e; add_edge H -[comp:obl]-> C }
+  }
+  
+  rule det_nummod {
+    pattern { e:H -[nummod]-> N; N << H}
+    without { H -[det]-> *}
+    without{ * -[det]-> H}
+    without { H[cat=ADJ]; * -[amod|mod]-> H}
+    commands { del_edge e; add_edge H -[det]-> N }
+  }
+
+}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 package relations {
   rule comp_agent {
@@ -214,7 +324,7 @@ package relations {
     commands { del_edge e; add_edge H -[comp:lvc]-> C }
   }
   rule comp_obj {
-    pattern { e:H -[obj|obj:agent|ccomp]-> C; }
+    pattern { e:H -[obj|obj:agent|ccomp]-> C; C[cat <> ADP]; }
     commands { del_edge e; add_edge H -[comp:obj]-> C }
   }
   rule comp_obj_caus {
@@ -301,7 +411,7 @@ package gov_rise{
       G -> D; D >> G; MOD << G;
       mod_rel:D -[mod]-> MOD
     }
-    without { MOD [PronType=Rel]}
+    without { MOD [PronType=Rel]} 
     commands {
       del_edge mod_rel;
       add_edge G -[mod]-> MOD
@@ -341,6 +451,24 @@ package correction{
     pattern{ ADV[cat=ADV]; e: H -[dep_SUD]-> ADV; ADV << H}
     commands{ del_edge e; add_edge H -[mod]-> ADV}
   }
+  
+  rule mwe_correct{
+    pattern{H -> D; H[_MISC_INMWE=Yes]; D[_MISC_MWEPOS]}
+    commands{
+       H._MISC_MWEPOS=D._MISC_MWEPOS;D._MISC_INMWE=Yes;
+       del_feat D._MISC_MWEPOS; del_feat H._MISC_INMWE
+     }
+   }
+
+  rule title_correct{
+    pattern{H -> D; H[_MISC_INTITLE=Yes]; D[_MISC_TITLE=Yes]}
+    commands{
+       H._MISC_TITLE= Yes; D._MISC_INTITLE=Yes;
+       del_feat D._MISC_TITLE; del_feat H._MISC_INTITLE
+     }
+   }
+
+
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -434,13 +562,90 @@ package fail_label{
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+package amalgam {
+  rule prep_det (feature $prep, $det, $amalgam) {
+    pattern {
+      P [cat=ADP, phon= $prep];
+      D [cat=DET, phon= $det];
+      P < D;
+    }
+    commands {
+      del_node D;
+      P.phon = $amalgam;
+      % The three next commands are needed to ensure correct CoNLLU output (without the x-y line for amalgam)
+      del_feat P._UD_mw_fusion;
+      del_feat P._UD_mw_span;
+      del_feat P._UD_MISC_SpaceAfter;
+    }
+  }
+#BEGIN
+à#le#au
+à#les#aux
+de#le#du
+de#les#des
+#END
+
+  rule prep_pro (feature $prep, $pron, $amalgam) {
+    pattern {
+      PREP [cat=ADP, phon= $prep];
+      PRON [cat=PRON, phon= $pron];
+      PREP < PRON;
+    }
+    commands {
+      del_node PRON;
+      PREP.phon = $amalgam;
+      % The three next commands are needed to ensure correct CoNLLU output (without the x-y line for amalgam)
+      del_feat PREP._UD_mw_fusion;
+      del_feat PREP._UD_mw_span;
+      del_feat PREP._UD_MISC_SpaceAfter;
+    }
+  }
+#BEGIN
+à#lequel#auquel
+à#lesquels#auxquels
+à#lesquelles#auxquelles
+de#lequel#duquel
+de#lesquelles#desquelles
+#END
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 strat main {
   Seq (
     %Onf (minimize_conj_dep),
     Onf (head_reverse),
     Onf (relations),
     Onf (gov_rise),% Package GOV_RISE must follow package HEAD_REVERSE because it corrects some wrong consequences of head changes.
-    Onf (chained_relations),% Package CHAINED_RELATIONS must follow package GOV_RISE because it can entail a wrong coordination between two elements because of errors in head changes (UD_French-GS: fr-ud-dev_00131).
+    Onf (chained_relations),% Package CHAINED_RELATIONS must follow package GOV_RISE because it can entail a wrong coordination between two elements because of errors in head changes (UD_French-GS: fr-ud-dev_00131). 
+    Onf (fail_label),
+  )
+}
+
+strat FR_main {
+  Seq (
+    %Onf (minimize_conj_dep),
+    Onf (head_reverse),
+    Onf (FR_relations),
+    Onf (relations),
+    Onf (gov_rise),
+    Onf (chained_relations),
+    Onf (correction),
+    Onf (fail_label),
+  )
+}
+
+strat udpos {
+  Seq (
+    Onf (UDPOS_init),
+    Onf (minimize_conj_dep),
+    Onf (head_reverse),
+    Onf (UDPOS_after_reverse),
+    Onf (FR_relations),
+    Onf (relations),
+    Onf (gov_rise),
+    Onf (chained_relations),
+    Onf (correction),
     Onf (fail_label),
   )
 }
