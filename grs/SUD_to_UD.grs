@@ -1,28 +1,39 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+include "specif_expr.grs"
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+include "SUD_to_UD_fr.grs"
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Feature "nom" is used to deal with all nominals in a uniform way.
 package nom_init {
 
+% All words with NOUN, PRON, PROPN, SYM, X as POS ar nominals.
   rule nom_noun {
     pattern {N[cat=NOUN|PRON|PROPN|SYM|X,!nom]}
     without {N[MWEPOS <> NOUN]}
     commands {N.nom=y}
   }
 
+% All words with a determiner are nominals.
   rule nom_det {
     pattern {N[cat<>NOUN|PRON|PROPN|SYM|X,!nom]; N -[det]-> *}
     commands {N.nom=y}
   }
 
+% All numerals following their gouvernor are nominals.
   rule nom_num1 {
     pattern {N[cat=NUM,!nom]; H -> N; H << N}
     commands {N.nom=y}
   }
 
+% All numerals preceding their governor with a specific relation are nominals.
   rule nom_num2 {
     pattern {N[cat=NUM,!nom]; H -[comp:obj|comp:obl|mod|obl:mod|subj]-> N; H >> N}
     commands {N.nom=y}
   }
 
+% Question marks that are target of DEP_SUD dependencies are nominals.
   rule nom_punct {
     pattern {P[cat=PUNCT,lemma="?", !nom]; * -[dep_SUD]-> P}
     commands {P.nom=y}
@@ -357,13 +368,21 @@ package dep_SUD {
     commands { del_edge e; add_edge N -[acl:relcl]-> M }
   }
 
-  rule advmod{
+  rule advmod1{
     pattern { e:H -[dep_SUD]-> D; D[cat=ADV]}
+    commands { del_edge e; add_edge H -[advmod]-> D }
+  }
+
+% An adjective introduced with a preposition is considered as an adverb.
+% Ex: :UD_French-GSD fr-ud-test_00294 - ... 2 menus à pas cher ...
+  rule advmod2{
+    pattern { e:H -[dep_SUD]-> D; D[cat=ADJ]; D -[case]-> *}
     commands { del_edge e; add_edge H -[advmod]-> D }
   }
 
   rule amod {
     pattern { e:H -[dep_SUD]-> D; D[cat=ADJ] }
+    without { D -[case]-> *}
     commands { del_edge e; add_edge H -[amod]-> D }
   }
 
@@ -458,7 +477,6 @@ package reverse_aux_cop {
     }
   }
 }
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 package final {

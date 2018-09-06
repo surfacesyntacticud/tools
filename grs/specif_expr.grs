@@ -1,0 +1,56 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+package specif_expr_init{
+  rule create_mwe_node{
+    pattern{ W[_MISC_MWEPOS]}
+    without{ * -[expr]-> W}
+    commands{
+      add_node MWE :< W;
+      shift_in W ==> MWE;
+      add_edge MWE -[expr]-> W;
+      MWE.cat = W._MISC_MWEPOS
+    }
+  }
+
+  rule create_titel_node{
+    pattern{ W[_MISC_TITLE]}
+    without{ * -[expr]-> W}
+    commands{
+      add_node T :< W;
+      shift_in W ==> T;
+      add_edge T -[expr]-> W;
+      T.cat = PROPN
+    }
+  }
+
+  rule move_dep{
+    pattern{ H -[expr]-> W; e: W -[^fixed]-> D}
+    without{D[_MISC_INMWE=Yes]}
+    commands{ del_edge e; add_edge e: H -> D}
+  }
+
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+package specif_expr_close{
+  rule del_specif_expr{
+    pattern{e: E -[expr]-> W}
+    commands{del_edge e; shift E ==> W; del_node E}
+  }
+
+  rule mwe_pos_raise{
+    pattern{ H[_MISC_INMWE=Yes]; D[_MISC_MWEPOS]; H -> D}
+    commands{
+      H._MISC_MWEPOS = D._MISC_MWEPOS; del_feat H._MISC_INMWE;
+      D._MISC_INMWE=Yes; del_feat D._MISC_MWEPOS
+    }
+  }
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+strat main_specif_expr{
+  Seq(
+    Onf(specif_expr_init),
+    main,
+    Onf(specif_expr_close)
+  )
+}
