@@ -8,13 +8,18 @@ include "SUD_to_UD_fr.grs"
 % Feature "nom" is used to deal with all nominals in a uniform way.
 package nom_init {
 
-% All words with NOUN, PRON, PROPN, SYM, X as POS ar nominals.
+% All words with NOUN, PRON, PROPN, SYM, X as POS are nominals.
   rule nom_noun {
     pattern {N[cat=NOUN|PRON|PROPN|SYM|X,!nom]}
-    without {N[MWEPOS <> NOUN]}
+    without {N[_MISC_MWEPOS <> NOUN]}
     commands {N.nom=y}
   }
 
+% All adverbs with a COMP:OBJ or SUBJ function are nominals.
+  rule nom_adv {
+    pattern {A[cat=ADV,!nom]; * -[comp:obj|subj]-> A}
+    commands {A.nom=y}
+  }
 % All words with a determiner are nominals.
   rule nom_det {
     pattern {N[cat<>NOUN|PRON|PROPN|SYM|X,!nom]; N -[det]-> *}
@@ -37,6 +42,12 @@ package nom_init {
   rule nom_punct {
     pattern {P[cat=PUNCT,lemma="?", !nom]; * -[dep_SUD]-> P}
     commands {P.nom=y}
+  }
+
+% When the head of a specific expression is a nominal, the node representing this expression is marked as a nominal;
+  rule nom_specif_expr{
+    pattern{H -[expr]-> N; H[!nom]; N[_MISC_MWEPOS=NOUN|PRON|PROPN|SYM|X]}
+    commands{H.nom=y}
   }
 }
 
