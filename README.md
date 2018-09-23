@@ -16,10 +16,10 @@ For more information, consult the related publication:
 
 The conversion rules are written for the [Grew software](http://grew.fr):
 
- * from UD to SUD: [`UD_to_SUD.grs`](https://gitlab.inria.fr/grew/SUD/blob/UDW18/grs/UD_to_SUD.grs) 
+ * from UD to SUD: [`UD_to_SUD.grs`](https://gitlab.inria.fr/grew/SUD/blob/UDW18/grs/UD_to_SUD.grs)
  * from SUD to UD: [`SUD_to_UD.grs`](https://gitlab.inria.fr/grew/SUD/blob/UDW18/grs/SUD_to_UD.grs)
 
-To apply the conversion, you have to install Grew (see [instructions](http:://grew.fr/install) and use one of the follwing commands:
+To apply the conversion, you have to install Grew (see [instructions](http://grew.fr/install)) and use one of the follwing commands:
 
  * `grew transform -grs UD_to_SUD.grs -i <input_UD_file.conllu> -o <output_SUD_file.conllu>`
  * `grew transform -grs SUD_to_UD.grs -i <input_SUD_file.conllu> -o <output_UD_file.conllu>`
