@@ -1,27 +1,32 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+include "specif_expr.grs"
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+include "UD_to_SUD.grs"
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 package FR_relations {
-  rule adj_compobl_ccomp (feature $adj,$mood; file "lexicons/adj_with_deobj_fin-verb.lp") {
+  rule adj_compobl_ccomp (lex from "lexicons/adj_with_deobj_fin-verb.lp") {
     pattern {
-      H[cat=ADJ,lemma=$adj]; e:H -[ccomp]-> C;
+      H[cat=ADJ,lemma=lex.adj]; e:H -[ccomp]-> C;
       C[cat=SCONJ,lemma=que]}
     commands { del_edge e; add_edge H -[comp:obl]-> C }
   }
   
-  rule verb_compobl_ccomp (feature $verb,$mood; file "lexicons/verb_with_deobj_fin-verb.lp") {
+  rule verb_compobl_ccomp (lex from "lexicons/verb_with_deobj_fin-verb.lp") {
     pattern {
-      H[cat=VERB,lemma=$verb]; e:H -[ccomp]-> C;
+      H[cat=VERB,lemma=lex.verb]; e:H -[ccomp]-> C;
       C[cat=SCONJ,lemma=que]}
     commands { del_edge e; add_edge H -[comp:obl]-> C }
   }
 
-  rule verb_aff_compobl_ccomp (feature $aff,$verb,$mood; file "lexicons/aff_verb_with_deobj_fin-verb.lp") {
+  rule verb_aff_compobl_ccomp (lex from "lexicons/aff_verb_with_deobj_fin-verb.lp") {
     pattern {
-      H[cat=VERB,lemma=$verb]; e:H -[ccomp]-> C;
+      H[cat=VERB,lemma=lex.verb]; e:H -[ccomp]-> C;
       C[cat=SCONJ,lemma=que];
-      AFF[cat=PRON, lemma=$aff]; H -[expl]-> AFF}
+      AFF[cat=PRON, lemma=lex.aff]; H -[expl]-> AFF}
     commands { del_edge e; add_edge H -[comp:obl]-> C }
   }
   
@@ -46,49 +51,51 @@ package correction{
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 package amalgam {
-  rule prep_det (feature $prep, $det, $amalgam) {
+  rule prep_det {
     pattern {
-      P [cat=ADP, phon= $prep];
-      D [cat=DET, phon= $det];
+      P [cat=ADP, phon= lex.prep];
+      D [cat=DET, phon= lex.det];
       P < D;
     }
     commands {
       del_node D;
-      P.phon = $amalgam;
+      P.phon = lex.amalgam;
       % The three next commands are needed to ensure correct CoNLLU output (without the x-y line for amalgam)
       del_feat P._UD_mw_fusion;
       del_feat P._UD_mw_span;
       del_feat P._UD_MISC_SpaceAfter;
     }
   }
-#BEGIN
-à#le#au
-à#les#aux
-de#le#du
-de#les#des
+#BEGIN lex
+prep	det	amalgam
+à	le	au
+à	les	aux
+de	le	du
+de	les	des
 #END
 
-  rule prep_pro (feature $prep, $pron, $amalgam) {
+  rule prep_pro {
     pattern {
-      PREP [cat=ADP, phon= $prep];
-      PRON [cat=PRON, phon= $pron];
+      PREP [cat=ADP, phon= lex.prep];
+      PRON [cat=PRON, phon= lex.pron];
       PREP < PRON;
     }
     commands {
       del_node PRON;
-      PREP.phon = $amalgam;
+      PREP.phon = lex.amalgam;
       % The three next commands are needed to ensure correct CoNLLU output (without the x-y line for amalgam)
       del_feat PREP._UD_mw_fusion;
       del_feat PREP._UD_mw_span;
       del_feat PREP._UD_MISC_SpaceAfter;
     }
   }
-#BEGIN
-à#lequel#auquel
-à#lesquels#auxquels
-à#lesquelles#auxquelles
-de#lequel#duquel
-de#lesquelles#desquelles
+#BEGIN lex
+prep	pron	amalgam
+à	lequel	auquel
+à	lesquels	auxquels
+à	lesquelles	auxquelles
+de	lequel	duquel
+de	lesquelles	desquelles
 #END
 }
 

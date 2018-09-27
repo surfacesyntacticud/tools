@@ -1,4 +1,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+include "specif_expr.grs"
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+include "SUD_to_UD.grs"
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 package FR_init {
   rule adv_det{
     pattern{A[cat=ADV,nom]; A -[det]-> D; D[cat=DET,lemma=le,Gender=Masc,Number=Sing]}
@@ -20,20 +26,21 @@ package FR_init {
     commands{del_feat P.nom}
   }
 
-  rule unity_num(feature $unite){
-    pattern{N[cat=NUM,nom]; H[lemma=$unite]; H -[dep_SUD]-> N }
+  rule unity_num{
+    pattern{N[cat=NUM,nom]; H[lemma=lex.unity]; H -[dep_SUD]-> N }
     commands{del_feat N.nom}
   }
-#BEGIN
+#BEGIN lex
+unity
 gramme
 heure
 litre
 mètre
 #END
 
-  rule adv_de_nom(feature $adv){
+  rule adv_de_nom{
     pattern{
-     A[cat=ADV,lemma=$adv,!nom];
+     A[cat=ADV,lemma=lex.adv,!nom];
      A -[comp:obl]-> P; P[cat=ADP,lemma=de];
      N[cat=NOUN|NUM|SYM]; P -[comp]-> N
    }
@@ -41,7 +48,8 @@ mètre
    without{ A[lemma=moins|plus]; P0 -[comp]-> A; P0[lemma=en]}
    commands{ A.nom=y}
  }
-#BEGIN
+#BEGIN lex
+adv
 assez
 autant
 beaucoup
@@ -60,6 +68,15 @@ trop
 }
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+package FR_comp {
+
+  rule oblarg {
+    pattern {e:P -[iobj]-> C; C[cat=NOUN|PROPN] }
+    commands { del_edge e; add_edge P -[obl:arg]-> C }
+  }
+
+}
 
 
 
@@ -67,7 +84,7 @@ trop
 package FR_mod {
 
   rule advmod {
-    pattern {N[cat <> INDET]; e:N -[mod]-> M; M[cat=PRON|SYM, lemma="où"|"y"|"+"] }
+    pattern {e:N -[mod]-> M; M[cat=PRON|SYM, lemma="où"|"y"|"+"] }
     commands { del_edge e; add_edge N -[advmod]-> M }
   }
 
@@ -77,8 +94,8 @@ package FR_mod {
 package FR_dep_SUD {
   rule aclrel{
     pattern{
-      N[nom]; e: N -[dep_SUD]-> D; D[cat <> INDET];
-      D -> PRO; PRO[PronType=Rel]
+      N[nom]; e: N -[dep_SUD]-> D;
+      D -> PRO; N << PRO; PRO[PronType=Rel]
     }
     without{D[cat=Verb,PronType=Fin]}
     commands{del_edge e; add_edge N -[acl:relcl]-> D}
@@ -155,6 +172,7 @@ strat FR_main {
     Onf (subj),
     Onf (det_nummod),
     Onf (comp),
+    Onf(FR_comp),
     Onf (FR_mod),
     Onf (mod),
     Onf (FR_dep_SUD),

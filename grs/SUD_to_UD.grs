@@ -1,10 +1,4 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-include "specif_expr.grs"
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-include "SUD_to_UD_fr.grs"
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Feature "nom" is used to deal with all nominals in a uniform way.
 package nom_init {
 
@@ -272,7 +266,7 @@ package comp {
   }
 
   rule iobj {
-    pattern { e:P -[comp:obl]-> A; A[cat = PRON]; }
+    pattern { e:P -[comp:obl]-> A; A[nom=y]}
     without { A -[case]-> * }
     commands { del_edge e; add_edge P -[iobj]-> A }
   }
@@ -380,7 +374,7 @@ package dep_SUD {
   }
 
   rule advmod1{
-    pattern { e:H -[dep_SUD]-> D; D[cat=ADV]}
+    pattern { e:H -[dep_SUD]-> D; D[cat=ADV|PART]}
     commands { del_edge e; add_edge H -[advmod]-> D }
   }
 
