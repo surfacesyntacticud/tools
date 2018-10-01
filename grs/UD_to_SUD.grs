@@ -296,9 +296,19 @@ package fail_label{
     commands{del_edge e; add_edge G -[FAIL_acl]-> D}
   }
 
+  rule FAIL_acl_relcl{
+    pattern{e: G -[acl:relcl]-> D}
+    commands{del_edge e; add_edge G -[FAIL_acl:relcl]-> D}
+  }
+
   rule FAIL_advcl{
     pattern{e: G -[advcl]-> D}
     commands{del_edge e; add_edge G -[FAIL_advcl]-> D}
+  }
+
+  rule FAIL_advcl_cleft{
+    pattern{e: G -[advcl:cleft]-> D}
+    commands{del_edge e; add_edge G -[FAIL_advcl:cleft]-> D}
   }
 
   rule FAIL_advmod{
@@ -314,6 +324,16 @@ package fail_label{
   rule FAIL_aux{
     pattern{e: G -[aux]-> D}
     commands{del_edge e; add_edge G -[FAIL_aux]-> D}
+  }
+
+  rule FAIL_aux_pass{
+    pattern{e: G -[aux:pass]-> D}
+    commands{del_edge e; add_edge G -[FAIL_aux:pass]-> D}
+  }
+
+  rule FAIL_aux_caus{
+    pattern{e: G -[aux:caus]-> D}
+    commands{del_edge e; add_edge G -[FAIL_aux:caus]-> D}
   }
 
   rule FAIL_case{
@@ -336,6 +356,11 @@ package fail_label{
     commands{del_edge e; add_edge G -[FAIL_csubj]-> D}
   }
 
+  rule FAIL_csubj_pass{
+    pattern{e: G -[csubj:pass]-> D}
+    commands{del_edge e; add_edge G -[FAIL_csubj:pass]-> D}
+  }
+
   rule FAIL_iobj{
     pattern{e: G -[iobj]-> D}
     commands{del_edge e; add_edge G -[FAIL_iobj]-> D}
@@ -356,6 +381,11 @@ package fail_label{
     commands{del_edge e; add_edge G -[FAIL_nsubj]-> D}
   }
 
+  rule FAIL_nsubj_pass{
+    pattern{e: G -[nsubj:pass]-> D}
+    commands{del_edge e; add_edge G -[FAIL_nsubj:pass]-> D}
+  }
+
   rule FAIL_nummod{
     pattern{e: G -[nummod]-> D}
     commands{del_edge e; add_edge G -[FAIL_nummod]-> D}
@@ -366,9 +396,29 @@ package fail_label{
     commands{del_edge e; add_edge G -[FAIL_obj]-> D}
   }
 
+  rule FAIL_obj_agent{
+    pattern{e: G -[obj]-> D}
+    commands{del_edge e; add_edge G -[FAIL_obj_agent]-> D}
+  }
+
   rule FAIL_obl{
     pattern{e: G -[obl]-> D}
     commands{del_edge e; add_edge G -[FAIL_obl]-> D}
+  }
+
+  rule FAIL_obl_mod{
+    pattern{e: G -[obl:mod]-> D}
+    commands{del_edge e; add_edge G -[FAIL_obl:mod]-> D}
+  }
+
+  rule FAIL_obl_arg{
+    pattern{e: G -[obl:arg]-> D}
+    commands{del_edge e; add_edge G -[FAIL_obl:arg]-> D}
+  }
+
+  rule FAIL_obl_agent{
+    pattern{e: G -[obl]-> D}
+    commands{del_edge e; add_edge G -[FAIL_obl_agent]-> D}
   }
 
   rule FAIL_xcomp{
