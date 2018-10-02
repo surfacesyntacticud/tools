@@ -2,7 +2,7 @@
 
 These files are produced automatically with rules (see [README](README.md))
 
-| Corpus | Files | # of relations | # of words | Ratio |
+| Corpus | Files | # of FAIL | # of words | Ratio |
 |--------|-------|----------------|------------|-------|
 | `SUD_Afrikaans-AfriBooms` |  [`af_afribooms-sud-dev.conllu`](http://grew.fr/download/sud-treebanks-v2.2/SUD_Afrikaans-AfriBooms/af_afribooms-sud-dev.conllu) [`af_afribooms-sud-test.conllu`](http://grew.fr/download/sud-treebanks-v2.2/SUD_Afrikaans-AfriBooms/af_afribooms-sud-test.conllu) [`af_afribooms-sud-train.conllu`](http://grew.fr/download/sud-treebanks-v2.2/SUD_Afrikaans-AfriBooms/af_afribooms-sud-train.conllu) |        0 |    49276 | 0% |
 | `SUD_Amharic-ATT` |  [`am_att-sud-test.conllu`](http://grew.fr/download/sud-treebanks-v2.2/SUD_Amharic-ATT/am_att-sud-test.conllu) |        5 |    10010 | .04995% |
