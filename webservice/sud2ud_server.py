@@ -7,7 +7,7 @@ from BaseHTTPServer import BaseHTTPRequestHandler
 
 dir = "/home/guillaum/webservice/"
 grew = "/home/guillaum/.opam/last/bin/grew"
-grs = "/home/guillaum/webservice/SUD/SUD_to_UD.grs"
+grs = "/home/guillaum/webservice/SUD/grs/SUD_to_UD.grs"
 
 def uniqid():
     from time import time
