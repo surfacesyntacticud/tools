@@ -45,7 +45,7 @@ package head_reverse {
       shift_out P =[mark]=> AUX;
       shift_out P =[comp]=> AUX;
       shift_out P =[aux]=> AUX;
-      shift_out P =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
+      shift_out P =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root|dislocated]=> AUX;
     }
   }
 
@@ -57,7 +57,7 @@ package head_reverse {
       shift_in P ==> AUX;
       shift_out P =[aux|mark]=> AUX;
       shift_out P =[comp]=> AUX;
-      shift_out P =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
+      shift_out P =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root|dislocated]=> AUX;
     }
   }
 
@@ -69,7 +69,7 @@ package head_reverse {
       shift_in P ==> AUX;
       shift_out P =[aux|mark]=> AUX;
       shift_out P =[obj:agent|obl:agent]=> AUX;
-      shift_out P =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
+      shift_out P =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root|dislocated]=> AUX;
     }
   }
 
@@ -82,7 +82,7 @@ package head_reverse {
       add_edge AUX -[comp:cop]-> P;
       shift_in P ==> AUX;
       shift_out P =[aux|mark]=> AUX;
-      shift_out P =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root]=> AUX;
+      shift_out P =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root|dislocated]=> AUX;
     }
   }
 
