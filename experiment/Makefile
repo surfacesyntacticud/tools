@@ -56,3 +56,6 @@ clean:
 .conll.svg:
 	dep2pict $< $@
 
+install:
+	cp -f _sud_diff/* /users/guillaum/gitlab/grew/grew_doc/static/_sud_diff/
+	cp -f _ud_diff/* /users/guillaum/gitlab/grew/grew_doc/static/_ud_diff/
