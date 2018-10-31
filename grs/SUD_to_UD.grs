@@ -301,7 +301,7 @@ package comp {
   }
 
   rule xcomp {
-    pattern { e:P -[comp:rais]-> A }
+    pattern { e:P -[comp:pred]-> A; P [upos <> "AUX"|"PART"] }
     commands { del_edge e; add_edge P -[xcomp]-> A }
   }
 
@@ -457,7 +457,7 @@ package reverse_aux_cop {
   }
 
   rule cop {
-    pattern { e:V -[comp:cop]-> C }
+    pattern { e:V -[comp:pred]-> C }
     commands {
       del_edge e;
       shift_in V ==> C;
