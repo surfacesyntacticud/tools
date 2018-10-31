@@ -14,6 +14,14 @@ gsd_sud:
 gui:
 	grew gui -grs grs/UD_to_SUD.grs -i UD_French-GSD/fr_gsd-ud-dev.conllu
 
+dc:
+	grew transform -grs grs/UD_to_SUD.grs -i UD_French-GSD/fr_gsd-ud-dev.conllu -o _fr_gsd-ud-dev.sud.conllu
+	grew transform -grs grs/SUD_to_UD.grs -i _fr_gsd-ud-dev.sud.conllu -o _fr_gsd-ud-dev.dc.conllu
+
+dc2:
+	grew transform -grs grs/UD_to_SUD.grs -i UD_French-GSD/fr_gsd-ud-dev.conllu -o _fr_gsd-ud-dev.sud2.conllu
+	grew transform -grs grs/SUD_to_UD.grs -i _fr_gsd-ud-dev.sud2.conllu -o _fr_gsd-ud-dev.dc2.conllu
+
 clean:
 	rm -rf _*
 
