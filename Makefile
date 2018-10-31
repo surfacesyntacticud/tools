@@ -7,9 +7,12 @@ doc:
 
 
 gsd_sud:
-	grew transform -grs UD_to_SUD.grs -i UD_French-GSD/fr_gsd-ud-dev.conllu -o _fr_gsd-ud-dev.sud.conllu
-	grew transform -grs UD_to_SUD.grs -i UD_French-GSD/fr_gsd-ud-test.conllu -o _fr_gsd-ud-test.sud.conllu
-	grew transform -grs UD_to_SUD.grs -i UD_French-GSD/fr_gsd-ud-train.conllu -o _fr_gsd-ud-train.sud.conllu
+	grew transform -grs grs/UD_to_SUD.grs -i UD_French-GSD/fr_gsd-ud-dev.conllu -o _fr_gsd-ud-dev.sud.conllu
+	grew transform -grs grs/UD_to_SUD.grs -i UD_French-GSD/fr_gsd-ud-test.conllu -o _fr_gsd-ud-test.sud.conllu
+	grew transform -grs grs/UD_to_SUD.grs -i UD_French-GSD/fr_gsd-ud-train.conllu -o _fr_gsd-ud-train.sud.conllu
+
+gui:
+	grew gui -grs grs/UD_to_SUD.grs -i UD_French-GSD/fr_gsd-ud-dev.conllu
 
 clean:
 	rm -rf _*
@@ -20,7 +23,7 @@ clean:
 	dep2pict $< $@
 
 ja:
-	grew transform -grs UD_to_SUD.grs -i ja_ud.conll -o _ja_sud_conv.conll
+	grew transform -grs grs/UD_to_SUD.grs -i ja_ud.conll -o _ja_sud_conv.conll
 
 ja_gui:
 	grew gui -grs UD_to_SUD.grs -i ja_ud.conll
