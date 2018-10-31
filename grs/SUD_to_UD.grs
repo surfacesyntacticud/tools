@@ -458,22 +458,6 @@ package reverse_aux_cop {
 
   rule cop {
     pattern { e:V -[comp:cop]-> C }
-    without { * -[comp]-> V }
-    without {V -[mark]-> CS; C << CS; CS << V}
-    commands {
-      del_edge e;
-      shift_in V ==> C;
-      shift_out V =[^fixed|conj:dicto|reparandum]=> C;
-      add_edge C -[cop]-> V;
-    }
-  }
-
-  rule cop_mark {
-    pattern {
-      e:V -[comp:cop]-> C;
-      V -[mark]-> CS; C << CS; CS << V
-    }
-    without { * -[comp]-> V } % apply cop later
     commands {
       del_edge e;
       shift_in V ==> C;
