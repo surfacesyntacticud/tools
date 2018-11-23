@@ -79,7 +79,7 @@ package head_reverse {
     without { P-[mark]->X; AUX >> X ; X >> P}
     commands {
       del_edge e;
-      add_edge AUX -[comp:cop]-> P;
+      add_edge AUX -[comp:pred]-> P;
       shift_in P ==> AUX;
       shift_out P =[aux|mark]=> AUX;
       shift_out P =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root|dislocated]=> AUX;
@@ -96,7 +96,7 @@ package head_reverse {
       add_edge X1-[comp]-> H;
       shift_in H==>X1;
       shift_out H =[aux|aux:pass|aux:caus|cop|mark|case]=> X1;
-      shift_out H =[advcl|cc|csubj|nsubj|punct|root]=> X1;
+      shift_out H =[advcl|cc|csubj|nsubj|root]=> X1;
     }
   }
 
@@ -176,7 +176,7 @@ package relations {
   }
   rule comp_rais {
     pattern { e:H -[xcomp]-> C; }
-    commands { del_edge e; add_edge H -[comp:rais]-> C }
+    commands { del_edge e; add_edge H -[comp:pred]-> C }
   }
   rule dep {
     pattern { e:H -[acl|acl:relcl|amod|nmod|nummod|obl]-> C; }
@@ -205,7 +205,7 @@ package gov_rise{
 
   rule conj_aux_rise{
     pattern{
-      AUX -[comp:aux|comp:caus|comp:cop|comp:pass]-> V;
+      AUX -[comp:aux|comp:caus|comp:pred|comp:pass]-> V;
       e: V -[conj]-> V1; V1[VerbForm];
       AUX.VerbForm = V1.VerbForm
     }

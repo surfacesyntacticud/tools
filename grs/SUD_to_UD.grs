@@ -301,7 +301,7 @@ package comp {
   }
 
   rule xcomp {
-    pattern { e:P -[comp:rais]-> A }
+    pattern { e:P -[comp:pred]-> A; P [upos <> "AUX"|"PART"] }
     commands { del_edge e; add_edge P -[xcomp]-> A }
   }
 
@@ -457,23 +457,7 @@ package reverse_aux_cop {
   }
 
   rule cop {
-    pattern { e:V -[comp:cop]-> C }
-    without { * -[comp]-> V }
-    without {V -[mark]-> CS; C << CS; CS << V}
-    commands {
-      del_edge e;
-      shift_in V ==> C;
-      shift_out V =[^fixed|conj:dicto|reparandum]=> C;
-      add_edge C -[cop]-> V;
-    }
-  }
-
-  rule cop_mark {
-    pattern {
-      e:V -[comp:cop]-> C;
-      V -[mark]-> CS; C << CS; CS << V
-    }
-    without { * -[comp]-> V } % apply cop later
+    pattern { e:V -[comp:pred]-> C }
     commands {
       del_edge e;
       shift_in V ==> C;
