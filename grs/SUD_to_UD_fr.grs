@@ -6,39 +6,30 @@ include "SUD_to_UD.grs"
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 package FR_init {
+% Adverbs with a determiner that have no complement introduced with the preposition "de" are considered as non nominals.
+%Ex: fr-ud-dev_00511 - ...il vivait le plus souvent une sexualité anhédonique...
   rule adv_det{
     pattern{A[cat=ADV,nom]; A -[det]-> D; D[cat=DET,lemma=le,Gender=Masc,Number=Sing]}
     without{P[cat=ADP,lemma=de]; A -[comp:obl]-> P}
     commands{del_feat A.nom}
   }
 
-% All adjectives or verbs that are attributive of nouns are considered as non nominals.
+% Adjectives or verbs that are attributive of nouns are considered as non nominals.
   rule attr_det{
     pattern{
-      N0[cat=NOUN|PRON]; N[cat <> INDET]; N0 -[dep_SUD]-> N;
+      N0[cat=NOUN|PRON]; N0 -[dep_SUD]-> N;
       N[cat=ADJ|VERB,nom]; N -[det]-> *}
     commands{del_feat N.nom}
   }
-  
-% All adjectives or verbs that govern a copula are considered as non nominals.
-  rule cop_det{
-    pattern{P[cat=ADJ|VERB,nom]; * -[comp:cop]-> P}
-    commands{del_feat P.nom}
-  }
 
-  rule unity_num{
+% Numbers that follow a measure unity
+  rule unity_num(lex from "lexicons/measure_unit.lp"){
     pattern{N[cat=NUM,nom]; H[lemma=lex.unity]; H -[dep_SUD]-> N }
     commands{del_feat N.nom}
   }
-#BEGIN lex
-unity
-gramme
-heure
-litre
-mètre
-#END
 
-  rule adv_de_nom{
+% Simple quantity adverbs with a complement introduced with the preposition "de" are considered as nominals.
+  rule adv_de_nom(lex from "lexicons/quant_adv.lp"){
     pattern{
      A[cat=ADV,lemma=lex.adv,!nom];
      A -[comp:obl]-> P; P[cat=ADP,lemma=de];
@@ -48,23 +39,25 @@ mètre
    without{ A[lemma=moins|plus]; P0 -[comp]-> A; P0[lemma=en]}
    commands{ A.nom=y}
  }
-#BEGIN lex
-adv
-assez
-autant
-beaucoup
-combien
-davantage
-moins
-peu
-plus
-près
-suffisamment
-tant
-tellement
-trop
-#END
 
+% Complex uantity adverbs with a complement introduced with the preposition "de" are considered as nominals.
+  rule complex_adv_de_nom{
+    pattern{
+     A[cat=ADV,!nom];
+     A -[comp:obl]-> P; P[cat=ADP,lemma=de];
+     N[cat=NOUN|NUM|SYM]; P -[comp]-> N;
+     A -[expr]-> H;
+     H[cat=ADV];
+     %H[cat=ADV, lemma=lex.head];
+     H -> D; D[lemma=lex.dep];
+   }
+   commands{ A.nom=y}
+ }
+#BEGIN lex
+dep	head
+%-------------
+un	peu
+#END
 }
 
 
@@ -72,7 +65,7 @@ trop
 package FR_comp {
 
   rule oblarg {
-    pattern {e:P -[iobj]-> C; C[cat=NOUN|PROPN] }
+    pattern {e:P -[iobj]-> C; C[cat=NOUN|NUM|PROPN] }
     commands { del_edge e; add_edge P -[obl:arg]-> C }
   }
 
@@ -83,29 +76,62 @@ package FR_comp {
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 package FR_mod {
 
+% Some French words are translated to adverbs.
   rule advmod {
     pattern {e:N -[mod]-> M; M[cat=PRON|SYM, lemma="où"|"y"|"+"] }
     commands { del_edge e; add_edge N -[advmod]-> M }
   }
 
+% Adjectival, verbal or nominal expression are hightlighted at the beginning of a clause.
+  rule left_appos(lex from "lexicons/nouns_adv.lp") {
+    pattern{
+      APP[cat=ADJ|NOUN|PRON|VERB];
+      V -[nsubj]-> SUBJ; APP << SUBJ; SUBJ << V;
+      e: V -[mod]-> APP}
+    without{ APP -[case]-> *}
+    without{APP[cat=NOUN]; APP -[det|nummod]-> *}
+    without{APP[PronType=Rel|Int]}
+    without{APP[cat=NOUN,lemma= lex.noun]}
+    without{% Modifiers in the form NOUN + PREP + NOUN.
+            % Ex: fr-ud-dev_00322 - Couche par couche, Morin arrange ...
+      APP[cat=NOUN];
+      P[cat=ADP,lemma="après"|par|sur];
+      N[cat=NOUN];
+      N -[case]-> P;
+      APP -[dep_SUD]-> N;
+      N.lemma=APP.lemma
+    }       
+    commands{ del_edge e; add_edge V -[advcl]-> APP}
+  }
+
+% Nouns behaving as circumstancial complements as heads of modifiers in the form of adverbial clauses.
+  rule conj_adv-nouns(lex from "lexicons/nouns_adv.lp") {
+    pattern{
+      N[cat=NOUN,lemma=lex.noun];
+      e: N -[case]-> C; C[cat=SCONJ];
+      * -[mod]-> N
+    }
+    commands{del_edge e; add_edge N -[mark]-> C}
+  }
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 package FR_dep_SUD {
+% The head of a relative clause is a not finite verb nor the governor of a finite copula.
   rule aclrel{
     pattern{
-      N[nom]; e: N -[dep_SUD]-> D;
-      D -> PRO; N << PRO; PRO[PronType=Rel]
+      H[nom]; e: H -[dep_SUD]-> D;
+      D -> PRO; H << PRO; PRO[PronType=Rel]
     }
-    without{D[cat=Verb,PronType=Fin]}
-    commands{del_edge e; add_edge N -[acl:relcl]-> D}
+    without{D[cat=AUX|VERB,VerbForm=Fin]}
+    commands{del_edge e; add_edge H -[acl:relcl]-> D}
   }
   
-  rule amod{
-    pattern{H[cat=ADJ]; D[cat=ADJ]; e: H -[dep_SUD]-> D}
-    without{D -[case|mark]-> *}
-    commands{ del_edge e; add_edge H -[amod]-> D}
-  }
+  % rule amod{
+  %   pattern{H[cat=ADJ]; D[cat=ADJ]; e: H -[dep_SUD]-> D}
+  %   without{D -[case|mark]-> *}
+  %   commands{ del_edge e; add_edge H -[amod]-> D}
+  % }
   
   rule amod_de{
     pattern{
@@ -117,23 +143,25 @@ package FR_dep_SUD {
 
   rule nmod_de{
     pattern{
-      H[cat <> INDET,nom]; D[cat=ADJ]; e: H -[dep_SUD]-> D;
+      H[nom]; D[cat=ADJ]; e: H -[dep_SUD]-> D;
       D -[case]-> DE; DE[cat=ADP,lemma=de]
     }
     without{H[lemma=chose|rien]}
     commands{ del_edge e; add_edge H -[nmod]-> D}
   }
-  
+
+% D is a numeral modifier of a nominal H that precedes it
   rule nmod_num1 {
-    pattern { e:H -[dep_SUD]-> D; H[cat <> INDET, nom=y]; D[cat=NUM]; H << D }
+    pattern { e:H -[dep_SUD]-> D; H[nom=y]; D[cat=NUM]; H << D }
     without{H[lemma=heure]}
+    without{D -> PRO; H << PRO; PRO[PronType=Rel]}
     commands { del_edge e; add_edge H -[nmod]-> D }
   }
  
   rule nmod_num2 {
     pattern {
-      e:H -[dep_SUD]-> D; H[cat <> INDET, nom=y]; H -[case]-> P;
-      D[cat=NUM]; D << P; P << H }
+      e:H -[dep_SUD]-> D; H[nom=y]; D[cat=NUM];
+      H -[case]-> P; D << P; P << H }
     commands { del_edge e; add_edge H -[nmod]-> D }
   }
 
@@ -152,7 +180,7 @@ package FR_dep_SUD {
   }
 
   rule obl_num{
-    pattern { e:H -[dep_SUD]-> D; H[cat=ADJ|ADV|VERB]; D[cat=NUM]; H << D ; D -[case]-> *}
+    pattern { e:H -[dep_SUD]-> D; H[cat=ADJ|ADV|VERB,!nom]; D[cat=NUM]; H << D ; D -[case]-> *}
     commands { del_edge e; add_edge H -[obl]-> D }
   }
 
@@ -169,15 +197,16 @@ strat FR_main {
     Onf (FR_init),
     Onf (unchained_relations),
     Onf (reverse_case_mark),
+    Onf (reverse_aux),
     Onf (subj),
-    Onf (det_nummod),
+    Onf (det),
     Onf (comp),
     Onf(FR_comp),
     Onf (FR_mod),
     Onf (mod),
     Onf (FR_dep_SUD),
     Onf (dep_SUD),
-    Onf (reverse_aux_cop),
+    Onf (reverse_cop),
     Onf (final),
   )
 }

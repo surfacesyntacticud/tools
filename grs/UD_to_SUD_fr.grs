@@ -4,7 +4,21 @@ include "specif_expr.grs"
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 include "UD_to_SUD.grs"
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+package FR_head_reverse {
+% Impersonal construction with an adjective as a predicative complement and an infinitive introduced with "de" as a direct object.
+%Ex : il est difficile de trouver du travail.
+  rule impers_adj_de_inf{
+    pattern{
+     IL[cat=PRON,lemma=il,Gender=Masc,Number=Sing,Person=3];
+     V[cat=AUX,lemma="être"]; V -[nsubj]-> IL;
+     A[cat=ADJ]; V -[comp:pred]-> A;
+     DE[cat=ADP,lemma=de]; e:A -[ccomp]-> DE;
+     INF[cat=VERB,VerbForm=Inf]; DE -[comp]-> INF}
+   commands{ del_edge e; add_edge V -[comp:obj]-> DE}
+ }
 
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 package FR_relations {
@@ -105,6 +119,7 @@ strat FR_main{
   Seq (
 %    Onf (minimize_conj_dep),
     Onf (head_reverse),
+    Onf (FR_head_reverse),
     Onf (FR_relations),
     Onf (relations),
     Onf (gov_rise),

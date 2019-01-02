@@ -34,111 +34,109 @@ package minimize_conj_dep{
 % Counterex: il vient quel que soit le temps (cop < mark)
 package head_reverse {
   rule aux {
-    pattern {e:P -[aux]-> AUX}
-    without { P-[mark|aux]->X; AUX << X ; X << P} % Il a semblé que Marie arrivait.
-    without { P-[mark|aux]->X; AUX >> X ; X >> P}
-    without {P -[aux:pass|aux:caus|cop]-> AUX2}
+    pattern {e:H -[aux]-> AUX}
+ %   without { H-[mark|aux]->X; AUX << X ; X << H} 
+ %   without { H-[mark|aux]->X; AUX >> X ; X >> H}
+    without {H -[aux:pass|aux:caus|cop]-> AUX2}
     commands {
       del_edge e;
-      add_edge AUX -[comp:aux]-> P;
-      shift_in P ==> AUX;
-      shift_out P =[mark]=> AUX;
-      shift_out P =[comp]=> AUX;
-      shift_out P =[aux]=> AUX;
-      shift_out P =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root|dislocated]=> AUX;
+      add_edge AUX -[comp:aux]-> H;
+      shift_in H ==> AUX;
+      shift_out H =[mark]=> AUX;
+      shift_out H =[advcl|advmod|cc|csubj|csubj:pass|dislocated|nsubj|nsubj:pass|obl:mod|punct|root]=> AUX;
     }
   }
 
   rule auxpass {
-    pattern {e:P -[aux:pass]-> AUX}
+    pattern {e:H -[aux:pass]-> AUX}
     commands {
       del_edge e;
-      add_edge AUX -[comp:pass]-> P;
-      shift_in P ==> AUX;
-      shift_out P =[aux|mark]=> AUX;
-      shift_out P =[comp]=> AUX;
-      shift_out P =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root|dislocated]=> AUX;
+      add_edge AUX -[comp:pass]-> H;
+      shift_in H ==> AUX;
+      shift_out H =[aux|mark]=> AUX;
+      shift_out H =[advcl|advmod|cc|csubj|csubj:pass|dislocated|nsubj|nsubj:pass|obl:mod|punct|root]=> AUX;
     }
   }
 
   rule auxcaus {
-    pattern {e:P -[aux:caus]-> AUX}
+    pattern {e:H -[aux:caus]-> AUX}
     commands {
       del_edge e;
-      add_edge AUX -[comp:caus]-> P;
-      shift_in P ==> AUX;
-      shift_out P =[aux|mark]=> AUX;
-      shift_out P =[obj:agent|obl:agent]=> AUX;
-      shift_out P =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root|dislocated]=> AUX;
+      add_edge AUX -[comp:caus]-> H;
+      shift_in H ==> AUX;
+      shift_out H =[aux|mark]=> AUX;
+      shift_out H =[obj:agent|obl:agent]=> AUX;
+      shift_out H =[advcl|advmod|cc|csubj|csubj:pass|dislocated|nsubj|nsubj:pass|obl:mod|punct|root]=> AUX;
     }
   }
 
   rule cop {
-    pattern {e:P -[cop]-> AUX}
-    without { P-[mark]->X; AUX << X ; X << P}
-    without { P-[mark]->X; AUX >> X ; X >> P}
+    pattern {e:H -[cop]-> AUX}
+    without { H-[mark]->X; AUX << X ; X << H}
+    without { H-[mark]->X; AUX >> X ; X >> H}
     commands {
       del_edge e;
-      add_edge AUX -[comp:pred]-> P;
-      shift_in P ==> AUX;
-      shift_out P =[aux|mark]=> AUX;
-      shift_out P =[advmod|obl:mod|advcl|nsubj|nsubj:pass|csubj|csubj:pass|cc|punct|root|dislocated]=> AUX;
+      add_edge AUX -[comp:pred]-> H;
+      shift_in H ==> AUX;
+      shift_out H =[aux|mark]=> AUX;
+      shift_out H =[advcl|advmod|cc|csubj|csubj:pass|dislocated|nsubj|nsubj:pass|obl:mod|punct|root]=> AUX;
     }
   }
 
   rule case{
     pattern { e:H-[case]->X1}
-    without { H-[aux|aux:pass|aux:caus|cop|mark|case]->X2; X1 << X2 ; X2 << H}
-    without { H-[aux|aux:pass|aux:caus|cop|mark|case]->X2; X1 >> X2 ; X2 >> H}
+    without { H-[case|cop|mark]->X2; X1 << X2 ; X2 << H}
+    without { H-[case|cop|mark]->X2; X1 >> X2 ; X2 >> H}
     without {  H -[punct]-> P; X1 << P; P << H}% no punctuation mark that has not to be shifted
     commands {
       del_edge e;
       add_edge X1-[comp]-> H;
       shift_in H==>X1;
-      shift_out H =[aux|aux:pass|aux:caus|cop|mark|case]=> X1;
-      shift_out H =[advcl|cc|csubj|nsubj|root]=> X1;
+      shift_out H =[aux|case|cop|mark]=> X1;
+      %shift_out H =[obl:mod]=> X1;
+      shift_out H =[advcl|cc|csubj|nsubj|obl:mod|punct|root]=> X1;
     }
   }
 
   rule case_punct{
-    pattern { e:H-[case]->X1;  H -[punct]-> P; X1 << P; P << H}
-    without { H-[aux|aux:pass|aux:caus|cop|mark|case]->X2; X1 << X2 ; X2 << H}
-    without { H-[aux|aux:pass|aux:caus|cop|mark|case]->X2; X1 >> X2 ; X2 >> H}
+    pattern { e:H-[case]->X1;  H -[punct]-> P; X1 << P; P << H} % there is a punctuation mark that has not to be shifted
+    without { H-[case|cop|mark]->X2; X1 << X2 ; X2 << H}
+    without { H-[case|cop|mark]->X2; X1 >> X2 ; X2 >> H}
     commands {
       del_edge e;
       add_edge X1-[comp]-> H;
       shift_in H==>X1;
-      shift_out H =[aux|aux:pass|aux:caus|cop|mark|case]=> X1;
-      shift_out H =[advcl|cc|csubj|nsubj|punct|root]=> X1;
+      shift_out H =[aux|cop|mark|case]=> X1;
+      shift_out H =[advcl|cc|csubj|nsubj|obl:mod|punct|root]=> X1;
     }
   }
 
   rule mark{
-    pattern { e:H-[mark]->X1}
-    without { H-[aux|aux:pass|aux:caus|cop|mark|case]->X2; X1 << X2 ; X2 << H}
-    without { H-[aux|aux:pass|aux:caus|cop|mark|case]->X2; X1 >> X2 ; X2 >> H}
+    pattern {e:H-[mark]->X1}
+    without { H-[aux|aux:pass|aux:caus|case|cop|mark]->X2; X1 << X2 ; X2 << H}
+    without { H-[aux|aux:pass|aux:caus|case|cop|mark]->X2; X1 >> X2 ; X2 >> H}
     without {  H -[punct]-> P; X1 << P; P << H}% no punctuation mark that has not to be shifted
     without{ * -[cop]-> H} % Ex : quel que soit ...
     commands {
       del_edge e;
       add_edge X1-[comp]-> H;
       shift_in H==>X1;
-      shift_out H =[aux|aux:pass|aux:caus|cop|mark|case]=> X1;
-      shift_out H =[cc|punct|root]=> X1;
+      shift_out H =[mark]=> X1; % COP is excluded because of constructions such as "quel que soit"?
+      shift_out H =[cc|ccomp|punct|root]=> X1;
     }
   }
-
+  
   rule mark_punct{
-    pattern { e:H-[mark]->X1; H -[punct]-> P; X1 << P; P << H} % punctuation marks preceding the old head are not concerned with the head change; when there are two marks in this case, only one does not change its governor (UD_French-GSD@dev: fr-ud-dev_01506)
-    without { H-[aux|aux:pass|aux:caus|cop|mark|case]->X2; X1 << X2 ; X2 << H}
-    without { H-[aux|aux:pass|aux:caus|cop|mark|case]->X2; X1 >> X2 ; X2 >> H}
+    pattern {e:H-[mark]->X1; H -[punct]-> P; X1 << P; P << H} % punctuation marks preceding the old head are not concerned with the head change; when there are two marks in this case, only one does not change its governor (UD_French-GSD@dev: fr-ud-dev_01506)
+    without { H-[aux|aux:pass|aux:caus|case|cop|mark]->X2; X1 << X2 ; X2 << H}
+    without { H-[aux|aux:pass|aux:caus|case|cop|mark]->X2; X1 >> X2 ; X2 >> H}
     without{ * -[cop]-> H} % Ex : quel que soit ...
     commands {
       del_edge e;
       add_edge X1-[comp]-> H;
       shift_in H==>X1;
-      shift_out H =[aux|aux:pass|aux:caus|cop|mark|case]=> X1;
-      shift_out H =[cc|punct|root]=> X1;
+      shift_out H =[mark]=> X1;
+      shift_out H =[cc|ccomp|punct|root]=> X1;
     }
   }
 
@@ -147,53 +145,68 @@ package head_reverse {
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 package relations {
   rule comp_agent {
-    pattern { e:H -[obl:agent]-> C; }
-    commands { del_edge e; add_edge H -[comp:agent]-> C }
+    pattern { e:H -[obl:agent]-> D; }
+    commands { del_edge e; add_edge H -[comp:agent]-> D }
   }
   rule comp_cleft {
-    pattern { e:H -[advcl:cleft]-> C; }
-    commands { del_edge e; add_edge H -[comp:cleft]-> C }
+    pattern { e:H -[advcl:cleft]-> D; }
+    commands { del_edge e; add_edge H -[comp:cleft]-> D }
   }
   rule comp_lvc {
-    pattern { e:H -[obj:lvc]-> C; }
-    commands { del_edge e; add_edge H -[comp:lvc]-> C }
+    pattern { e:H -[obj:lvc]-> D; }
+    commands { del_edge e; add_edge H -[comp:lvc]-> D }
   }
   rule comp_obj {
-    pattern { e:H -[obj|obj:agent|ccomp]-> C; }
-    commands { del_edge e; add_edge H -[comp:obj]-> C }
+    pattern { e:H -[obj|obj:agent|ccomp]-> D; }
+    commands { del_edge e; add_edge H -[comp:obj]-> D }
   }
   rule comp_obj_caus {
-    pattern { e:H -[obj:agent]-> C; A -[comp:caus]-> H}
-    commands { del_edge e; add_edge A -[comp:obj]-> C }
+    pattern { e:H -[obj:agent]-> D; A -[comp:caus]-> H}
+    commands { del_edge e; add_edge A -[comp:obj]-> D }
   }
   rule comp_obl {
-    pattern { e:H -[obl:arg|iobj]-> C; }
-    commands { del_edge e; add_edge H -[comp:obl]-> C }
+    pattern { e:H -[obl:arg|iobj]-> D; }
+    commands { del_edge e; add_edge H -[comp:obl]-> D }
   }
   rule comp_obl_ccomp {
-    pattern { e:H -[ccomp]-> C; C[cat = ADP]; }
-    commands { del_edge e; add_edge H -[comp:obl]-> C }
+    pattern { e:H -[ccomp]-> D; D[cat = ADP]; }
+    commands { del_edge e; add_edge H -[comp:obl]-> D }
   }
   rule comp_rais {
-    pattern { e:H -[xcomp]-> C; }
-    commands { del_edge e; add_edge H -[comp:pred]-> C }
+    pattern { e:H -[xcomp]-> D; }
+    commands { del_edge e; add_edge H -[comp:pred]-> D }
   }
   rule dep {
-    pattern { e:H -[acl|acl:relcl|amod|nmod|nummod|obl]-> C; }
-    commands { del_edge e; add_edge H -[dep_SUD]-> C }
+    pattern { e:H -[acl|acl:relcl|amod|nmod|nummod|obl]-> D}
+    without{H[cat=ADJ]; H -[amod|nummod]-> D}
+    commands { del_edge e; add_edge H -[dep_SUD]-> D }
+  }
+% Adjectives with determiners are considered as nominals.
+  rule dep_adj {
+    pattern { H[cat=ADJ]; H -[det]-> *; e:H -[acl|acl:relcl|amod|nmod|nummod|obl]-> D}
+    commands { del_edge e; add_edge H -[dep_SUD]-> D }
   }
   rule dep_advmod {
-    pattern { H[cat=NOUN|NUM|PRON|PROPN|SYM|X];  e:H -[advmod]-> C}
-    commands { del_edge e; add_edge H -[dep_SUD]-> C }
+    pattern { H[cat=NOUN|NUM|PRON|PROPN|SYM|X];  e:H -[advmod]-> D}
+    commands { del_edge e; add_edge H -[dep_SUD]-> D }
   }
   rule mod {
-    pattern { e:H -[advmod|advmod:neg|advcl|obl:mod]-> C; }
+    pattern { e:H -[advcl|obl:mod]-> D; }
+    commands { del_edge e; add_edge H -[mod]-> D }
+  }
+  rule mod_adj {
+    pattern {H[cat=ADJ]; e:H -[amod|nummod]-> D }
+    without{ H -[det]-> *}
+    commands { del_edge e; add_edge H -[mod]-> D }
+  }
+  rule mod_advmod {
+    pattern { e:H -[advmod|advmod:neg]-> D; }
     without{ H[cat=NOUN|NUM|PRON|PROPN|SYM|X]}
-    commands { del_edge e; add_edge H -[mod]-> C }
+    commands { del_edge e; add_edge H -[mod]-> D }
   }
   rule subj {
-    pattern { e:H -[nsubj|nsubj:pass|csubj|csubj:pass]-> C}
-    commands { del_edge e; add_edge H -[subj]-> C }
+    pattern { e:H -[nsubj|nsubj:pass|csubj|csubj:pass]-> D}
+    commands { del_edge e; add_edge H -[subj]-> D }
   }
 
 }
@@ -203,15 +216,17 @@ package relations {
 % In head changes, some dependents did not rise wrongly and it is necessary to correct it.
 package gov_rise{
 
+% In a coordination, the head V1 of the second conjunct is a verb and the head V1 of the first conjunct depends on an auxiliary AUX, which has the same form as V2. The relation CONJ must raise from V1 to AUX.
   rule conj_aux_rise{
     pattern{
-      AUX -[comp:aux|comp:caus|comp:pred|comp:pass]-> V;
-      e: V -[conj]-> V1; V1[VerbForm];
-      AUX.VerbForm = V1.VerbForm
+      AUX -[comp:aux|comp:caus|comp:pred|comp:pass]-> V1;
+      e: V1 -[conj]-> V2; V2[VerbForm];
+      AUX.VerbForm = V2.VerbForm
     }
-    commands{del_edge e; add_edge AUX -[conj]-> V1}
+    commands{del_edge e; add_edge AUX -[conj]-> V2}
   }
 
+% In a coordination, the head PREP2 of the second conjunct is a preposition and the head C of the first conjunct depends on another preposition PREP1. The relation CONJ must raise from C to PREP1.
   rule conj_case_rise{
     pattern{
       PREP1[cat=ADP]; PREP1 -[comp]-> C;
@@ -220,6 +235,7 @@ package gov_rise{
     commands{del_edge e; add_edge PREP1 -[conj]-> PREP2}
   }
 
+% In a coordination, the head CS2 of the second conjunct is a subordination conjunction and the head C of the first conjunct depends on another subordination conjunction CS1. The relation CONJ must raise from C to CS1.
   rule conj_mark_rise{
     pattern{
       CS1[cat=SCONJ]; CS1 -[comp]-> C;
@@ -228,25 +244,26 @@ package gov_rise{
     commands{del_edge e; add_edge CS1 -[conj]-> CS2}
   }
 
-
-  rule raise_dep{
+% The governor G of a dependent D is on its left and D has a dependent D1 on the left of G in a relation DEP_SUD. The relation must raise from D to G.
+  rule left_raise_dep{
     pattern {
-      G -> D; D >> G; MOD[cat=ADV]; MOD << G;
-      mod_rel:D -[dep_SUD]-> MOD
+      G -> D; D >> G; D1 << G;
+      mod_rel:D -[dep_SUD]-> D1; D1[cat=ADP|ADV|SCONJ]
     }
     commands {
       del_edge mod_rel;
-      add_edge G -[dep_SUD]-> MOD
+      add_edge G -[dep_SUD]-> D1
     }
   }
 
-% Modifiers preceding their governor with non projectivity rise to the governor of their governor.
-  rule raise_mod{
+% The governor G of a dependent D is on its left and D has a modifier MOD on the left of G. The relation of modification must raise from D to G.
+  rule left_raise_mod{
     pattern {
       G -> D; D >> G; MOD << G;
-      mod_rel:D -[mod]-> MOD
+      mod_rel:D -[mod]-> MOD; D1[cat=ADP|ADV|NOUN|SCONJ]
     }
     without { MOD [PronType=Rel]}
+    without{ MOD -[comp]-> PRO; PRO [PronType=Rel]}
     commands {
       del_edge mod_rel;
       add_edge G -[mod]-> MOD
@@ -397,7 +414,7 @@ package fail_label{
   }
 
   rule FAIL_obj_agent{
-    pattern{e: G -[obj]-> D}
+    pattern{e: G -[obj:agent]-> D}
     commands{del_edge e; add_edge G -[FAIL_obj_agent]-> D}
   }
 
@@ -417,7 +434,7 @@ package fail_label{
   }
 
   rule FAIL_obl_agent{
-    pattern{e: G -[obl]-> D}
+    pattern{e: G -[obl:agent]-> D}
     commands{del_edge e; add_edge G -[FAIL_obl_agent]-> D}
   }
 
