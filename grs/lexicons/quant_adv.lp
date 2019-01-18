@@ -1,0 +1,15 @@
+adv
+assez
+autant
+beaucoup
+bien
+combien
+davantage
+moins
+peu
+plus
+près
+suffisamment
+tant
+tellement
+trop
