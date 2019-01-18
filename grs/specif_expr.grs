@@ -25,6 +25,7 @@ package specif_expr_init{
   rule move_dep{
     pattern{ H -[expr]-> W; e: W -[^fixed]-> D}
     without{D[_MISC_INMWE=Yes]}
+    without{D[_MISC_INTITLE=Yes]}
     commands{ del_edge e; add_edge e: H -> D}
   }
 
@@ -54,3 +55,6 @@ strat main_specif_expr{
     Onf(specif_expr_close)
   )
 }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+strat mwe{ Onf(specif_expr_init)}

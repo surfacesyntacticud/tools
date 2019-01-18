@@ -21,7 +21,9 @@ package FR_head_reverse {
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Relations in SUD that require the use of a lexicon to be determined from UD relations.
 package FR_relations {
+% Relation between an adjective and an argument in the form of a finite clause, which is an oblique complement introduced with "que". By default, CCOMP relations are transformed into COMP:OBJ relations. In this case, they are transformed into COMP:OBL relations.
   rule adj_compobl_ccomp (lex from "lexicons/adj_with_deobj_fin-verb.lp") {
     pattern {
       H[cat=ADJ,lemma=lex.adj]; e:H -[ccomp]-> C;
@@ -29,6 +31,7 @@ package FR_relations {
     commands { del_edge e; add_edge H -[comp:obl]-> C }
   }
   
+% Relation between a verb and an argument in the form of a finite clause, which is an oblique complement introduced with "que". By default, CCOMP relations are transformed into COMP:OBJ relations. In this case, they are transformed into COMP:OBL relations.
   rule verb_compobl_ccomp (lex from "lexicons/verb_with_deobj_fin-verb.lp") {
     pattern {
       H[cat=VERB,lemma=lex.verb]; e:H -[ccomp]-> C;
@@ -36,6 +39,7 @@ package FR_relations {
     commands { del_edge e; add_edge H -[comp:obl]-> C }
   }
 
+% Relation between a verb with affix and an argument in the form of a finite clause, which is an oblique complement introduced with "que". By default, CCOMP relations are transformed into COMP:OBJ relations. In this case, they are transformed into COMP:OBL relations.
   rule verb_aff_compobl_ccomp (lex from "lexicons/aff_verb_with_deobj_fin-verb.lp") {
     pattern {
       H[cat=VERB,lemma=lex.verb]; e:H -[ccomp]-> C;
@@ -44,24 +48,8 @@ package FR_relations {
     commands { del_edge e; add_edge H -[comp:obl]-> C }
   }
   
-  rule det_nummod {
-    pattern { e:H -[nummod]-> N; N << H}
-    without { H -[det]-> *}
-    without{ * -[det]-> H}
-    without { H[cat=ADJ]; * -[amod|mod]-> H}
-    commands { del_edge e; add_edge H -[det]-> N }
-  }
-
 }
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-package correction{
-  rule mod_adv{
-    pattern{ ADV[cat=ADV]; e: H -[dep_SUD]-> ADV; ADV << H}
-    commands{ del_edge e; add_edge H -[mod]-> ADV}
-  }
-}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 package amalgam {
@@ -120,11 +108,10 @@ strat FR_main{
 %    Onf (minimize_conj_dep),
     Onf (head_reverse),
     Onf (FR_head_reverse),
+    Onf (gov_rise),
     Onf (FR_relations),
     Onf (relations),
-    Onf (gov_rise),
     Onf (chained_relations),
-    Onf (correction),
     Onf (fail_label)
   )
 }

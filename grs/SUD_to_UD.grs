@@ -5,7 +5,7 @@ package nom_init {
 % All words with NOUN, PRON, PROPN, SYM, X as POS are nominals.
   rule nom_noun {
     pattern {N[cat=NOUN|PRON|PROPN|SYM|X,!nom]}
-    without {N[_MISC_MWEPOS <> NOUN]}
+    without{N[cat=SYM]; M -[dep_SUD]-> N; N << M} % Ex: + 3,6 %
     commands {N.nom=y}
   }
 
@@ -17,19 +17,18 @@ package nom_init {
 % All words with a determiner are nominals.
   rule nom_det {
     pattern {N[cat<>NOUN|PRON|PROPN|SYM|X,!nom]; N -[det]-> *}
-    without{ N[_MISC_MWEPOS <> NOUN]}
     commands {N.nom=y}
   }
 
 % All numerals following their gouvernor are nominals.
-  rule nom_num1 {
+  rule nom_num_after {
     pattern {N[cat=NUM,!nom]; H -> N; H << N}
     commands {N.nom=y}
   }
 
-% All numerals preceding their governor with a specific relation are nominals.
-  rule nom_num2 {
-    pattern {N[cat=NUM,!nom]; H -[comp|comp:obj|comp:obl|mod|obl:mod|subj]-> N; H >> N}
+% All numerals preceding their governor with a relation that is normally used for nominals are nominals.
+  rule nom_num_before {
+    pattern {N[cat=NUM,!nom]; H -[comp|comp:obj|comp:obl|mod|subj]-> N; H >> N}
     commands {N.nom=y}
   }
 
@@ -39,15 +38,15 @@ package nom_init {
     commands {P.nom=y}
   }
 
-% When the specific expression is a nominal, the node representing this expression is marked as a nominal;
-  rule nom_specif_expr1{
+% When a MWE is a nominal, the node representing this expression is marked as a nominal.
+  rule nom_mwe{
     pattern{H -[expr]-> N; H[!nom]; N[_MISC_MWEPOS=NOUN|PRON|PROPN|SYM|X]}
     commands{H.nom=y}
   }
 
-% When the head of a specific expression is a nominal, the node representing this expression is marked as a nominal;
-  rule nom_specif_expr2{
-    pattern{H -[expr]-> N; H[!nom]; N[nom=y]}
+% A node representing a title is marked as a nominal.
+  rule nom_title{
+    pattern{H -[expr]-> N; H[!nom]; N[_MISC_TITLE=Yes]}
     commands{H.nom=y}
   }
 }
@@ -111,7 +110,7 @@ package unchained_relations {
 package reverse_case_mark {
 % A preposition or a particle governs a nominal.
   rule case_nom {
-    pattern { e:H -[comp]-> D; H [cat=ADP|PART]; D[nom=y] }
+    pattern { e:H -[comp]-> D; H [cat=ADP|PART|SYM]; D[nom=y] }
     without { D -[comp]-> * }
     commands {
       del_edge e;
@@ -206,7 +205,7 @@ package reverse_aux {
     commands {
       del_edge e;
       shift_in V ==> C;
-      shift_out V =[^fixed|conj:dicto|reparandum]=> C;
+      shift_out V =[^fixed|conj:dicto|orphan|reparandum]=> C;
       add_edge C -[aux]-> V;
     }
   }
@@ -218,7 +217,7 @@ package reverse_aux {
     commands {
       del_edge e;
       shift_in V ==> C;
-      shift_out V =[^fixed|conj:dicto|reparandum]=> C;
+      shift_out V =[^fixed|conj:dicto|orphan|reparandum]=> C;
       add_edge C -[aux:pass]-> V;
     }
   }
@@ -231,7 +230,7 @@ package reverse_aux {
     commands {
       del_edge e;
       shift_in V ==> C;
-      shift_out V =[^fixed|conj:dicto|reparandum]=> C;
+      shift_out V =[^fixed|conj:dicto|orphan|reparandum]=> C;
       add_edge C -[aux:caus]-> V;
     }
   }
@@ -244,7 +243,7 @@ package reverse_aux {
       del_edge e;
       del_edge obj;
       shift_in V ==> C;
-      shift_out V =[^fixed|conj:dicto|reparandum]=> C;
+      shift_out V =[^fixed|conj:dicto|orphan|reparandum]=> C;
       add_edge C -[aux:caus]-> V;
       add_edge C -[obj:agent]-> O;
     }
@@ -292,7 +291,7 @@ package det{
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Relations for required complements are re-labelled.
+% Relations COMP for required complements are re-labelled.
 package comp {
   rule advclcleft {
     pattern { e:H -[comp:cleft]-> D }
@@ -323,13 +322,6 @@ package comp {
     without { D -[cop]-> C; }
     commands { del_edge e; add_edge H -[obj]-> D }
   }
-
-  % rule obj_adv {
-  %   pattern {e:H -[comp:obj]-> D; D[cat=ADV];  }
-  %   without { D -[cop]-> C; }
-  %   without{D -[mark]-> *}
-  %   commands { del_edge e; add_edge H -[obj]-> D }
-  % }
 
   rule obj_lvc {
     pattern {e:H -[comp:lvc]-> D;  }
@@ -379,15 +371,10 @@ package mod {
   }
 
   rule advmod {
-    pattern { e:H -[mod]-> D; D[cat=ADV|PART, !nom] }
+    pattern { e:H -[mod]-> D; D[cat=ADV|PART|SYM, !nom] }
     without{D -[mark]-> *}
     commands { del_edge e; add_edge H -[advmod]-> D }
   }
-
-  % rule advmod_adj {
-  %   pattern { H[!nom]; e:H -[mod]-> D; D[cat=ADJ]; D -[case]-> * }
-  %   commands { del_edge e; add_edge H -[advmod]-> D }
-  % }
 
   rule amod {
     pattern { H[cat=ADJ]; e:H -[mod]-> D; D[cat=ADJ] }
@@ -414,7 +401,7 @@ package mod {
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Relations DEP_SUD are re-labelled. At this stage are still heads of clauses.
+% Relations DEP_SUD are re-labelled. At this stage, some auxilairies are still heads of clauses.
 % A nominal governs an infinitive or a participle in a DEP_SUD relation.
 package dep_SUD {
   rule acl_non-finite-clause {
@@ -449,19 +436,23 @@ package dep_SUD {
     without { D -[mark]-> *}
     commands { del_edge e; add_edge H -[acl:relcl]-> D }
   }
+
+% The head of a relative clause, when it is identified as the governor of a relative pronoun, is a not finite verb or auxiliary.
+  rule aclrel_spec{
+    pattern{
+      H[nom]; e: H -[dep_SUD]-> D;
+      D -> PRO; H << PRO; PRO[PronType=Rel]
+    }
+    without{D[cat=AUX|VERB,VerbForm=Fin]}
+    commands{del_edge e; add_edge H -[acl:relcl]-> D}
+  }
+
 %  A word governs an adverb in a DEP_SUD relation and the adverb is not the head of a clause .
   rule advmod{
-    pattern { e:H -[dep_SUD]-> D; D[cat=ADV|PART]}
+    pattern { e:H -[dep_SUD]-> D; D[cat=ADV|PART|SYM]}
     without{ D -[mark]-> *}
     commands { del_edge e; add_edge H -[advmod]-> D }
   }
-
-% % An adjective introduced with a preposition is considered as an adverb.
-% % Ex: :UD_French-GSD fr-ud-test_00294 - ... 2 menus à pas cher ...
-%   rule advmod2{
-%     pattern { e:H -[dep_SUD]-> D; D[cat=ADJ]; D -[case]-> *}
-%     commands { del_edge e; add_edge H -[advmod]-> D }
-%   }
 
 % A nominal or an adjective governs an adjective in a DEP_SUD relation.
   rule amod {
@@ -471,17 +462,11 @@ package dep_SUD {
     commands { del_edge e; add_edge H -[amod]-> D }
   }
 
-% A nominal or a numeral governs a numeral in a DEP_SUD relation.
-  rule nummod {
-    pattern { e:H -[dep_SUD]-> D; D[cat=NUM]}
-    without{H[cat <> NUM, !nom]}
-    commands { del_edge e; add_edge H -[nummod]-> D }
-  }
-
 % A nominal governs a nominal in a DEP_SUD relation.
   rule nmod {
     pattern {e:H -[dep_SUD]-> D; H[nom=y]; D[nom=y]}
     without{D -[mark]-> *}
+    without{ PRO[PronType =Rel]; D -> PRO; H << PRO; PRO << D} % D cannot be the head of relative clause, H being the antecedent of this clause.    
     commands { del_edge e; add_edge H -[nmod]-> D }
   }
 
@@ -491,6 +476,24 @@ package dep_SUD {
     without{D -[mark]-> *}
     commands { del_edge e; add_edge H -[nmod]-> D }
   }
+
+% A numeral is dependent on another numeral via an adposition.
+  rule nmod_num{
+    pattern { 
+      N1[cat=NUM]; N2[cat=NUM]; e:N1 -[dep_SUD]-> N2;
+      N2 -[case]-> P
+    }
+    commands{del_edge e; add_edge N1 -[nmod]-> N2}
+  }
+
+% A nominal governs a numeral in a DEP_SUD relation. In this case, we make the hypothesis that it expresses a quantity on the nominal.
+  rule nummod {
+    pattern { e:H -[dep_SUD]-> D; H[nom=y]; D[cat=NUM]}
+    without{ D -[case]-> *}
+    without{ PRO[PronType =Rel]; D -> PRO; H << PRO; PRO << D} % D cannot be the head of relative clause, H being the antecedent of this clause.
+    commands { del_edge e; add_edge H -[nummod]-> D }
+  }
+
 % A predicate governs a nominal or an adjective in a DEP_SUD relation.
   rule obl {
     pattern {e:H -[dep_SUD]-> D; H[cat=ADJ|ADV|VERB|AUX,!nom]}
@@ -507,7 +510,7 @@ package reverse_cop {
     commands {
       del_edge e;
       shift_in V ==> C;
-      shift_out V =[^fixed|conj:dicto|reparandum]=> C;
+      shift_out V =[^fixed|conj:dicto|orphan|reparandum]=> C;
       add_edge C -[cop]-> V;
     }
   }
