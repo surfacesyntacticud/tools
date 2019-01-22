@@ -178,29 +178,29 @@ package gov_rise{
     commands{del_edge e; add_edge CS1 -[conj]-> CS2}
   }
 
-% The governor G of a dependent D is on its left and D has a dependent D1 on the left of G in a relation DEP_SUD. The relation must raise from D to G.
-  rule left_raise_dep{  %TODO
+% With a left-headed relation H -> D, a dependant of D on the left of type "depSUD" is raised to H.
+  rule left_raise_dep{
     pattern {
-      G -> D; D >> G; D1 << G;
-      mod_rel:D -[dep_SUD]-> D1; D1[cat=ADP|ADV|SCONJ]
+      H -> D; H << D; D1 << H;
+      e:D -[acl|acl:relcl|nmod|obl|amod|nummod|advmod]-> D1; D1[cat=ADP|ADV|SCONJ]
     }
     commands {
-      del_edge mod_rel;
-      add_edge G -[dep_SUD]-> D1
+      del_edge e;
+      add_edge e: H -> D1
     }
   }
 
-% The governor G of a dependent D is on its left and D has a modifier MOD on the left of G. The relation of modification must raise from D to G.
-  rule left_raise_mod{ %TODO
+% With a left-headed relation H -> D, a dependant MOD of D on the left is raised to H.
+  rule left_raise_mod{
     pattern {
-      G -> D; D >> G; MOD << G;
-      mod_rel:D -[advmod]-> MOD; MOD[cat=ADP|ADV|NOUN|SCONJ]
+      H -> D; H << D; MOD << H;
+      e:D -[advcl|obl:mod|amod|nummod|advmod]-> MOD; MOD[cat=ADP|ADV|NOUN|SCONJ]
     }
-    without { MOD [PronType=Rel]}
-    without{ MOD -[comp]-> PRO; PRO [PronType=Rel]}
+    without { MOD [PronType=Rel] }
+    without { MOD -[comp]-> PRO; PRO [PronType=Rel] }
     commands {
-      del_edge mod_rel;
-      add_edge G -[advmod]-> MOD
+      del_edge e;
+      add_edge e: H -> MOD
     }
   }
 
@@ -213,7 +213,7 @@ package pre_relations {
   rule det_nummod {
     pattern { e:H -[nummod]-> N; N << H}
     without { H -[det]-> *}
-    without { HH -[det]-> *; HH -> H; }
+    without { HH -[det]-> *; HH -> H; N << HH; }
     commands { del_edge e; add_edge H -[det]-> N }
   }
 }
@@ -264,8 +264,11 @@ package relations {
     commands { del_edge e; add_edge H -[subj]-> D }
   }
 
+
+
+
   rule comp_obj_ccomp {
-    pattern { e:H -[ccomp]-> D; D[upos <> ADP]; } % TODO
+    pattern { e:H -[ccomp]-> D; D[upos <> ADP]; }
     commands { del_edge e; add_edge H -[comp:obj]-> D }
   }
 
@@ -273,6 +276,8 @@ package relations {
     pattern { e:H -[ccomp]-> D; D[upos = ADP]; }
     commands { del_edge e; add_edge H -[comp:obl]-> D }
   }
+
+
 
   rule dep_not_adj {
     pattern { H[cat<>ADJ]; e:H -[amod|nummod]-> D}
