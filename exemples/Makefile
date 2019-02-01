@@ -27,15 +27,17 @@ draw:
 	dep_diff -d1 _sud_gold -d2 _sud_auto -svg _sud_diff
 	dep_diff -d1 _ud_gold -d2 _ud_auto -svg _ud_diff
 
-install:
-	cp -f _sud_diff/* /users/guillaum/gitlab/grew/grew_doc/static/_sud_diff/
-	cp -f _ud_diff/* /users/guillaum/gitlab/grew/grew_doc/static/_ud_diff/
-
 gui_ud:
 	grew gui -grs ../grs/SUD_to_UD.grs -i sud.conll
 
 gui_sud:
 	grew gui -grs ../grs/UD_to_SUD.grs -i ud.conll
+
+gui_mud:
+	grew gui -grs ../grs/SUD_to_UD.grs -i more_sud.conll
+
+gui_msud:
+	grew gui -grs ../grs/UD_to_SUD.grs -i more_ud.conll
 
 sud:
 	grew transform -grs ../grs/UD_to_SUD.grs -i ud.conll -o _sud_conv.conll
