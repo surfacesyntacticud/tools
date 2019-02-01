@@ -363,7 +363,7 @@ package mod {
 
 % Ex: fr-ud-train_01058 - Son équipe en difficulté, il est remplacé à la mi-temps ...
 % Ex: fr-ud-dev_00890 - ... les restes du château d'Eaucourt étaient plus considérables qu'aujourd'hui.
-% Ex: fr-ud-test_00158 - Comme chaque soir à 18h40, il tranche, malmène et détourne l'actualité. 
+% Ex: fr-ud-test_00158 - Comme chaque soir à 18h40, il tranche, malmène et détourne l'actualité.
   rule advcl_ellipsis {
     pattern {H[!nom]; e:H -[mod]-> D; D -[mark|nsubj]-> * }
     without{D[cat=VERB]}
@@ -381,12 +381,12 @@ package mod {
     without{ D -[mark]-> *}
     commands { del_edge e; add_edge H -[amod]-> D }
   }
-  
+
   rule nummod {
     pattern { H[cat=ADJ]; e:H -[mod]-> D; D[cat=NUM] }
     commands { del_edge e; add_edge H -[nummod]-> D }
   }
-  
+
   rule oblmod {
     pattern { H[!nom]; e:H -[mod]-> D; D[nom=y] }
     without{ D -[nsubj|mark]-> *}
@@ -423,7 +423,7 @@ package dep_SUD {
 
 %  A nominal governs a finite verb in a DEP_SUD relation and the hypothesis is that this verb is always the head of a relative clause.
   rule aclrel {
-    pattern { e:H -[dep_SUD]-> D; H[nom=y]; D[cat=AUX|VERB,VerbForm=Fin]  } 
+    pattern { e:H -[dep_SUD]-> D; H[nom=y]; D[cat=AUX|VERB,VerbForm=Fin]  }
     without { D -[mark]-> *}
     commands { del_edge e; add_edge H -[acl:relcl]-> D }
   }
@@ -432,7 +432,7 @@ package dep_SUD {
   rule aclrel_aux {
     pattern {
       e:H -[dep_SUD]-> D; H[nom=y];
-      D -[aux|aux:pass|aux:caus]-> AUX; AUX[VerbForm=Fin]  } 
+      D -[aux|aux:pass|aux:caus]-> AUX; AUX[VerbForm=Fin]  }
     without { D -[mark]-> *}
     commands { del_edge e; add_edge H -[acl:relcl]-> D }
   }
@@ -466,7 +466,7 @@ package dep_SUD {
   rule nmod {
     pattern {e:H -[dep_SUD]-> D; H[nom=y]; D[nom=y]}
     without{D -[mark]-> *}
-    without{ PRO[PronType =Rel]; D -> PRO; H << PRO; PRO << D} % D cannot be the head of relative clause, H being the antecedent of this clause.    
+    without{ PRO[PronType =Rel]; D -> PRO; H << PRO; PRO << D} % D cannot be the head of relative clause, H being the antecedent of this clause.
     commands { del_edge e; add_edge H -[nmod]-> D }
   }
 
@@ -479,7 +479,7 @@ package dep_SUD {
 
 % A numeral is dependent on another numeral via an adposition.
   rule nmod_num{
-    pattern { 
+    pattern {
       N1[cat=NUM]; N2[cat=NUM]; e:N1 -[dep_SUD]-> N2;
       N2 -[case]-> P
     }
