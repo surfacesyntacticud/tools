@@ -1,3 +1,9 @@
+% during the transformation, the relation dep from SUD is renamed dep_SUD to avoid confusion with dep (UD).
+rule dep {
+  pattern { e:M -[dep]-> N; }
+  commands { del_edge e; add_edge M -[dep_SUD]-> N; }
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Feature "nom" is used to deal with all nominals in a uniform way.
 package nom_init {
@@ -527,6 +533,7 @@ package final {
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 strat main {
   Seq (
+    Onf (dep),
     Onf (nom_init),
     Onf (unchained_relations), % For CONJ relations, chains must be transformed into bouquets before head changes because of conditions on the presence of prepositions, conjunctions and auxiliaries. It is easier to take these conditions into account before head changes (UD_French-GSD : fr-ud-dev_00751)
     Onf (reverse_case_mark), % Package REVERSE_CASE_MARK precedes package COMP because  UD labels of complement relations depend on the category of the complements introduced with a preposition or a conjunction

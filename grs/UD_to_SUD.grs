@@ -24,6 +24,7 @@ package minimize_conj_dep {
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 package remove_extension_on_reverted_relations {
   package protect {
     rule auxcaus {
@@ -361,9 +362,15 @@ package relations {
   }
 
   rule unknown {
-    pattern { e:H -[re"\(dep\|dep:.*\)"]-> D; } % caution: do not catch dep_SUD
+    pattern { e:H -[dep]-> D; }
     commands { del_edge e; add_edge H -[unknown]-> D }
   }
+
+  rule unknown_sub { %TODO= relations dep:* should not exist in UD ???
+    pattern { e:H -[re"dep:.*"]-> D; } % caution: do not catch dep_SUD
+    commands { del_edge e; add_edge H -[unknown]-> D }
+  }
+
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
