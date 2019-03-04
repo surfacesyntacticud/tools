@@ -11,7 +11,7 @@ package specif_expr_init{
     }
   }
 
-  rule create_titel_node{
+  rule create_title_node{
     pattern{ W[_MISC_TITLE]}
     without{ * -[expr]-> W}
     commands{
@@ -23,7 +23,7 @@ package specif_expr_init{
   }
 
   rule move_dep{
-    pattern{ H -[expr]-> W; e: W -[^fixed]-> D}
+    pattern{ H -[expr]-> W; e: W -[^fixed|flat:name|goeswith]-> D}
     without{D[_MISC_INMWE=Yes]}
     without{D[_MISC_INTITLE=Yes]}
     commands{ del_edge e; add_edge e: H -> D}

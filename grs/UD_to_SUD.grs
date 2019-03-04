@@ -96,7 +96,7 @@ package head_reverse {
       add_edge AUX -[comp:aux]-> H;
       shift_in H ==> AUX;
       shift_out H =[mark]=> AUX;
-      shift_out H =[advcl|advmod|cc|csubj|csubj:pass|dislocated|nsubj|nsubj:pass|obl:mod|punct|root]=> AUX;
+      shift_out H =[advcl|advmod|cc|csubj|csubj:pass|dislocated|nsubj|nsubj:pass|obl:mod|parataxis|punct|root]=> AUX;
     }
   }
 
@@ -107,7 +107,7 @@ package head_reverse {
       add_edge AUX -[comp:pass]-> H;
       shift_in H ==> AUX;
       shift_out H =[aux|mark]=> AUX;
-      shift_out H =[advcl|advmod|cc|csubj|csubj:pass|dislocated|nsubj|nsubj:pass|obl:mod|punct|root]=> AUX;
+      shift_out H =[advcl|advmod|cc|csubj|csubj:pass|dislocated|nsubj|nsubj:pass|obl:mod|parataxis|punct|root]=> AUX;
     }
   }
 
@@ -118,8 +118,8 @@ package head_reverse {
       add_edge AUX -[comp:caus]-> H;
       shift_in H ==> AUX;
       shift_out H =[aux|mark]=> AUX;
-      shift_out H =[obj:agent|obl:agent]=> AUX;
-      shift_out H =[advcl|advmod|cc|csubj|csubj:pass|dislocated|nsubj|nsubj:pass|obl:mod|punct|root]=> AUX;
+      shift_out H =[iobj:agent|obj:agent|obl:agent]=> AUX;
+      shift_out H =[advcl|advmod|cc|csubj|csubj:pass|dislocated|nsubj|nsubj:caus|nsubj:pass|obl:mod|parataxis|punct|root]=> AUX;
     }
   }
 
@@ -132,12 +132,12 @@ package head_reverse {
       add_edge AUX -[comp:pred]-> H;
       shift_in H ==> AUX;
       shift_out H =[aux|mark]=> AUX;
-      shift_out H =[advcl|advmod|cc|csubj|csubj:pass|dislocated|nsubj|nsubj:pass|obl:mod|punct|root]=> AUX;
+      shift_out H =[advcl|advmod|cc|csubj|csubj:pass|dislocated|nsubj|nsubj:pass|obl:mod|parataxis|punct|root]=> AUX;
     }
   }
 
   rule case{
-    pattern { e:H-[case]->X1}
+    pattern { e:H-[case]->X1; X1[cat <> PART]}
     without { H-[case]->X2; X1 << X2 ; X2 << H} % There is no other CASE dependent between the head and the COP dependent (point (4)).
     without { H-[case]->X2; X1 >> X2 ; X2 >> H}
     without { H -[punct]-> P; X1 << P; P << H} % no punctuation mark that has not to be shifted
@@ -151,7 +151,7 @@ package head_reverse {
   }
 
   rule case_punct{
-    pattern { e:H-[case]->X1; H -[punct]-> P; X1 << P; P << H} % there is a punctuation mark that has not to be shifted
+    pattern { e:H-[case]->X1; H -[punct]-> P; X1[cat <> PART]; X1 << P; P << H} % there is a punctuation mark that has not to be shifted
     without { H-[case]->X2; X1 << X2 ; X2 << H} % There is no other CASE dependent between the head and the COP dependent (point (4)).
     without { H-[case]->X2; X1 >> X2 ; X2 >> H}
     commands {
@@ -226,11 +226,11 @@ package gov_rise{
     commands{del_edge e; add_edge CS1 -[conj]-> CS2}
   }
 
-% With a left-headed relation H -> D, a dependant of D on the left of type "depSUD" is raised to H.
-  rule left_raise_dep{
+% With a left-headed relation H -> D, a dependant of D on the left of a type that may be modifier is raised to H.
+  rule left_raise{
     pattern {
-      H -> D; H << D; D1 << H;
-      e:D -[acl|acl:relcl|nmod|obl|amod|nummod|advmod]-> D1; D1[cat=ADP|ADV|SCONJ]
+      H -[re"comp.*"]-> D; H << D; D1 << H;
+      e:D -[acl|acl:relcl|advcl|advmod|amod|nmod|obl|obl:mod]-> D1; D1[cat=ADP|ADV|SCONJ|SYM]
     }
     commands {
       del_edge e;
@@ -238,36 +238,14 @@ package gov_rise{
     }
   }
 
-% With a left-headed relation H -> D, a dependant MOD of D on the left is raised to H.
-  rule left_raise_mod{
-    pattern {
-      H -> D; H << D; MOD << H;
-      e:D -[advcl|obl:mod|amod|nummod|advmod]-> MOD; MOD[cat=ADP|ADV|NOUN|SCONJ]
-    }
-    without { MOD [PronType=Rel] }
-    without { MOD -[comp]-> PRO; PRO [PronType=Rel] }
-    commands {
-      del_edge e;
-      add_edge e: H -> MOD
-    }
-  }
-
 }
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% UD relations are renamed as SUD relations.
-
-package pre_relations {
-  rule det_nummod {
-    pattern { e:H -[nummod]-> N; N << H}
-    without { H -[det]-> *}
-    commands { del_edge e; add_edge H -[det]-> N }
-  }
-}
-
+% UD sub-relations  are renamed as  SUD sub-relations.
 package sub_relations {
   rule comp_agent {
-    pattern { e:H -[obl:agent]-> D; }
+    pattern { e:H -[iobj:agent|obl:agent]-> D; }
     commands { del_edge e; add_edge H -[comp:agent]-> D }
   }
 
@@ -287,11 +265,13 @@ package sub_relations {
   }
 
   rule mod {
-    pattern { e:H -[obl:mod]-> D; }
+    pattern { e:H -[acl:relcl|obl:mod]-> D; }
     commands { del_edge e; add_edge H -[mod]-> D }
   }
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% UD relations are renamed as SUD relations or sub-relations.
 package relations {
   rule comp_obj {
     pattern { e:H -[re"obj.*"]-> D; }
@@ -307,22 +287,7 @@ package relations {
     pattern { e:H -[re"xcomp.*"]-> D; }
     commands { del_edge e; add_edge H -[comp:pred]-> D }
   }
-
-  rule dep {
-    pattern { e:H -[re"\(acl\|nmod\|obl\).*"]-> D}
-    commands { del_edge e; add_edge H -[dep_SUD]-> D }
-  }
-
-  rule mod {
-    pattern { e:H -[re"advcl.*"]-> D; }
-    commands { del_edge e; add_edge H -[mod]-> D }
-  }
-
-  rule subj {
-    pattern { e:H -[re"\(nsubj\|csubj\).*"]-> D}
-    commands { del_edge e; add_edge H -[subj]-> D }
-  }
-
+  
   rule comp_obj_ccomp {
     pattern { e:H -[re"ccomp.*"]-> D; D[upos <> ADP]; }
     commands { del_edge e; add_edge H -[comp:obj]-> D }
@@ -332,43 +297,57 @@ package relations {
     pattern { e:H -[re"ccomp.*"]-> D; D[upos = ADP]; }
     commands { del_edge e; add_edge H -[comp:obl]-> D }
   }
-
-  rule dep_not_adj {
-    pattern { H[cat<>ADJ]; e:H -[re"\(amod\|nummod\).*"]-> D}
-    commands { del_edge e; add_edge H -[dep_SUD]-> D }
+  
+  rule det_nummod {
+    pattern { e:H -[re"nummod.*"]-> D; D << H}
+    without { H -[det]-> *}
+    commands { del_edge e; add_edge H -[det]-> D }
   }
 
-% Adjectives with determiners are considered as nominals.
-  rule dep_adj {
-    pattern { H[cat=ADJ]; H -[det]-> *; e:H -[re"\(amod\|nummod\).*"]-> D}
-    commands { del_edge e; add_edge H -[dep_SUD]-> D }
+  rule mod {
+    pattern { e:H -[re"\(advcl\|advmod\|amod\).*"]-> D; }
+    commands { del_edge e; add_edge H -[mod]-> D }
   }
 
-  rule mod_adj {
-    pattern {H[cat=ADJ]; e:H -[re"\(amod\|nummod\).*"]-> D }
+  rule mod_noun {
+    pattern { e:H -[re"\(acl\|nmod\).*"]-> D}
+    without{ D -[case|mark]-> *}
+    commands { del_edge e; add_edge H -[udep]-> D }
+  }
+  
+  rule mod_nummod1 {
+    pattern {e:H -[re"nummod.*"]-> D; H << D }
     without{ H -[det]-> *}
     commands { del_edge e; add_edge H -[mod]-> D }
   }
-
-  rule dep_advmod {
-    pattern { H[cat=NOUN|NUM|PRON|PROPN|SYM|X]; e:H -[re"advmod.*"]-> D}
-    commands { del_edge e; add_edge H -[dep_SUD]-> D }
-  }
-
-  rule mod_advmod {
-    pattern { e:H -[re"advmod.*"]-> D; }
-    without{ H[cat=NOUN|NUM|PRON|PROPN|SYM|X]}
+  
+  rule mod_nummod2 {
+    pattern {e:H -[re"nummod.*"]-> D; H -[det]-> * }
     commands { del_edge e; add_edge H -[mod]-> D }
   }
-
-  rule unknown {
-    pattern { e:H -[dep]-> D; }
-    commands { del_edge e; add_edge H -[unknown]-> D }
+  
+  rule pcase {
+    pattern {e:H -[re"case.*"]-> D; D[cat=PART] }
+    commands { del_edge e; add_edge H -[pcase]-> D }
+  }
+  
+  rule subj {
+    pattern { e:H -[re"\(nsubj\|csubj\).*"]-> D}
+    commands { del_edge e; add_edge H -[subj]-> D }
+  }
+  
+  rule udep {
+    pattern { e:H -[re"\(acl\|nmod\).*"]-> D; D -[case|mark]-> *}
+    commands { del_edge e; add_edge H -[udep]-> D }
   }
 
-  rule unknown_sub { %TODO= relations dep:* should not exist in UD ???
-    pattern { e:H -[re"dep:.*"]-> D; } % caution: do not catch dep_SUD
-    commands { del_edge e; add_edge H -[unknown]-> D }
+  rule udep_obl {
+    pattern { e:H -[re"obl.*"]-> D}
+    commands { del_edge e; add_edge H -[udep]-> D }
+  }
+  rule unk {
+    pattern { e:H -[re"dep.*"]-> D; }
+    commands { del_edge e; add_edge H -[unk]-> D }
   }
 
 }
@@ -398,10 +377,6 @@ package chained_relations {
   }
 }
 
-rule depSUD {
-  pattern { e:H -[dep_SUD]-> D; }
-  commands { del_edge e; add_edge H -[dep]-> D }
-}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 strat main {
@@ -411,12 +386,9 @@ strat main {
     remove_extension_on_reverted_relations.s,
     Onf (head_reverse),
     Onf (gov_rise),% Package GOV_RISE must follow package HEAD_REVERSE because it corrects some wrong consequences of head changes.
-
-    Onf (pre_relations),
     Onf (sub_relations),
     Onf (relations), % Package RELATIONS must follow package GOV_RISE because this package entails the change of catagory for the source and the target of some relaitions.
 
     Onf (chained_relations),% Package CHAINED_RELATIONS must follow package GOV_RISE because it can entail a wrong coordination between two elements because of errors in head changes (UD_French-GS: fr-ud-dev_00131).
-    Onf (depSUD),
   )
 }
