@@ -45,6 +45,13 @@ package specif_expr_close{
       D._MISC_INMWE=Yes; del_feat D._MISC_MWEPOS
     }
   }
+  rule title_pos_raise{
+    pattern{ H[_MISC_INTITLE=Yes]; D[_MISC_TITLE]; H -> D}
+    commands{
+      H._MISC_TITLE = Yes; del_feat H._MISC_INTITLE;
+      D._MISC_INTITLE=Yes; del_feat D._MISC_TITLE
+    }
+  }
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

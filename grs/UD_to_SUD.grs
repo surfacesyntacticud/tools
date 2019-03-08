@@ -311,8 +311,8 @@ package relations {
 
   rule mod_noun {
     pattern { e:H -[re"\(acl\|nmod\).*"]-> D}
-    without{ D -[case|mark]-> *}
-    commands { del_edge e; add_edge H -[udep]-> D }
+    without{ D[cat=ADP|SCONJ]}
+    commands { del_edge e; add_edge H -[mod]-> D }
   }
   
   rule mod_nummod1 {
@@ -337,10 +337,9 @@ package relations {
   }
   
   rule udep {
-    pattern { e:H -[re"\(acl\|nmod\).*"]-> D; D -[case|mark]-> *}
+    pattern { e:H -[re"\(acl\|nmod\).*"]-> D; D[cat=ADP|SCONJ]}
     commands { del_edge e; add_edge H -[udep]-> D }
   }
-
   rule udep_obl {
     pattern { e:H -[re"obl.*"]-> D}
     commands { del_edge e; add_edge H -[udep]-> D }

@@ -8,6 +8,7 @@ décembre
 dimanche
 faute
 février
+fin
 fois
 janvier
 jeudi
@@ -21,7 +22,9 @@ mars
 mercredi
 novembre
 octobre
+plupart
 ps
+rue
 samedi
 septembre
 soir

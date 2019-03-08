@@ -20,12 +20,13 @@ package FR_nom_init {
     pattern{
       N0[cat=NOUN|PRON]; N0 -[mod|udep]-> N;
       N[cat=ADJ|VERB,nom]; N -[det]-> *}
+    without{ PRO[PronType=Rel]; N -> PRO; N0 << N} % N is not the head of a relative clause with N0 as the antecedent of the relative pronoun.
     commands{del_feat N.nom}
   }
 
 % Numbers that follow a measure unity
   rule unity_num(lex from "lexicons/measure_unit.lp"){
-    pattern{N[cat=NUM,nom]; H[lemma=lex.unity]; H -[udep]-> N }
+    pattern{N[cat=NUM,nom]; H[lemma=lex.unity]; H -[mod]-> N }
     commands{del_feat N.nom}
   }
 
@@ -90,8 +91,8 @@ package FR_mod {
 % Ex: fr-ud-dev_00407 - Spécialiste des six jours, il a remporté 38 compétitions entre 1931 et 1942. 
   rule left_extraposition(lex from "lexicons/nouns_adv.lp") {
     pattern{
-      APP[cat=ADJ|NOUN|PRON|VERB];
-      V -[nsubj|nsubj:pass]-> SUBJ; APP << SUBJ; SUBJ << V;
+      APP[cat=ADJ|NOUN|PRON|PROPN|VERB];
+      V -[nsubj|nsubj:pass|nsubj:caus]-> SUBJ; APP << SUBJ; SUBJ << V;
       e: V -[mod]-> APP}
     without{ APP -[case]-> *}
     without{APP[cat=NOUN]; APP -[det|nummod]-> *}
@@ -118,6 +119,13 @@ package FR_mod {
     }
     commands{del_edge e; add_edge N -[mark]-> C}
   }
+
+% Numbers that follow a measure unity
+  rule unity_num(lex from "lexicons/measure_unit.lp"){
+    pattern{D[cat=NUM]; H[lemma=lex.unity]; e:H -[mod]-> D }
+    commands{del_edge e; add_edge H -[nummod]-> D}
+  }
+
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -137,6 +145,7 @@ package FR_udep {
     pattern { e:H -[udep]-> D; H[nom=y]; D[cat=NUM]; H << D }
     without{H[lemma=heure]}
     without{D -> PRO; H << PRO; PRO[PronType=Rel]}
+    without{D -[mark]-> *}
     commands { del_edge e; add_edge H -[nmod]-> D }
   }
 
@@ -148,14 +157,6 @@ package FR_udep {
       H -[case]-> P; D << P; P << H }
     commands { del_edge e; add_edge H -[nmod]-> D }
   }
-
-% % A numeral depends on an adjective on its left.
-% % Ex: fr-ud-train_08502 - Les 92 premiers épisodes ...
-%   rule nummod{
-%     pattern { e:H -[udep]-> D; H[cat=ADJ]; D[cat=NUM]; D << H }
-%     without{D -[case]-> *}
-%     commands { del_edge e; add_edge H -[nummod]-> D }
-%   }
 
 }
 
