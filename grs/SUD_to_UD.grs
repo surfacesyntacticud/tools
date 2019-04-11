@@ -360,7 +360,7 @@ package comp {
   }
 
   rule xcomp {
-    pattern { e:H -[comp:pred]-> D; H [cat <> AUX|PART] }
+    pattern { e:H -[comp:obj:x|comp:obl:x]-> D; H [cat <> AUX|PART] }
     commands { del_edge e; add_edge H -[xcomp]-> D }
   }
 
@@ -373,15 +373,27 @@ package comp {
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Relations MOD are re-labelled.
 package mod {
-% A nominal governs a participle in a MOD relation.
-  rule acl {
+% A nominal governs a participle or an infinitive in a MOD relation.
+  rule acl_part {
     pattern {
       e:H -[mod]-> D; H[nom=y];
-      D[cat=AUX|VERB,!nom]
+      D[cat=AUX|VERB,!nom, VerbForm=Inf|Part]
     }
+    without{D -[mark]-> *}
+    without{PRO[PronType=Rel]; D -> PRO; H << PRO}
+    without{PRO[PronType=Rel]; D -> X; X -> PRO; H << PRO}
     commands { del_edge e; add_edge H -[acl]-> D }
   }
 
+% A nominal governs an adverbial clause in a MOD relation.
+  rule acl_clause {
+    pattern {
+      e:H -[mod]-> D; H[nom=y];
+      D[cat=AUX|VERB,!nom]; D -[mark]-> *
+    }
+    commands { del_edge e; add_edge H -[acl]-> D }
+  }
+  
 %  A nominal governs a finite verb in a MOD relation and the hypothesis is that this verb is always the head of a relative clause.
   rule aclrel {
     pattern {
@@ -402,8 +414,8 @@ package mod {
     commands { del_edge e; add_edge H -[acl:relcl]-> D }
   }
 
-% The head of a relative clause, when it is identified as the governor of a relative pronoun, is a not finite verb or auxiliary.
-  rule aclrel_spec{
+% The head of a relative clause, when it is identified as the direct governor of a relative pronoun, is a not finite verb or auxiliary.
+  rule aclrel_spec1{
     pattern{
       %H[nom];
       e: H -[mod]-> D;
@@ -413,6 +425,16 @@ package mod {
     commands{del_edge e; add_edge H -[acl:relcl]-> D}
   }
 
+% The head of a relative clause, when it is identified as the indirect governor of a relative pronoun, is a not finite verb or auxiliary.
+  rule aclrel_spec{
+    pattern{
+      %H[nom];
+      e: H -[mod]-> D;
+      D -> X; X -> PRO; H << PRO; PRO[PronType=Rel]
+    }
+    without{D[cat=AUX|VERB,VerbForm=Fin]}
+    commands{del_edge e; add_edge H -[acl:relcl]-> D}
+  }
   rule advcl {
     pattern { H[!nom]; e:H -[mod]-> D; D[cat=ADJ|AUX|VERB,!nom] }
     without{H[cat=ADJ];D[cat=ADJ]}
@@ -464,6 +486,7 @@ package mod {
   rule nummod {
     pattern { e:H -[mod]-> D; D[cat=NUM]; H[nom=y]; D << H }
     without{ PRO[PronType=Rel]; D -> PRO; H << PRO}
+    without{ H -[case|mark]-> D1; D << D1}
     commands { del_edge e; add_edge H -[nummod]-> D }
   }
 
@@ -510,7 +533,7 @@ package udep {
     commands { del_edge e; add_edge H -[nmod]-> D }
   }
 
-% A nominal governs an adjective introduced with an adpostion in a DEP_SUD relation.
+% A nominal governs an adjective introduced with an adposition in a DEP_SUD relation.
   rule nmod_adj {
     pattern {e:H -[udep]-> D; H[nom=y]; D[cat=ADJ]; D -[case]-> *}
     without{D -[mark]-> *}

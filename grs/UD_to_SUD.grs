@@ -230,7 +230,7 @@ package gov_rise{
   rule left_raise{
     pattern {
       H -[re"comp.*"]-> D; H << D; D1 << H;
-      e:D -[acl|acl:relcl|advcl|advmod|amod|nmod|obl|obl:mod]-> D1; D1[cat=ADP|ADV|SCONJ|SYM]
+      e:D -[acl|acl:relcl|advcl|advmod|amod|nmod|obl|obl:mod]-> D1; D1[cat=ADP|ADV|NUM|SCONJ|SYM]
     }
     commands {
       del_edge e;
@@ -277,22 +277,28 @@ package relations {
     pattern { e:H -[re"obj.*"]-> D; }
     commands { del_edge e; add_edge H -[comp:obj]-> D }
   }
-
-  rule comp_obl {
-    pattern { e:H -[re"iobj.*"]-> D; }
-    commands { del_edge e; add_edge H -[comp:obl]-> D }
-  }
-
-  rule comp_pred {
-    pattern { e:H -[re"xcomp.*"]-> D; }
-    commands { del_edge e; add_edge H -[comp:pred]-> D }
-  }
   
   rule comp_obj_ccomp {
     pattern { e:H -[re"ccomp.*"]-> D; D[upos <> ADP]; }
     commands { del_edge e; add_edge H -[comp:obj]-> D }
   }
 
+  rule comp_obl {
+    pattern { e:H -[re"iobj.*"]-> D; }
+    commands { del_edge e; add_edge H -[comp:obl]-> D }
+  }
+
+  rule comp_objx {
+    pattern { e:H -[re"xcomp.*"]-> D;D[cat=VERB,VerbForm=Inf] }
+    commands { del_edge e; add_edge H -[comp:obj:x]-> D }
+  }
+  
+  rule comp_oblx {
+    pattern { e:H -[re"xcomp.*"]-> D; }
+    without{D[cat=VERB,VerbForm=Inf]}
+    commands { del_edge e; add_edge H -[comp:obl:x]-> D }
+  }
+  
   rule comp_obl_ccomp {
     pattern { e:H -[re"ccomp.*"]-> D; D[upos = ADP]; }
     commands { del_edge e; add_edge H -[comp:obl]-> D }

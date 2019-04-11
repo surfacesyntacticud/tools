@@ -7,13 +7,6 @@ include "SUD_to_UD.grs"
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % After the universal determination of nominals, rectification specific to French.
 package FR_nom_init {
-% % Adverbs with a determiner that have no complement introduced with the preposition "de" are considered as non nominals.
-% %Ex: fr-ud-dev_00511 - ...il vivait le plus souvent une sexualité anhédonique...
-%   rule adv_det{
-%     pattern{A[cat=ADV,nom]; A -[det]-> D; D[cat=DET,lemma=le,Gender=Masc,Number=Sing]}
-%     without{P[cat=ADP,lemma=de]; A -[comp:obl]-> P}
-%     commands{del_feat A.nom}
-%   }
 
 % Adjectives or verbs that are attributive of nouns are considered as non nominals.
   rule attr_det{
@@ -87,6 +80,15 @@ package FR_comp {
 % Re-labelling of MOD relations specific to French
 package FR_mod {
 
+% Adverbs antecedent of a relative clause
+  rule adv_relcl{
+    pattern{
+      A[cat=ADV,lemma="là"|partout];
+      B[cat=VERB, VerbForm=Fin];
+      e:A -[mod]-> B}
+    commands{del_edge e; add_edge A -[acl:relcl]-> B}
+  }
+
 % Adjectival, verbal or nominal expressions that are hightlighted at the beginning of a clause are considered as incomplete clauses.
 % Ex: fr-ud-dev_00407 - Spécialiste des six jours, il a remporté 38 compétitions entre 1931 et 1942. 
   rule left_extraposition(lex from "lexicons/nouns_adv.lp") {
@@ -120,6 +122,21 @@ package FR_mod {
     commands{del_edge e; add_edge N -[mark]-> C}
   }
 
+% Finite clauses, which are not relative clauses and which are not introduced with a conjunction, modifying a nominal expression.
+  rule noun_mod_fin-clause{
+    pattern{
+      N[nom=y];
+      V[cat=VERB, VerbForm=Fin];
+      e: N -[mod]->V}
+    without{PRO[PronType=Rel]; V -> PRO; N << PRO}
+    without{PRO[PronType=Rel]; V -> X; X -> PRO;  N << PRO}
+    without{PRO[PronType=Rel]; V -> X; X -> Y; Y -> PRO;  N << PRO}
+    without{ADV[cat=ADV,lemma="où"|pourquoi]; V -> ADV; N << ADV}
+    without{ADV[cat=ADV,lemma="où"|pourquoi]; V -> X; X -> ADV;  N << ADV}
+    without{ADV[cat=ADV,lemma="où"|pourquoi]; V -> X; X -> Y; Y -> ADV;  N << ADV}    
+    commands{ del_edge e; add_edge N -[acl]-> V}
+  }
+  
 % Numbers that follow a measure unity
   rule unity_num(lex from "lexicons/measure_unit.lp"){
     pattern{D[cat=NUM]; H[lemma=lex.unity]; e:H -[mod]-> D }
