@@ -6,6 +6,7 @@ bien
 combien
 davantage
 moins
+nombre
 peu
 plus
 près

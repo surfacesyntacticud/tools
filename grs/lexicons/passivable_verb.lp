@@ -2066,6 +2066,7 @@ parquer
 parrainer
 parsemer
 partager
+passer
 passionner
 pasteuriser
 pasticher

@@ -20,8 +20,11 @@ mai
 mardi
 mars
 mercredi
+mi-novembre
+niveau
 novembre
 octobre
+page
 plupart
 ps
 rue
