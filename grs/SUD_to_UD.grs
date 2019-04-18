@@ -380,8 +380,8 @@ package mod {
       D[cat=AUX|VERB,!nom, VerbForm=Inf|Part]
     }
     without{D -[mark]-> *}
-    without{PRO[PronType=Rel]; D -> PRO; H << PRO}
-    without{PRO[PronType=Rel]; D -> X; X -> PRO; H << PRO}
+    without{PRO[PronType=Rel]; D -> PRO; PRO << D; H << PRO}
+    without{PRO[PronType=Rel]; D -> X; X -> PRO; PRO << D; H << PRO}
     commands { del_edge e; add_edge H -[acl]-> D }
   }
 
@@ -419,18 +419,18 @@ package mod {
     pattern{
       %H[nom];
       e: H -[mod]-> D;
-      D -> PRO; H << PRO; PRO[PronType=Rel]
+      D -> PRO; H << PRO; PRO << D; PRO[PronType=Rel]
     }
     without{D[cat=AUX|VERB,VerbForm=Fin]}
     commands{del_edge e; add_edge H -[acl:relcl]-> D}
   }
 
 % The head of a relative clause, when it is identified as the indirect governor of a relative pronoun, is a not finite verb or auxiliary.
-  rule aclrel_spec{
+  rule aclrel_spec2{
     pattern{
       %H[nom];
       e: H -[mod]-> D;
-      D -> X; X -> PRO; H << PRO; PRO[PronType=Rel]
+      D -> X; X -> PRO; H << PRO; PRO << D; PRO[PronType=Rel]
     }
     without{D[cat=AUX|VERB,VerbForm=Fin]}
     commands{del_edge e; add_edge H -[acl:relcl]-> D}
