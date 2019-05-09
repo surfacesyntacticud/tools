@@ -273,21 +273,31 @@ package sub_relations {
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % UD relations are renamed as SUD relations or sub-relations.
 package relations {
+
+  % === obj ===
   rule comp_obj {
     pattern { e:H -[re"obj.*"]-> D; }
     commands { del_edge e; add_edge H -[comp:obj]-> D }
   }
 
+  % === ccomp ===
   rule comp_obj_ccomp {
     pattern { e:H -[re"ccomp.*"]-> D; D[upos <> ADP]; }
     commands { del_edge e; add_edge H -[comp:obj]-> D }
   }
 
+  rule comp_obl_ccomp {
+    pattern { e:H -[re"ccomp.*"]-> D; D[upos = ADP]; }
+    commands { del_edge e; add_edge H -[comp:obl]-> D }
+  }
+
+  % === iobj ===
   rule comp_obl {
     pattern { e:H -[re"iobj.*"]-> D; }
     commands { del_edge e; add_edge H -[comp:obl]-> D }
   }
 
+  % === xcomp ===
   rule comp_objx {
     pattern { e:H -[re"xcomp.*"]-> D;D[cat=VERB,VerbForm=Inf] }
     commands { del_edge e; add_edge H -[comp:obj:x]-> D }
@@ -299,45 +309,49 @@ package relations {
     commands { del_edge e; add_edge H -[comp:obl:x]-> D }
   }
 
-  rule comp_obl_ccomp {
-    pattern { e:H -[re"ccomp.*"]-> D; D[upos = ADP]; }
-    commands { del_edge e; add_edge H -[comp:obl]-> D }
-  }
-
+  % === advcl | advmod | amod ===
   rule mod {
     pattern { e:H -[re"\(advcl\|advmod\|amod\).*"]-> D; }
     commands { del_edge e; add_edge H -[mod]-> D }
   }
 
+  % === nummod ===
+  rule mod_nummod {
+    pattern {e:H -[re"nummod.*"]-> D }
+    commands { del_edge e; add_edge H -[mod]-> D }
+  }
+
+  % === acl | nmod ===
   rule mod_noun {
     pattern { e:H -[re"\(acl\|nmod\).*"]-> D}
     without{ D[cat=ADP|SCONJ]}
     commands { del_edge e; add_edge H -[mod]-> D }
   }
 
-  rule mod_nummod {
-    pattern {e:H -[re"nummod.*"]-> D }
-    commands { del_edge e; add_edge H -[mod]-> D }
+  rule udep {
+    pattern { e:H -[re"\(acl\|nmod\).*"]-> D; D[cat=ADP|SCONJ]}
+    commands { del_edge e; add_edge H -[udep]-> D }
   }
 
+  % === case === special treatment when the dep of a case is a PART, the relation is not reversed
   rule pcase {
     pattern {e:H -[re"case.*"]-> D; D[cat=PART] }
     commands { del_edge e; add_edge H -[pcase]-> D }
   }
 
+  % === nsubj | csubj ===
   rule subj {
     pattern { e:H -[re"\(nsubj\|csubj\).*"]-> D}
     commands { del_edge e; add_edge H -[subj]-> D }
   }
 
-  rule udep {
-    pattern { e:H -[re"\(acl\|nmod\).*"]-> D; D[cat=ADP|SCONJ]}
-    commands { del_edge e; add_edge H -[udep]-> D }
-  }
+  % === obl ===
   rule udep_obl {
     pattern { e:H -[re"obl.*"]-> D}
     commands { del_edge e; add_edge H -[udep]-> D }
   }
+
+  % === dep ===
   rule unk {
     pattern { e:H -[re"dep.*"]-> D; }
     commands { del_edge e; add_edge H -[unk]-> D }
