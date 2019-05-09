@@ -90,7 +90,7 @@ package FR_mod {
   }
 
 % Adjectival, verbal or nominal expressions that are hightlighted at the beginning of a clause are considered as incomplete clauses.
-% Ex: fr-ud-dev_00407 - Spécialiste des six jours, il a remporté 38 compétitions entre 1931 et 1942. 
+% Ex: fr-ud-dev_00407 - Spécialiste des six jours, il a remporté 38 compétitions entre 1931 et 1942.
   rule left_extraposition(lex from "lexicons/nouns_adv.lp") {
     pattern{
       APP[cat=ADJ|NOUN|PRON|PROPN|VERB];
@@ -108,7 +108,7 @@ package FR_mod {
       N -[case]-> P;
       APP -[udep]-> N;
       N.lemma=APP.lemma
-    }       
+    }
     commands{ del_edge e; add_edge V -[advcl]-> APP}
   }
 
@@ -133,10 +133,10 @@ package FR_mod {
     without{PRO[PronType=Rel]; V -> X; X -> Y; Y -> PRO;  N << PRO}
     without{ADV[cat=ADV,lemma="où"|pourquoi]; V -> ADV; N << ADV}
     without{ADV[cat=ADV,lemma="où"|pourquoi]; V -> X; X -> ADV;  N << ADV}
-    without{ADV[cat=ADV,lemma="où"|pourquoi]; V -> X; X -> Y; Y -> ADV;  N << ADV}    
+    without{ADV[cat=ADV,lemma="où"|pourquoi]; V -> X; X -> Y; Y -> ADV;  N << ADV}
     commands{ del_edge e; add_edge N -[acl]-> V}
   }
-  
+
 % Numbers that follow a measure unity
   rule unity_num(lex from "lexicons/measure_unit.lp"){
     pattern{D[cat=NUM]; H[lemma=lex.unity]; e:H -[mod]-> D }

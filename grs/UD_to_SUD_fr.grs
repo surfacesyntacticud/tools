@@ -30,7 +30,7 @@ package FR_relations {
       C[cat=SCONJ,lemma=que]}
     commands { del_edge e; add_edge H -[comp:obl]-> C }
   }
-  
+
 % Relation between a verb and an argument in the form of a finite clause, which is an oblique complement introduced with "que". By default, CCOMP relations are transformed into COMP:OBJ relations. In this case, they are transformed into COMP:OBL relations.
   rule verb_compobl_ccomp (lex from "lexicons/verb_with_deobj_fin-verb.lp") {
     pattern {
@@ -47,7 +47,7 @@ package FR_relations {
       AFF[cat=PRON, lemma=lex.aff]; H -[expl]-> AFF}
     commands { del_edge e; add_edge H -[comp:obl]-> C }
   }
-  
+
 }
 
 

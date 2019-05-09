@@ -277,7 +277,7 @@ package relations {
     pattern { e:H -[re"obj.*"]-> D; }
     commands { del_edge e; add_edge H -[comp:obj]-> D }
   }
-  
+
   rule comp_obj_ccomp {
     pattern { e:H -[re"ccomp.*"]-> D; D[upos <> ADP]; }
     commands { del_edge e; add_edge H -[comp:obj]-> D }
@@ -292,18 +292,18 @@ package relations {
     pattern { e:H -[re"xcomp.*"]-> D;D[cat=VERB,VerbForm=Inf] }
     commands { del_edge e; add_edge H -[comp:obj:x]-> D }
   }
-  
+
   rule comp_oblx {
     pattern { e:H -[re"xcomp.*"]-> D; }
     without{D[cat=VERB,VerbForm=Inf]}
     commands { del_edge e; add_edge H -[comp:obl:x]-> D }
   }
-  
+
   rule comp_obl_ccomp {
     pattern { e:H -[re"ccomp.*"]-> D; D[upos = ADP]; }
     commands { del_edge e; add_edge H -[comp:obl]-> D }
   }
-  
+
   rule det_nummod {
     pattern { e:H -[re"nummod.*"]-> D; D << H}
     without { H -[det]-> *}
@@ -320,28 +320,28 @@ package relations {
     without{ D[cat=ADP|SCONJ]}
     commands { del_edge e; add_edge H -[mod]-> D }
   }
-  
+
   rule mod_nummod1 {
     pattern {e:H -[re"nummod.*"]-> D; H << D }
     without{ H -[det]-> *}
     commands { del_edge e; add_edge H -[mod]-> D }
   }
-  
+
   rule mod_nummod2 {
     pattern {e:H -[re"nummod.*"]-> D; H -[det]-> * }
     commands { del_edge e; add_edge H -[mod]-> D }
   }
-  
+
   rule pcase {
     pattern {e:H -[re"case.*"]-> D; D[cat=PART] }
     commands { del_edge e; add_edge H -[pcase]-> D }
   }
-  
+
   rule subj {
     pattern { e:H -[re"\(nsubj\|csubj\).*"]-> D}
     commands { del_edge e; add_edge H -[subj]-> D }
   }
-  
+
   rule udep {
     pattern { e:H -[re"\(acl\|nmod\).*"]-> D; D[cat=ADP|SCONJ]}
     commands { del_edge e; add_edge H -[udep]-> D }

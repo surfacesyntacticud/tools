@@ -317,7 +317,7 @@ package comp {
     }
     commands { del_edge e; add_edge H -[ccomp]-> D }
   }
-  
+
   rule iobj {
     pattern { e:H -[comp:obl]-> D; D[cat=PRON]}
     without { D -[case]-> * }
@@ -329,7 +329,7 @@ package comp {
     without{ D -[case]-> *}
     commands { del_edge e; add_edge H -[iobj:agent]-> D }
   }
-  
+
   rule obj {
     pattern { e:H -[comp:obj]-> D; D[nom=y];  }
     without { D -[cop]-> C; }
@@ -346,7 +346,7 @@ package comp {
     without { D -[case]-> *}
     commands { del_edge e; add_edge H -[obl:arg]-> D }
   }
-  
+
   rule obl_arg_case {
     pattern {e:H -[comp:obl]-> D; D -[case]-> * }
     without {D -[mark]-> *}
@@ -393,7 +393,7 @@ package mod {
     }
     commands { del_edge e; add_edge H -[acl]-> D }
   }
-  
+
 %  A nominal governs a finite verb in a MOD relation and the hypothesis is that this verb is always the head of a relative clause.
   rule aclrel {
     pattern {
