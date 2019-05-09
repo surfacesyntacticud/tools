@@ -304,12 +304,6 @@ package relations {
     commands { del_edge e; add_edge H -[comp:obl]-> D }
   }
 
-  rule det_nummod {
-    pattern { e:H -[re"nummod.*"]-> D; D << H}
-    without { H -[det]-> *}
-    commands { del_edge e; add_edge H -[det]-> D }
-  }
-
   rule mod {
     pattern { e:H -[re"\(advcl\|advmod\|amod\).*"]-> D; }
     commands { del_edge e; add_edge H -[mod]-> D }
@@ -321,14 +315,8 @@ package relations {
     commands { del_edge e; add_edge H -[mod]-> D }
   }
 
-  rule mod_nummod1 {
-    pattern {e:H -[re"nummod.*"]-> D; H << D }
-    without{ H -[det]-> *}
-    commands { del_edge e; add_edge H -[mod]-> D }
-  }
-
-  rule mod_nummod2 {
-    pattern {e:H -[re"nummod.*"]-> D; H -[det]-> * }
+  rule mod_nummod {
+    pattern {e:H -[re"nummod.*"]-> D }
     commands { del_edge e; add_edge H -[mod]-> D }
   }
 
