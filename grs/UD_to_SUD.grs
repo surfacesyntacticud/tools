@@ -88,15 +88,30 @@ package remove_extension_on_reverted_relations {
 % (4) cop <> mark case <> case, mark <> mark; the order is determined by the order of proximity with respect the head
 %===================================
 package head_reverse {
-  rule aux {
-    pattern {e:H -[aux]-> AUX}
-    without {H -[aux:pass|aux:caus|cop]-> AUX2} % AUX relations must be processed after AUX:CAUS, AUX:PASS and COP relations (point (1)).
+  rule case{
+    pattern { e:H-[case]->X1; X1[cat <> PART]}
+    without { H-[case]->X2; X1 << X2 ; X2 << H} % There is no other CASE dependent between the head and the COP dependent (point (4)).
+    without { H-[case]->X2; X1 >> X2 ; X2 >> H}
+    without { H -[punct]-> P; X1 << P; P << H} % no punctuation mark that has not to be shifted
     commands {
       del_edge e;
-      add_edge AUX -[comp:aux]-> H;
-      shift_in H ==> AUX;
-      shift_out H =[mark]=> AUX;
-      shift_out H =[advcl|advmod|cc|csubj|csubj:pass|dislocated|nsubj|nsubj:pass|obl:mod|parataxis|punct|root]=> AUX;
+      add_edge X1-[comp]-> H;
+      shift_in H ==> X1;
+      shift_out H =[aux|case|cop|mark]=> X1;
+      shift_out H =[advcl|cc|csubj|nsubj|obl:mod|punct|root]=> X1;
+    }
+  }
+
+  rule case_punct{
+    pattern { e:H-[case]->X1; H -[punct]-> P; X1[cat <> PART]; X1 << P; P << H} % there is a punctuation mark that has not to be shifted
+    without { H-[case]->X2; X1 << X2 ; X2 << H} % There is no other CASE dependent between the head and the COP dependent (point (4)).
+    without { H-[case]->X2; X1 >> X2 ; X2 >> H}
+    commands {
+      del_edge e;
+      add_edge X1-[comp]-> H;
+      shift_in H ==> X1;
+      shift_out H =[aux|case|cop|mark]=> X1;
+      shift_out H =[advcl|cc|csubj|nsubj|obl:mod|punct|root]=> X1;
     }
   }
 
@@ -136,30 +151,15 @@ package head_reverse {
     }
   }
 
-  rule case{
-    pattern { e:H-[case]->X1; X1[cat <> PART]}
-    without { H-[case]->X2; X1 << X2 ; X2 << H} % There is no other CASE dependent between the head and the COP dependent (point (4)).
-    without { H-[case]->X2; X1 >> X2 ; X2 >> H}
-    without { H -[punct]-> P; X1 << P; P << H} % no punctuation mark that has not to be shifted
+  rule aux {
+    pattern {e:H -[aux]-> AUX}
+    without {H -[aux:pass|aux:caus|cop]-> AUX2} % AUX relations must be processed after AUX:CAUS, AUX:PASS and COP relations (point (1)).
     commands {
       del_edge e;
-      add_edge X1-[comp]-> H;
-      shift_in H ==> X1;
-      shift_out H =[aux|case|cop|mark]=> X1;
-      shift_out H =[advcl|cc|csubj|nsubj|obl:mod|punct|root]=> X1;
-    }
-  }
-
-  rule case_punct{
-    pattern { e:H-[case]->X1; H -[punct]-> P; X1[cat <> PART]; X1 << P; P << H} % there is a punctuation mark that has not to be shifted
-    without { H-[case]->X2; X1 << X2 ; X2 << H} % There is no other CASE dependent between the head and the COP dependent (point (4)).
-    without { H-[case]->X2; X1 >> X2 ; X2 >> H}
-    commands {
-      del_edge e;
-      add_edge X1-[comp]-> H;
-      shift_in H ==> X1;
-      shift_out H =[aux|case|cop|mark]=> X1;
-      shift_out H =[advcl|cc|csubj|nsubj|obl:mod|punct|root]=> X1;
+      add_edge AUX -[comp:aux]-> H;
+      shift_in H ==> AUX;
+      shift_out H =[mark]=> AUX;
+      shift_out H =[advcl|advmod|cc|csubj|csubj:pass|dislocated|nsubj|nsubj:pass|obl:mod|parataxis|punct|root]=> AUX;
     }
   }
 
@@ -183,6 +183,118 @@ package head_reverse {
     without { H-[aux|aux:pass|aux:caus|case|cop|mark]->X2; X1 << X2 ; X2 << H}% There is no AUX, AUX:CAUS, AUX:PASS (point (3)), CASE (point(2)), COP and other MARK (point(4)) dependents between the head and the mark dependent.
     without { H-[aux|aux:pass|aux:caus|case|cop|mark]->X2; X1 >> X2 ; X2 >> H}
     without{ * -[cop]-> H} % Ex : quel que soit ...
+    commands {
+      del_edge e;
+      add_edge X1-[comp]-> H;
+      shift_in H ==> X1;
+      shift_out H =[mark]=> X1;
+      shift_out H =[cc|punct|root]=> X1;
+    }
+  }
+}
+
+
+
+package new_head_reverse {
+  rule case{
+    pattern { e:H-[case]->X1; X1[cat <> PART]}
+    without { H-[case]->X2; X1 << X2 ; X2 << H}
+    without { H-[case]->X2; X1 >> X2 ; X2 >> H}
+    without { H -[punct]-> P; X1 << P; P << H}
+    commands {
+      del_edge e;
+      add_edge X1-[comp]-> H;
+      shift_in H ==> X1;
+      shift_out H =[aux|case|cop|mark]=> X1;
+      shift_out H =[advcl|cc|csubj|nsubj|obl:mod|punct|root]=> X1;
+    }
+  }
+
+  rule case_punct{
+    pattern { e:H-[case]->X1; H -[punct]-> P; X1[cat <> PART]; X1 << P; P << H}
+    without { H-[case]->X2; X1 << X2 ; X2 << H}
+    without { H-[case]->X2; X1 >> X2 ; X2 >> H}
+    commands {
+      del_edge e;
+      add_edge X1-[comp]-> H;
+      shift_in H ==> X1;
+      shift_out H =[aux|case|cop|mark]=> X1;
+      shift_out H =[advcl|cc|csubj|nsubj|obl:mod|punct|root]=> X1;
+    }
+  }
+
+  rule auxpass {
+    pattern {e:H -[aux:pass]-> AUX}
+    without { H -[case]-> * }
+    commands {
+      del_edge e;
+      add_edge AUX -[comp:pass]-> H;
+      shift_in H ==> AUX;
+      shift_out H =[aux|mark]=> AUX;
+      shift_out H =[advcl|advmod|cc|csubj|csubj:pass|dislocated|nsubj|nsubj:pass|obl:mod|parataxis|punct|root]=> AUX;
+    }
+  }
+
+  rule auxcaus {
+    pattern {e:H -[aux:caus]-> AUX}
+    without { H -[case]-> * }
+    commands {
+      del_edge e;
+      add_edge AUX -[comp:caus]-> H;
+      shift_in H ==> AUX;
+      shift_out H =[aux|mark]=> AUX;
+      shift_out H =[iobj:agent|obj:agent|obl:agent]=> AUX;
+      shift_out H =[advcl|advmod|cc|csubj|csubj:pass|dislocated|nsubj|nsubj:caus|nsubj:pass|obl:mod|parataxis|punct|root]=> AUX;
+    }
+  }
+
+  rule cop {
+    pattern {e:H -[cop]-> AUX}
+    without { H -[case]-> * }
+    commands {
+      del_edge e;
+      add_edge AUX -[comp:pred]-> H;
+      shift_in H ==> AUX;
+      shift_out H =[aux|mark]=> AUX;
+      shift_out H =[advcl|advmod|cc|csubj|csubj:pass|dislocated|nsubj|nsubj:pass|obl:mod|parataxis|punct|root]=> AUX;
+    }
+  }
+
+  rule aux {
+    pattern {e:H -[aux]-> AUX}
+    without {H -[case|aux:pass|aux:caus|cop]-> AUX2}
+    without { H -[aux]-> AUX2; AUX << AUX2 ; AUX2 << H}
+    without { H -[aux]-> AUX2; AUX >> AUX2 ; AUX2 >> H}
+    commands {
+      del_edge e;
+      add_edge AUX -[comp:aux]-> H;
+      shift_in H ==> AUX;
+      shift_out H =[mark]=> AUX;
+      shift_out H =[advcl|advmod|cc|csubj|csubj:pass|dislocated|nsubj|nsubj:pass|obl:mod|parataxis|punct|root]=> AUX;
+    }
+  }
+
+  rule mark{
+    pattern {e:H-[mark]->X1}
+    without {H -[case|aux:pass|aux:caus|cop|aux]-> X2}
+    without { H-[mark]->X2; X1 << X2 ; X2 << H}
+    without { H-[mark]->X2; X1 >> X2 ; X2 >> H}
+    without { H -[punct]-> P; X1 << P; P << H}
+    commands {
+      del_edge e;
+      add_edge X1-[comp]-> H;
+      shift_in H ==> X1;
+      shift_out H =[mark]=> X1;
+      shift_out H =[cc|punct|root]=> X1;
+    }
+  }
+
+  rule mark_punct{
+    pattern {e:H-[mark]->X1; H -[punct]-> P; X1 << P; P << H}
+    without { H -[case|aux:pass|aux:caus|cop|aux]-> X2}
+    without { H-[mark]->X2; X1 << X2 ; X2 << H}
+    without { H-[mark]->X2; X1 >> X2 ; X2 >> H}
+    without { H-[aux|aux:pass|aux:caus|case|cop|mark]->X2; X1 >> X2 ; X2 >> H}
     commands {
       del_edge e;
       add_edge X1-[comp]-> H;
@@ -392,6 +504,21 @@ strat main {
     Onf (minimize_conj_dep),
     remove_extension_on_reverted_relations.s,
     Onf (head_reverse),
+    Onf (gov_rise),% Package GOV_RISE must follow package HEAD_REVERSE because it corrects some wrong consequences of head changes.
+    Onf (sub_relations),
+    Onf (relations), % Package RELATIONS must follow package GOV_RISE because this package entails the change of catagory for the source and the target of some relaitions.
+
+    Onf (chained_relations),% Package CHAINED_RELATIONS must follow package GOV_RISE because it can entail a wrong coordination between two elements because of errors in head changes (UD_French-GS: fr-ud-dev_00131).
+  )
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+strat new {
+  Seq (
+    Onf (eud_to_ud),
+    Onf (minimize_conj_dep),
+    remove_extension_on_reverted_relations.s,
+    Onf (new_head_reverse),
     Onf (gov_rise),% Package GOV_RISE must follow package HEAD_REVERSE because it corrects some wrong consequences of head changes.
     Onf (sub_relations),
     Onf (relations), % Package RELATIONS must follow package GOV_RISE because this package entails the change of catagory for the source and the target of some relaitions.
