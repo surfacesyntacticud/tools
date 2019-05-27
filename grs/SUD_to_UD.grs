@@ -5,7 +5,6 @@ package nom_init {
 % All words with NOUN, PRON, PROPN, SYM, X as POS are nominals.
   rule nom_noun {
     pattern {N[cat=NOUN|PRON|PROPN|SYM|X,!nom]}
-    without{N[cat=SYM]; M -[mod]-> N; N << M} % Ex: + 3,6 %
     commands {N.nom=y}
   }
 
@@ -14,9 +13,10 @@ package nom_init {
     pattern {A[cat=ADV,!nom]; * -[comp:obj|subj]-> A}
     commands {A.nom=y}
   }
+
 % All words with a determiner are nominals.
   rule nom_det {
-    pattern {N[cat<>NOUN|PRON|PROPN|X,!nom]; N -[det]-> *}
+    pattern {N[cat<>NOUN|PRON|PROPN|SYM|X,!nom]; N -[det]-> *}
     commands {N.nom=y}
   }
 
@@ -30,12 +30,6 @@ package nom_init {
   rule nom_num_before {
     pattern {N[cat=NUM,!nom]; H -[comp|comp:obj|comp:obl|mod|subj|udep]-> N; H >> N}
     commands {N.nom=y}
-  }
-
-% Question marks that are target of DEP_SUD dependencies are nominals.
-  rule nom_punct {
-    pattern {P[cat=PUNCT,lemma="?", !nom]; * -[dep_SUD]-> P}
-    commands {P.nom=y}
   }
 
 % When a MWE is a nominal, the node representing this expression is marked as a nominal.
@@ -332,7 +326,7 @@ package comp {
 
   rule obj {
     pattern { e:H -[comp:obj]-> D; D[nom=y];  }
-    without { D -[cop]-> C; }
+    without { D -[cop]-> C; } % TODO: remove no cop at this stage
     commands { del_edge e; add_edge H -[obj]-> D }
   }
 
