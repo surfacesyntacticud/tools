@@ -31,6 +31,15 @@ package FR_relations {
     commands { del_edge e; add_edge H -[comp:obl]-> C }
   }
 
+% When a NUM D depends on a word G in a NUMMOD relation and when D precedes G, D is a determiner of G.
+  rule num_det{
+    pattern{
+      D[cat=NUM];
+      e:H -[nummod]-> D; D << H
+    }
+    commands{ del_edge e; add_edge H -[det]-> D}
+  }
+  
 % Relation between a verb and an argument in the form of a finite clause, which is an oblique complement introduced with "que". By default, CCOMP relations are transformed into COMP:OBJ relations. In this case, they are transformed into COMP:OBL relations.
   rule verb_compobl_ccomp (lex from "lexicons/verb_with_deobj_fin-verb.lp") {
     pattern {
@@ -122,6 +131,28 @@ strat FR_main_specif_expr{
   Seq(
     Onf(specif_expr_init),
     FR_main,
+    Onf(specif_expr_close)
+  )
+}
+
+strat FR_new{
+  Seq (
+%    Onf (minimize_conj_dep),
+    remove_extension_on_reverted_relations.s,
+    Onf (new_head_reverse),
+    Onf (FR_head_reverse),
+    Onf (gov_rise),
+    Onf (FR_relations),
+    Onf (sub_relations),
+    Onf (relations),
+    Onf (chained_relations),
+  )
+}
+
+strat FR_new_specif_expr{
+  Seq(
+    Onf(specif_expr_init),
+    FR_new,
     Onf(specif_expr_close)
   )
 }

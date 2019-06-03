@@ -28,10 +28,15 @@ package nom_init {
 
 % All numerals preceding their governor with a relation that is normally used for nominals are nominals.
   rule nom_num_before {
-    pattern {N[cat=NUM,!nom]; H -[comp|comp:obj|comp:obl|mod|subj|udep]-> N; H >> N}
+    pattern {N[cat=NUM,!nom]; H -[comp|comp:obj|comp:obl|subj|udep]-> N; H >> N}
     commands {N.nom=y}
   }
 
+% All numerals preceding their governor with a relation that is normally used for nominals are nominals.
+  rule nom_num_verb {
+    pattern {N[cat=NUM,!nom]; H[cat=AUX|VERB]; H -[mod]-> N}
+    commands {N.nom=y}
+  }
 % When a MWE is a nominal, the node representing this expression is marked as a nominal.
   rule nom_mwe{
     pattern{H -[expr]-> N; H[!nom]; N[_MISC_MWEPOS=NOUN|PRON|PROPN|SYM|X]}
@@ -478,7 +483,7 @@ package mod {
     commands { del_edge e; add_edge H -[nmod]-> D }
   }
   rule nummod {
-    pattern { e:H -[mod]-> D; D[cat=NUM]; H[nom=y]; D << H }
+    pattern { e:H -[mod]-> D; D[cat=NUM]; D << H }
     without{ PRO[PronType=Rel]; D -> PRO; H << PRO}
     without{ H -[case|mark]-> D1; D << D1}
     commands { del_edge e; add_edge H -[nummod]-> D }
