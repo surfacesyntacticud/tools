@@ -17,7 +17,7 @@
 1	je	_	PRON	_	_	2	subj	_	_
 2	parle	_	VERB	_	_	0	root	_	_
 3	à	_	ADP	_	_	2	comp:obl	_	_
-4	Marie	_	PROPN	_	_	3	comp	_	_
+4	Marie	_	PROPN	_	_	3	comp:obj	_	_
 
 # sent_id = on_nomme_Jean_N
 1	on	_	PRON	_	_	2	subj	_	_
@@ -28,15 +28,15 @@
 # sent_id = il_fait_VINF_P
 1	il	_	PRON	_	_	2	subj	_	_
 2	fait	_	AUX	_	_	0	root	_	_
-3	dormir	_	VERB	_	_	2	comp:caus	_	_
-4	Pierre	_	PROPN	_	_	2	comp:obj	_	_
+3	dormir	_	VERB	_	_	2	comp:aux@caus	_	_
+4	Pierre	_	PROPN	_	_	2	comp:obj@agent	_	_
 
 # sent_id = il_oblige_P_a_VINF
 1	il	_	PRON	_	_	2	subj	_	_
 2	oblige	_	VERB	_	_	0	root	_	_
 3	Pierre	_	PROPN	_	_	2	comp:obj	_	_
-4	à	_	ADP	_	_	2	comp:pred	_	_
-5	dormir	_	VERB	_	_	4	comp	_	_
+4	à	_	ADP	_	_	2	comp:obl@x	_	_
+5	dormir	_	VERB	_	_	4	comp:obj	_	_
 
 # sent_id = difficile_a_lire
 1	ce	_	DET	_	_	2	det	_	_
@@ -44,30 +44,30 @@
 3	est	_	AUX	_	_	0	root	_	_
 4	difficile	_	ADJ	_	_	3	comp:pred	_	_
 5	à	_	ADP	_	_	4	comp:obl	_	_
-6	lire	_	VERB	_	_	5	comp	_	_
+6	lire	_	VERB	_	_	5	comp:obj	_	_
 
 # sent_id = possible_que
-1	c'	_	PRON	_	_	2	subj	_	_
+1	c'	_	PRON	_	_	2	subj@expl	_	_
 2	est	_	AUX	_	_	0	root	_	_
 3	possible	_	ADJ	_	_	2	comp:pred	_	_
-4	qu'	_	SCONJ	_	_	3	comp:obj	_	_
+4	qu'	_	SCONJ	_	_	3	comp:obj@agent	_	_
 5	il	_	PRON	_	_	6	subj	_	_
-6	vienne	_	VERB	_	_	4	comp	_	_
+6	vienne	_	VERB	_	_	4	comp:obj	_	_
 
 # sent_id = difficile_a_expliquer
 1	c'	_	PRON	_	_	2	subj	_	_
 2	est	_	AUX	_	_	0	root	_	_
 3	difficile	_	ADJ	_	_	2	comp:pred	_	_
-4	à	_	ADP	_	_	3	comp:obl	_	_
-5	expliquer	_	VERB	_	_	4	comp	_	_
+4	à	_	ADP	_	_	3	comp:obl@x	_	_
+5	expliquer	_	VERB	_	_	4	comp:obj	_	_
 
 # sent_id = avoir_besoin
 1	il	_	PRON	_	_	2	subj	_	_
 2	a	_	VERB	_	_	0	root	_	_
-3	besoin	_	NOUN	_	_	2	comp:lvc	_	_
-4	de	_	ADP	_	_	3	dep	_	_
+3	besoin	_	NOUN	_	_	2	comp:obl@lvc	_	_
+4	de	_	ADP	_	_	3	comp:obl	_	_
 5	sa	_	DET	_	_	6	det	_	_
-6	voiture	_	NOUN	_	_	4	comp	_	_
+6	voiture	_	NOUN	_	_	4	comp:obj	_	_
 
 # sent_id = est_gentil
 1	il	_	PRON	_	_	2	subj	_	_
@@ -87,45 +87,45 @@
 # sent_id = one_pass
 1	il	_	PRON	_	_	2	subj	_	_
 2	est	_	AUX	_	_	0	root	_	_
-3	mordu	_	VERB	_	_	2	comp:pass	_	_
+3	mordu	_	VERB	_	_	2	comp:aux@pass	_	_
 
 # sent_id = aux_and_pass
 1	il	_	PRON	_	_	2	subj	_	_
 2	a	_	AUX	_	_	0	root	_	_
 3	été	_	AUX	_	_	2	comp:aux	_	_
-4	mordu	_	VERB	_	_	3	comp:pass	_	_
+4	mordu	_	VERB	_	_	3	comp:aux@pass	_	_
 
 # sent_id = etre_oblique
 1	il	_	PRON	_	_	2	subj	_	_
 2	est	_	VERB	_	_	0	root	_	_
 3	en	_	ADP	_	_	2	comp:obl	_	_
-4	voiture	_	NOUN	_	_	3	comp	_	_
+4	voiture	_	NOUN	_	_	3	comp:obj	_	_
 
 # sent_id = etre_cop
 1	il	_	PRON	_	_	2	subj	_	_
 2	est	_	AUX	_	_	0	root	_	_
 3	en	_	ADP	_	_	2	comp:pred	_	_
-4	nage	_	NOUN	_	_	3	comp	_	_
+4	nage	_	NOUN	_	_	3	comp:obj	_	_
 
 # sent_id = tres_difficile
 1	un	_	DET	_	_	2	det	_	_
 2	livre	_	NOUN	_	_	0	root	_	_
 3	très	_	ADV	_	_	4	mod	_	_
-4	difficile	_	ADJ	_	_	2	dep	_	_
+4	difficile	_	ADJ	_	_	2	udep	_	_
 5	à	_	ADP	_	_	4	comp:obl	_	_
-6	lire	_	VERB	_	_	5	comp	_	_
+6	lire	_	VERB	_	_	5	comp:obj	_	_
 
 # sent_id = difficilement_lisible
 1	un	_	DET	_	_	2	det	_	_
 2	livre	_	NOUN	_	_	0	root	_	_
 3	très	_	ADV	_	_	4	mod	_	_
 4	difficilement	_	ADV	_	_	5	mod	_	_
-5	lisible	_	ADJ	_	_	2	dep	_	_
+5	lisible	_	ADJ	_	_	2	udep	_	_
 
 # sent_id = beaucoup_de
 1	beaucoup	_	ADV	_	_	4	subj	_	_
 2	de	_	ADP	_	_	1	comp:obl	_	_
-3	gens	_	NOUN	_	_	2	comp	_	_
+3	gens	_	NOUN	_	_	2	comp:obj	_	_
 4	viennent	_	VERB	_	_	0	root	_	_
 
 # sent_id = ccomp_obj
@@ -133,29 +133,29 @@
 2	pense	_	VERB	_	_	0	root	_	_
 3	qu'	_	SCONJ	_	_	2	comp:obj	_	_
 4	il	_	PRON	_	_	5	subj	_	_
-5	vient	_	VERB	_	_	3	comp	_	_
+5	vient	_	VERB	_	_	3	comp:obj	_	_
 
 # sent_id = ccomp_obl
 1	je	_	PRON	_	_	2	subj	_	_
 2	rêve	_	VERB	_	_	0	root	_	_
 3	qu'	_	SCONJ	_	_	2	comp:obl	_	_
 4	il	_	PRON	_	_	5	subj	_	_
-5	vienne	_	VERB	_	_	3	comp	_	_
+5	vienne	_	VERB	_	_	3	comp:obj	_	_
 
 # sent_id = par_P
 1	elle	_	PRON	_	_	2	subj	_	_
 2	est	_	AUX	_	_	0	root	_	_
-3	désignée	_	VERB	_	_	2	comp:pass	_	_
-4	par	_	ADP	_	_	3	comp:agent	_	_
-5	Pierre	_	PROPN	_	_	4	comp	_	_
+3	désignée	_	VERB	_	_	2	comp:aux@pass	_	_
+4	par	_	ADP	_	_	3	comp:obl@agent	_	_
+5	Pierre	_	PROPN	_	_	4	comp:obj	_	_
 
 # sent_id = par_son_nom
 1	elle	_	PRON	_	_	2	subj	_	_
 2	est	_	AUX	_	_	0	root	_	_
-3	désignée	_	VERB	_	_	2	comp:pass	_	_
+3	désignée	_	VERB	_	_	2	comp:aux@pass	_	_
 4	par	_	ADP	_	_	3	comp:obl	_	_
 5	son	_	DET	_	_	6	det	_	_
-6	nom	_	NOUN	_	_	4	comp	_	_
+6	nom	_	NOUN	_	_	4	comp:obj	_	_
 
 # section = Negation
 # sent_id = one_aux_neg
@@ -170,7 +170,7 @@
 2	n'	_	ADV	_	Polarity=Neg	3	mod	_	_
 3	est	_	AUX	_	_	0	root	_	_
 4	pas	_	ADV	_	Polarity=Neg	3	mod	_	_
-5	mordu	_	VERB	_	_	3	comp:pass	_	_
+5	mordu	_	VERB	_	_	3	comp:aux@pass	_	_
 
 # sent_id = aux_and_pass_neg
 1	il	_	PRON	_	_	3	subj	_	_
@@ -178,15 +178,15 @@
 3	a	_	AUX	_	_	0	root	_	_
 4	pas	_	ADV	_	Polarity=Neg	3	mod	_	_
 5	été	_	AUX	_	_	3	comp:aux	_	_
-6	mordu	_	VERB	_	_	5	comp:pass	_	_
+6	mordu	_	VERB	_	_	5	comp:aux@pass	_	_
 
 # sent_id = aux_mark
 1	dès	_	ADP	_	_	0	root	_	_
-2	que	_	SCONJ	_	_	1	comp	_	_
+2	que	_	SCONJ	_	_	1	comp:obj	_	_
 3	tu	_	PRON	_	_	4	subj	_	_
-4	auras	_	AUX	_	_	2	comp	_	_
+4	auras	_	AUX	_	_	2	comp:obj	_	_
 5	été	_	AUX	_	_	4	comp:aux	_	_
-6	contacté	_	VERB	_	_	5	comp:pass	_	_
+6	contacté	_	VERB	_	_	5	comp:aux@pass	_	_
 
 # sent_id = Europar.550_00040
 # text = Je pense vraiment qu'il convient d'être extrêmement prudent.
@@ -194,10 +194,10 @@
 2	pense	penser	VERB	_	_	0	root	_	_
 3	vraiment	vraiment	ADV	_	_	2	mod	_	_
 4	qu'	que	SCONJ	_	_	2	comp:obj	_	_
-5	il	il	PRON	_	_	6	subj	_	_
-6	convient	convenir	VERB	_	_	4	comp	_	_
-7	d'	de	ADP	_	_	6	comp:obj	_	_
-8	être	être	AUX	_	_	7	comp	_	_
+5	il	il	PRON	_	_	6	subj@expl	_	_
+6	convient	convenir	VERB	_	_	4	comp:obj	_	_
+7	d'	de	ADP	_	_	6	comp:obj@agent	_	_
+8	être	être	AUX	_	_	7	comp:obj	_	_
 9	extrêmement	extrêmement	ADV	_	_	10	mod	_	_
 10	prudent	prudent	ADJ	_	_	8	comp:pred	_	_
 11	.	.	PUNCT	_	_	2	punct	_	_
@@ -206,13 +206,13 @@
 # text = Il est composé de quatre étoiles non clairement identifiées.
 1	Il	il	PRON	_	Gender=Masc|Number=Sing|Person=3|PronType=Prs	2	subj	_	_
 2	est	être	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	_
-3	composé	composer	VERB	_	Gender=Masc|Number=Sing|Tense=Past|VerbForm=Part	2	comp:pass	_	_
-4	de	de	ADP	_	_	3	comp:agent	_	_
+3	composé	composer	VERB	_	Gender=Masc|Number=Sing|Tense=Past|VerbForm=Part	2	comp:aux@pass	_	_
+4	de	de	ADP	_	_	3	comp:obl@agent	_	_
 5	quatre	quatre	NUM	_	_	6	det	_	_
-6	étoiles	étoile	NOUN	_	Gender=Fem|Number=Plur	4	comp	_	_
+6	étoiles	étoile	NOUN	_	Gender=Fem|Number=Plur	4	comp:obj	_	_
 7	non	non	ADV	_	_	9	mod	_	_
 8	clairement	clairement	ADV	_	_	9	mod	_	_
-9	identifiées	identifier	VERB	_	Gender=Fem|Number=Plur|Tense=Past|VerbForm=Part	6	dep	_	SpaceAfter=No
+9	identifiées	identifier	VERB	_	Gender=Fem|Number=Plur|Tense=Past|VerbForm=Part	6	mod	_	SpaceAfter=No
 10	.	.	PUNCT	_	_	2	punct	_	_
 
 # sent_id = fr-ud-train_11980
@@ -221,13 +221,13 @@
 2	Britanniques	britannique	NOUN	_	Gender=Masc|Number=Plur	3	subj	_	_
 3	sont	être	AUX	_	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	_
 4	également	également	ADV	_	_	5	mod	_	_
-5	approchés	approcher	VERB	_	Gender=Masc|Number=Plur|Tense=Past|VerbForm=Part	3	comp:pass	_	_
+5	approchés	approcher	VERB	_	Gender=Masc|Number=Plur|Tense=Past|VerbForm=Part	3	comp:aux@pass	_	_
 6	pour	pour	ADP	_	_	5	mod	_	_
-7	intervenir	intervenir	VERB	_	VerbForm=Inf	6	comp	_	_
+7	intervenir	intervenir	VERB	_	VerbForm=Inf	6	comp:obj	_	_
 8	mais	mais	CCONJ	_	_	9	cc	_	_
 9	sans	sans	ADP	_	_	5	conj	_	_
-10	réelle	réel	ADJ	_	Gender=Fem|Number=Sing	11	dep	_	_
-11	insistance	insistance	NOUN	_	Gender=Fem|Number=Sing	9	comp	_	SpaceAfter=No
+10	réelle	réel	ADJ	_	Gender=Fem|Number=Sing	11	mod	_	_
+11	insistance	insistance	NOUN	_	Gender=Fem|Number=Sing	9	comp:obj	_	SpaceAfter=No
 12	.	.	PUNCT	_	_	3	punct	_	_
 
 # sent_id = fr-ud-train_09113
@@ -235,52 +235,52 @@
 1	Il	il	PRON	_	Gender=Masc|Number=Sing|Person=3|PronType=Prs	2	subj	_	_
 2	fut	être	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	_
 3	précepteur	précepteur	NOUN	_	Gender=Masc|Number=Sing	2	comp:pred	_	_
-4	de	de	ADP	_	_	3	dep	_	_
-5	Don	Don	PROPN	_	_	4	comp	_	_
+4	de	de	ADP	_	_	3	comp:obl	_	_
+5	Don	Don	PROPN	_	_	4	comp:obj	_	_
 6	Antonio	Antonio	PROPN	_	_	5	flat:name	_	SpaceAfter=No
 7	,	,	PUNCT	_	_	5	punct	_	_
 8	neveu	neveu	NOUN	_	Gender=Masc|Number=Sing	5	appos	_	_
 9-10	du	_	_	_	_	_	_	_	_
-9	de	de	ADP	_	_	8	dep	_	_
+9	de	de	ADP	_	_	8	comp:obl	_	_
 10	le	le	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	11	det	_	_
-11	roi	roi	NOUN	_	Gender=Masc|Number=Sing	9	comp	_	_
+11	roi	roi	NOUN	_	Gender=Masc|Number=Sing	9	comp:obj	_	_
 12	Jean	Jean	PROPN	_	_	11	appos	_	_
-13	III	III	NUM	_	_	12	dep	_	SpaceAfter=No
+13	III	III	NUM	_	_	12	udep	_	SpaceAfter=No
 14	,	,	PUNCT	_	_	15	punct	_	_
 15	fut	être	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	2	conj	_	_
-16	nommé	nommer	VERB	_	Gender=Masc|Number=Sing|Tense=Past|VerbForm=Part	15	comp:pass	_	_
+16	nommé	nommer	VERB	_	Gender=Masc|Number=Sing|Tense=Past|VerbForm=Part	15	comp:aux@pass	_	_
 17	en	en	ADP	_	_	16	mod	_	_
-18	1559	1559	NUM	_	_	17	comp	_	_
+18	1559	1559	NUM	_	_	17	comp:obj	_	_
 19	archevêque	archevêque	NOUN	_	Gender=Masc|Number=Sing	16	comp:pred	_	_
-20	de	de	ADP	_	_	19	dep	_	_
-21	Braga	Braga	PROPN	_	_	20	comp	_	SpaceAfter=No
+20	de	de	ADP	_	_	19	mod	_	_
+21	Braga	Braga	PROPN	_	_	20	comp:obj	_	SpaceAfter=No
 22	,	,	PUNCT	_	_	24	punct	_	_
 23	se	se	PRON	_	Person=3|PronType=Prs	24	comp:obj	_	_
 24	démit	démettre	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	15	conj	_	_
 25	de	de	ADP	_	_	24	comp:obl	_	_
 26	son	son	DET	_	Gender=Masc|Number=Sing|Poss=Yes|PronType=Prs	27	det	_	_
-27	évêché	évêché	NOUN	_	Gender=Masc|Number=Sing	25	comp	_	_
-28	pour	pour	ADP	_	_	24	mod	_	_
+27	évêché	évêché	NOUN	_	Gender=Masc|Number=Sing	25	comp:obj	_	_
+28	pour	pour	ADP	_	_	24	mod@x	_	_
 29	s'	se	PRON	_	Person=3|PronType=Prs	30	comp:obj	_	SpaceAfter=No
-30	enfermer	enfermer	VERB	_	VerbForm=Inf	28	comp	_	_
+30	enfermer	enfermer	VERB	_	VerbForm=Inf	28	comp:obj	_	_
 31	dans	dans	ADP	_	_	30	comp:obl	_	_
 32	un	un	DET	_	Definite=Ind|Gender=Masc|Number=Sing|PronType=Art	33	det	_	_
-33	couvent	couvent	NOUN	_	Gender=Masc|Number=Sing	31	comp	_	SpaceAfter=No
+33	couvent	couvent	NOUN	_	Gender=Masc|Number=Sing	31	comp:obj	_	SpaceAfter=No
 34	,	,	PUNCT	_	_	36	punct	_	_
 35	et	et	CCONJ	_	_	36	cc	_	_
 36	mourut	mourir	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	24	conj	_	_
 37	en	en	ADP	_	_	36	comp:obl	_	_
-38	1590	1590	NUM	_	_	37	comp	_	_
+38	1590	1590	NUM	_	_	37	comp:obj	_	_
 39	en	en	ADP	_	_	36	mod	_	_
-40	odeur	odeur	NOUN	_	Gender=Fem|Number=Sing	39	comp	_	_
-41	de	de	ADP	_	_	40	dep	_	_
-42	sainteté	sainteté	NOUN	_	Gender=Fem|Number=Sing	41	comp	_	SpaceAfter=No
+40	odeur	odeur	NOUN	_	Gender=Fem|Number=Sing	39	comp:obj	_	_
+41	de	de	ADP	_	_	40	comp:obl	_	_
+42	sainteté	sainteté	NOUN	_	Gender=Fem|Number=Sing	41	comp:obj	_	SpaceAfter=No
 43	.	.	PUNCT	_	_	2	punct	_	_
 
 # sent_id = fr-ud-dev_00204
 # text = Après avoir atteint l'Arctique, Inglefield explora et cartographia la côte occidentale du Groenland ;
 1	Après	après	ADP	_	_	8	mod	_	_
-2	avoir	avoir	AUX	_	VerbForm=Inf	1	comp	_	_
+2	avoir	avoir	AUX	_	VerbForm=Inf	1	comp:obj	_	_
 3	atteint	atteindre	VERB	_	Gender=Masc|Number=Sing|Tense=Past|VerbForm=Part	2	comp:aux	_	_
 4	l'	le	DET	_	Definite=Def|Number=Sing|PronType=Art	5	det	_	SpaceAfter=No
 5	Arctique	Arctique	PROPN	_	_	3	comp:obj	_	SpaceAfter=No
@@ -291,11 +291,11 @@
 10	cartographia	cartographier	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	8	conj	_	_
 11	la	le	DET	_	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	12	det	_	_
 12	côte	côte	NOUN	_	Gender=Fem|Number=Sing	10	comp:obj	_	_
-13	occidentale	occidental	ADJ	_	Gender=Fem|Number=Sing	12	dep	_	_
+13	occidentale	occidental	ADJ	_	Gender=Fem|Number=Sing	12	mod	_	_
 14-15	du	_	_	_	_	_	_	_	_
-14	de	de	ADP	_	_	12	dep	_	_
+14	de	de	ADP	_	_	12	comp:obl	_	_
 15	le	le	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	16	det	_	_
-16	Groenland	Groenland	PROPN	_	_	14	comp	_	_
+16	Groenland	Groenland	PROPN	_	_	14	comp:obj	_	_
 17	;	;	PUNCT	_	_	8	punct	_	_
 
 # sent_id = fr-ud-dev_00131
@@ -305,12 +305,12 @@
 3	développe	développer	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	_
 4	ses	son	DET	_	Gender=Fem|Number=Plur|Poss=Yes|PronType=Prs	5	det	_	_
 5	applications	application	NOUN	_	Gender=Fem|Number=Plur	3	comp:obj	_	_
-6	domestiques	domestique	ADJ	_	Gender=Fem|Number=Plur	5	dep	_	SpaceAfter=No
-7	,	,	PUNCT	_	_	5	punct	_	_
-8	à	à	ADP	_	_	5	dep	_	_
+6	domestiques	domestique	ADJ	_	Gender=Fem|Number=Plur	5	mod	_	SpaceAfter=No
+7	,	,	PUNCT	_	_	8	punct	_	_
+8	à	à	ADP	_	_	5	mod	_	_
 9	la	le	DET	_	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	10	det	_	_
-10	cuisine	cuisine	NOUN	_	Gender=Fem|Number=Sing	8	comp	_	SpaceAfter=No
-11	,	,	PUNCT	_	_	10	punct	_	_
+10	cuisine	cuisine	NOUN	_	Gender=Fem|Number=Sing	8	comp:obj	_	SpaceAfter=No
+11	,	,	PUNCT	_	_	12	punct	_	_
 12	pour	pour	ADP	_	_	8	mod	_	_
 13	cuire	cuire	VERB	_	VerbForm=Inf	12	comp	_	_
 14	et	et	CCONJ	_	_	15	cc	_	_
@@ -320,9 +320,9 @@
 18	,	,	PUNCT	_	_	20	punct	_	_
 19	ou	ou	CCONJ	_	_	20	cc	_	_
 20	comme	comme	ADP	_	_	5	conj	_	_
-21	mode	mode	NOUN	_	Gender=Masc|Number=Sing	20	comp	_	_
-22	de	de	ADP	_	_	21	dep	_	_
-23	chauffage	chauffage	NOUN	_	Gender=Masc|Number=Sing	22	comp	_	_
-24	central	central	ADJ	_	Gender=Masc|Number=Sing	23	dep	_	SpaceAfter=No
+21	mode	mode	NOUN	_	Gender=Masc|Number=Sing	20	comp:obj	_	_
+22	de	de	ADP	_	_	21	comp:obl	_	_
+23	chauffage	chauffage	NOUN	_	Gender=Masc|Number=Sing	22	comp:obj	_	_
+24	central	central	ADJ	_	Gender=Masc|Number=Sing	23	mod	_	SpaceAfter=No
 25	.	.	PUNCT	_	_	3	punct	_	_
 
