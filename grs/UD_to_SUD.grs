@@ -71,157 +71,50 @@ package remove_extension_on_reverted_relations {
 }
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% For the auxiliaries, the rule of starting with the closest dependent does not work in the cases of extraposition of the predicate.
-% Ex: fr-ud-test_00067-  ... ce que nous avons été ...
-% The rule that works in all cases is based on an order between types of auxiliaries : cop < tense auxiliairy and passive auxiliary < tense auxiliary for instance.
-% The change of head for auxiliary relations must be processed together with the change of heads for case and mark relations. When several function words depend on the same head and compete for head change, the rule is to take into account an order between the function words and then to start with the function word that is the closest to the head.
-% Ex: Il a été en retard ce matin. (case < cop < aux)
-% Ex : Il part sans avoir été malade un seul jour. (cop < aux < mark)
-% Ex: fr-ud-train_00086 - qui peut faire remonter sa lignée à un maître Chan, quelle que soit la nature de ses pratiques,... (mark < cop)
-% Ex: fr-ud-train_01211 - cette crue était plus que cinquantennale ( mark < cop)
-%=================================
-% ORDER BETWEEN HEAD CHANGES :
-% (1) aux:pass < aux , aux:caus < aux; cop < aux
-% (2) case < aux, case < cop, case < mark; dependents of CASE relations are always closer to the head than AUX, COP and MARK relations.
-% (3) aux < mark, aux:caus < mark, aux:pass < mark; dependents of AUX, AUX:CAUS and AUX:PASS relations are always closer to the head than MARK relations.
-% (4) cop <> mark case <> case, mark <> mark; the order is determined by the order of proximity with respect the head
-%===================================
+
+
+
 package head_reverse {
-  rule aux {
-    pattern {e:H -[aux]-> AUX}
-    without {H -[aux:pass|aux:caus|cop]-> AUX1} % AUX relations must be processed after AUX:CAUS, AUX:PASS and COP relations (point (1)). It is useless to prevent CASE relations because there is no CASE relation without a COP relation.
-    without { H-[aux]-> AUX1; AUX << AUX1 ; AUX1 << H} % There is no other AUX dependent between the head and the COP dependent (point (4)).
-    without { H-[case]-> AUX1; AUX >> AUX1 ; AUX1 >> H} % There is no other AUX dependent between the he
-    commands {
-      del_edge e;
-      add_edge AUX -[comp:aux]-> H;
-      shift_in H ==> AUX;
-      shift_out H =[mark]=> AUX;
-      shift_out H =[advcl|advmod|cc|csubj|csubj:pass|dislocated|nsubj|nsubj:pass|obl:mod|parataxis|punct|root]=> AUX;
-    }
-  }
-  
-  rule auxcaus {
-    pattern {e:H -[aux:caus]-> AUX}
-    commands {
-      del_edge e;
-      add_edge AUX -[comp:caus]-> H;
-      shift_in H ==> AUX;
-      shift_out H =[aux|mark]=> AUX;
-      shift_out H =[iobj:agent|obj:agent|obl:agent]=> AUX;
-      shift_out H =[advcl|advmod|cc|csubj|csubj:pass|dislocated|nsubj|nsubj:caus|nsubj:pass|obl:mod|parataxis|punct|root]=> AUX;
-    }
-  }
-  
-  rule auxpass {
-    pattern {e:H -[aux:pass]-> AUX}
-    commands {
-      del_edge e;
-      add_edge AUX -[comp:pass]-> H;
-      shift_in H ==> AUX;
-      shift_out H =[aux|mark]=> AUX;
-      shift_out H =[advcl|advmod|cc|csubj|csubj:pass|dislocated|nsubj|nsubj:pass|obl:mod|parataxis|punct|root]=> AUX;
-    }
-  }
-
-   rule case{
-    pattern { e:H-[case]->X1; X1[cat <> PART]}
-    without { H-[case]->X2; X1 << X2 ; X2 << H} % There is no other CASE dependent between the head and the COP dependent (point (4)).
-    without { H-[case]->X2; X1 >> X2 ; X2 >> H} % There is no other CASE dependent between the head and the COP dependent (point (4)).
-    without { H -[punct]-> P; X1 << P; P << H} % no punctuation mark that has not to be shifted
-    commands {
-      del_edge e;
-      add_edge X1-[comp]-> H;
-      shift_in H ==> X1;
-      shift_out H =[aux|case|cop|mark]=> X1;
-      shift_out H =[advcl|cc|csubj|nsubj|obl:mod|punct|root]=> X1;
-    }
-  }
-
-  rule case_punct{
-    pattern { e:H-[case]->X1; H -[punct]-> P; X1[cat <> PART]; X1 << P; P << H} % there is a punctuation mark that has not to be shifted
-    without { H-[case]->X2; X1 << X2 ; X2 << H} % There is no other CASE dependent between the head and the COP dependent (point (4)).
-    without { H-[case]->X2; X1 >> X2 ; X2 >> H}% There is no other CASE dependent between the head and the COP dependent (point (4)).
-    commands {
-      del_edge e;
-      add_edge X1-[comp]-> H;
-      shift_in H ==> X1;
-      shift_out H =[aux|case|cop|mark]=> X1;
-      shift_out H =[advcl|cc|csubj|nsubj|obl:mod|punct|root]=> X1;
-    }
-  }
-
- rule cop {
-    pattern {e:H -[cop]-> AUX}
-    without { H-[mark]->X; AUX << X ; X << H} % There is no MARK dependent between the head and the COP dependent (point (4)).
-    without { H-[mark]->X; AUX >> X ; X >> H} % There is no MARK dependent between the head and the COP dependent (point (4)).
-    without { H-[case]->X} % There is no CASE dependent (point (2)).
-    commands {
-      del_edge e;
-      add_edge AUX -[comp:pred]-> H;
-      shift_in H ==> AUX;
-      shift_out H =[aux|mark]=> AUX;
-      shift_out H =[advcl|advmod|cc|csubj|csubj:pass|dislocated|nsubj|nsubj:pass|obl:mod|parataxis|punct|root]=> AUX;
-    }
-  }
-
-  rule mark{
-    pattern {e:H-[mark]->X1}
-    without { H-[aux|aux:caus|aux:pass|case]->X2}% There is no AUX, AUX:CAUS, AUX:PASS (point (3)), CASE (point(2)) dependents from the head.
-    without { H-[cop|mark]->X2; X1 << X2 ; X2 << H}% There is no COP and other MARK (point(4)) dependents between the head and the mark dependent.
-    without { H-[cop|mark]->X2; X1 >> X2 ; X2 >> H}% There is no COP and other MARK (point(4)) dependents between the head and the mark dependent.
-    without {  H -[punct]-> P; X1 << P; P << H}% no punctuation mark that has not to be shifted
-    commands {
-      del_edge e;
-      add_edge X1-[comp]-> H;
-      shift_in H ==> X1;
-      shift_out H =[mark]=> X1;
-      shift_out H =[cc|punct|root]=> X1;
-    }
-  }
-
-  rule mark_punct{
-    pattern {e:H-[mark]->X1; H -[punct]-> P; X1 << P; P << H} % punctuation marks preceding the old head are not concerned with the head change; when there are two marks in this case, only one does not change its governor (UD_French-GSD@dev: fr-ud-dev_01506)
-    without { H-[aux|aux:caus|aux:pass|case]->X2}% There is no AUX, AUX:CAUS, AUX:PASS (point (3)), CASE (point(2)) dependents from the head.
-    without { H-[cop|mark]->X2; X1 << X2 ; X2 << H}% There is no COP and other MARK (point(4)) dependents between the head and the mark dependent.
-    without { H-[cop|mark]->X2; X1 >> X2 ; X2 >> H}% There is no COP and other MARK (point(4)) dependents between the head and the mark dependent.
-     commands {
-      del_edge e;
-      add_edge X1-[comp]-> H;
-      shift_in H ==> X1;
-      shift_out H =[mark]=> X1;
-      shift_out H =[cc|punct|root]=> X1;
-    }
-  }
-}
-
-
-
-package new_head_reverse {
   rule case{
     pattern { e:H-[case]->X1; X1[cat <> PART]}
-    without { H-[case]->X2; X1 << X2 ; X2 << H}
-    without { H-[case]->X2; X1 >> X2 ; X2 >> H}
+    without { H-[1=case]->X2; X1 << X2 ; X2 << H}
+    without { H-[1=case]->X2; X1 >> X2 ; X2 >> H}
     without { H -[punct]-> P; X1 << P; P << H}
     commands {
       del_edge e;
       add_edge X1-[comp]-> H;
       shift_in H ==> X1;
-      shift_out H =[aux|case|cop|mark]=> X1;
+      shift_out H =[case|aux:pass|aux:caus|cop|aux|mark]=> X1;
       shift_out H =[advcl|cc|csubj|nsubj|obl:mod|punct|root]=> X1;
     }
   }
 
+  rule case_ext {
+    pattern { e:H-[1=case, 2=*]->X1; X1[cat <> PART]}
+    without { H-[1=case]->X2; X1 << X2 ; X2 << H}
+    without { H-[1=case]->X2; X1 >> X2 ; X2 >> H}
+    without { H -[punct]-> P; X1 << P; P << H}
+    commands {
+      del_edge e;
+      add_edge X1-[1=comp, 2=e.2]-> H;
+      shift_in H ==> X1;
+      shift_out H =[case|aux:pass|aux:caus|cop|aux|mark]=> X1;
+      shift_out H =[advcl|cc|csubj|nsubj|obl:mod|punct|root]=> X1;
+    }
+  }
+
+
+
+
   rule case_punct{
-    pattern { e:H-[case]->X1; H -[punct]-> P; X1[cat <> PART]; X1 << P; P << H}
+    pattern { e:H-[case]->X1; X1[cat <> PART]; H -[punct]-> P;  X1 << P; P << H}
     without { H-[case]->X2; X1 << X2 ; X2 << H}
     without { H-[case]->X2; X1 >> X2 ; X2 >> H}
     commands {
       del_edge e;
       add_edge X1-[comp]-> H;
       shift_in H ==> X1;
-      shift_out H =[aux|case|cop|mark]=> X1;
+      shift_out H =[case|aux:pass|aux:caus|cop|aux|mark]=> X1;
       shift_out H =[advcl|cc|csubj|nsubj|obl:mod|punct|root]=> X1;
     }
   }
@@ -251,6 +144,7 @@ package new_head_reverse {
     }
   }
 
+  % TODO: deal with cop extension : cop:locat in UD_Polish-LFG and cop:own in UD_Finnish-* and UD_Karelian-KKPP
   rule cop {
     pattern {e:H -[cop]-> AUX}
     without { H -[case]-> * }
@@ -265,23 +159,37 @@ package new_head_reverse {
 
   rule aux {
     pattern {e:H -[aux]-> AUX}
-    without {H -[case|aux:pass|aux:caus|cop]-> AUX2}
-    without { H -[aux]-> AUX2; AUX << AUX2 ; AUX2 << H}
-    without { H -[aux]-> AUX2; AUX >> AUX2 ; AUX2 >> H}
+    without { H -[case|aux:pass|aux:caus|cop]-> AUX2}
+    without { H -[1=aux]-> AUX2; AUX << AUX2 ; AUX2 << H}
+    without { H -[1=aux]-> AUX2; AUX >> AUX2 ; AUX2 >> H}
     commands {
       del_edge e;
       add_edge AUX -[comp:aux]-> H;
       shift_in H ==> AUX;
-      shift_out H =[mark]=> AUX;
+      shift_out H =[aux|mark]=> AUX;
+      shift_out H =[advcl|advmod|cc|csubj|csubj:pass|dislocated|nsubj|nsubj:pass|obl:mod|parataxis|punct|root]=> AUX;
+    }
+  }
+
+  rule aux_ext {
+    pattern {e:H -[1=aux, 2=*]-> AUX}
+    without { H -[case|aux:pass|aux:caus|cop]-> AUX2}
+    without { H -[1=aux]-> AUX2; AUX << AUX2 ; AUX2 << H}
+    without { H -[1=aux]-> AUX2; AUX >> AUX2 ; AUX2 >> H}
+    commands {
+      del_edge e;
+      add_edge AUX -[1=comp, 2=e.2]-> H;
+      shift_in H ==> AUX;
+      shift_out H =[aux|mark]=> AUX;
       shift_out H =[advcl|advmod|cc|csubj|csubj:pass|dislocated|nsubj|nsubj:pass|obl:mod|parataxis|punct|root]=> AUX;
     }
   }
 
   rule mark{
-    pattern {e:H-[mark]->X1}
-    without {H -[case|aux:pass|aux:caus|cop|aux]-> X2}
-    without { H-[mark]->X2; X1 << X2 ; X2 << H}
-    without { H-[mark]->X2; X1 >> X2 ; X2 >> H}
+    pattern {e:H-[mark]->X1; X1[cat <> PART]}
+    without { H -[case|aux:pass|aux:caus|cop|aux]-> X2}
+    without { H-[1=mark]->X2; X1 << X2 ; X2 << H}
+    without { H-[1=mark]->X2; X1 >> X2 ; X2 >> H}
     without { H -[punct]-> P; X1 << P; P << H}
     commands {
       del_edge e;
@@ -292,8 +200,23 @@ package new_head_reverse {
     }
   }
 
+  rule mark_ext {
+    pattern {e:H-[1=mark, 2=*]->X1; X1[cat <> PART]}
+    without { H -[case|aux:pass|aux:caus|cop|aux]-> X2}
+    without { H-[1=mark]->X2; X1 << X2 ; X2 << H}
+    without { H-[1=mark]->X2; X1 >> X2 ; X2 >> H}
+    without { H -[punct]-> P; X1 << P; P << H}
+    commands {
+      del_edge e;
+      add_edge X1-[1=comp, 2=e.2]-> H;
+      shift_in H ==> X1;
+      shift_out H =[mark]=> X1;
+      shift_out H =[cc|punct|root]=> X1;
+    }
+  }
+
   rule mark_punct{
-    pattern {e:H-[mark]->X1; H -[punct]-> P; X1 << P; P << H}
+    pattern {e:H-[mark]->X1; X1[cat <> PART]; H -[punct]-> P; X1 << P; P << H}
     without { H -[case|aux:pass|aux:caus|cop|aux]-> X2}
     without { H-[mark]->X2; X1 << X2 ; X2 << H}
     without { H-[mark]->X2; X1 >> X2 ; X2 >> H}
@@ -451,8 +374,24 @@ package relations {
 
   % === case === special treatment when the dep of a case is a PART, the relation is not reversed
   rule pcase {
-    pattern {e:H -[re"case.*"]-> D; D[cat=PART] }
+    pattern {e:H -[case]-> D; D[cat=PART] }
     commands { del_edge e; add_edge H -[pcase]-> D }
+  }
+
+  rule pcase_ext {
+    pattern {e:H -[1=case, 2=*]-> D; D[cat=PART] }
+    commands { del_edge e; add_edge H -[1=pcase, 2=e.2]-> D }
+  }
+
+  % === mark === special treatment when the dep of a mark is a PART, the relation is not reversed
+  rule pmark {
+    pattern {e:H -[mark]-> D; D[cat=PART] }
+    commands { del_edge e; add_edge H -[pmark]-> D }
+  }
+
+  rule pmark_ext {
+    pattern {e:H -[1=mark, 2=*]-> D; D[cat=PART] }
+    commands { del_edge e; add_edge H -[1=pmark, 2=e.2]-> D }
   }
 
   % === nsubj | csubj ===
@@ -506,7 +445,7 @@ strat main {
   Seq (
     Onf (eud_to_ud),
     Onf (minimize_conj_dep),
-    remove_extension_on_reverted_relations.s,
+%    remove_extension_on_reverted_relations.s,
     Onf (head_reverse),
     Onf (gov_rise),% Package GOV_RISE must follow package HEAD_REVERSE because it corrects some wrong consequences of head changes.
     Onf (sub_relations),
@@ -517,16 +456,156 @@ strat main {
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-strat new {
+strat old {
   Seq (
     Onf (eud_to_ud),
     Onf (minimize_conj_dep),
     remove_extension_on_reverted_relations.s,
-    Onf (new_head_reverse),
+    Onf (old_head_reverse),
     Onf (gov_rise),% Package GOV_RISE must follow package HEAD_REVERSE because it corrects some wrong consequences of head changes.
     Onf (sub_relations),
     Onf (relations), % Package RELATIONS must follow package GOV_RISE because this package entails the change of catagory for the source and the target of some relaitions.
 
     Onf (chained_relations),% Package CHAINED_RELATIONS must follow package GOV_RISE because it can entail a wrong coordination between two elements because of errors in head changes (UD_French-GS: fr-ud-dev_00131).
   )
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For the auxiliaries, the rule of starting with the closest dependent does not work in the cases of extraposition of the predicate.
+% Ex: fr-ud-test_00067-  ... ce que nous avons été ...
+% The rule that works in all cases is based on an order between types of auxiliaries : cop < tense auxiliairy and passive auxiliary < tense auxiliary for instance.
+% The change of head for auxiliary relations must be processed together with the change of heads for case and mark relations. When several function words depend on the same head and compete for head change, the rule is to take into account an order between the function words and then to start with the function word that is the closest to the head.
+% Ex: Il a été en retard ce matin. (case < cop < aux)
+% Ex : Il part sans avoir été malade un seul jour. (cop < aux < mark)
+% Ex: fr-ud-train_00086 - qui peut faire remonter sa lignée à un maître Chan, quelle que soit la nature de ses pratiques,... (mark < cop)
+% Ex: fr-ud-train_01211 - cette crue était plus que cinquantennale ( mark < cop)
+%=================================
+% ORDER BETWEEN HEAD CHANGES :
+% (1) aux:pass < aux , aux:caus < aux; cop < aux
+% (2) case < aux, case < cop, case < mark; dependents of CASE relations are always closer to the head than AUX, COP and MARK relations.
+% (3) aux < mark, aux:caus < mark, aux:pass < mark; dependents of AUX, AUX:CAUS and AUX:PASS relations are always closer to the head than MARK relations.
+% (4) cop <> mark case <> case, mark <> mark; the order is determined by the order of proximity with respect the head
+%===================================
+package head_reverse_old {
+  rule aux {
+    pattern {e:H -[aux]-> AUX}
+    without {H -[aux:pass|aux:caus|cop]-> AUX1} % AUX relations must be processed after AUX:CAUS, AUX:PASS and COP relations (point (1)). It is useless to prevent CASE relations because there is no CASE relation without a COP relation.
+    without { H-[aux]-> AUX1; AUX << AUX1 ; AUX1 << H} % There is no other AUX dependent between the head and the COP dependent (point (4)).
+    without { H-[case]-> AUX1; AUX >> AUX1 ; AUX1 >> H} % There is no other AUX dependent between the he
+    commands {
+      del_edge e;
+      add_edge AUX -[comp:aux]-> H;
+      shift_in H ==> AUX;
+      shift_out H =[mark]=> AUX;
+      shift_out H =[advcl|advmod|cc|csubj|csubj:pass|dislocated|nsubj|nsubj:pass|obl:mod|parataxis|punct|root]=> AUX;
+    }
+  }
+
+  rule auxcaus {
+    pattern {e:H -[aux:caus]-> AUX}
+    commands {
+      del_edge e;
+      add_edge AUX -[comp:caus]-> H;
+      shift_in H ==> AUX;
+      shift_out H =[aux|mark]=> AUX;
+      shift_out H =[iobj:agent|obj:agent|obl:agent]=> AUX;
+      shift_out H =[advcl|advmod|cc|csubj|csubj:pass|dislocated|nsubj|nsubj:caus|nsubj:pass|obl:mod|parataxis|punct|root]=> AUX;
+    }
+  }
+
+  rule auxpass {
+    pattern {e:H -[aux:pass]-> AUX}
+    commands {
+      del_edge e;
+      add_edge AUX -[comp:pass]-> H;
+      shift_in H ==> AUX;
+      shift_out H =[aux|mark]=> AUX;
+      shift_out H =[advcl|advmod|cc|csubj|csubj:pass|dislocated|nsubj|nsubj:pass|obl:mod|parataxis|punct|root]=> AUX;
+    }
+  }
+
+   rule case{
+    pattern { e:H-[case]->X1; X1[cat <> PART]}
+    without { H-[case]->X2; X1 << X2 ; X2 << H} % There is no other CASE dependent between the head and the COP dependent (point (4)).
+    without { H-[case]->X2; X1 >> X2 ; X2 >> H} % There is no other CASE dependent between the head and the COP dependent (point (4)).
+    without { H -[punct]-> P; X1 << P; P << H} % no punctuation mark that has not to be shifted
+    commands {
+      del_edge e;
+      add_edge X1-[comp]-> H;
+      shift_in H ==> X1;
+      shift_out H =[aux|case|cop|mark]=> X1;
+      shift_out H =[advcl|cc|csubj|nsubj|obl:mod|punct|root]=> X1;
+    }
+  }
+
+  rule case_punct{
+    pattern { e:H-[case]->X1; H -[punct]-> P; X1[cat <> PART]; X1 << P; P << H} % there is a punctuation mark that has not to be shifted
+    without { H-[case]->X2; X1 << X2 ; X2 << H} % There is no other CASE dependent between the head and the COP dependent (point (4)).
+    without { H-[case]->X2; X1 >> X2 ; X2 >> H}% There is no other CASE dependent between the head and the COP dependent (point (4)).
+    commands {
+      del_edge e;
+      add_edge X1-[comp]-> H;
+      shift_in H ==> X1;
+      shift_out H =[aux|case|cop|mark]=> X1;
+      shift_out H =[advcl|cc|csubj|nsubj|obl:mod|punct|root]=> X1;
+    }
+  }
+
+ rule cop {
+    pattern {e:H -[cop]-> AUX}
+    without { H-[mark]->X; AUX << X ; X << H} % There is no MARK dependent between the head and the COP dependent (point (4)).
+    without { H-[mark]->X; AUX >> X ; X >> H} % There is no MARK dependent between the head and the COP dependent (point (4)).
+    without { H-[case]->X} % There is no CASE dependent (point (2)).
+    commands {
+      del_edge e;
+      add_edge AUX -[comp:pred]-> H;
+      shift_in H ==> AUX;
+      shift_out H =[aux|mark]=> AUX;
+      shift_out H =[advcl|advmod|cc|csubj|csubj:pass|dislocated|nsubj|nsubj:pass|obl:mod|parataxis|punct|root]=> AUX;
+    }
+  }
+
+  rule mark{
+    pattern {e:H-[mark]->X1}
+    without { H-[aux|aux:caus|aux:pass|case]->X2}% There is no AUX, AUX:CAUS, AUX:PASS (point (3)), CASE (point(2)) dependents from the head.
+    without { H-[cop|mark]->X2; X1 << X2 ; X2 << H}% There is no COP and other MARK (point(4)) dependents between the head and the mark dependent.
+    without { H-[cop|mark]->X2; X1 >> X2 ; X2 >> H}% There is no COP and other MARK (point(4)) dependents between the head and the mark dependent.
+    without {  H -[punct]-> P; X1 << P; P << H}% no punctuation mark that has not to be shifted
+    commands {
+      del_edge e;
+      add_edge X1-[comp]-> H;
+      shift_in H ==> X1;
+      shift_out H =[mark]=> X1;
+      shift_out H =[cc|punct|root]=> X1;
+    }
+  }
+
+  rule mark_punct{
+    pattern {e:H-[mark]->X1; H -[punct]-> P; X1 << P; P << H} % punctuation marks preceding the old head are not concerned with the head change; when there are two marks in this case, only one does not change its governor (UD_French-GSD@dev: fr-ud-dev_01506)
+    without { H-[aux|aux:caus|aux:pass|case]->X2}% There is no AUX, AUX:CAUS, AUX:PASS (point (3)), CASE (point(2)) dependents from the head.
+    without { H-[cop|mark]->X2; X1 << X2 ; X2 << H}% There is no COP and other MARK (point(4)) dependents between the head and the mark dependent.
+    without { H-[cop|mark]->X2; X1 >> X2 ; X2 >> H}% There is no COP and other MARK (point(4)) dependents between the head and the mark dependent.
+     commands {
+      del_edge e;
+      add_edge X1-[comp]-> H;
+      shift_in H ==> X1;
+      shift_out H =[mark]=> X1;
+      shift_out H =[cc|punct|root]=> X1;
+    }
+  }
 }
