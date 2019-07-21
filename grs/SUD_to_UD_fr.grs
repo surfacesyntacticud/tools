@@ -5,6 +5,19 @@ include "specif_expr.grs"
 include "SUD_to_UD.grs"
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+package FR_init{
+
+% The relative or interrogative pronoun "où" is translated into an adverb and the empty node with the category adverb must carry the feature "PronType=Rel", so that the relative or interrogative clause be detected.
+  rule prontype_rise{
+    pattern{
+      PRO[cat=PRON, PronType=Rel];
+      PRO1[!PronType]; PRO1 -[expr]-> PRO}
+    commands{PRO1.PronType=Rel}
+  }
+
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % After the universal determination of nominals, rectification specific to French.
 package FR_nom_init {
 
@@ -28,76 +41,30 @@ package FR_nom_init {
     pattern{
      A[cat=ADV,lemma=lex.adv,!nom];
      A -[comp:obl]-> P; P[cat=ADP,lemma=de];
-     N[cat=NOUN|NUM|SYM]; P -[comp]-> N
+     N[cat=NOUN|NUM|SYM]; P -[comp:obj]-> N
    }
    without{ * -[udep|mod]-> A}
-   without{ A[lemma=moins|plus]; P0 -[comp]-> A; P0[lemma=en]}
+   without{ A[lemma=moins|plus]; P0 -[comp:obj]-> A; P0[lemma=en]}
    commands{ A.nom=y}
  }
-
-% Complex quantity adverbs with a complement introduced with the preposition "de" are considered as nominals.
-  rule complex_adv_de_nom{
-    pattern{
-     A[cat=ADV,!nom];
-     A -[comp:obl]-> P; P[cat=ADP,lemma=de];
-     N[cat=NOUN|NUM|SYM]; P -[comp]-> N;
-     A -[expr]-> H;
-     H[_MISC_MWEPOS=ADV, lemma=lex.head];
-     H -> D; D[lemma=lex.dep];
-   }
-   commands{ A.nom=y}
- }
-#BEGIN lex
-head	dep
-%-------------
-un	peu
-#END
-}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Re-labelling of subject relations specific to French.
-package FR_subj {
-% Subjects of passive participles without auxiliary.
-  rule nsubj_pass (lex from "lexicons/passivable_verb.lp") {
-    pattern {e:V -[nsubj]-> S; V [VerbForm=Part,Tense=Past,lemma=lex.verb] }
-    without {V -[aux|aux:pass]-> *}
-    commands { del_edge e; add_edge V -[nsubj:pass]-> S }
-  }
-
 }
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Re-labelling of argument relations specific to French
-package FR_comp {
-% Universal transformation entails the re-labelling of COMP:OBL relations without adpositions as IOBJ relations, but in French only clitic complements are labelled IOBJ.
-  rule oblarg {
-    pattern {e:P -[iobj]-> C; C[cat=NOUN|NUM|PROPN] }
-    commands { del_edge e; add_edge P -[obl:arg]-> C }
-  }
 
-}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Re-labelling of MOD relations specific to French
 package FR_mod {
 
-% Adverbs antecedent of a relative clause
-  rule adv_relcl{
-    pattern{
-      A[cat=ADV,lemma="là"|partout];
-      B[cat=VERB, VerbForm=Fin];
-      e:A -[mod]-> B}
-    commands{del_edge e; add_edge A -[acl:relcl]-> B}
-  }
 
 % Adjectival, verbal or nominal expressions that are hightlighted at the beginning of a clause are considered as incomplete clauses.
 % Ex: fr-ud-dev_00407 - Spécialiste des six jours, il a remporté 38 compétitions entre 1931 et 1942.
   rule left_extraposition(lex from "lexicons/nouns_adv.lp") {
     pattern{
       APP[cat=ADJ|NOUN|PRON|PROPN|VERB];
-      V -[nsubj|nsubj:pass|nsubj:caus]-> SUBJ; APP << SUBJ; SUBJ << V;
+      V -[1=subj]-> SUBJ; APP << SUBJ; SUBJ << V;
       e: V -[mod]-> APP}
-    without{ APP -[case]-> *}
-    without{APP[cat=NOUN]; APP -[det|nummod]-> *}
+    without{ APP -[1=case]-> *}
+    without{APP[cat=NOUN]; APP -[det]-> *}
     without{APP[PronType=Rel|Int]}
     without{APP[cat=NOUN,lemma= lex.noun]}
     without{% Modifiers in the form NOUN + PREP + NOUN.
@@ -105,35 +72,32 @@ package FR_mod {
       APP[cat=NOUN];
       P[cat=ADP,lemma="après"|par|sur];
       N[cat=NOUN];
-      N -[case]-> P;
-      APP -[udep]-> N;
+      N -[1=case]-> P;
+      APP -[1=udep]-> N;
       N.lemma=APP.lemma
     }
     commands{ del_edge e; add_edge V -[advcl]-> APP}
   }
 
-% Nouns behaving as circumstancial complements as heads of modifiers in the form of adverbial clauses.
+% Nouns behaving as circumstancial complements and heads of modifiers in the form of adverbial clauses.
   rule conj_adv-noun(lex from "lexicons/nouns_adv.lp") {
     pattern{
       N[cat=NOUN,lemma=lex.noun];
-      e: N -[case]-> C; C[cat=SCONJ];
+      e: N -[1=case]-> C; C[cat=SCONJ];
       * -[mod]-> N
     }
-    commands{del_edge e; add_edge N -[mark]-> C}
+    commands{e.1=mark}
   }
 
 % Finite clauses, which are not relative clauses and which are not introduced with a conjunction, modifying a nominal expression.
   rule noun_mod_fin-clause{
-    pattern{
-      N[nom=y];
-      V[cat=VERB, VerbForm=Fin];
-      e: N -[mod]->V}
+    pattern{N[nom=y]; V[cat=VERB]; e: N -[mod]->V}
     without{PRO[PronType=Rel]; V -> PRO; N << PRO}
     without{PRO[PronType=Rel]; V -> X; X -> PRO;  N << PRO}
     without{PRO[PronType=Rel]; V -> X; X -> Y; Y -> PRO;  N << PRO}
-    without{ADV[cat=ADV,lemma="où"|pourquoi]; V -> ADV; N << ADV}
-    without{ADV[cat=ADV,lemma="où"|pourquoi]; V -> X; X -> ADV;  N << ADV}
-    without{ADV[cat=ADV,lemma="où"|pourquoi]; V -> X; X -> Y; Y -> ADV;  N << ADV}
+    without{ADV[cat=ADV,lemma=pourquoi]; V -> ADV; N << ADV}
+    without{ADV[cat=ADV,lemma=pourquoi]; V -> X; X -> ADV;  N << ADV}
+    without{ADV[cat=ADV,lemma=pourquoi]; V -> X; X -> Y; Y -> ADV;  N << ADV}
     commands{ del_edge e; add_edge N -[acl]-> V}
   }
 
@@ -152,7 +116,7 @@ package FR_udep {
   rule amod_de{
     pattern{
       H[cat=NOUN|PRON,lemma=chose|rien]; D[cat=ADJ]; e: H -[udep]-> D;
-      D -[case]-> DE; DE[cat=ADP,lemma=de]
+      D -[1=case]-> DE; DE[cat=ADP,lemma=de]
     }
     commands{ del_edge e; add_edge H -[amod]-> D}
   }
@@ -162,7 +126,7 @@ package FR_udep {
     pattern { e:H -[udep]-> D; H[nom=y]; D[cat=NUM]; H << D }
     without{H[lemma=heure]}
     without{D -> PRO; H << PRO; PRO[PronType=Rel]}
-    without{D -[mark]-> *}
+    without{D -[1=mark]-> *}
     commands { del_edge e; add_edge H -[nmod]-> D }
   }
 
@@ -171,32 +135,43 @@ package FR_udep {
   rule nmod_num_prep{
     pattern {
       e:H -[udep]-> D; H[nom=y]; D[cat=NUM];
-      H -[case]-> P; D << P; P << H }
+      H -[1=case]-> P; D << P; P << H }
     commands { del_edge e; add_edge H -[nmod]-> D }
   }
 
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Re-labelling of subject relations specific to French.
+package FR_subj {
+% Subjects of passive participles without auxiliary.
+  rule nsubj_pass (lex from "lexicons/passivable_verb.lp") {
+    pattern {e:V -[nsubj]-> S; V [VerbForm=Part,Tense=Past,lemma=lex.verb] }
+    without {V -[aux|aux:pass]-> *}
+    commands { del_edge e; add_edge V -[nsubj:pass]-> S }
+  }
+
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 strat FR_main {
   Seq (
+    Onf (FR_init),
     Onf (nom_init),
     Onf (FR_nom_init),
     Onf (unchained_relations),
     Onf (reverse_case_mark),
-    Onf (reverse_aux),
-    Onf (subj),
-    Onf(FR_subj),
-    Onf (det),
-    Onf (comp),
-    Onf(FR_comp),
+    Onf( reverse_close),
+    Onf(case_mark_relations),
+    Onf (sub_relations),
     Onf (FR_mod),
-    Onf (mod),
     Onf (FR_udep),
-    Onf (udep),
-    Onf (reverse_cop),
+    Onf (rel_extensions),
+    Onf (relations),
+    Onf (FR_subj),
+    Onf(reverse_aux),
+    Onf( reverse_close),
     Onf (final),
   )
 }
@@ -205,7 +180,8 @@ strat FR_main_specif_expr{
   Seq(
     Onf(specif_expr_init),
     FR_main,
-    Onf(specif_expr_close)
+    Onf(specif_expr_close),
+    Onf(fixed_remove)
   )
 }
 

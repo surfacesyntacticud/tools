@@ -6,16 +6,16 @@ include "UD_to_SUD.grs"
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 package FR_head_reverse {
-% Impersonal construction with an adjective as a predicative complement and an infinitive introduced with "de" as a direct object.
+% Impersonal construction with an adjective as a predicative complement and an infinitive introduced with "de" as a direct object. The head of the CCOMP relation is moved from the adjective to the copula.
 %Ex : il est difficile de trouver du travail.
   rule impers_adj_de_inf{
     pattern{
      IL[cat=PRON,lemma=il,Gender=Masc,Number=Sing,Person=3];
      V[cat=AUX,lemma="être"]; V -[nsubj]-> IL;
-     A[cat=ADJ]; V -[comp:pred]-> A;
+     A[cat=ADJ]; V -[cop]-> A;
      DE[cat=ADP,lemma=de]; e:A -[ccomp]-> DE;
-     INF[cat=VERB,VerbForm=Inf]; DE -[comp]-> INF}
-   commands{ del_edge e; add_edge V -[comp:obj]-> DE}
+     INF[cat=VERB,VerbForm=Inf]; DE -[mark]-> INF}
+   commands{ add_edge e: V -> DE; del_edge e}
  }
 
 }
@@ -57,7 +57,6 @@ package FR_relations {
     commands { del_edge e; add_edge H -[comp:obl]-> C }
   }
 
-% TODO: add a rule which transform nummod into det when needed (right-headed and no other det)
 }
 
 
@@ -116,12 +115,12 @@ de	lesquelles	desquelles
 strat FR_main{
   Seq (
 %    Onf (minimize_conj_dep),
-    remove_extension_on_reverted_relations.s,
     Onf (head_reverse),
     Onf (FR_head_reverse),
     Onf (gov_rise),
     Onf (FR_relations),
     Onf (sub_relations),
+    Onf (rel_extensions),
     Onf (relations),
     Onf (chained_relations),
   )
@@ -135,24 +134,3 @@ strat FR_main_specif_expr{
   )
 }
 
-strat FR_new{
-  Seq (
-%    Onf (minimize_conj_dep),
-    remove_extension_on_reverted_relations.s,
-    Onf (new_head_reverse),
-    Onf (FR_head_reverse),
-    Onf (gov_rise),
-    Onf (FR_relations),
-    Onf (sub_relations),
-    Onf (relations),
-    Onf (chained_relations),
-  )
-}
-
-strat FR_new_specif_expr{
-  Seq(
-    Onf(specif_expr_init),
-    FR_new,
-    Onf(specif_expr_close)
-  )
-}

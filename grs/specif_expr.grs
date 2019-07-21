@@ -1,18 +1,22 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 package specif_expr_init{
+% For a node that is a MWE head, an empty node, which represents the MWE, is created.
   rule create_mwe_node{
-    pattern{ W[_MISC_MWEPOS]}
+    pattern{ W[_MISC_EXTPOS,_MISC_Type=MWE]}
     without{ * -[expr]-> W}
+    without{ H[_MISC_Type=Title]; H -> W; W[_MISC_INTITLE=Yes]}% The node is not the daughter of a title head as part of the title.
     commands{
       add_node MWE :< W;
       shift_in W ==> MWE;
       add_edge MWE -[expr]-> W;
-      MWE.cat = W._MISC_MWEPOS
+      MWE.cat = W._MISC_EXTPOS
     }
   }
 
-  rule create_title_node{
-    pattern{ W[_MISC_TITLE]}
+ 
+% For a node that is a title head, an empty node, which represents the title, is created.
+   rule create_title_node{
+    pattern{ W[_MISC_EXTPOS,_MISC_Type=Title]}
     without{ * -[expr]-> W}
     commands{
       add_node T :< W;
@@ -22,8 +26,38 @@ package specif_expr_init{
     }
   }
 
+% For a node the POS has to be translated, a new node with the same lemma and the new POS is created.  The node is not the daughter of a title head as part of the title.
+  rule create_trans_node{
+    pattern{ W[_MISC_EXTPOS,_MISC_Type=Trans]}
+    without{ * -[expr]-> W}
+    without{ H[_MISC_Type=Title]; H -> W; W[_MISC_INTITLE=Yes]} % The node is not the daughter of a title head as part of the title.
+    commands{
+      add_node T :< W;
+      shift_in W ==> T;
+      add_edge T -[expr]-> W;
+      T.cat = W._MISC_EXTPOS; T.lemma=W.lemma
+    }
+  }
+
+% For a node the POS has to be translated, a new node with the same lemma and the new POS is created.  The node is the daughter of a title head as part of the title and for the title head, an empty node representing the title has been already created.
+% Ex :fr-ud-train_04578 - Depuis son début en 1987 Handford a produit un total de six Où est Charlie ?
+   rule create_trans_node_title{
+    pattern{
+      W[_MISC_EXTPOS,_MISC_Type=Trans];
+       H[_MISC_Type=Title]; H -> W;W[_MISC_INTITLE=Yes];
+       * -[expr]-> H}
+    without{ * -[expr]-> W}
+    commands{
+      add_node T :< W;
+      T.cat = W._MISC_EXTPOS;
+      shift_in W ==> T;
+      add_edge T -[expr]-> W; T.lemma=W.lemma
+    }
+  }
+
+% The source of any external dependency for a MWE or title head, or for a word that has to be translated, is moved to the empty node representing the MWE, the title or the translated word.
   rule move_dep{
-    pattern{ H -[expr]-> W; e: W -[^fixed|flat:name|goeswith]-> D}
+    pattern{ H -[expr]-> W; e: W -[^unk@fixed|fixed|flat:name|goeswith]-> D}
     without{D[_MISC_INMWE=Yes]}
     without{D[_MISC_INTITLE=Yes]}
     commands{ del_edge e; add_edge e: H -> D}
@@ -39,19 +73,38 @@ package specif_expr_close{
   }
 
   rule mwe_pos_raise{
-    pattern{ H[_MISC_INMWE=Yes]; D[_MISC_MWEPOS]; H -> D}
+    pattern{
+      H [_MISC_INMWE=Yes]; H -> D;
+      D[_MISC_EXTPOS,_MISC_Type=MWE]; H[!_MISC_EXTPOS]}
     commands{
-      H._MISC_MWEPOS = D._MISC_MWEPOS; del_feat H._MISC_INMWE;
-      D._MISC_INMWE=Yes; del_feat D._MISC_MWEPOS
+      H._MISC_EXTPOS = D._MISC_EXTPOS; H._MISC_Type=MWE;
+      del_feat H._MISC_INMWE;
+      D._MISC_INMWE=Yes;
+      del_feat D._MISC_EXTPOS; del_feat D._MISC_Type
     }
   }
+   
   rule title_pos_raise{
-    pattern{ H[_MISC_INTITLE=Yes]; D[_MISC_TITLE]; H -> D}
+    pattern{ H[_MISC_INTITLE=Yes]; D[_MISC_Type=Title]; H -> D}
     commands{
-      H._MISC_TITLE = Yes; del_feat H._MISC_INTITLE;
-      D._MISC_INTITLE=Yes; del_feat D._MISC_TITLE
+      H._MISC_Type = Title; H._MISC_EXTPOS=PROPN; del_feat H._MISC_INTITLE;
+      D._MISC_INTITLE=Yes; del_feat D._MISC_Type; del_feat D._MISC_EXTPOS
     }
   }
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+package fixed_remove{
+  rule del_fixed{
+    pattern {e:H -[1<>fixed,!2,deep=fixed]-> D;D[!_MISC_INMWE]}
+    commands {add_edge H -[1=e.1]-> D;del_edge e; D._MISC_INMWE=Yes}
+  }
+  
+  rule del_fixed_ext{
+    pattern {e:H -[1<>fixed,2=*,deep=fixed]-> D;D[!_MISC_INMWE]}
+    commands {add_edge H -[1=e.1,2=e.2]-> D; del_edge e; D._MISC_INMWE=Yes}
+  }
+  
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

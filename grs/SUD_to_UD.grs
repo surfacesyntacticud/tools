@@ -2,52 +2,61 @@
 % Feature "nom" is used to deal with all nominals in a uniform way.
 package nom_init {
 
-% All words with NOUN, PRON, PROPN, SYM, X as POS are nominals.
-  rule nom_noun {
-    pattern {N[cat=NOUN|PRON|PROPN|SYM|X,!nom]}
-    commands {N.nom=y}
-  }
 
-% All adverbs with a COMP:OBJ or SUBJ function are nominals.
-  rule nom_adv {
-    pattern {A[cat=ADV,!nom]; * -[comp:obj|subj]-> A}
+% All adverbs, numerals and symbols with a COMP:OBJ function are nominals.
+  rule nom_comp_obj {
+    pattern {A[upos=ADV|SYM|NUM,!nom]; H -[1=comp, 2=obj]-> A}
+    without{ H[upos=ADP|SCONJ]; A[upos=ADV]}
     commands {A.nom=y}
   }
 
 % All words with a determiner are nominals.
   rule nom_det {
-    pattern {N[cat<>NOUN|PRON|PROPN|SYM|X,!nom]; N -[det]-> *}
+    pattern {N[upos<>NOUN|PRON|PROPN|X,!nom]; N -[det]-> *}
     commands {N.nom=y}
   }
 
+% All words with NOUN, PRON, PROPN, SYM, X as POS are nominals.
+  rule nom_noun {
+    pattern {N[upos=NOUN|PRON|PROPN|X,!nom]}
+    commands {N.nom=y}
+  }
+  
 % All numerals following their gouvernor are nominals.
   rule nom_num_after {
-    pattern {N[cat=NUM,!nom]; H -> N; H << N}
+    pattern {N[upos=NUM,!nom]; H -> N; H << N}
     commands {N.nom=y}
   }
 
 % All numerals preceding their governor with a relation that is normally used for nominals are nominals.
   rule nom_num_before {
-    pattern {N[cat=NUM,!nom]; H -[comp|comp:obj|comp:obl|subj|udep]-> N; H >> N}
+    pattern {N[upos=NUM,!nom]; H -[comp|comp:obj|comp:obl|subj|udep]-> N; H >> N}
     commands {N.nom=y}
   }
 
 % All numerals preceding their governor with a relation that is normally used for nominals are nominals.
   rule nom_num_verb {
-    pattern {N[cat=NUM,!nom]; H[cat=AUX|VERB]; H -[mod]-> N}
+    pattern {N[upos=NUM,!nom]; H[upos=AUX|VERB]; H -[mod]-> N}
     commands {N.nom=y}
   }
 % When a MWE is a nominal, the node representing this expression is marked as a nominal.
   rule nom_mwe{
-    pattern{H -[expr]-> N; H[!nom]; N[_MISC_MWEPOS=NOUN|PRON|PROPN|SYM|X]}
+    pattern{H -[expr]-> N; H[!nom]; N[_MISC_Type=MWE, _MISC_EXTPOS=NOUN|PRON|PROPN|SYM|X]}
     commands{H.nom=y}
   }
 
 % A node representing a title is marked as a nominal.
   rule nom_title{
-    pattern{H -[expr]-> N; H[!nom]; N[_MISC_TITLE=Yes]}
+    pattern{H -[expr]-> N; H[!nom]; N[_MISC_Type=Title]}
     commands{H.nom=y}
   }
+
+% All adverbs, numerals and symbols with a SUBJ function are nominals.
+  rule nom_subj {
+    pattern {A[upos=ADV|SYM|NUM,!nom]; V -[1=subj]-> A}
+    commands {A.nom=y}
+  }
+
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -60,15 +69,15 @@ package unchained_relations {
   }
 
   rule fixed {
-    pattern { H -[fixed]-> D1; e: D1 -[fixed]-> D2; }
-    without { * -[fixed]-> H; }
-    commands { del_edge e; add_edge H -[fixed]-> D2; }
+    pattern { H -[unk@fixed]-> D1; e: D1 -[unk@fixed]-> D2; }
+    without { * -[unk@fixed]-> H; }
+    commands { del_edge e; add_edge H -[unk@fixed]-> D2; }
   }
 
 % The second conjunct has neither subject nor determiner.
   rule conj {
     pattern { H -[conj]-> D1;e: D1 -[conj]-> D2 }
-    without { D1 -[det|subj]-> * }
+    without { D1 -[1=det|subj]-> X }
     without { H -[conj]-> X; D1 << X; X << D2 }
     commands { del_edge e; add_edge H -[conj]-> D2 }
   }
@@ -77,7 +86,7 @@ package unchained_relations {
   rule conj_det1 {
     pattern {
       H -[conj]-> D1;e: D1 -[conj]-> D2;
-      D1 -[det]-> *; D2 -[det]-> *
+      D1 -[1=det]-> X; D2 -[1=det]-> Y
     }
     without { H -[conj]-> X; D1 << X; X << D2 }
     commands {del_edge e;add_edge H -[conj]-> D2 }
@@ -87,7 +96,7 @@ package unchained_relations {
   rule conj_det2 {
     pattern {
       H -[conj]-> D1; e: D1 -[conj]-> D2;
-      D1 -[det]-> *; D2[cat=PROPN|PRON]
+      D1 -[1=det]-> X; D2[upos=PROPN|PRON]
     }
     without { H -[conj]-> X; D1 << X; X << D2 }
     commands { del_edge e; add_edge H -[conj]-> D2 }
@@ -97,479 +106,492 @@ package unchained_relations {
   rule conj_subj {
     pattern {
       H -[conj]-> D1;e: D1 -[conj]-> D2;
-      D1 -[subj]-> *; D2 -[subj]-> *
+      D1 -[1=subj]-> X; D2 -[1=subj]-> Y
     }
     commands {del_edge e;add_edge H -[conj]-> D2 }
   }
 }
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% The COMP relations from adpositions,subordination conjunctions and some particles are reversed.
+% The relations with prepositions and conjunction of subordination as their heads are reversed.
 package reverse_case_mark {
-% A preposition governs a nominal.
-  rule case_nom {
-    pattern { e:H -[comp]-> D; H [cat=ADP|SYM]; D[nom=y] }
-    without { D -[comp]-> * }
+% The heads are reversed from the most internal to the most external. The source and the target of the reversed relation are marked "reversed = y" so that loops are not possible.
+  rule rev_head {
+    pattern {e:H -[1=comp,2=obj]-> D; H[upos= ADP|CCONJ|PART|SCONJ]}
+    without{D[upos= ADP|CCONJ|PART|SCONJ]; D -[1=comp,2=obj]-> D1; D1[!reversed]}
+    without{H[reversed=y]; D[reversed=y]}
     commands {
+      H.reversed=y; D.reversed=y;
+      add_edge e:D -> H;
       del_edge e;
       shift_in H ==> D;
-      shift_out H =[^expr|fixed|conj:dicto|reparandum]=> D;
-      add_edge D -[case]-> H;
-    }
-  }
-
-% An adposition governs an adverb or an adjective that is not the head of a clause.
-  rule case_adv-adj {
-    pattern { e:H -[comp]-> D; H [cat=ADP]; D[cat=ADV|ADJ] }
-    without { D -[comp]-> * }
-    without { D -[mark]-> * }
-    commands {
-      del_edge e;
-      shift_in H ==> D;
-      shift_out H =[^expr|fixed|conj:dicto|reparandum]=> D;
-      add_edge D -[case]-> H;
-    }
-  }
-
-% A conjunction governs a nominal that is not the head of a clause. It is considered as an adposition.
-  rule case_conj {
-    pattern { e:H -[comp]-> D; H [cat=CCONJ|SCONJ]; D[nom=y] }
-    without { D -[comp]-> * }
-    without{ D -[mark]-> *}
-    commands {
-      del_edge e;
-      shift_in H ==> D;
-      shift_out H =[^expr|fixed|conj:dicto|reparandum]=> D;
-      add_edge D -[case]-> H;
-    }
-  }
-
-% An adposition governs a verb that is a not a nominal.
-  rule mark_adp_verb {
-    pattern { e:H -[comp]-> D; H [cat=ADP]; D[cat=VERB|AUX,!nom] }
-    without { D -[comp]-> * }
-    commands {
-      del_edge e;
-      shift_in H ==> D;
-      shift_out H =[^aux|aux:pass|expr|fixed|conj:dicto|reparandum]=> D;
-      add_edge D -[mark]-> H;
-    }
-  }
-
-% An adposition governs the head of clause.
-  rule mark_adp_clause {
-    pattern { e:H -[comp]-> D; H [cat=ADP]; D -[mark]-> * }
-    without { D -[comp]-> * }
-    commands {
-      del_edge e;
-      shift_in H ==> D;
-      shift_out H =[^aux|aux:pass|expr|fixed|conj:dicto|reparandum]=> D;
-      add_edge D -[mark]-> H;
-    }
-  }
-
-% A conjunction governs a verb, an adverb or an adjective that is a not a nominal.
-  rule mark_conj {
-    pattern { e:H -[comp]-> D; H[cat=CCONJ|SCONJ]; D[cat=VERB|AUX|ADJ|ADV|INTJ,!nom] }
-    without { D -[comp]-> * }
-    commands {
-      del_edge e;
-      shift_in H ==> D;
-      shift_out H =[^expr|fixed|discourse|reparandum]=> D;
-      add_edge D -[mark]-> H;
-    }
-  }
-
-% A conjunction governs an adpositional phrase.
-  rule mark_conj_adp {
-    pattern {e:H -[comp]-> D; H [cat=CCONJ|SCONJ]; D -[case]-> *}
-    without { D -[comp]-> * }
-    commands {
-      del_edge e;
-      shift_in H ==> D;
-      shift_out H =[^expr|fixed|discourse|reparandum]=> D;
-      add_edge D -[mark]-> H;
+      shift_out H =[^conj:dicto|expr|goeswith|orphan|reparandum|unk:fixed]=> D;
     }
   }
 
 }
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% The relations from tense, passive and causative auxiliaries to the main verb are reversed.
-package reverse_aux {
-% Tense auxiliaries.
-  rule aux {
-    pattern { e:V -[comp:aux]-> C }
-    without { * -[comp:aux|comp:pass]-> V }
-    commands {
-      del_edge e;
-      shift_in V ==> C;
-      shift_out V =[^fixed|conj:dicto|orphan|reparandum]=> C;
-      add_edge C -[aux]-> V;
-    }
+% It is necessary to delete the reversed marks because there is another package reversing heads and it must start with no reversed marks.
+package reverse_close {
+  rule del_reversed{
+    pattern {W[reversed=y]}
+    commands {del_feat W.reversed}
   }
 
-% Passive auxiliaries.
-  rule pass {
-    pattern { e:V -[comp:pass]-> C }
-    without { * -[comp:aux|comp:pass]-> V }
-    commands {
-      del_edge e;
-      shift_in V ==> C;
-      shift_out V =[^fixed|conj:dicto|orphan|reparandum]=> C;
-      add_edge C -[aux:pass]-> V;
-    }
-  }
-
-% Causative auxiliaries without object that is the agent of the caused verb.
-  rule caus {
-    pattern { e:V -[comp:caus]-> C }
-    without { * -[comp:aux|comp:pass]-> V }
-    without { V -[comp:obj]-> * }
-    commands {
-      del_edge e;
-      shift_in V ==> C;
-      shift_out V =[^fixed|conj:dicto|orphan|reparandum]=> C;
-      add_edge C -[aux:caus]-> V;
-    }
-  }
-
-% Causative auxiliaries with an object that is the agent of the caused verb.
-  rule caus_obj_agent {
-    pattern { e:V -[comp:caus]-> C; obj: V -[comp:obj]-> O; }
-    without { * -[comp:aux|comp:pass]-> V }
-    commands {
-      del_edge e;
-      del_edge obj;
-      shift_in V ==> C;
-      shift_out V =[^fixed|conj:dicto|orphan|reparandum]=> C;
-      add_edge C -[aux:caus]-> V;
-      add_edge C -[obj:agent]-> O;
-    }
-  }
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Re-labelling of SUBJ relations.
-package subj {
-% The subject is nominal and there is no passive or causative auxiliary.
-  rule nsubj {
-    pattern { e:V -[subj]-> S; S[nom=y] }
-    without { V -[aux:pass|aux:caus]-> * }
-    commands { del_edge e; add_edge V -[nsubj]-> S }
+% SUD relations with adpositions or conjonctions of subordination are renamed as case or mark UD relations.
+package case_mark_relations {
+% Nominal heads of relations with an adposition as its dependent.
+% Ex: à Paris - comme à Paris - il ira plutôt à Lyon qu'à Paris.
+  rule case_nom{
+    pattern{ e:H -[1=comp,2=obj]-> D; H[nom=y];D[upos=ADP|PART] }
+    without{ H -[1=comp|mark]-> CONJ; CONJ[upos=CCONJ|SCONJ]; D << CONJ; CONJ << H}
+    without{ H -[1=comp|mark]-> CONJ; CONJ[upos=CCONJ|SCONJ]; D >> CONJ; CONJ >> H}
+    commands {e.1=case}
   }
 
-% The subject is nominal and there is a caus auxiliary.
-  rule nsubj_caus {
-    pattern {  e:V -[subj]-> S; S[nom=y];  V -[aux:caus]-> * }
-    commands { del_edge e; add_edge V -[nsubj:caus]-> S }
+% Nominal heads of relations with a conjunction and without adpositions as dependents.
+% Ex: Lyon est plus près que Paris.
+  rule case_nom_conj{
+    pattern{ e:H -[1=comp,2=obj]-> D; H[nom=y];D[upos=CCONJ|SCONJ] }
+    without{H -> ADP; ADP[upos=ADP|PART]}
+    commands {e.1=case}
+  }
+  
+% Adjectival or adverbial heads of relations with an adposition and without conjunctions as dependents between the head and the adposition.
+% Ex: dès demain - en continu
+  rule case_pred{
+    pattern{ e:H -[1=comp,2=obj]-> D; H[upos=ADV|ADJ];D[upos=ADP|PART] }
+    without{ H -[1=comp|mark]-> CONJ; CONJ[upos=CCONJ|SCONJ]; D << CONJ; CONJ << H}
+    without{ H -[1=comp|mark]-> CONJ; CONJ[upos=CCONJ|SCONJ]; D >> CONJ; CONJ >> H}
+    commands {e.1=case}
+  }
+  rule mark{
+    pattern{ e:H -[1=comp,2=obj]-> D; H[upos=AUX|VERB,!nom];D[upos=ADP|CCONJ|PART|SCONJ] }
+    commands {e.1=mark}
   }
 
-% The subject is nominal and there is a passive auxiliary.
-  rule nsubj_pass {
-    pattern {  e:V -[subj]-> S; S[nom=y];  V -[aux:pass]-> * }
-    commands { del_edge e; add_edge V -[nsubj:pass]-> S }
+% si possible
+  rule mark_pred_conj{
+    pattern{ e:H -[1=comp,2=obj]-> D; H[upos=ADJ|ADV,!nom];D[upos=CCONJ|SCONJ] }
+    commands {e.1=mark}
   }
 
-% The subject is clausal and there is no passive auxiliary.
-  rule csubj {
-    pattern { e:V -[subj]-> S; S[cat=AUX|VERB, !nom] }
-    without { V -[aux:pass]-> * }
-    commands { del_edge e; add_edge V -[csubj]-> S }
+% Governors of an adposition, with a conjunction between the governor and the adposition.
+% Ex: dès que possible
+  rule mark_pred_adp1{
+    pattern{
+      e:H -[1=comp,2=obj]-> D; D[upos=ADP|PART];
+      H -[1=comp|mark]-> CONJ; CONJ[upos=CCONJ|SCONJ]; D << CONJ; CONJ << H}
+    commands {e.1=mark}
   }
 
-% The subject is clausal and there is a passive auxiliary.
-  rule csubj_pass {
-    pattern { e:V -[subj]-> S; S[cat=AUX|VERB];  V -[aux:pass]-> * }
-    commands { del_edge e; add_edge V -[csubj:pass]-> S }
+% Governors of an adposition, with a conjunction between the governor and the adposition.
+  rule mark_pred_adp2{
+    pattern{
+      e:H -[1=comp,2=obj]-> D; D[upos=ADP|PART];
+      H -[1=comp|mark]-> CONJ; CONJ[upos=CCONJ|SCONJ]; D >> CONJ; CONJ >> H}
+    commands {e.1=mark}
   }
+  
+% comme à Paris
+  rule mark_nom1{
+    pattern{
+      e:H -[1=comp,2=obj]-> D;
+      H[nom=y];D[upos=CCONJ|SCONJ];
+      H -[1=case]-> ADP; D << ADP; ADP << H}
+    commands {e.1=mark}
+  }
+  
+  rule mark_nom2{
+    pattern{
+      e:H -[1=comp,2=obj]-> D;
+      H[nom=y];D[upos=CCONJ|SCONJ];
+      H -[1=case]-> ADP; D >> ADP; ADP >> H}
+    commands {e.1=mark}
+  }
+
 }
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Some determiner relations are re-labelled.
-package det{
-% When a determiner relation has a numeral as its dependent, it is labelled with NUMMOD.
-  rule det_nummod{
-    pattern { e: H -[det]-> D; D[cat=NUM] }
-    commands { del_edge e; add_edge H -[nummod]-> D }
+% SUD sub-relations  are renamed as UD relations or sub-relations.
+% Rem: the rules are ordered according to the alphabetic order of the names of the resulting relations
+package sub_relations {
+  rule acl_relcl {
+    pattern { e:H -[1=mod,2=relcl]-> D }
+    commands {e.1=acl}
   }
-}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Relations COMP for required complements are re-labelled.
-package comp {
+  
   rule advclcleft {
     pattern { e:H -[comp:cleft]-> D }
-    commands { del_edge e; add_edge H -[advcl:cleft]-> D }
+    commands {e.1=advcl; e.2=cleft}
   }
 
+% All auxiliaries except tense auxiliaries.
+  rule aux{
+    pattern{ e:H -[1=comp,2=aux]-> D }
+    without{H -[deep=tense]-> D}
+    commands {e.1=aux}
+  }
+  
+  rule aux_tense{
+    pattern{ e:H -[comp:aux@tense]-> D }
+    commands {add_edge H -[aux]-> D; del_edge e}
+  }
+
+% Complement that is a complete clause without control of its subject.
   rule ccomp {
-    pattern {
-      e:H -[comp:obj|comp:obl]-> D; D[cat = ADJ|AUX|VERB,!nom];
-    }
-    commands { del_edge e; add_edge H -[ccomp]-> D }
+    pattern {e:H -[1=comp, 2=obj|obl]-> D; D[upos = AUX|VERB,!nom]}
+    without{ H -[comp:obj@x|comp:obl@x]-> D}
+    commands {e.1=ccomp}
   }
-
-  rule ccomp_mark {
+  
+% Clausal complement  with an adjectival or adverb as its head without control of its subject.
+  rule ccomp_adv_adj {
     pattern {
-      e:H -[comp:obj|comp:obl]-> D; D -[mark]-> *
-    }
-    commands { del_edge e; add_edge H -[ccomp]-> D }
+      e:H -[1=comp, 2=obj|obl]-> D; D[upos = ADJ|ADV,!nom];
+      D -[1=mark]-> CONJ}
+    without{ H -[comp:obj@x|comp:obl@x]-> D}
+    without{ H -[comp:obj@expl]-> D}
+    commands {e.1=ccomp}
   }
-
+  
+  rule cop{
+    pattern{ e:H -[1=comp,2=pred]-> D; H[upos=AUX]}
+    commands {e.1=cop}
+  }
+  
+% In an impersonal active construction, the deep clausal subject, which is a COMP:OBJ dependent in SUD, becomes a CSUBJ dependent in UD.
+% Ex: il m'arrive de faire des erreurs.
+  rule csubj_expl{
+    pattern { e:H -[comp:obj@expl]-> D; D[upos=AUX|VERB]}
+    commands {add_edge H -[csubj:expl]-> D; del_edge e}
+  }
+  
+% In an impersonal active construction, the deep clausal subject introduced with a conjunction, which is a COMP:OBJ dependent in SUD, becomes a CSUBJ dependent in UD.
+% Ex: il m'arrive de faire des erreurs.
+  rule csubj_expl_conj{
+    pattern {
+      e:H -[comp:obj@expl]-> D;D[upos <>AUX|VERB];
+      D -[1=mark]-> CONJ}
+    commands {add_edge H -[csubj:expl]-> D; del_edge e}
+  }
+  
+% In an impersonal passive construction, the deep clausan subject, which is a COMP:OBJ dependent in SUD, becomes a CSUBJ:PASS dependent in UD.
+% Ex: Il est prévu de continuer. - Il se dit que tu viendras.
+  rule csubj_expl_pass{
+    pattern { e:H -[comp:obj@pass]-> D; D[upos=AUX|VERB]; H -[expl:subj]-> S}
+    commands {add_edge H -[csubj:pass]-> D; del_edge e}
+  }
+  
+% An expletive complement, which is a COMP:EXPL dependent in SUD, becomes an EXPL:COMP dependent in UD.
+% Ex: Les gens s'enfuient - Il s'agit d'un accident. - Les voitures se vendent bien. - Il s'est vendu une grande maison aujourd'hui. -  Il se dit que tu viendras.
+  rule expl_comp{
+    pattern{ e:H -[comp@expl]-> D}
+    commands {add_edge H -[expl:comp]-> D; del_edge e}
+  }
+  
+% In an impersonal construction, the impersonal subject, which is a SUBJ:EXPL dependent in SUD, becomes an  EXPL:SUBJ dependent in UD.
+% Ex: Il arrive deux personnes. - Il faut un bilan. - Il s'agit d'une erreur. - Il a été vendu une grande maison. - il se dit que tu viendras.
+  rule expl_subj{
+    pattern{ e:H -[subj@expl]-> D}
+    commands {add_edge H -[expl:subj]-> D; del_edge e}
+  }
+  
+  rule fixed{
+    pattern{ e:H -[unk@fixed]-> D}
+    commands {add_edge H -[fixed]-> D; del_edge e}
+  }
+  
   rule iobj {
-    pattern { e:H -[comp:obl]-> D; D[cat=PRON]}
-    without { D -[case]-> * }
-    commands { del_edge e; add_edge H -[iobj]-> D }
+    pattern { e:H -[1=comp,2=obl]-> D; D[upos=PRON]}
+    without { D -> X; X[upos=ADP] }
+    commands {e.1=iobj}
   }
-
-  rule iobj_agent {
-    pattern { e:H -[comp:agent]-> D}
-    without{ D -[case]-> *}
-    commands { del_edge e; add_edge H -[iobj:agent]-> D }
+  
+  
+  rule nmod{
+    pattern { e:H -[1=comp, 2=obl]-> D; H[nom=y]; D[nom=y];  }
+    commands {e.1=nmod}
   }
-
-  rule obj {
-    pattern { e:H -[comp:obj]-> D; D[nom=y];  }
-    without { D -[cop]-> C; } % TODO: remove no cop at this stage
-    commands { del_edge e; add_edge H -[obj]-> D }
+  
+% In an impersonal active construction, the deep nominal subject, which is a COMP:OBJ dependent in SUD, becomes a NSUBJ dependent in UD.
+% Ex: il arrive deux personnes.
+  rule nsubj_expl{
+    pattern { e:H -[comp:obj@expl]-> D; D[nom=y]}
+    without{ H -[comp@pass]-> AUX}
+    without{D -[1=mark]-> CONJ}
+    commands {add_edge H -[nsubj:expl]-> D; del_edge e}
   }
-
-  rule obj_lvc {
-    pattern {e:H -[comp:lvc]-> D;  }
-    commands { del_edge e; add_edge H -[obj:lvc]-> D }
+  
+% In an impersonal passive construction, the deep nominal subject, which is a COMP:OBJ dependent in SUD, becomes a NSUBJ:PASS dependent in UD.
+% Ex: Il a été vendu une grande maison. - Il s'est vendu une grande maison.
+  rule nsubj_expl_pass{
+    pattern { e:H -[comp:obj@pass]-> D; D[nom=y]; H -[expl:subj]-> S}
+    commands {add_edge H -[nsubj:pass]-> D; del_edge e}
   }
-
-  rule obl_arg_adv {
-    pattern { e:H -[comp:obl]-> D; D[cat=ADV] }
-    without { D -[case]-> *}
-    commands { del_edge e; add_edge H -[obl:arg]-> D }
+  
+   rule obj_nom{
+    pattern { e:H -[1=comp, 2=obj]-> D; D[nom=y]}
+    without{ H -[comp:obj@expl]-> D}
+    without{ D -[1=mark]-> *}
+    commands {e.1=obj}
   }
-
-  rule obl_arg_case {
-    pattern {e:H -[comp:obl]-> D; D -[case]-> * }
-    without {D -[mark]-> *}
-    commands { del_edge e; add_edge H -[obl:arg]-> D }
+  
+   rule obj_pred{
+    pattern { e:H -[1=comp, 2=obj]-> D; D[cat=ADJ|ADV,!nom]}
+    without{ H -[comp:obj@expl]-> D}
+    without{ D -[1=mark]-> *}
+    commands {e.1=obj}
+  }
+  
+  rule obl_agent {
+    pattern { e:H -[1=comp,2=obl,deep=agent]-> D; D -[case]-> * }
+    commands { del_edge e; add_edge H -[obl:agent]-> D }
   }
 
   rule obl_arg_nom {
-    pattern { e:H -[comp:obl]-> D; D[cat <> PRON,nom=y] }
-    without { D -[case]-> *}
-    commands { del_edge e; add_edge H -[obl:arg]-> D }
+    pattern { e:H -[1=comp,2=obl]-> D; H[upos=ADJ|ADV|AUX|INTJ|VERB]; D[upos <> PRON,nom=y] }
+    without{ D -[1=mark]-> *}
+    commands {e.1=obl; e.2=arg}
   }
 
+  rule obl_arg {
+    pattern { e:H -[1=comp,2=obl]-> D; H[upos=ADJ|ADV|AUX|INTJ|VERB]; D[upos=ADJ|ADV] }
+    without{ D -[1=mark]-> *}
+    commands {e.1=obl; e.2=arg}
+  }
+
+  rule obl_arg_pron {
+    pattern { e:H -[1=comp,2=obl]-> D; D[upos=PRON]; D -[1=case]-> * }
+    commands {e.1=obl; e.2=arg}
+  }
+  
   rule xcomp {
-    pattern { e:H -[comp:obj:x|comp:obl:x]-> D; H [cat <> AUX|PART] }
+    pattern { e:H -[comp:obj@x|comp:obl@x|comp:pred]-> D }
+    without{ H[upos=AUX]}
     commands { del_edge e; add_edge H -[xcomp]-> D }
   }
 
-  rule obl_agent {
-    pattern { e:H -[comp:agent]-> D; D -[case]-> * }
-    commands { del_edge e; add_edge H -[obl:agent]-> D }
-  }
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Relations MOD are re-labelled.
-package mod {
+% SUD deep extensions of relations are transformed into  extensions of UD relations
+package rel_extensions {
+  rule change_ext{
+    pattern{e: H -[1=*, deep <> fixed]-> D}
+    commands{ add_edge H -[1=e.1,2=e.deep]-> D; del_edge e}
+  }
+  
+  rule del_ext{
+    pattern{e: H -[1=*,2=aux|obj|obl|pred,!deep]-> D}
+    commands{ add_edge H -[1=e.1]-> D; del_edge e}
+  }
+  
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SUD relations are renamed as UD relations or sub-relations.
+% Rem: the rules are ordered according to the alphabetic order of the names of the resulting relations
+package relations {
+
 % A nominal governs a participle or an infinitive in a MOD relation.
   rule acl_part {
     pattern {
-      e:H -[mod]-> D; H[nom=y];
-      D[cat=AUX|VERB,!nom, VerbForm=Inf|Part]
+      e:H -[1=mod]-> D; H[nom=y];
+      D[upos=AUX|VERB,!nom, VerbForm=Inf|Part]
     }
-    without{D -[mark]-> *}
+    without{D -[1=mark]-> *}
+    without{D -[1=aux]-> AUX; AUX[VerbForm=Fin]}
     without{PRO[PronType=Rel]; D -> PRO; PRO << D; H << PRO}
     without{PRO[PronType=Rel]; D -> X; X -> PRO; PRO << D; H << PRO}
-    commands { del_edge e; add_edge H -[acl]-> D }
+    commands {e.1=acl}
   }
 
-% A nominal governs an adverbial clause in a MOD relation.
-  rule acl_clause {
+%  A nominal governs the head of a complementized clause in a UDEP relation.
+  rule acl_mark-clause {
     pattern {
-      e:H -[mod]-> D; H[nom=y];
-      D[cat=AUX|VERB,!nom]; D -[mark]-> *
+      e:H -[1=mod|udep]-> D; H[nom=y];
+      D -[1=mark]-> *
     }
-    commands { del_edge e; add_edge H -[acl]-> D }
+    commands {e.1=acl}
   }
 
 %  A nominal governs a finite verb in a MOD relation and the hypothesis is that this verb is always the head of a relative clause.
   rule aclrel {
     pattern {
-      e:H -[mod]-> D;
+      e:H -[1=mod]-> D; H[upos <> AUX|VERB];
      % H[nom=y]; H can be an adverb
-      D[cat=AUX|VERB,VerbForm=Fin]  }
-    without { D -[mark]-> *}
-    commands { del_edge e; add_edge H -[acl:relcl]-> D }
+      D[upos=AUX|VERB,VerbForm=Fin]  }
+    without { D -[1=mark]-> X}
+    commands {e.1=acl; e.2=relcl}
   }
 
-%  A nominal governs a verb with a finite auxiliary in a UDEP relation and the hypothesis is that this verb is always the head of a relative clause.
-  rule aclrel_aux {
-    pattern {
-      e:H -[mod]-> D;
-      %H[nom=y];
-      D -[aux|aux:pass|aux:caus]-> AUX; AUX[VerbForm=Fin]  }
-    without { D -[mark]-> *}
-    commands { del_edge e; add_edge H -[acl:relcl]-> D }
-  }
 
-% The head of a relative clause, when it is identified as the direct governor of a relative pronoun, is a not finite verb or auxiliary.
-  rule aclrel_spec1{
+% A word H has a modifier D, which is not a finite verb and itself governs a relative pronoun and the relative pronoun is located between H and D. The hypothesis is that D is  the head of a relative clause.
+  rule aclrel_relpro1{
     pattern{
-      %H[nom];
-      e: H -[mod]-> D;
+      e: H -[1=mod]-> D; H[upos <> AUX|VERB];
       D -> PRO; H << PRO; PRO << D; PRO[PronType=Rel]
     }
-    without{D[cat=AUX|VERB,VerbForm=Fin]}
-    commands{del_edge e; add_edge H -[acl:relcl]-> D}
+    without{D[upos=AUX|VERB,VerbForm=Fin]}
+    commands {e.1=acl; e.2=relcl}
   }
 
-% The head of a relative clause, when it is identified as the indirect governor of a relative pronoun, is a not finite verb or auxiliary.
-  rule aclrel_spec2{
+% A word H has a modifier D, which is not a finite verb and itself indirectly governs a relative pronoun via an intermediate word and the relative pronoun is located between H and D. The hypothesis is that D is  the head of a relative clause.
+  rule aclrel_relpro2{
     pattern{
-      %H[nom];
-      e: H -[mod]-> D;
+      e: H -[1=mod]-> D;  H[upos <> AUX|VERB];
       D -> X; X -> PRO; H << PRO; PRO << D; PRO[PronType=Rel]
     }
-    without{D[cat=AUX|VERB,VerbForm=Fin]}
-    commands{del_edge e; add_edge H -[acl:relcl]-> D}
+    without{D[upos=AUX|VERB,VerbForm=Fin]}
+    commands {e.1=acl; e.2=relcl}
   }
+
   rule advcl {
-    pattern { H[!nom]; e:H -[mod]-> D; D[cat=ADJ|AUX|VERB,!nom] }
-    without{H[cat=ADJ];D[cat=ADJ]}
-    without {D[cat=ADJ]; D -[case]-> *}
-    without{ PRO[PronType=Rel]; D -> PRO; H << PRO} % The dependency MOD is not the dependency of a relative clause.
-    commands { del_edge e; add_edge H -[advcl]-> D }
+    pattern { H[!nom]; e:H -[1=mod]-> D; D[upos=ADJ|AUX|VERB,!nom] }
+    without{H[upos=ADJ];D[upos=ADJ]}
+    without {D[upos=ADJ]; D -[1=case]-> X}
+    without{ PRO[PronType=Rel]; D -> PRO; H << PRO; H [upos <> AUX|VERB]} % The dependency MOD is not the dependency of a relative clause.
+    commands {e.1=advcl}
   }
 
 % Ex: fr-ud-train_01058 - Son équipe en difficulté, il est remplacé à la mi-temps ...
 % Ex: fr-ud-dev_00890 - ... les restes du château d'Eaucourt étaient plus considérables qu'aujourd'hui.
 % Ex: fr-ud-test_00158 - Comme chaque soir à 18h40, il tranche, malmène et détourne l'actualité.
   rule advcl_ellipsis {
-    pattern {H[!nom]; e:H -[mod]-> D; D -[mark|nsubj]-> * }
-    without{D[cat=VERB]}
-    commands { del_edge e; add_edge H -[advcl]-> D }
+    pattern {H[!nom]; e:H -[1=mod]-> D; D -[1=mark|nsubj]-> X }
+    without{D[upos=VERB]}
+    commands {e.1=advcl}
   }
 
   rule advmod {
-    pattern { e:H -[mod]-> D; D[cat=ADV|CCONJ|INTJ|PART|SYM, !nom] }
-    without{D -[mark]-> *}
-    commands { del_edge e; add_edge H -[advmod]-> D }
+    pattern { e:H -[1=mod]-> D; D[upos=ADV|CCONJ|INTJ|PART|SYM, !nom] }
+    without{D -[1=mark]-> X}
+    commands {e.1=advmod}
   }
 
   rule amod1 {
-    pattern { H[cat=ADJ]; e:H -[mod]-> D; D[cat=ADJ] }
-    without{ D -[mark]-> *}
+    pattern { H[upos=ADJ]; e:H -[1=mod]-> D; D[upos=ADJ] }
+    without{ D -[1=mark]-> X}
     without{ PRO[PronType=Rel]; D -> PRO; H << PRO}
-    commands { del_edge e; add_edge H -[amod]-> D }
+    commands {e.1=amod}
   }
 
   rule amod2 {
-    pattern { H[nom=y]; e:H -[mod]-> D; D[cat=ADJ] }
-    without{ D -[mark]-> *}
+    pattern { H[nom=y]; e:H -[1=mod]-> D; D[upos=ADJ] }
+    without{ D -[1=mark]-> X}
     without{ PRO[PronType=Rel]; D -> PRO; H << PRO}
-    commands { del_edge e; add_edge H -[amod]-> D }
+    commands {e.1=amod}
+  }
+
+% Clausal subject.
+  rule csubj {
+    pattern { e:V -[1=subj]-> S; S[upos=AUX|VERB, !nom] }
+    without { V -[aux:pass]-> * }
+    commands {e.1=csubj}
+  }
+
+  rule dep{
+    pattern{ e: H -[unk]-> D}
+    commands{e.1=dep}
+  }
+  
+% When a determiner relation has a numeral as its dependent, it is labelled with NUMMOD.
+  rule det_nummod{
+    pattern { e: H -[1=det]-> D; D[upos=NUM] }
+    commands {e.1=nummod}
   }
 
   rule nmod {
-    pattern {e:H -[mod]-> D; H[nom=y]; D[nom=y]}
-    without{D -[mark]-> *}
+    pattern {e:H -[1=mod|udep]-> D; H[nom=y]; D[nom=y]}
+    without{D -[1=mark]-> X}
     without{ PRO[PronType =Rel]; D -> PRO; H << PRO; PRO << D} % D cannot be the head of relative clause, H being the antecedent of this clause.
-    commands { del_edge e; add_edge H -[nmod]-> D }
-  }
-
-  rule nmod_num {
-    pattern {e:H -[mod]-> D; H[cat=NUM]; D[cat=NUM]}
-    commands { del_edge e; add_edge H -[nmod]-> D }
-  }
-  rule nummod {
-    pattern { e:H -[mod]-> D; D[cat=NUM]; D << H }
-    without{ PRO[PronType=Rel]; D -> PRO; H << PRO}
-    without{ H -[case|mark]-> D1; D << D1}
-    commands { del_edge e; add_edge H -[nummod]-> D }
-  }
-
-  rule oblmod {
-    pattern { H[!nom]; e:H -[mod]-> D; D[nom=y] }
-    without{ D -[nsubj|mark]-> *}
-    without{H[cat=NUM];D[cat=NUM]}
-    commands { del_edge e; add_edge H -[obl:mod]-> D }
-  }
-
-  rule oblmod_adj {
-    pattern { H[!nom]; e:H -[mod]-> D; D[cat=ADJ,!nom]; D -[case]-> * }
-    commands { del_edge e; add_edge H -[obl:mod]-> D }
-  }
-}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Relations UDEP are re-labelled. At this stage, some auxilairies are still heads of clauses.
-% A nominal governs an infinitive or a participle in a UDEP relation.
-package udep {
-  rule acl_non-finite-clause {
-    pattern {
-      e:H -[udep]-> D; H[nom=y];
-      D[cat=AUX|VERB,!nom]
-    }
-    commands { del_edge e; add_edge H -[acl]-> D }
-  }
-
-%  A nominal governs the head of a complementized clause in a UDEP relation.
-  rule acl_mark-clause {
-    pattern {
-      e:H -[udep]-> D; H[nom=y];
-      D -[mark]-> *
-    }
-    commands { del_edge e; add_edge H -[acl]-> D }
-  }
-
-
-% A nominal governs a nominal in a DEP_SUD relation.
-  rule nmod {
-    pattern {e:H -[udep]-> D; H[nom=y]; D[nom=y]}
-    without{D -[mark]-> *}
-    without{ PRO[PronType =Rel]; D -> PRO; H << PRO; PRO << D} % D cannot be the head of relative clause, H being the antecedent of this clause.
-    commands { del_edge e; add_edge H -[nmod]-> D }
+    commands {e.1=nmod}
   }
 
 % A nominal governs an adjective introduced with an adposition in a DEP_SUD relation.
   rule nmod_adj {
-    pattern {e:H -[udep]-> D; H[nom=y]; D[cat=ADJ]; D -[case]-> *}
-    without{D -[mark]-> *}
-    commands { del_edge e; add_edge H -[nmod]-> D }
+    pattern {e:H -[1=udep]-> D; H[nom=y]; D[upos=ADJ]; D -[1=case]-> X}
+    without{D -[1=mark]-> Y}
+    commands {e.1=nmod}
   }
 
+  rule nmod_num1{
+    pattern {e:H -[1=mod]-> D; H[upos=NUM]; D[upos=NUM]}
+    commands {e.1=nmod}
+  }
+  
 % A numeral is dependent on another numeral via an adposition.
-  rule nmod_num{
+  rule nmod_num2{
     pattern {
-      N1[cat=NUM]; N2[cat=NUM]; e:N1 -[udep]-> N2;
-      N2 -[case]-> P
-    }
-    commands{del_edge e; add_edge N1 -[nmod]-> N2}
+      N1[upos=NUM]; N2[upos=NUM]; e:N1 -[1=udep]-> N2;
+      N2 -[1=case]-> P}
+    commands {e.1=nmod}
   }
 
+% A numeral is a modifier of an nominal that has a case marker between it and the numaral.
+  rule nmod_num3{
+    pattern {
+      N1[nom=y]; N2[upos=NUM]; e:N1 -[1=mod]-> N2;
+      N1 -[case]-> ADP; N2 << ADP; ADP << N1}
+    commands {e.1=nmod}
+  }
+  
+% Nomminal subject.
+  rule nsubj {
+    pattern { e:V -[1=subj]-> S; S[nom=y] }
+    commands {e.1=nsubj}
+  }
+
+  rule nummod {
+    pattern { e:H -[1=mod]-> D; D[upos=NUM]; D << H }
+    without{ PRO[PronType=Rel]; D -> PRO; H << PRO}
+    without{ H -[1=case|mark]-> D1; D << D1}
+    without{ D -[case|mark]-> *}
+    commands {e.1=nummod}
+  }
+
+  rule oblmod {
+    pattern { H[!nom]; e:H -[1=mod]-> D; D[nom=y] }
+    without{ D -[1=nsubj|mark]-> X}
+    without{H[upos=NUM];D[upos=NUM]}
+    commands {e.1=obl; e.2=mod}
+  }
+
+  rule oblmod_adj {
+    pattern { H[!nom]; e:H -[1=mod]-> D; D[upos=ADJ,!nom]; D -[1=case]-> X }
+    commands {e.1=obl; e.2=mod}
+  }
 
 % A predicate governs a nominal or an adjective in a DEP_SUD relation.
   rule obl {
-    pattern {e:H -[udep]-> D; H[cat=ADJ|ADV|VERB|AUX|INTJ,!nom]}
-    without{D[cat <> ADJ|ADV, !nom]}
-    commands { del_edge e; add_edge H -[obl]-> D }
+    pattern {e:H -[1=udep]-> D; H[upos=ADJ|ADV|VERB|AUX|INTJ,!nom]}
+    without{D[upos <> ADJ|ADV, !nom]}
+    commands {e.1=obl}
   }
 }
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% The relations from copulas to the predicate they govern are reversed
-package reverse_cop {
-  rule cop {
-    pattern { V[cat=AUX|PART]; e:V -[comp:pred]-> C }
+% The relations with auxiliaries as their heads are reversed.
+package reverse_aux {
+
+  rule rev_head {
+    pattern {e:H -[1=aux|cop]-> D; H[upos= AUX]}
+    without{D[upos= AUX]; D -[1=aux|cop]-> D1; D1[!reversed]}
+    without{H[reversed=y]; D[reversed=y]}
     commands {
+      H.reversed=y; D.reversed=y;
+      add_edge e:D -> H;
       del_edge e;
-      shift_in V ==> C;
-      shift_out V =[^fixed|conj:dicto|orphan|reparandum]=> C;
-      add_edge C -[cop]-> V;
+      shift_in H ==> D;
+      shift_out H =[^conj:dicto|expr|goeswith|orphan|reparandum|unk:fixed]=> D;
     }
   }
+
 }
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 package final {
@@ -577,6 +599,7 @@ package final {
     pattern {W[nom=y]}
     commands {del_feat W.nom}
   }
+
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -584,14 +607,14 @@ strat main {
   Seq (
     Onf (nom_init),
     Onf (unchained_relations), % For CONJ relations, chains must be transformed into bouquets before head changes because of conditions on the presence of prepositions, conjunctions and auxiliaries. It is easier to take these conditions into account before head changes (UD_French-GSD : fr-ud-dev_00751)
-    Onf (reverse_case_mark), % Package REVERSE_CASE_MARK precedes package COMP because  UD labels of complement relations depend on the category of the complements introduced with a preposition or a conjunction
-    Onf (reverse_aux), % Package REVERSE_AUX precedes package SUBJ because of the simultaneous presence of a tense auxiliary and a passive auxiliary. The order between them is cancelled in this way.
-    Onf (subj),
-    Onf (det),
-    Onf (comp),
-    Onf (mod),
-    Onf (udep),% Regarding the detection of relative clauses, it would be preferable to put package DEP_SUD before package REVERSE_AUX, because relative clauses are detected as finite clauses.
-    Onf (reverse_cop), % Package REVERSE_COP follows packages COMP, MOD and DEP_SUD because UD labels of complement relations are different depending on whether the gouvernor or the dependent is a predicative head or a noun. It also follows package SUBJ because the copula must be the head of its clause in order to distinguish CSUBJ from NSUBJ.
+    Onf (reverse_case_mark),  % Package REVERSE_CASE_MARK precedes packages SUB_RELATIONS and RELATIONS because  UD labels of complement relations depend on the category of the complements introduced with a preposition or a conjunction
+    Onf( reverse_close),
+    Onf(case_mark_relations), %Package CASE_MARK_RELATIONS must precede package SUB_RELATIONS because renaming of some SUD relations requires the distinction between case and mark relations.
+    Onf (sub_relations), % Package SUB_RELATIONS must precede package REL_EXTENSIONS because this package swat extensions on level 2. 
+    Onf (rel_extensions),
+    Onf (relations),
+    Onf(reverse_aux),    % Package REVERSE_AUX follows packages SUB_RELATIONS and RELATIONS because of the dependencies H -> AUX in UD: if H is the target of a dependency, the label of the dependency may depend on the mood of AUX.
+    Onf( reverse_close),
     Onf (final),
   )
 }

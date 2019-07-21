@@ -7,10 +7,13 @@ combien
 davantage
 moins
 nombre
+pas
 peu
 plus
++
 près
 suffisamment
 tant
 tellement
 trop
+
