@@ -47,10 +47,10 @@
 6	lire	_	VERB	_	_	5	comp:obj	_	_
 
 # sent_id = possible_que
-1	c'	_	PRON	_	_	2	subj@expl	_	_
+1	c'	_	PRON	_	_	2	subj	_	_
 2	est	_	AUX	_	_	0	root	_	_
 3	possible	_	ADJ	_	_	2	comp:pred	_	_
-4	qu'	_	SCONJ	_	_	3	comp:obj@agent	_	_
+4	qu'	_	SCONJ	_	_	2	comp:obl@agent	_	_
 5	il	_	PRON	_	_	6	subj	_	_
 6	vienne	_	VERB	_	_	4	comp:obj	_	_
 
@@ -58,13 +58,13 @@
 1	c'	_	PRON	_	_	2	subj	_	_
 2	est	_	AUX	_	_	0	root	_	_
 3	difficile	_	ADJ	_	_	2	comp:pred	_	_
-4	à	_	ADP	_	_	3	comp:obl@x	_	_
+4	à	_	ADP	_	_	3	comp:obl	_	_
 5	expliquer	_	VERB	_	_	4	comp:obj	_	_
 
 # sent_id = avoir_besoin
 1	il	_	PRON	_	_	2	subj	_	_
 2	a	_	VERB	_	_	0	root	_	_
-3	besoin	_	NOUN	_	_	2	comp:obl@lvc	_	_
+3	besoin	_	NOUN	_	_	2	comp:obj@lvc	_	_
 4	de	_	ADP	_	_	3	comp:obl	_	_
 5	sa	_	DET	_	_	6	det	_	_
 6	voiture	_	NOUN	_	_	4	comp:obj	_	_
@@ -82,17 +82,17 @@
 # sent_id = one_aux
 1	il	_	PRON	_	_	2	subj	_	_
 2	est	_	AUX	_	_	0	root	_	_
-3	venu	_	VERB	_	_	2	comp:aux	_	_
+3	venu	_	VERB	_	_	2	comp:aux@tense	_	_
 
 # sent_id = one_pass
-1	il	_	PRON	_	_	2	subj	_	_
+1	il	_	PRON	_	_	2	subj@pass	_	_
 2	est	_	AUX	_	_	0	root	_	_
 3	mordu	_	VERB	_	_	2	comp:aux@pass	_	_
 
 # sent_id = aux_and_pass
-1	il	_	PRON	_	_	2	subj	_	_
+1	il	_	PRON	_	_	2	subj@pass	_	_
 2	a	_	AUX	_	_	0	root	_	_
-3	été	_	AUX	_	_	2	comp:aux	_	_
+3	été	_	AUX	_	_	2	comp:aux@tense	_	_
 4	mordu	_	VERB	_	_	3	comp:aux@pass	_	_
 
 # sent_id = etre_oblique
@@ -111,7 +111,7 @@
 1	un	_	DET	_	_	2	det	_	_
 2	livre	_	NOUN	_	_	0	root	_	_
 3	très	_	ADV	_	_	4	mod	_	_
-4	difficile	_	ADJ	_	_	2	udep	_	_
+4	difficile	_	ADJ	_	_	2	mod	_	_
 5	à	_	ADP	_	_	4	comp:obl	_	_
 6	lire	_	VERB	_	_	5	comp:obj	_	_
 
@@ -120,7 +120,7 @@
 2	livre	_	NOUN	_	_	0	root	_	_
 3	très	_	ADV	_	_	4	mod	_	_
 4	difficilement	_	ADV	_	_	5	mod	_	_
-5	lisible	_	ADJ	_	_	2	udep	_	_
+5	lisible	_	ADJ	_	_	2	mod	_	_
 
 # sent_id = beaucoup_de
 1	beaucoup	_	ADV	_	_	4	subj	_	_
@@ -143,14 +143,14 @@
 5	vienne	_	VERB	_	_	3	comp:obj	_	_
 
 # sent_id = par_P
-1	elle	_	PRON	_	_	2	subj	_	_
+1	elle	_	PRON	_	_	2	subj@pass	_	_
 2	est	_	AUX	_	_	0	root	_	_
 3	désignée	_	VERB	_	_	2	comp:aux@pass	_	_
 4	par	_	ADP	_	_	3	comp:obl@agent	_	_
 5	Pierre	_	PROPN	_	_	4	comp:obj	_	_
 
 # sent_id = par_son_nom
-1	elle	_	PRON	_	_	2	subj	_	_
+1	elle	_	PRON	_	_	2	subj@pass	_	_
 2	est	_	AUX	_	_	0	root	_	_
 3	désignée	_	VERB	_	_	2	comp:aux@pass	_	_
 4	par	_	ADP	_	_	3	comp:obl	_	_
@@ -163,29 +163,29 @@
 2	n'	_	ADV	_	Polarity=Neg	3	mod	_	_
 3	est	_	AUX	_	_	0	root	_	_
 4	pas	_	ADV	_	Polarity=Neg	3	mod	_	_
-5	venu	_	VERB	_	_	3	comp:aux	_	_
+5	venu	_	VERB	_	_	3	comp:aux@tense	_	_
 
 # sent_id = one_pass_neg
-1	il	_	PRON	_	_	3	subj	_	_
+1	il	_	PRON	_	_	3	subj@pass	_	_
 2	n'	_	ADV	_	Polarity=Neg	3	mod	_	_
 3	est	_	AUX	_	_	0	root	_	_
 4	pas	_	ADV	_	Polarity=Neg	3	mod	_	_
 5	mordu	_	VERB	_	_	3	comp:aux@pass	_	_
 
 # sent_id = aux_and_pass_neg
-1	il	_	PRON	_	_	3	subj	_	_
+1	il	_	PRON	_	_	3	subj@pass	_	_
 2	n'	_	ADV	_	Polarity=Neg	3	mod	_	_
 3	a	_	AUX	_	_	0	root	_	_
 4	pas	_	ADV	_	Polarity=Neg	3	mod	_	_
-5	été	_	AUX	_	_	3	comp:aux	_	_
+5	été	_	AUX	_	_	3	comp:aux@tense	_	_
 6	mordu	_	VERB	_	_	5	comp:aux@pass	_	_
 
 # sent_id = aux_mark
 1	dès	_	ADP	_	_	0	root	_	_
 2	que	_	SCONJ	_	_	1	comp:obj	_	_
-3	tu	_	PRON	_	_	4	subj	_	_
+3	tu	_	PRON	_	_	4	subj@pass	_	_
 4	auras	_	AUX	_	_	2	comp:obj	_	_
-5	été	_	AUX	_	_	4	comp:aux	_	_
+5	été	_	AUX	_	_	4	comp:aux@tense	_	_
 6	contacté	_	VERB	_	_	5	comp:aux@pass	_	_
 
 # sent_id = Europar.550_00040
@@ -204,7 +204,7 @@
 
 # sent_id = fr-ud-train_09696
 # text = Il est composé de quatre étoiles non clairement identifiées.
-1	Il	il	PRON	_	Gender=Masc|Number=Sing|Person=3|PronType=Prs	2	subj	_	_
+1	Il	il	PRON	_	Gender=Masc|Number=Sing|Person=3|PronType=Prs	2	subj@pass	_	_
 2	est	être	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	_
 3	composé	composer	VERB	_	Gender=Masc|Number=Sing|Tense=Past|VerbForm=Part	2	comp:aux@pass	_	_
 4	de	de	ADP	_	_	3	comp:obl@agent	_	_
@@ -218,7 +218,7 @@
 # sent_id = fr-ud-train_11980
 # text = Les Britanniques sont également approchés pour intervenir mais sans réelle insistance.
 1	Les	le	DET	_	Definite=Def|Gender=Masc|Number=Plur|PronType=Art	2	det	_	_
-2	Britanniques	britannique	NOUN	_	Gender=Masc|Number=Plur	3	subj	_	_
+2	Britanniques	britannique	NOUN	_	Gender=Masc|Number=Plur	3	subj@pass	_	_
 3	sont	être	AUX	_	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	_
 4	également	également	ADV	_	_	5	mod	_	_
 5	approchés	approcher	VERB	_	Gender=Masc|Number=Plur|Tense=Past|VerbForm=Part	3	comp:aux@pass	_	_
@@ -237,15 +237,14 @@
 3	précepteur	précepteur	NOUN	_	Gender=Masc|Number=Sing	2	comp:pred	_	_
 4	de	de	ADP	_	_	3	comp:obl	_	_
 5	Don	Don	PROPN	_	_	4	comp:obj	_	_
-6	Antonio	Antonio	PROPN	_	_	5	flat:name	_	SpaceAfter=No
+6	Antonio	Antonio	PROPN	_	_	5	flat@name	_	SpaceAfter=No
 7	,	,	PUNCT	_	_	5	punct	_	_
 8	neveu	neveu	NOUN	_	Gender=Masc|Number=Sing	5	appos	_	_
-9-10	du	_	_	_	_	_	_	_	_
 9	de	de	ADP	_	_	8	comp:obl	_	_
 10	le	le	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	11	det	_	_
 11	roi	roi	NOUN	_	Gender=Masc|Number=Sing	9	comp:obj	_	_
 12	Jean	Jean	PROPN	_	_	11	appos	_	_
-13	III	III	NUM	_	_	12	udep	_	SpaceAfter=No
+13	III	III	NUM	_	_	12	mod	_	SpaceAfter=No
 14	,	,	PUNCT	_	_	15	punct	_	_
 15	fut	être	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	2	conj	_	_
 16	nommé	nommer	VERB	_	Gender=Masc|Number=Sing|Tense=Past|VerbForm=Part	15	comp:aux@pass	_	_
@@ -281,7 +280,7 @@
 # text = Après avoir atteint l'Arctique, Inglefield explora et cartographia la côte occidentale du Groenland ;
 1	Après	après	ADP	_	_	8	mod	_	_
 2	avoir	avoir	AUX	_	VerbForm=Inf	1	comp:obj	_	_
-3	atteint	atteindre	VERB	_	Gender=Masc|Number=Sing|Tense=Past|VerbForm=Part	2	comp:aux	_	_
+3	atteint	atteindre	VERB	_	Gender=Masc|Number=Sing|Tense=Past|VerbForm=Part	2	comp:aux@tense	_	_
 4	l'	le	DET	_	Definite=Def|Number=Sing|PronType=Art	5	det	_	SpaceAfter=No
 5	Arctique	Arctique	PROPN	_	_	3	comp:obj	_	SpaceAfter=No
 6	,	,	PUNCT	_	_	1	punct	_	_
@@ -292,7 +291,6 @@
 11	la	le	DET	_	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	12	det	_	_
 12	côte	côte	NOUN	_	Gender=Fem|Number=Sing	10	comp:obj	_	_
 13	occidentale	occidental	ADJ	_	Gender=Fem|Number=Sing	12	mod	_	_
-14-15	du	_	_	_	_	_	_	_	_
 14	de	de	ADP	_	_	12	comp:obl	_	_
 15	le	le	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	16	det	_	_
 16	Groenland	Groenland	PROPN	_	_	14	comp:obj	_	_
@@ -312,9 +310,9 @@
 10	cuisine	cuisine	NOUN	_	Gender=Fem|Number=Sing	8	comp:obj	_	SpaceAfter=No
 11	,	,	PUNCT	_	_	12	punct	_	_
 12	pour	pour	ADP	_	_	8	mod	_	_
-13	cuire	cuire	VERB	_	VerbForm=Inf	12	comp	_	_
+13	cuire	cuire	VERB	_	VerbForm=Inf	12	comp:obj	_	_
 14	et	et	CCONJ	_	_	15	cc	_	_
-15	chauffer	chauffer	VERB	_	VerbForm=Inf	12	conj	_	_
+15	chauffer	chauffer	VERB	_	VerbForm=Inf	13	conj	_	_
 16	l'	le	DET	_	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	17	det	_	SpaceAfter=No
 17	eau	eau	NOUN	_	Gender=Fem|Number=Sing	15	comp:obj	_	SpaceAfter=No
 18	,	,	PUNCT	_	_	20	punct	_	_

@@ -38,9 +38,9 @@ package minimize_conj_dep {
 package head_reverse {
   rule aux {
     pattern {e:H -[1=aux,!deep]-> AUX}
-    without { H -[aux:pass|aux:caus]-> AUX} 
+    without { H -[aux:pass|aux:caus]-> AUX}
     without { H -[1=aux, 2=pass|caus, !deep]-> AUX1} % Application of rule (3). It is useless to prevent CASE relations because there is no CASE relation without a COP relation.
-    without { H -[1=cop|mark, !deep]-> AUX1} % Application of rule (3). It is useless to prevent CASE relations because there is no CASE relation without a COP relation.
+    without { H -[1=cop, !deep]-> AUX1} % Application of rule (3). It is useless to prevent CASE relations because there is no CASE relation without a COP relation.
     without { H -[1=aux, !deep]-> AUX1; AUX << AUX1 ; AUX1 << H}% There is no other AUX dependent between the head and the AUX dependent (point (5)).
     without { H -[1=aux, !deep]-> AUX1; AUX >> AUX1 ; AUX1 >> H}% There is no other AUX dependent between the head and the AUX dependent (point (5)).
     without {AUX -[deep=reversed]-> H}
@@ -56,7 +56,7 @@ package head_reverse {
       shift_out H =[1=obl,2=mod]=> AUX
     }
   }
-  
+
   rule auxcaus {
     pattern {e:H -[1=aux, 2=caus,!deep]-> AUX}
     without { H -[1=cop,!deep]-> D}% Application of rule (2).
@@ -67,12 +67,12 @@ package head_reverse {
       del_edge e;
       shift_in H ==> AUX;
       shift_out H =[1=aux|mark,!deep]=> AUX;
-      shift_out H =[1=iobj|obl, 2=agent]=> AUX;
+      shift_out H =[2=agent]=> AUX;
       shift_out H =[1=advcl|advmod|cc|csubj|dislocated|nsubj|parataxis|punct|root]=> AUX;
       shift_out H =[1=obl,2=mod]=> AUX
     }
   }
-  
+
   rule auxpass {
     pattern {e:H -[1=aux, 2=pass,!deep]-> AUX}
     without {AUX -[deep=reversed]-> H}
@@ -136,7 +136,7 @@ package head_reverse {
       shift_out H =[1=obl,2=mod]=> AUX
     }
   }
- 
+
   rule mark{
     pattern {e:H -[1=mark,!deep]-> D}
     without { H -[1=aux, 2=caus|pass,!deep]-> *}% Application of rule (4).
@@ -244,7 +244,7 @@ package sub_relations {
     pattern { e:H -[csubj:expl|nsubj:expl]-> D; }
     commands {e.1=comp; e.2=obj; e.deep=expl}
   }
-  
+
 % In an impersonal passive construction, the deep passive subject, which is a NSUBJ:PASS or CSUBJ:PASS dependent in UD, becomes a direct object in SUD with the deep extension expl.
 % Ex: Il a été vendu une grande maison aujourd'hui - Il s'est vendu une grande maison aujourd'hui - Il est prévu de continuer. - Il se dit que tu viendras.
   rule comp_obj_expl_pass {
@@ -253,7 +253,7 @@ package sub_relations {
       H -[expl:subj]-> S}
     commands {e.1=comp; e.2=obj; e.deep=pass}
   }
-  
+
   rule comp_obl {
     pattern { e:H -[1=obl, 2=arg]-> D; }
     commands {e.1=comp; e.2=obl}
@@ -270,12 +270,12 @@ package sub_relations {
     pattern { e:H -[obl:mod]-> D; }
     commands { del_edge e; add_edge H -[mod]-> D }
   }
-  
+
   rule mod_relcl {
     pattern { e:H -[acl:relcl]-> D; }
     commands { del_edge e; add_edge H -[mod:relcl]-> D }
   }
-  
+
 % In an impersonal construction, the impersonal subject, which is an EXPL dependent in UD, becomes an  explicit subject in SUD with the deep extension expl.
 % Ex: Il arrive deux personnes. - Il faut un bilan. - Il s'agit d'une erreur. - Il a été vendu une grande maison. - il se dit que tu viendras.
   rule subj_expl {
@@ -296,13 +296,13 @@ package rel_extensions {
     without{H -[1=mod,2=relcl]-> D}
     commands{ add_edge H -[1=e.1,deep=e.2]-> D; del_edge e}
   }
-  
+
 % When a relation has a deep=reversed extension, this extension is deleted.
   rule del_reversed{
     pattern{e: H -[1=*, !2, deep=reversed]-> D}
     commands{ add_edge H -[1=e.1]-> D; del_edge e}
   }
-  
+
 % When a relation with an extension has a deep=reversed extension, this extension is deleted.
   rule del_reversed_ext{
     pattern{e: H -[1=*, 2=*, deep=reversed]-> D}
@@ -352,7 +352,7 @@ package relations {
     pattern { e:H -[1=ccomp]-> D; D[upos = ADP]; }
     commands {e.1=comp;e.2=obl}
   }
-  
+
   rule comp_obl {
     pattern { e:H -[1=iobj]-> D; }
     commands {e.1=comp;e.2=obl}
@@ -363,20 +363,25 @@ package relations {
     commands {e.1=comp;e.2=obl;e.deep=x}
   }
 
+  rule comp_obl_agent {
+    pattern { e:H -[1=obl,deep=agent]-> D }
+    commands {e.1=comp;e.2=obl;e.deep=agent}
+  }
+
 % comp:pred
 %==========
 % A direct argument with the control of its subject is considered  as a predicative complement in SUD.
   rule comp_pred {
     pattern { e:H -[1=xcomp]-> D; D[upos<>ADP]}
-    without{D[upos=AUX|VERB,VerbForm=Inf] } 
+    without{D[upos=AUX|VERB,VerbForm=Inf] }
     commands {e.1=comp;e.2=pred}
   }
-  
+
   rule comp_pred_cop {
     pattern { e:H -[1=cop]-> D; }
     commands {e.1=comp;e.2=pred}
   }
-  
+
 % mod
 %====
 % This rule is too strong for nummod, because in many languages, the relation is DET when D precedes H.
@@ -408,7 +413,7 @@ package relations {
   }
 
   rule udep_obl {
-    pattern { e:H -[1=obl]-> D}
+    pattern { e:H -[1=obl, !deep]-> D} % TODO: replace !deep by without { e.deep=agent }
     commands {e.1=udep}
   }
 
@@ -418,7 +423,7 @@ package relations {
     pattern { e:H -[1=dep]-> D; }
     commands {e.1=unk}
   }
-  
+
   rule unk_fixed {
     pattern { e:H -[fixed]-> D; }
     commands { del_edge e; add_edge H -[unk@fixed]-> D }
@@ -461,7 +466,7 @@ strat main {
 %    remove_extension_on_reverted_relations.s,
     Onf (head_reverse),
     Onf (gov_rise),% Package GOV_RISE must follow package HEAD_REVERSE because it corrects some wrong consequences of head changes.
-    Onf (sub_relations), % Package SUB_RELATIONS must precede package REL_EXTENSIONS because this package swat extensions on level 2. 
+    Onf (sub_relations), % Package SUB_RELATIONS must precede package REL_EXTENSIONS because this package swat extensions on level 2.
     Onf (rel_extensions),
     Onf (relations), % Package RELATIONS must follow package GOV_RISE because this package entails the change of category for the source and the target of some relations.
     Onf (chained_relations),% Package CHAINED_RELATIONS must follow package GOV_RISE because it can entail a wrong coordination between two elements because of errors in head changes (UD_French-GS: fr-ud-dev_00131).
