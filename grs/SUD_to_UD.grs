@@ -238,7 +238,7 @@ package sub_relations {
   
   rule aux_tense{
     pattern{ e:H -[comp:aux@tense]-> D }
-    commands {add_edge H -[aux]-> D; del_edge e}
+    commands {e.1=aux; del_feat e.2; del_feat e.deep}
   }
 
 % Complement that is a complete clause without control of its subject.
@@ -267,7 +267,7 @@ package sub_relations {
 % Ex: il m'arrive de faire des erreurs.
   rule csubj_expl{
     pattern { e:H -[comp:obj@expl]-> D; D[upos=AUX|VERB]}
-    commands {add_edge H -[csubj:expl]-> D; del_edge e}
+    commands {e.1=csubj;e.2=expl; del_feat e.deep}
   }
   
 % In an impersonal active construction, the deep clausal subject introduced with a conjunction, which is a COMP:OBJ dependent in SUD, becomes a CSUBJ dependent in UD.
@@ -276,33 +276,33 @@ package sub_relations {
     pattern {
       e:H -[comp:obj@expl]-> D;D[upos <>AUX|VERB];
       D -[1=mark]-> CONJ}
-    commands {add_edge H -[csubj:expl]-> D; del_edge e}
+    commands {e.1=csubj;e.2=expl; del_feat e.deep}
   }
   
 % In an impersonal passive construction, the deep clausan subject, which is a COMP:OBJ dependent in SUD, becomes a CSUBJ:PASS dependent in UD.
 % Ex: Il est prévu de continuer. - Il se dit que tu viendras.
   rule csubj_expl_pass{
     pattern { e:H -[comp:obj@pass]-> D; D[upos=AUX|VERB]; H -[expl:subj]-> S}
-    commands {add_edge H -[csubj:pass]-> D; del_edge e}
+    commands {e.1=csubj;e.2=pass; del_feat e.deep}
   }
   
 % An expletive complement, which is a COMP:EXPL dependent in SUD, becomes an EXPL:COMP dependent in UD.
 % Ex: Les gens s'enfuient - Il s'agit d'un accident. - Les voitures se vendent bien. - Il s'est vendu une grande maison aujourd'hui. -  Il se dit que tu viendras.
   rule expl_comp{
     pattern{ e:H -[comp@expl]-> D}
-    commands {add_edge H -[expl:comp]-> D; del_edge e}
+    commands {e.1=expl;e.2=comp; del_feat e.deep}
   }
   
 % In an impersonal construction, the impersonal subject, which is a SUBJ:EXPL dependent in SUD, becomes an  EXPL:SUBJ dependent in UD.
 % Ex: Il arrive deux personnes. - Il faut un bilan. - Il s'agit d'une erreur. - Il a été vendu une grande maison. - il se dit que tu viendras.
   rule expl_subj{
     pattern{ e:H -[subj@expl]-> D}
-    commands {add_edge H -[expl:subj]-> D; del_edge e}
+    commands {e.1=expl;e.2=subj; del_feat e.deep}
   }
   
   rule fixed{
     pattern{ e:H -[unk@fixed]-> D}
-    commands {add_edge H -[fixed]-> D; del_edge e}
+    commands {e.1=fixed; del_feat e.deep}
   }
   
   rule iobj {
@@ -323,14 +323,14 @@ package sub_relations {
     pattern { e:H -[comp:obj@expl]-> D; D[nom=y]}
     without{ H -[comp@pass]-> AUX}
     without{D -[1=mark]-> CONJ}
-    commands {add_edge H -[nsubj:expl]-> D; del_edge e}
+    commands {e.1=nsubj; e.2=expl; del_feat e.deep}
   }
   
 % In an impersonal passive construction, the deep nominal subject, which is a COMP:OBJ dependent in SUD, becomes a NSUBJ:PASS dependent in UD.
 % Ex: Il a été vendu une grande maison. - Il s'est vendu une grande maison.
   rule nsubj_expl_pass{
     pattern { e:H -[comp:obj@pass]-> D; D[nom=y]; H -[expl:subj]-> S}
-    commands {add_edge H -[nsubj:pass]-> D; del_edge e}
+    commands {e.1=nsubj; e.2=pass; del_feat e.deep}
   }
   
    rule obj_nom{
@@ -349,7 +349,7 @@ package sub_relations {
   
   rule obl_agent {
     pattern { e:H -[1=comp,2=obl,deep=agent]-> D; D -[case]-> * }
-    commands { del_edge e; add_edge H -[obl:agent]-> D }
+    commands {e.1=obl; e.2=agent; del_feat e.deep }
   }
 
   rule obl_arg_nom {
@@ -372,7 +372,7 @@ package sub_relations {
   rule xcomp {
     pattern { e:H -[comp:obj@x|comp:obl@x|comp:pred]-> D }
     without{ H[upos=AUX]}
-    commands { del_edge e; add_edge H -[xcomp]-> D }
+    commands {e.1=xcomp; del_feat e.2; del_feat e.deep}
   }
 
 }
@@ -387,7 +387,7 @@ package rel_extensions {
   
   rule del_ext{
     pattern{e: H -[1=*,2=aux|obj|obl|pred,!deep]-> D}
-    commands{ add_edge H -[1=e.1]-> D; del_edge e}
+    commands{del_feat e.2}
   }
   
 }

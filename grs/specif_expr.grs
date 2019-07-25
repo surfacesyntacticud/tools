@@ -9,7 +9,7 @@ package specif_expr_init{
       add_node MWE :< W;
       shift_in W ==> MWE;
       add_edge MWE -[expr]-> W;
-      MWE.cat = W._MISC_EXTPOS
+      MWE.upos = W._MISC_EXTPOS
     }
   }
 
@@ -22,7 +22,7 @@ package specif_expr_init{
       add_node T :< W;
       shift_in W ==> T;
       add_edge T -[expr]-> W;
-      T.cat = PROPN
+      T.upos = PROPN
     }
   }
 
@@ -35,7 +35,7 @@ package specif_expr_init{
       add_node T :< W;
       shift_in W ==> T;
       add_edge T -[expr]-> W;
-      T.cat = W._MISC_EXTPOS; T.lemma=W.lemma
+      T.upos = W._MISC_EXTPOS; T.lemma=W.lemma
     }
   }
 
@@ -44,13 +44,13 @@ package specif_expr_init{
    rule create_trans_node_title{
     pattern{
       W[_MISC_EXTPOS,_MISC_Type=Trans];
-       H[_MISC_Type=Title]; H -> W;W[_MISC_INTITLE=Yes];
+       H[_MISC_Type=Title]; e: H -> W;W[_MISC_INTITLE=Yes];
        * -[expr]-> H}
     without{ * -[expr]-> W}
     commands{
       add_node T :< W;
-      T.cat = W._MISC_EXTPOS;
-      shift_in W ==> T;
+      T.upos = W._MISC_EXTPOS;
+      add_edge e: H -> T; del_edge e;
       add_edge T -[expr]-> W; T.lemma=W.lemma
     }
   }
@@ -60,7 +60,7 @@ package specif_expr_init{
     pattern{ H -[expr]-> W; e: W -[^unk@fixed|fixed|flat:name|goeswith]-> D}
     without{D[_MISC_INMWE=Yes]}
     without{D[_MISC_INTITLE=Yes]}
-    commands{ del_edge e; add_edge e: H -> D}
+    commands{add_edge e: H -> D;  del_edge e}
   }
 
 }

@@ -52,7 +52,7 @@ package head_reverse {
       shift_out H =[aux]=> AUX;
       shift_out H =[1=aux,2<>caus|pass,!deep]=> AUX;
       shift_out H =[1=mark,!deep]=> AUX;
-      shift_out H =[1=advcl|advmod|cc|csubj|dislocated|nsubj|parataxis|punct|root]=> AUX;
+      shift_out H =[1=advcl|advmod|cc|csubj|dislocated|expl|nsubj|parataxis|punct|root]=> AUX;
       shift_out H =[1=obl,2=mod]=> AUX
     }
   }
@@ -132,7 +132,7 @@ package head_reverse {
       del_edge e;
       shift_in H ==> AUX;
       shift_out H =[1=aux|mark,!deep]=> AUX;
-      shift_out H =[1=advcl|advmod|cc|csubj|dislocated|nsubj|parataxis|punct|root]=> AUX;
+      shift_out H =[1=advcl|advmod|cc|csubj|dislocated|expl|nsubj|parataxis|punct|root]=> AUX;
       shift_out H =[1=obl,2=mod]=> AUX
     }
   }
@@ -222,10 +222,7 @@ package gov_rise{
       H -[1=case|comp|mark]-> D; H << D; D1 << H;
       e:D -[1=acl|advcl|advmod|amod|nmod|obl]-> D1; D1[upos=ADP|ADV|NUM|SCONJ|SYM]
     }
-    commands {
-      del_edge e;
-      add_edge e: H -> D1
-    }
+    commands {add_edge e: H -> D1; del_edge e}
   }
 
 }
@@ -263,24 +260,24 @@ package sub_relations {
 % Ex: Les gens s'enfuient - Il s'agit d'un accident. - Les voitures se vendent bien. - Il s'est vendu une grande maison aujourd'hui. -  Il se dit que tu viendras.
   rule comp_expl {
     pattern { e:H -[expl:comp]-> D; }
-    commands {add_edge H -[comp@expl]-> D; del_edge e}
+    commands {e.1=comp; e.deep=expl; del_feat e.2}
   }
 
   rule mod {
     pattern { e:H -[obl:mod]-> D; }
-    commands { del_edge e; add_edge H -[mod]-> D }
+    commands {e.1=mod; del_feat e.2}
   }
 
   rule mod_relcl {
     pattern { e:H -[acl:relcl]-> D; }
-    commands { del_edge e; add_edge H -[mod:relcl]-> D }
+    commands {e.1=mod}
   }
 
 % In an impersonal construction, the impersonal subject, which is an EXPL dependent in UD, becomes an  explicit subject in SUD with the deep extension expl.
 % Ex: Il arrive deux personnes. - Il faut un bilan. - Il s'agit d'une erreur. - Il a été vendu une grande maison. - il se dit que tu viendras.
   rule subj_expl {
     pattern { e:H -[expl:subj]-> D; }
-    commands {add_edge H -[subj@expl]-> D; del_edge e}
+    commands {e.1=subj;e.deep=expl; del_feat e.2}
   }
 
 }
@@ -299,15 +296,10 @@ package rel_extensions {
 
 % When a relation has a deep=reversed extension, this extension is deleted.
   rule del_reversed{
-    pattern{e: H -[1=*, !2, deep=reversed]-> D}
-    commands{ add_edge H -[1=e.1]-> D; del_edge e}
+    pattern{e: H -[deep=reversed]-> D}
+    commands{del_feat e.deep}
   }
 
-% When a relation with an extension has a deep=reversed extension, this extension is deleted.
-  rule del_reversed_ext{
-    pattern{e: H -[1=*, 2=*, deep=reversed]-> D}
-    commands{ add_edge H -[1=e.1, 2=e.2]-> D; del_edge e}
-  }
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -426,7 +418,7 @@ package relations {
 
   rule unk_fixed {
     pattern { e:H -[fixed]-> D; }
-    commands { del_edge e; add_edge H -[unk@fixed]-> D }
+    commands {e.1=unk; e.deep=fixed}
   }
 
 

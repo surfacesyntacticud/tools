@@ -10,11 +10,11 @@ package FR_head_reverse {
 %Ex : il est difficile de trouver du travail.
   rule impers_adj_de_inf{
     pattern{
-     IL[cat=PRON,lemma=il,Gender=Masc,Number=Sing,Person=3];
-     V[cat=AUX,lemma="être"]; V -[nsubj]-> IL;
-     A[cat=ADJ]; V -[cop]-> A;
-     DE[cat=ADP,lemma=de]; e:A -[ccomp]-> DE;
-     INF[cat=VERB,VerbForm=Inf]; DE -[mark]-> INF}
+     IL[upos=PRON,lemma=il,Gender=Masc,Number=Sing,Person=3];
+     V[upos=AUX,lemma="être"]; V -[nsubj]-> IL;
+     A[upos=ADJ]; V -[cop]-> A;
+     DE[upos=ADP,lemma=de]; e:A -[ccomp]-> DE;
+     INF[upos=VERB,VerbForm=Inf]; DE -[mark]-> INF}
    commands{ add_edge e: V -> DE; del_edge e}
  }
 
@@ -26,15 +26,15 @@ package FR_relations {
 % Relation between an adjective and an argument in the form of a finite clause, which is an oblique complement introduced with "que". By default, CCOMP relations are transformed into COMP:OBJ relations. In this case, they are transformed into COMP:OBL relations.
   rule adj_compobl_ccomp (lex from "lexicons/adj_with_deobj_fin-verb.lp") {
     pattern {
-      H[cat=ADJ,lemma=lex.adj]; e:H -[ccomp]-> C;
-      C[cat=SCONJ,lemma=que]}
+      H[upos=ADJ,lemma=lex.adj]; e:H -[ccomp]-> C;
+      C[upos=SCONJ,lemma=que]}
     commands { del_edge e; add_edge H -[comp:obl]-> C }
   }
 
 % When a NUM D depends on a word G in a NUMMOD relation and when D precedes G, D is a determiner of G.
   rule num_det{
     pattern{
-      D[cat=NUM];
+      D[upos=NUM];
       e:H -[nummod]-> D; D << H
     }
     commands{ del_edge e; add_edge H -[det]-> D}
@@ -43,17 +43,17 @@ package FR_relations {
 % Relation between a verb and an argument in the form of a finite clause, which is an oblique complement introduced with "que". By default, CCOMP relations are transformed into COMP:OBJ relations. In this case, they are transformed into COMP:OBL relations.
   rule verb_compobl_ccomp (lex from "lexicons/verb_with_deobj_fin-verb.lp") {
     pattern {
-      H[cat=VERB,lemma=lex.verb]; e:H -[ccomp]-> C;
-      C[cat=SCONJ,lemma=que]}
+      H[upos=VERB,lemma=lex.verb]; e:H -[ccomp]-> C;
+      C[upos=SCONJ,lemma=que]}
     commands { del_edge e; add_edge H -[comp:obl]-> C }
   }
 
 % Relation between a verb with affix and an argument in the form of a finite clause, which is an oblique complement introduced with "que". By default, CCOMP relations are transformed into COMP:OBJ relations. In this case, they are transformed into COMP:OBL relations.
   rule verb_aff_compobl_ccomp (lex from "lexicons/aff_verb_with_deobj_fin-verb.lp") {
     pattern {
-      H[cat=VERB,lemma=lex.verb]; e:H -[ccomp]-> C;
-      C[cat=SCONJ,lemma=que];
-      AFF[cat=PRON, lemma=lex.aff]; H -[expl]-> AFF}
+      H[upos=VERB,lemma=lex.verb]; e:H -[ccomp]-> C;
+      C[upos=SCONJ,lemma=que];
+      AFF[upos=PRON, lemma=lex.aff]; H -[expl]-> AFF}
     commands { del_edge e; add_edge H -[comp:obl]-> C }
   }
 
@@ -64,8 +64,8 @@ package FR_relations {
 package amalgam {
   rule prep_det {
     pattern {
-      P [cat=ADP, phon= lex.prep];
-      D [cat=DET, phon= lex.det];
+      P [upos=ADP, phon= lex.prep];
+      D [upos=DET, phon= lex.det];
       P < D;
     }
     commands {
@@ -87,8 +87,8 @@ de	les	des
 
   rule prep_pro {
     pattern {
-      PREP [cat=ADP, phon= lex.prep];
-      PRON [cat=PRON, phon= lex.pron];
+      PREP [upos=ADP, phon= lex.prep];
+      PRON [upos=PRON, phon= lex.pron];
       PREP < PRON;
     }
     commands {

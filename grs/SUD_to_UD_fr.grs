@@ -10,7 +10,7 @@ package FR_init{
 % The relative or interrogative pronoun "où" is translated into an adverb and the empty node with the category adverb must carry the feature "PronType=Rel", so that the relative or interrogative clause be detected.
   rule prontype_rise{
     pattern{
-      PRO[cat=PRON, PronType=Rel];
+      PRO[upos=PRON, PronType=Rel];
       PRO1[!PronType]; PRO1 -[expr]-> PRO}
     commands{PRO1.PronType=Rel}
   }
@@ -24,27 +24,27 @@ package FR_nom_init {
 % Adjectives or verbs that are attributive of nouns are considered as non nominals.
   rule attr_det{
     pattern{
-      N0[cat=NOUN|PRON]; N0 -[mod|udep]-> N;
-      N[cat=ADJ|VERB,nom]; N -[det]-> *}
+      N0[upos=NOUN|PRON]; N0 -[mod|udep]-> N;
+      N[upos=ADJ|VERB,nom]; N -[det]-> *}
     without{ PRO[PronType=Rel]; N -> PRO; N0 << N} % N is not the head of a relative clause with N0 as the antecedent of the relative pronoun.
     commands{del_feat N.nom}
   }
 
 % Numbers that follow a measure unity
   rule unity_num(lex from "lexicons/measure_unit.lp"){
-    pattern{N[cat=NUM,nom]; H[lemma=lex.unity]; H -[mod]-> N }
+    pattern{N[upos=NUM,nom]; H[lemma=lex.unity]; H -[mod]-> N }
     commands{del_feat N.nom}
   }
 
 % Simple quantity adverbs with a complement introduced with the preposition "de" are considered as nominals.
   rule adv_de_nom(lex from "lexicons/quant_adv.lp"){
     pattern{
-     A[cat=ADV,lemma=lex.adv,!nom];
-     A -[comp:obl]-> P; P[cat=ADP,lemma=de];
-     N[cat=NOUN|NUM|SYM]; P -[comp:obj]-> N
+     A[upos=ADV,lemma=lex.adv,!nom];
+     A -[comp:obl]-> P; P[upos=ADP,lemma=de];
+     N[upos=NOUN|NUM|SYM]; P -[comp:obj]-> N
    }
-   without{ * -[udep|mod]-> A}
-   without{ A[lemma=moins|plus]; P0 -[comp:obj]-> A; P0[lemma=en]}
+   without{ A[lemma=moins|plus]; P0 -[comp:obj]-> A; P0[lemma=en]} % Ex: en plus de lui
+   without{ A[lemma="près"]; * -[mod]-> A} % Il marche près de la rivière
    commands{ A.nom=y}
  }
 }
@@ -60,18 +60,18 @@ package FR_mod {
 % Ex: fr-ud-dev_00407 - Spécialiste des six jours, il a remporté 38 compétitions entre 1931 et 1942.
   rule left_extraposition(lex from "lexicons/nouns_adv.lp") {
     pattern{
-      APP[cat=ADJ|NOUN|PRON|PROPN|VERB];
+      APP[upos=ADJ|NOUN|PRON|PROPN|VERB];
       V -[1=subj]-> SUBJ; APP << SUBJ; SUBJ << V;
       e: V -[mod]-> APP}
     without{ APP -[1=case]-> *}
-    without{APP[cat=NOUN]; APP -[det]-> *}
+    without{APP[upos=NOUN]; APP -[det]-> *}
     without{APP[PronType=Rel|Int]}
-    without{APP[cat=NOUN,lemma= lex.noun]}
+    without{APP[upos=NOUN,lemma= lex.noun]}
     without{% Modifiers in the form NOUN + PREP + NOUN.
             % Ex: fr-ud-dev_00322 - Couche par couche, Morin arrange ...
-      APP[cat=NOUN];
-      P[cat=ADP,lemma="après"|par|sur];
-      N[cat=NOUN];
+      APP[upos=NOUN];
+      P[upos=ADP,lemma="après"|par|sur];
+      N[upos=NOUN];
       N -[1=case]-> P;
       APP -[1=udep]-> N;
       N.lemma=APP.lemma
@@ -82,8 +82,8 @@ package FR_mod {
 % Nouns behaving as circumstancial complements and heads of modifiers in the form of adverbial clauses.
   rule conj_adv-noun(lex from "lexicons/nouns_adv.lp") {
     pattern{
-      N[cat=NOUN,lemma=lex.noun];
-      e: N -[1=case]-> C; C[cat=SCONJ];
+      N[upos=NOUN,lemma=lex.noun];
+      e: N -[1=case]-> C; C[upos=SCONJ];
       * -[mod]-> N
     }
     commands{e.1=mark}
@@ -91,19 +91,19 @@ package FR_mod {
 
 % Finite clauses, which are not relative clauses and which are not introduced with a conjunction, modifying a nominal expression.
   rule noun_mod_fin-clause{
-    pattern{N[nom=y]; V[cat=VERB]; e: N -[mod]->V}
+    pattern{N[nom=y]; V[upos=VERB]; e: N -[mod]->V}
     without{PRO[PronType=Rel]; V -> PRO; N << PRO}
     without{PRO[PronType=Rel]; V -> X; X -> PRO;  N << PRO}
     without{PRO[PronType=Rel]; V -> X; X -> Y; Y -> PRO;  N << PRO}
-    without{ADV[cat=ADV,lemma=pourquoi]; V -> ADV; N << ADV}
-    without{ADV[cat=ADV,lemma=pourquoi]; V -> X; X -> ADV;  N << ADV}
-    without{ADV[cat=ADV,lemma=pourquoi]; V -> X; X -> Y; Y -> ADV;  N << ADV}
+    without{ADV[upos=ADV,lemma=pourquoi]; V -> ADV; N << ADV}
+    without{ADV[upos=ADV,lemma=pourquoi]; V -> X; X -> ADV;  N << ADV}
+    without{ADV[upos=ADV,lemma=pourquoi]; V -> X; X -> Y; Y -> ADV;  N << ADV}
     commands{ del_edge e; add_edge N -[acl]-> V}
   }
 
 % Numbers that follow a measure unity
   rule unity_num(lex from "lexicons/measure_unit.lp"){
-    pattern{D[cat=NUM]; H[lemma=lex.unity]; e:H -[mod]-> D }
+    pattern{D[upos=NUM]; H[lemma=lex.unity]; e:H -[mod]-> D }
     commands{del_edge e; add_edge H -[nummod]-> D}
   }
 
@@ -115,15 +115,15 @@ package FR_mod {
 package FR_udep {
   rule amod_de{
     pattern{
-      H[cat=NOUN|PRON,lemma=chose|rien]; D[cat=ADJ]; e: H -[udep]-> D;
-      D -[1=case]-> DE; DE[cat=ADP,lemma=de]
+      H[upos=NOUN|PRON,lemma=chose|rien]; D[upos=ADJ]; e: H -[udep]-> D;
+      D -[1=case]-> DE; DE[upos=ADP,lemma=de]
     }
     commands{ del_edge e; add_edge H -[amod]-> D}
   }
 
 % D is a numeral modifier of a nominal H that precedes it. In this case, it does not express a modifier of H in the form of a quantity.
   rule nmod_num_after {
-    pattern { e:H -[udep]-> D; H[nom=y]; D[cat=NUM]; H << D }
+    pattern { e:H -[udep]-> D; H[nom=y]; D[upos=NUM]; H << D }
     without{H[lemma=heure]}
     without{D -> PRO; H << PRO; PRO[PronType=Rel]}
     without{D -[1=mark]-> *}
@@ -134,7 +134,7 @@ package FR_udep {
 % Ex: fr-ud-test_00133 - ... Ben Spies et Jorge Lorenzo, tous deux sur Yamaha M1 ...
   rule nmod_num_prep{
     pattern {
-      e:H -[udep]-> D; H[nom=y]; D[cat=NUM];
+      e:H -[udep]-> D; H[nom=y]; D[upos=NUM];
       H -[1=case]-> P; D << P; P << H }
     commands { del_edge e; add_edge H -[nmod]-> D }
   }
