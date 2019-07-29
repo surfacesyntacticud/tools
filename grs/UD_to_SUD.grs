@@ -310,14 +310,8 @@ package relations {
 % comp:aux
 %=========
   rule comp_aux {
-    pattern { e:H -[1=aux,deep=*]-> D; }
+    pattern { e:H -[1=aux]-> D; }
     commands { e.1=comp;e.2=aux }
-  }
-
-% In UD an aux relation always corresponds to a tense auxiliary.
-  rule comp_aux_tense {
-    pattern { e:H -[aux]-> D; }
-    commands { e.1=comp;e.2=aux;e.deep=tense }
   }
 
 %comp:obj

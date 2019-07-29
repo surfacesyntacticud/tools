@@ -21,7 +21,7 @@ package nom_init {
     pattern {N[upos=NOUN|PRON|PROPN|X,!nom]}
     commands {N.nom=y}
   }
-  
+
 % All numerals following their gouvernor are nominals.
   rule nom_num_after {
     pattern {N[upos=NUM,!nom]; H -> N; H << N}
@@ -160,7 +160,7 @@ package case_mark_relations {
     without{H -> ADP; ADP[upos=ADP|PART]}
     commands {e.1=case}
   }
-  
+
 % Adjectival or adverbial heads of relations with an adposition and without conjunctions as dependents between the head and the adposition.
 % Ex: dès demain - en continu
   rule case_pred{
@@ -196,7 +196,7 @@ package case_mark_relations {
       H -[1=comp|mark]-> CONJ; CONJ[upos=CCONJ|SCONJ]; D >> CONJ; CONJ >> H}
     commands {e.1=mark}
   }
-  
+
 % comme à Paris
   rule mark_nom1{
     pattern{
@@ -205,7 +205,7 @@ package case_mark_relations {
       H -[1=case]-> ADP; D << ADP; ADP << H}
     commands {e.1=mark}
   }
-  
+
   rule mark_nom2{
     pattern{
       e:H -[1=comp,2=obj]-> D;
@@ -223,7 +223,7 @@ package sub_relations {
     pattern { e:H -[1=mod,2=relcl]-> D }
     commands {e.1=acl}
   }
-  
+
   rule advclcleft {
     pattern { e:H -[comp:cleft]-> D }
     commands {e.1=advcl; e.2=cleft}
@@ -231,14 +231,16 @@ package sub_relations {
 
 % All auxiliaries except tense auxiliaries.
   rule aux{
-    pattern{ e:H -[1=comp,2=aux]-> D }
-    without{H -[deep=tense]-> D}
+    pattern{ e:H -[1=comp,2=aux, !deep]-> D }
     commands {e.1=aux}
   }
-  
-  rule aux_tense{
-    pattern{ e:H -[comp:aux@tense]-> D }
-    commands {e.1=aux; del_feat e.2; del_feat e.deep}
+
+  rule aux_deep{
+    pattern{ e:H -[1=comp,2=aux,deep=*]-> D }
+    commands {
+      add_edge H -[1=aux, 2=e.deep]-> D;
+      del_edge e;
+    }
   }
 
 % Complement that is a complete clause without control of its subject.
@@ -247,7 +249,7 @@ package sub_relations {
     without{ H -[comp:obj@x|comp:obl@x]-> D}
     commands {e.1=ccomp}
   }
-  
+
 % Clausal complement  with an adjectival or adverb as its head without control of its subject.
   rule ccomp_adv_adj {
     pattern {
@@ -257,19 +259,19 @@ package sub_relations {
     without{ H -[comp:obj@expl]-> D}
     commands {e.1=ccomp}
   }
-  
+
   rule cop{
     pattern{ e:H -[1=comp,2=pred]-> D; H[upos=AUX]}
     commands {e.1=cop}
   }
-  
+
 % In an impersonal active construction, the deep clausal subject, which is a COMP:OBJ dependent in SUD, becomes a CSUBJ dependent in UD.
 % Ex: il m'arrive de faire des erreurs.
   rule csubj_expl{
     pattern { e:H -[comp:obj@expl]-> D; D[upos=AUX|VERB]}
     commands {e.1=csubj;e.2=expl; del_feat e.deep}
   }
-  
+
 % In an impersonal active construction, the deep clausal subject introduced with a conjunction, which is a COMP:OBJ dependent in SUD, becomes a CSUBJ dependent in UD.
 % Ex: il m'arrive de faire des erreurs.
   rule csubj_expl_conj{
@@ -278,45 +280,45 @@ package sub_relations {
       D -[1=mark]-> CONJ}
     commands {e.1=csubj;e.2=expl; del_feat e.deep}
   }
-  
+
 % In an impersonal passive construction, the deep clausan subject, which is a COMP:OBJ dependent in SUD, becomes a CSUBJ:PASS dependent in UD.
 % Ex: Il est prévu de continuer. - Il se dit que tu viendras.
   rule csubj_expl_pass{
     pattern { e:H -[comp:obj@pass]-> D; D[upos=AUX|VERB]; H -[expl:subj]-> S}
     commands {e.1=csubj;e.2=pass; del_feat e.deep}
   }
-  
+
 % An expletive complement, which is a COMP:EXPL dependent in SUD, becomes an EXPL:COMP dependent in UD.
 % Ex: Les gens s'enfuient - Il s'agit d'un accident. - Les voitures se vendent bien. - Il s'est vendu une grande maison aujourd'hui. -  Il se dit que tu viendras.
   rule expl_comp{
     pattern{ e:H -[comp@expl]-> D}
     commands {e.1=expl;e.2=comp; del_feat e.deep}
   }
-  
+
 % In an impersonal construction, the impersonal subject, which is a SUBJ:EXPL dependent in SUD, becomes an  EXPL:SUBJ dependent in UD.
 % Ex: Il arrive deux personnes. - Il faut un bilan. - Il s'agit d'une erreur. - Il a été vendu une grande maison. - il se dit que tu viendras.
   rule expl_subj{
     pattern{ e:H -[subj@expl]-> D}
     commands {e.1=expl;e.2=subj; del_feat e.deep}
   }
-  
+
   rule fixed{
     pattern{ e:H -[unk@fixed]-> D}
     commands {e.1=fixed; del_feat e.deep}
   }
-  
+
   rule iobj {
     pattern { e:H -[1=comp,2=obl]-> D; D[upos=PRON]}
     without { D -> X; X[upos=ADP] }
     commands {e.1=iobj}
   }
-  
-  
+
+
   rule nmod{
     pattern { e:H -[1=comp, 2=obl]-> D; H[nom=y]; D[nom=y];  }
     commands {e.1=nmod}
   }
-  
+
 % In an impersonal active construction, the deep nominal subject, which is a COMP:OBJ dependent in SUD, becomes a NSUBJ dependent in UD.
 % Ex: il arrive deux personnes.
   rule nsubj_expl{
@@ -325,28 +327,28 @@ package sub_relations {
     without{D -[1=mark]-> CONJ}
     commands {e.1=nsubj; e.2=expl; del_feat e.deep}
   }
-  
+
 % In an impersonal passive construction, the deep nominal subject, which is a COMP:OBJ dependent in SUD, becomes a NSUBJ:PASS dependent in UD.
 % Ex: Il a été vendu une grande maison. - Il s'est vendu une grande maison.
   rule nsubj_expl_pass{
     pattern { e:H -[comp:obj@pass]-> D; D[nom=y]; H -[expl:subj]-> S}
     commands {e.1=nsubj; e.2=pass; del_feat e.deep}
   }
-  
+
    rule obj_nom{
     pattern { e:H -[1=comp, 2=obj]-> D; D[nom=y]}
     without{ H -[comp:obj@expl]-> D}
     without{ D -[1=mark]-> *}
     commands {e.1=obj}
   }
-  
+
    rule obj_pred{
     pattern { e:H -[1=comp, 2=obj]-> D; D[cat=ADJ|ADV,!nom]}
     without{ H -[comp:obj@expl]-> D}
     without{ D -[1=mark]-> *}
     commands {e.1=obj}
   }
-  
+
   rule obl_agent {
     pattern { e:H -[1=comp,2=obl,deep=agent]-> D; D -[case]-> * }
     commands {e.1=obl; e.2=agent; del_feat e.deep }
@@ -368,7 +370,7 @@ package sub_relations {
     pattern { e:H -[1=comp,2=obl]-> D; D[upos=PRON]; D -[1=case]-> * }
     commands {e.1=obl; e.2=arg}
   }
-  
+
   rule xcomp {
     pattern { e:H -[comp:obj@x|comp:obl@x|comp:pred]-> D }
     without{ H[upos=AUX]}
@@ -384,12 +386,12 @@ package rel_extensions {
     pattern{e: H -[1=*, deep <> fixed]-> D}
     commands{ add_edge H -[1=e.1,2=e.deep]-> D; del_edge e}
   }
-  
+
   rule del_ext{
     pattern{e: H -[1=*,2=aux|obj|obl|pred,!deep]-> D}
     commands{del_feat e.2}
   }
-  
+
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -498,7 +500,7 @@ package relations {
     pattern{ e: H -[unk]-> D}
     commands{e.1=dep}
   }
-  
+
 % When a determiner relation has a numeral as its dependent, it is labelled with NUMMOD.
   rule det_nummod{
     pattern { e: H -[1=det]-> D; D[upos=NUM] }
@@ -523,7 +525,7 @@ package relations {
     pattern {e:H -[1=mod]-> D; H[upos=NUM]; D[upos=NUM]}
     commands {e.1=nmod}
   }
-  
+
 % A numeral is dependent on another numeral via an adposition.
   rule nmod_num2{
     pattern {
@@ -539,7 +541,7 @@ package relations {
       N1 -[case]-> ADP; N2 << ADP; ADP << N1}
     commands {e.1=nmod}
   }
-  
+
 % Nomminal subject.
   rule nsubj {
     pattern { e:V -[1=subj]-> S; S[nom=y] }
@@ -610,7 +612,7 @@ strat main {
     Onf (reverse_case_mark),  % Package REVERSE_CASE_MARK precedes packages SUB_RELATIONS and RELATIONS because  UD labels of complement relations depend on the category of the complements introduced with a preposition or a conjunction
     Onf( reverse_close),
     Onf(case_mark_relations), %Package CASE_MARK_RELATIONS must precede package SUB_RELATIONS because renaming of some SUD relations requires the distinction between case and mark relations.
-    Onf (sub_relations), % Package SUB_RELATIONS must precede package REL_EXTENSIONS because this package swat extensions on level 2. 
+    Onf (sub_relations), % Package SUB_RELATIONS must precede package REL_EXTENSIONS because this package swat extensions on level 2.
     Onf (rel_extensions),
     Onf (relations),
     Onf(reverse_aux),    % Package REVERSE_AUX follows packages SUB_RELATIONS and RELATIONS because of the dependencies H -> AUX in UD: if H is the target of a dependency, the label of the dependency may depend on the mood of AUX.
