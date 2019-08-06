@@ -94,27 +94,23 @@ package specif_expr_close{
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For the internal elements of MWE, feature INMWE=Yes is replaced with the deep extension fixed on the incoming relation.
+package fixed_add{
+  rule add_fixed{
+    pattern {e:H -> D;D[_MISC_INMWE=Yes]}
+    without{H -[deep=fixed]-> D}
+    commands {e.deep=fixed; del_feat D._MISC_INMWE}
+  }
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For the internal elements of MWE,  the deep extension fixed on the incoming relation  is replaced with feature INMWE=Yes.
 package fixed_remove{
   rule del_fixed{
-    pattern {e:H -[1<>fixed,!2,deep=fixed]-> D;D[!_MISC_INMWE]}
-    commands {add_edge H -[1=e.1]-> D;del_edge e; D._MISC_INMWE=Yes}
-  }
-  
-  rule del_fixed_ext{
-    pattern {e:H -[1<>fixed,2=*,deep=fixed]-> D;D[!_MISC_INMWE]}
-    commands {add_edge H -[1=e.1,2=e.2]-> D; del_edge e; D._MISC_INMWE=Yes}
+    pattern {e:H -[deep=fixed]-> D;D[!_MISC_INMWE]}
+    without { H -[1=unk]-> D}
+    commands {del_feat e.deep; D._MISC_INMWE=Yes}
   }
   
 }
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-strat main_specif_expr{
-  Seq(
-    Onf(specif_expr_init),
-    main,
-    Onf(specif_expr_close)
-  )
-}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-strat mwe{ Onf(specif_expr_init)}

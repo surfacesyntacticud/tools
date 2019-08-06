@@ -558,7 +558,7 @@ package relations {
 
   rule oblmod {
     pattern { H[!nom]; e:H -[1=mod]-> D; D[nom=y] }
-    without{ D -[1=nsubj|mark]-> X}
+    without{ D -[1=nsubj|mark|subj]-> X}
     without{H[upos=NUM];D[upos=NUM]}
     commands {e.1=obl; e.2=mod}
   }

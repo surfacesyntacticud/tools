@@ -178,10 +178,10 @@ strat FR_main {
 
 strat FR_main_specif_expr{
   Seq(
+    Onf(fixed_remove),
     Onf(specif_expr_init),
     FR_main,
     Onf(specif_expr_close),
-    Onf(fixed_remove)
   )
 }
 
