@@ -47,10 +47,10 @@
 6	lire	_	VERB	_	_	5	comp:obj	_	_
 
 # sent_id = possible_que
-1	c'	_	PRON	_	_	2	subj	_	_
+1	c'	_	PRON	_	_	2	subj@expl	_	_
 2	est	_	AUX	_	_	0	root	_	_
 3	possible	_	ADJ	_	_	2	comp:pred	_	_
-4	qu'	_	SCONJ	_	_	2	comp:obl@agent	_	_
+4	qu'	_	SCONJ	_	_	2	comp:obj@agent	_	_
 5	il	_	PRON	_	_	6	subj	_	_
 6	vienne	_	VERB	_	_	4	comp:obj	_	_
 
@@ -65,7 +65,7 @@
 1	il	_	PRON	_	_	2	subj	_	_
 2	a	_	VERB	_	_	0	root	_	_
 3	besoin	_	NOUN	_	_	2	comp:obj@lvc	_	_
-4	de	_	ADP	_	_	3	comp:obl	_	_
+4	de	_	ADP	_	_	2	comp:obl	_	_
 5	sa	_	DET	_	_	6	det	_	_
 6	voiture	_	NOUN	_	_	4	comp:obj	_	_
 
@@ -82,7 +82,7 @@
 # sent_id = one_aux
 1	il	_	PRON	_	_	2	subj	_	_
 2	est	_	AUX	_	_	0	root	_	_
-3	venu	_	VERB	_	_	2	comp:aux	_	_
+3	venu	_	VERB	_	_	2	comp:aux@tense	_	_
 
 # sent_id = one_pass
 1	il	_	PRON	_	_	2	subj@pass	_	_
@@ -92,7 +92,7 @@
 # sent_id = aux_and_pass
 1	il	_	PRON	_	_	2	subj@pass	_	_
 2	a	_	AUX	_	_	0	root	_	_
-3	été	_	AUX	_	_	2	comp:aux	_	_
+3	été	_	AUX	_	_	2	comp:aux@tense	_	_
 4	mordu	_	VERB	_	_	3	comp:aux@pass	_	_
 
 # sent_id = etre_oblique
@@ -163,7 +163,7 @@
 2	n'	_	ADV	_	Polarity=Neg	3	mod	_	_
 3	est	_	AUX	_	_	0	root	_	_
 4	pas	_	ADV	_	Polarity=Neg	3	mod	_	_
-5	venu	_	VERB	_	_	3	comp:aux	_	_
+5	venu	_	VERB	_	_	3	comp:aux@tense	_	_
 
 # sent_id = one_pass_neg
 1	il	_	PRON	_	_	3	subj@pass	_	_
@@ -177,7 +177,7 @@
 2	n'	_	ADV	_	Polarity=Neg	3	mod	_	_
 3	a	_	AUX	_	_	0	root	_	_
 4	pas	_	ADV	_	Polarity=Neg	3	mod	_	_
-5	été	_	AUX	_	_	3	comp:aux	_	_
+5	été	_	AUX	_	_	3	comp:aux@tense	_	_
 6	mordu	_	VERB	_	_	5	comp:aux@pass	_	_
 
 # sent_id = aux_mark
@@ -185,7 +185,7 @@
 2	que	_	SCONJ	_	_	1	comp:obj	_	_
 3	tu	_	PRON	_	_	4	subj@pass	_	_
 4	auras	_	AUX	_	_	2	comp:obj	_	_
-5	été	_	AUX	_	_	4	comp:aux	_	_
+5	été	_	AUX	_	_	4	comp:aux@tense	_	_
 6	contacté	_	VERB	_	_	5	comp:aux@pass	_	_
 
 # sent_id = Europar.550_00040
@@ -225,7 +225,7 @@
 6	pour	pour	ADP	_	_	5	mod	_	_
 7	intervenir	intervenir	VERB	_	VerbForm=Inf	6	comp:obj	_	_
 8	mais	mais	CCONJ	_	_	9	cc	_	_
-9	sans	sans	ADP	_	_	5	conj	_	_
+9	sans	sans	ADP	_	_	6	conj	_	_
 10	réelle	réel	ADJ	_	Gender=Fem|Number=Sing	11	mod	_	_
 11	insistance	insistance	NOUN	_	Gender=Fem|Number=Sing	9	comp:obj	_	SpaceAfter=No
 12	.	.	PUNCT	_	_	3	punct	_	_
@@ -238,7 +238,7 @@
 4	de	de	ADP	_	_	3	comp:obl	_	_
 5	Don	Don	PROPN	_	_	4	comp:obj	_	_
 6	Antonio	Antonio	PROPN	_	_	5	flat@name	_	SpaceAfter=No
-7	,	,	PUNCT	_	_	5	punct	_	_
+7	,	,	PUNCT	_	_	8	punct	_	_
 8	neveu	neveu	NOUN	_	Gender=Masc|Number=Sing	5	appos	_	_
 9	de	de	ADP	_	_	8	comp:obl	_	_
 10	le	le	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	11	det	_	_
@@ -280,7 +280,7 @@
 # text = Après avoir atteint l'Arctique, Inglefield explora et cartographia la côte occidentale du Groenland ;
 1	Après	après	ADP	_	_	8	mod	_	_
 2	avoir	avoir	AUX	_	VerbForm=Inf	1	comp:obj	_	_
-3	atteint	atteindre	VERB	_	Gender=Masc|Number=Sing|Tense=Past|VerbForm=Part	2	comp:aux	_	_
+3	atteint	atteindre	VERB	_	Gender=Masc|Number=Sing|Tense=Past|VerbForm=Part	2	comp:aux@tense	_	_
 4	l'	le	DET	_	Definite=Def|Number=Sing|PronType=Art	5	det	_	SpaceAfter=No
 5	Arctique	Arctique	PROPN	_	_	3	comp:obj	_	SpaceAfter=No
 6	,	,	PUNCT	_	_	1	punct	_	_
@@ -317,7 +317,7 @@
 17	eau	eau	NOUN	_	Gender=Fem|Number=Sing	15	comp:obj	_	SpaceAfter=No
 18	,	,	PUNCT	_	_	20	punct	_	_
 19	ou	ou	CCONJ	_	_	20	cc	_	_
-20	comme	comme	ADP	_	_	5	conj	_	_
+20	comme	comme	ADP	_	_	8	conj	_	_
 21	mode	mode	NOUN	_	Gender=Masc|Number=Sing	20	comp:obj	_	_
 22	de	de	ADP	_	_	21	comp:obl	_	_
 23	chauffage	chauffage	NOUN	_	Gender=Masc|Number=Sing	22	comp:obj	_	_

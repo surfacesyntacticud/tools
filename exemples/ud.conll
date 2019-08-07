@@ -47,12 +47,12 @@
 6	lire	_	VERB	_	_	4	ccomp	_	_
 
 # sent_id = possible_que
-1	c'	_	PRON	_	_	3	nsubj	_	_
+1	c'	_	PRON	_	_	3	expl	_	_
 2	est	_	AUX	_	_	3	cop	_	_
 3	possible	_	ADJ	_	_	0	root	_	_
 4	qu'	_	SCONJ	_	_	6	mark	_	_
 5	il	_	PRON	_	_	6	nsubj	_	_
-6	vienne	_	VERB	_	_	3	ccomp	_	_
+6	vienne	_	VERB	_	_	3	csubj	_	_
 
 # sent_id = difficile_a_expliquer
 1	c'	_	PRON	_	_	3	nsubj	_	_
@@ -67,7 +67,7 @@
 3	besoin	_	NOUN	_	_	2	obj:lvc	_	_
 4	de	_	ADP	_	_	6	case	_	_
 5	sa	_	DET	_	_	6	det	_	_
-6	voiture	_	NOUN	_	_	3	nmod	_	_
+6	voiture	_	NOUN	_	_	2	obl:comp	_	_
 
 # sent_id = est_gentil
 1	il	_	PRON	_	_	3	nsubj	_	_
@@ -81,7 +81,7 @@
 
 # sent_id = one_aux
 1	il	_	PRON	_	_	3	nsubj	_	_
-2	est	_	AUX	_	_	3	aux	_	_
+2	est	_	AUX	_	_	3	aux:tense	_	_
 3	venu	_	VERB	_	_	0	root	_	_
 
 # sent_id = one_pass
@@ -91,7 +91,7 @@
 
 # sent_id = aux_and_pass
 1	il	_	PRON	_	_	4	nsubj:pass	_	_
-2	a	_	AUX	_	_	4	aux	_	_
+2	a	_	AUX	_	_	4	aux:tense	_	_
 3	été	_	AUX	_	_	4	aux:pass	_	_
 4	mordu	_	VERB	_	_	0	root	_	_
 
@@ -161,7 +161,7 @@
 # sent_id = one_aux_neg
 1	il	_	PRON	_	_	5	nsubj	_	_
 2	n'	_	ADV	_	Polarity=Neg	5	advmod	_	_
-3	est	_	AUX	_	_	5	aux	_	_
+3	est	_	AUX	_	_	5	aux:tense	_	_
 4	pas	_	ADV	_	Polarity=Neg	5	advmod	_	_
 5	venu	_	VERB	_	_	0	root	_	_
 
@@ -175,7 +175,7 @@
 # sent_id = aux_and_pass_neg
 1	il	_	PRON	_	_	6	nsubj:pass	_	_
 2	n'	_	ADV	_	Polarity=Neg	6	advmod	_	_
-3	a	_	AUX	_	_	6	aux	_	_
+3	a	_	AUX	_	_	6	aux:tense	_	_
 4	pas	_	ADV	_	Polarity=Neg	6	advmod	_	_
 5	été	_	AUX	_	_	6	aux:pass	_	_
 6	mordu	_	VERB	_	_	0	root	_	_
@@ -184,7 +184,7 @@
 1	dès	_	ADP	_	_	6	mark	_	_
 2	que	_	SCONJ	_	_	6	mark	_	_
 3	tu	_	PRON	_	_	6	nsubj:pass	_	_
-4	auras	_	AUX	_	_	6	aux	_	_
+4	auras	_	AUX	_	_	6	aux:tense	_	_
 5	été	_	AUX	_	_	6	aux:pass	_	_
 6	contacté	_	VERB	_	_	0	root	_	_
 
@@ -199,7 +199,7 @@
 7	d'	de	ADP	_	_	10	mark	_	_
 8	être	être	AUX	_	_	10	cop	_	_
 9	extrêmement	extrêmement	ADV	_	_	10	advmod	_	_
-10	prudent	prudent	ADJ	_	_	6	ccomp:agent	_	_
+10	prudent	prudent	ADJ	_	_	6	csubj	_	_
 11	.	.	PUNCT	_	_	2	punct	_	_
 
 # sent_id = fr-ud-train_09696
@@ -238,9 +238,8 @@
 4	de	de	ADP	_	_	5	case	_	_
 5	Don	Don	PROPN	_	_	3	nmod	_	_
 6	Antonio	Antonio	PROPN	_	_	5	flat:name	_	SpaceAfter=No
-7	,	,	PUNCT	_	_	5	punct	_	_
+7	,	,	PUNCT	_	_	8	punct	_	_
 8	neveu	neveu	NOUN	_	Gender=Masc|Number=Sing	5	appos	_	_
-9-10	du	_	_	_	_	_	_	_	_
 9	de	de	ADP	_	_	11	case	_	_
 10	le	le	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	11	det	_	_
 11	roi	roi	NOUN	_	Gender=Masc|Number=Sing	8	nmod	_	_
@@ -280,7 +279,7 @@
 # sent_id = fr-ud-dev_00204
 # text = Après avoir atteint l'Arctique, Inglefield explora et cartographia la côte occidentale du Groenland ;
 1	Après	après	ADP	_	_	3	mark	_	_
-2	avoir	avoir	AUX	_	VerbForm=Inf	3	aux	_	_
+2	avoir	avoir	AUX	_	VerbForm=Inf	3	aux:tense	_	_
 3	atteint	atteindre	VERB	_	Gender=Masc|Number=Sing|Tense=Past|VerbForm=Part	8	advcl	_	_
 4	l'	le	DET	_	Definite=Def|Number=Sing|PronType=Art	5	det	_	SpaceAfter=No
 5	Arctique	Arctique	PROPN	_	_	3	obj	_	SpaceAfter=No
@@ -292,7 +291,6 @@
 11	la	le	DET	_	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	12	det	_	_
 12	côte	côte	NOUN	_	Gender=Fem|Number=Sing	8	obj	_	_
 13	occidentale	occidental	ADJ	_	Gender=Fem|Number=Sing	12	amod	_	_
-14-15	du	_	_	_	_	_	_	_	_
 14	de	de	ADP	_	_	16	case	_	_
 15	le	le	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	16	det	_	_
 16	Groenland	Groenland	PROPN	_	_	12	nmod	_	_
@@ -320,7 +318,7 @@
 18	,	,	PUNCT	_	_	21	punct	_	_
 19	ou	ou	CCONJ	_	_	21	cc	_	_
 20	comme	comme	ADP	_	_	21	case	_	_
-21	mode	mode	NOUN	_	Gender=Masc|Number=Sing	5	conj	_	_
+21	mode	mode	NOUN	_	Gender=Masc|Number=Sing	10	conj	_	_
 22	de	de	ADP	_	_	23	case	_	_
 23	chauffage	chauffage	NOUN	_	Gender=Masc|Number=Sing	21	nmod	_	_
 24	central	central	ADJ	_	Gender=Masc|Number=Sing	23	amod	_	SpaceAfter=No
