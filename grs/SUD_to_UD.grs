@@ -1,4 +1,17 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+include "common.grs"
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For the internal elements of MWE, the deep extension fixed on the incoming relation is replaced with feature INMWE=Yes.
+rule remove_deep_fixed{
+  pattern {e:H -[deep=fixed]-> D;D[!_MISC_INMWE]}
+  without { H -[1=unk]-> D}
+  commands {del_feat e.deep; D._MISC_INMWE=Yes}
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Feature "nom" is used to deal with all nominals in a uniform way.
 package nom_init {
 
@@ -124,8 +137,8 @@ package reverse_case_mark {
       H.reversed=y; D.reversed=y;
       add_edge e:D -> H;
       del_edge e;
-      shift_in H ==> D;
-      shift_out H =[^conj:dicto|expr|goeswith|orphan|reparandum|unk:fixed]=> D;
+      shift_in H =[^MWE|TITLE]=> D;
+      shift_out H =[^conj:dicto|expr|goeswith|orphan|reparandum|unk:fixed|HEAD|MWE|TITLE]=> D;
     }
   }
 
@@ -475,6 +488,11 @@ package relations {
     commands {e.1=advmod}
   }
 
+  rule advmod2 {
+    pattern { e:H -[1=udep]-> D; H [nom=y]; D[upos=ADV, !nom] }
+    commands {e.1=advmod}
+  }
+
   rule amod1 {
     pattern { H[upos=ADJ]; e:H -[1=mod]-> D; D[upos=ADJ] }
     without{ D -[1=mark]-> X}
@@ -575,6 +593,12 @@ package relations {
     commands {e.1=obl}
   }
 }
+
+rule relations_backoff {
+  pattern { e:H -[1=unk|subj|udep|mod|comp]-> D; }
+  commands { del_edge e; add_edge H -[dep]-> D; }
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % The relations with auxiliaries as their heads are reversed.
 package reverse_aux {
@@ -587,8 +611,8 @@ package reverse_aux {
       H.reversed=y; D.reversed=y;
       add_edge e:D -> H;
       del_edge e;
-      shift_in H ==> D;
-      shift_out H =[^conj:dicto|expr|goeswith|orphan|reparandum|unk:fixed]=> D;
+      shift_in H =[^MWE|TITLE]=> D;
+      shift_out H =[^conj:dicto|expr|goeswith|orphan|reparandum|unk:fixed|MWE|TITLE]=> D;
     }
   }
 
@@ -607,6 +631,8 @@ package final {
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 strat main {
   Seq (
+    Onf (remove_deep_fixed),
+    ext_features_to_nodes,
     Onf (nom_init),
     Onf (unchained_relations), % For CONJ relations, chains must be transformed into bouquets before head changes because of conditions on the presence of prepositions, conjunctions and auxiliaries. It is easier to take these conditions into account before head changes (UD_French-GSD : fr-ud-dev_00751)
     Onf (reverse_case_mark),  % Package REVERSE_CASE_MARK precedes packages SUB_RELATIONS and RELATIONS because  UD labels of complement relations depend on the category of the complements introduced with a preposition or a conjunction
@@ -615,8 +641,10 @@ strat main {
     Onf (sub_relations), % Package SUB_RELATIONS must precede package REL_EXTENSIONS because this package swat extensions on level 2.
     Onf (rel_extensions),
     Onf (relations),
+    Onf (relations_backoff),
     Onf(reverse_aux),    % Package REVERSE_AUX follows packages SUB_RELATIONS and RELATIONS because of the dependencies H -> AUX in UD: if H is the target of a dependency, the label of the dependency may depend on the mood of AUX.
     Onf( reverse_close),
     Onf (final),
+    ext_nodes_to_features,
   )
 }

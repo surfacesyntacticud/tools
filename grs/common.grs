@@ -1,0 +1,164 @@
+package add_edges {
+	rule init_mwe {
+		pattern { H [_MISC_Type=MWE]; H-> N; N[_MISC_INMWE=Yes] }
+		commands { del_feat N._MISC_INMWE; add_edge H -[MWE]-> N }
+	}
+
+	rule iter_mwe {
+		pattern { H -[MWE]-> M; M -> N; N[_MISC_INMWE=Yes] }
+		commands { del_feat N._MISC_INMWE; add_edge H -[MWE]-> N }
+	}
+
+	rule init_title {
+		pattern { H [_MISC_Type=Title]; H-> N; N[_MISC_INTITLE=Yes] }
+		commands { del_feat N._MISC_INTITLE; add_edge H -[TITLE]-> N }
+	}
+
+	rule iter_title {
+		pattern { H -[TITLE]-> M; M -> N; N[_MISC_INTITLE=Yes] }
+		commands { del_feat N._MISC_INTITLE; add_edge H -[TITLE]-> N }
+	}
+}
+
+package add_nodes {
+	rule mwe {
+		pattern{ H [_MISC_EXTPOS,_MISC_Type=MWE] }
+		without{ * -[expr]-> H }
+		commands{
+			add_node MWE :< H;
+			add_edge MWE -[MWE]-> H; add_edge MWE -[HEAD]-> H;
+			shift_in H =[^MWE|TITLE]=> MWE;
+			shift_out H =[MWE]=> MWE;
+			MWE.upos = H._MISC_EXTPOS; del_feat H._MISC_EXTPOS;
+			MWE.Type = H._MISC_Type; del_feat H._MISC_Type;
+		}
+	}
+
+	rule title {
+		pattern{ H [_MISC_EXTPOS,_MISC_Type=Title] }
+		without{ * -[expr]-> H }
+		commands{
+			add_node TITLE :< H; add_edge TITLE -[TITLE]-> H; add_edge TITLE -[HEAD]-> H;
+			shift_in H =[^MWE|TITLE]=> TITLE;
+			shift_out H =[TITLE]=> TITLE;
+			TITLE.upos = H._MISC_EXTPOS; del_feat H._MISC_EXTPOS;
+			TITLE.Type = H._MISC_Type; del_feat H._MISC_Type;
+		}
+	}
+
+	rule trans {
+		pattern{ H [_MISC_EXTPOS,_MISC_Type=Trans] }
+		without{ * -[HEAD]-> H }
+		commands{
+			add_node TRANS :< H; add_edge TRANS -[TRANS]-> H; add_edge TRANS -[HEAD]-> H;
+			shift_in H =[^MWE|TITLE]=> TRANS;
+			TRANS.upos = H._MISC_EXTPOS; del_feat H._MISC_EXTPOS;
+			TRANS.Type = H._MISC_Type; del_feat H._MISC_Type;
+			TRANS.lemma = H.lemma
+		}
+	}
+
+	rule mwe_in_title {
+		pattern { E -[HEAD]-> N; T -[TITLE]-> N; }
+		without { T -[TITLE]-> E; }
+		commands { add_edge T -[TITLE]-> E; }
+	}
+}
+
+package ext_dep {
+	rule mwe {
+		pattern { H -[MWE]-> N; e:N -[^unk@fixed|fixed|flat:name|goeswith]-> M; }
+		without { H -[MWE]-> M; }
+		commands { add_edge e:H->M; del_edge e;}
+	}
+
+	rule title {
+		pattern { H -[TITLE]-> N; e:N -[^unk@fixed|fixed|flat:name|goeswith]-> M; }
+		without { H -[TITLE]-> M; }
+		commands { add_edge e:H->M; del_edge e;}
+	}
+
+	rule trans {
+		pattern { H -[TRANS]-> N; e:N -[^unk@fixed|fixed|flat:name|goeswith]-> M; }
+		without { H -[TRANS]-> M; }
+		commands { add_edge e:H->M; del_edge e;}
+	}
+}
+
+strat ext_features_to_nodes {
+	Seq (
+		Onf(add_edges),
+		Onf(add_nodes),
+		Onf(ext_dep),
+	)
+}
+
+
+
+package del_edges {
+	rule mwe_head {
+		pattern { MWE -[HEAD]-> H; e:MWE -[MWE]-> H; }
+		commands {
+			del_edge e;
+			H._MISC_EXTPOS = MWE.upos;
+			H._MISC_Type = MWE.Type;
+		}
+	}
+
+	rule mwe {
+		pattern { e:MWE -[MWE]-> H }
+		without { MWE -[HEAD]-> H }
+		commands {
+			del_edge e;
+			H._MISC_INMWE = Yes;
+		}
+	}
+
+	rule title_head {
+		pattern { TITLE -[HEAD]-> H; e:TITLE -[TITLE]-> H }
+		commands {
+			del_edge e;
+			H._MISC_EXTPOS = TITLE.upos;
+			H._MISC_Type = TITLE.Type;
+		}
+	}
+
+	rule title {
+		pattern { e:TITLE -[TITLE]-> H }
+		without { TITLE -[HEAD]-> H }
+		commands {
+			del_edge e;
+			H._MISC_INTITLE = Yes;
+		}
+	}
+
+	rule trans_head {
+		pattern { TRANS -[HEAD]-> H; e:TRANS -[TRANS]-> H }
+		commands {
+			del_edge e;
+			H._MISC_EXTPOS = TRANS.upos;
+			H._MISC_Type = TRANS.Type;
+		}
+	}
+}
+
+package del_nodes {
+	rule del_specif_expr{
+		pattern{ e: N -[HEAD]-> H }
+		commands{
+			del_edge e;
+			shift N ==> H;
+			del_node N
+		}
+	}
+}
+
+strat ext_nodes_to_features {
+	Seq (
+		Onf(del_edges),
+		Onf(del_nodes),
+	)
+}
+
+
+

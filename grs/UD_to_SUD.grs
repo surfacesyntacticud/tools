@@ -1,3 +1,6 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+include "common.grs"
+
 % Remove all EUD specific information
 package eud_to_ud {
   rule deep { % remove add enhanced relations
@@ -48,7 +51,7 @@ package head_reverse {
       e.deep=reversed;
       add_edge e:AUX -> H;
       del_edge e;
-      shift_in H ==> AUX;
+      shift_in H =[^TITLE|MWE]=> AUX;
       shift_out H =[aux]=> AUX;
       shift_out H =[1=aux,2<>caus|pass,!deep]=> AUX;
       shift_out H =[1=mark,!deep]=> AUX;
@@ -65,7 +68,7 @@ package head_reverse {
       e.deep=reversed;
       add_edge e:AUX -> H;
       del_edge e;
-      shift_in H ==> AUX;
+      shift_in H =[^TITLE|MWE]=> AUX;
       shift_out H =[1=aux|mark,!deep]=> AUX;
       shift_out H =[2=agent]=> AUX;
       shift_out H =[1=advcl|advmod|cc|csubj|dislocated|nsubj|parataxis|punct|root]=> AUX;
@@ -80,7 +83,7 @@ package head_reverse {
       e.deep=reversed;
       add_edge e:AUX -> H;
       del_edge e;
-      shift_in H ==> AUX;
+      shift_in H =[^TITLE|MWE]=> AUX;
       shift_out H =[1=aux|mark,!deep]=> AUX;
       shift_out H =[1=advcl|advmod|cc|csubj|dislocated|nsubj|parataxis|punct|root]=> AUX;
       shift_out H =[1=obl,2=mod]=> AUX
@@ -97,7 +100,7 @@ package head_reverse {
       e.deep=reversed;
       add_edge e:D -> H;
       del_edge e;
-      shift_in H ==> D;
+      shift_in H =[^TITLE|MWE]=> D;
       shift_out H =[1=aux|case|cop|mark,!deep]=> D;
       shift_out H =[1=advcl|cc|csubj|nsubj|punct|root]=> D;
       shift_out H =[1=expl]=> D;
@@ -116,7 +119,7 @@ package head_reverse {
       e.deep=reversed;
       add_edge e:D -> H;
       del_edge e;
-      shift_in H ==> D;
+      shift_in H =[^TITLE|MWE]=> D;
       shift_out H =[1=aux|case|cop|mark,!deep]=> D;
       shift_out H =[1=advcl|cc|csubj|nsubj|punct|root]=> D;
       shift_out H =[1=obl,2=mod]=> D
@@ -131,7 +134,7 @@ package head_reverse {
       e.deep=reversed;
       add_edge e:AUX -> H;
       del_edge e;
-      shift_in H ==> AUX;
+      shift_in H =[^TITLE|MWE]=> AUX;
       shift_out H =[1=aux|mark,!deep]=> AUX;
       shift_out H =[1=advcl|advmod|cc|csubj|dislocated|expl|nsubj|parataxis|punct|root]=> AUX;
       shift_out H =[1=obl,2=mod]=> AUX
@@ -151,7 +154,7 @@ package head_reverse {
       e.deep=reversed;
       add_edge e:D -> H;
       del_edge e;
-      shift_in H ==> D;
+      shift_in H =[^TITLE|MWE]=> D;
       shift_out H =[1=mark,!deep]=> D;
       shift_out H =[1=cc|punct|root]=> D;
     }
@@ -171,7 +174,7 @@ package head_reverse {
       e.deep=reversed;
       add_edge e:D -> H;
       del_edge e;
-      shift_in H ==> D;
+      shift_in H =[^TITLE|MWE]=> D;
       shift_out H =[1=mark,!deep]=> D;
       shift_out H =[1=cc|punct|root]=> D;
     }
@@ -417,42 +420,6 @@ package relations {
   }
 }
 
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% % In case MWE with an internal syntactic analysis
-% % Information move from node features (INMWE) to edge features (@fixed)
-% % step 1: move EXTPOS to the head of MWE (rule mv_extpos_to_head)
-% % step 2: move form node to edge (rule deep_fixed)
-% package fixed {
-%   rule mv_extpos_to_head {
-%     pattern { e: M -> N; N[_MISC_EXTPOS, _MISC_Type]; M[_MISC_INMWE]}
-%     commands {
-%       del_feat M._MISC_INMWE; M._MISC_EXTPOS = N._MISC_EXTPOS; M._MISC_Type = N._MISC_Type;
-%       del_feat N._MISC_EXTPOS; del_feat N._MISC_Type; N._MISC_INMWE=Yes;
-%     }
-%   }
-
-
-% %  rule deep_fixed {
-% %    pattern { e: M -> N; N[_MISC_INMWE]; }
-% %    commands { e.deep=fixed; del_feat N._MISC_INMWE }
-% %  }
-
-% %TMP: keep track of cases where @fixed remove existing @…
-%   rule deep_fixed {
-%     pattern { e: M -[!deep]-> N; N[_MISC_INMWE]; }
-%     commands { e.deep=fixed; del_feat N._MISC_INMWE }
-%   }
-
-%   rule deep_fixed_del {
-%     pattern { e: M -[deep=*]-> N; N[_MISC_INMWE]; }
-%     commands { e.deep=fixed_repl; del_feat N._MISC_INMWE }
-%   }
-
-%   strat s { Seq (Onf(mv_extpos_to_head), Onf(deep_fixed),
-%     Onf(deep_fixed_del)) % TMP: to be removed
-%   }
-% }
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Dependencies of type CONJ, FIXED and FLAT:NAME grouped into a bouquet are reorganized into a chain.
 package chained_relations {
@@ -478,13 +445,20 @@ package chained_relations {
   }
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For the internal elements of MWE, feature INMWE=Yes is replaced with the deep extension fixed on the incoming relation.
+rule add_deep_fixed{
+  pattern { e:H -> D;D[_MISC_INMWE=Yes] }
+  without{ H -[deep=fixed]-> D }
+  commands {e.deep=fixed; del_feat D._MISC_INMWE}
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 strat main {
   Seq (
     Onf (eud_to_ud),
+    ext_features_to_nodes,
 %    Onf (minimize_conj_dep),
-%    remove_extension_on_reverted_relations.s,
     Onf (head_reverse),
     Onf (gov_rise),% Package GOV_RISE must follow package HEAD_REVERSE because it corrects some wrong consequences of head changes.
     Onf (sub_relations), % Package SUB_RELATIONS must precede package REL_EXTENSIONS because this package swat extensions on level 2.
@@ -492,9 +466,7 @@ strat main {
     Onf (relations), % Package RELATIONS must follow package GOV_RISE because this package entails the change of category for the source and the target of some relations.
    % fixed.s,
     Onf (chained_relations),% Package CHAINED_RELATIONS must follow package GOV_RISE because it can entail a wrong coordination between two elements because of errors in head changes (UD_French-GS: fr-ud-dev_00131).
+    ext_nodes_to_features,
+    Onf(add_deep_fixed),
   )
 }
-
-
-
-
