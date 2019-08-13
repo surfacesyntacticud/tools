@@ -1,7 +1,4 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-include "specif_expr.grs"
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 include "SUD_to_UD.grs"
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -155,7 +152,7 @@ package FR_subj {
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-strat FR_main {
+strat FR_core {
   Seq (
     Onf (FR_init),
     Onf (nom_init),
@@ -176,12 +173,12 @@ strat FR_main {
   )
 }
 
-strat FR_main_specif_expr{
+strat FR_main{
   Seq(
-    Onf(fixed_remove),
-    Onf(specif_expr_init),
-    FR_main,
-    Onf(specif_expr_close),
+    Onf (remove_deep_fixed), % in UD, @fixed becomes INMWE
+    ext_features_to_nodes, % Change all EXTPOS to a new node
+    FR_core,
+    ext_nodes_to_features, % Change all new nodes to EXTPOS
   )
 }
 

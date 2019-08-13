@@ -1,7 +1,4 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-include "specif_expr.grs"
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 include "UD_to_SUD.grs"
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -39,7 +36,7 @@ package FR_relations {
     }
     commands{ del_edge e; add_edge H -[det]-> D}
   }
-  
+
 % Relation between a verb and an argument in the form of a finite clause, which is an oblique complement introduced with "que". By default, CCOMP relations are transformed into COMP:OBJ relations. In this case, they are transformed into COMP:OBL relations.
   rule verb_compobl_ccomp (lex from "lexicons/verb_with_deobj_fin-verb.lp") {
     pattern {
@@ -112,7 +109,7 @@ de	lesquelles	desquelles
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-strat FR_main{
+strat FR_core{
   Seq (
 %    Onf (minimize_conj_dep),
     Onf (head_reverse),
@@ -126,12 +123,12 @@ strat FR_main{
   )
 }
 
-strat FR_main_specif_expr{
+strat FR_main {
   Seq(
-    Onf(specif_expr_init),
-    FR_main,
-    Onf(specif_expr_close),
-    Onf(fixed_add),
+    ext_features_to_nodes, % Change all EXTPOS to a new node
+    FR_core,
+    ext_nodes_to_features, % Change all new nodes to EXTPOS
+    Onf(add_deep_fixed), % in SUD, INMWE becomes @fixed
   )
 }
 
