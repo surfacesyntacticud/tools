@@ -1,3 +1,5 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% The package [add_edges] turns all features INMWE (resp. INTITLE) into a edge MWE (resp. TITLE) from the head to to node
 package add_edges {
 	rule init_mwe {
 		pattern { H [_MISC_Type=MWE]; H-> N; N[_MISC_INMWE=Yes] }
@@ -20,6 +22,9 @@ package add_edges {
 	}
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% The package [add_nodes] insert a new node for each MWE/TITLE/TRANS
+% The new node is linked to the head with the HEAD relation and to other elements by a MWE/TITLE relation
 package add_nodes {
 	rule mwe {
 		pattern{ H [_MISC_EXTPOS,_MISC_Type=MWE] }
@@ -58,6 +63,7 @@ package add_nodes {
 		}
 	}
 
+	% When a MWE is included in a TITLE, the new node must receive a TITLE relation
 	rule mwe_in_title {
 		pattern { E -[HEAD]-> N; T -[TITLE]-> N; }
 		without { T -[TITLE]-> E; }
@@ -65,6 +71,8 @@ package add_nodes {
 	}
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% The package [ext_dep] move dependencies external to the MWE/TITLE/TRANS, on the new node
 package ext_dep {
 	rule mwe {
 		pattern { H -[MWE]-> N; e:N -[^unk@fixed|fixed|flat:name|goeswith]-> M; }
@@ -85,6 +93,8 @@ package ext_dep {
 	}
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% seq of the 3 previous packages into one strat
 strat ext_features_to_nodes {
 	Seq (
 		Onf(add_edges),
@@ -94,7 +104,9 @@ strat ext_features_to_nodes {
 }
 
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% replace edges MWE/TITLE by features
+% NB in UD_to_SUD, the deep features "@fixed" is introduced in a later step
 package del_edges {
 	rule mwe_head {
 		pattern { MWE -[HEAD]-> H; e:MWE -[MWE]-> H; }
@@ -142,6 +154,8 @@ package del_edges {
 	}
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% remove nodes
 package del_nodes {
 	rule del_specif_expr{
 		pattern{ e: N -[HEAD]-> H }
@@ -153,12 +167,11 @@ package del_nodes {
 	}
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% seq of the 3 previous packages into one strat
 strat ext_nodes_to_features {
 	Seq (
 		Onf(del_edges),
 		Onf(del_nodes),
 	)
 }
-
-
-
