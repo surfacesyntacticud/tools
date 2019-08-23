@@ -9,7 +9,6 @@ Examples of converted data are available [here](https://surfacesyntacticud.githu
 
 You first have to install the Grew software (see [instructions](http://grew.fr/install) page).
 
-
 ### Conversion from UD to SUD
 
 ```
