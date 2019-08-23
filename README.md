@@ -1,30 +1,7 @@
-# SUD annotation scheme
+# SUD tools
 
-SUD id a surface-syntactic annotation scheme that is near-isomorphic to the Universal Dependencies (UD) annotation scheme while following distributional criteria for defining the dependency tree structure and
-the naming of the syntactic functions.
+This repository aims to collect [SUD](https://surfacesyntacticud.github.io/) related tools.
 
-For more information, consult the related publication:
+## The converter
 
- * Kim Gerdes, Bruno Guillaume, Sylvain Kahane and Guy Perrier. [SUD or Surface-Syntactic Universal Dependencies: An annotation scheme near-isomorphic to UD](http://universaldependencies.org/udw18/PDFs/33_Paper.pdf) in proceedings of [Universal Dependencies Workshop 2018](http://universaldependencies.org/udw18/).
-
-# Conversion Rules
-
-The conversion rules are written for the [Grew software](http://grew.fr):
-
-| System | Version used in the paper experiment | Latest version (2018/10/01) |
-|--------|--------------------------------------|--------------------|
-| from UD to SUD | [`UD_to_SUD.grs`](https://gitlab.inria.fr/grew/SUD/blob/UDW18/grs/UD_to_SUD.grs) | [`UD_to_SUD.grs`](https://gitlab.inria.fr/grew/SUD/blob/master/grs/UD_to_SUD.grs) |
-| from SUD to UD | [`SUD_to_UD.grs`](https://gitlab.inria.fr/grew/SUD/blob/UDW18/grs/SUD_to_UD.grs) | [`SUD_to_UD.grs`](https://gitlab.inria.fr/grew/SUD/blob/master/grs/SUD_to_UD.grs) |
-
-# Universal dependencies corpora converted in SUD
-
-The SUD corpora available are converted with the current system [`UD_to_SUD.grs`](https://gitlab.inria.fr/grew/SUD/blob/master/grs/UD_to_SUD.grs) (2018/10/01).
-
- * Download the full set of 122 UD corpora (version 2.2) converted in SUD format: [sud-treebanks-v2.2.tgz](http://www.grew.fr/download/sud-treebanks-v2.2.tgz)
- * Acces to separate files download: [here](sud-treebanks-v2.2.md)
-
-
-To apply the conversion, you have to install Grew (see [instructions](http://grew.fr/install)) and use one of the follwing commands:
-
- * `grew transform -grs UD_to_SUD.grs -i [input_UD_file.conllu] -o [output_SUD_file.conllu]`
- * `grew transform -grs SUD_to_UD.grs -i [input_SUD_file.conllu] -o [output_UD_file.conllu]`
+The [**converter**](conveter/README.md) is a tool to convert annotated data form UD to SUD or from SUD to UD.
