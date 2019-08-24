@@ -11,6 +11,14 @@ doc:
 	@echo "draw:    run both convertion build figures"
 	@echo "----------------------------------------------------------------"
 
+wget:
+	rm -f sud.conll.most.recent.trees.conll10
+	wget https://arborator.ilpga.fr/projects/Examples-SUD/export/sud.conll.most.recent.trees.conll10
+	grew transform -grs clean_arborator_output.grs -i sud.conll.most.recent.trees.conll10 -o sud.conll
+	rm -f ud.conll.most.recent.trees.conll10
+	wget https://arborator.ilpga.fr/projects/Examples-UD/export/ud.conll.most.recent.trees.conll10
+	grew transform -grs clean_arborator_output.grs -i ud.conll.most.recent.trees.conll10 -o ud.conll
+
 draw:
 	rm -rf _sud_gold
 	splitter sud.conll _sud_gold
@@ -29,17 +37,38 @@ draw:
 	dep_diff -d1 _sud_gold -d2 _sud_auto -svg _sud_diff
 	dep_diff -d1 _ud_gold -d2 _ud_auto -svg _ud_diff
 
+
+draw_02:
+	rm -rf _sud_02_gold
+	splitter sud_02.conll _sud_02_gold
+	find _sud_02_gold -name "*.conll" -type f -print | sed "s/.conll$$//" | xargs -I {} make "{}.svg"
+	${GREW} transform -grs ../grs/SUD_to_UD.grs -i sud_02.conll -o _ud_02.conll
+	rm -rf _ud_02_auto
+	splitter _ud_02.conll _ud_02_auto
+	# ----
+	rm -rf _ud_02_gold
+	splitter ud_02.conll _ud_02_gold
+	find _ud_02_gold -name "*.conll" -type f -print | sed "s/.conll$$//" | xargs -I {} make "{}.svg"
+	${GREW} transform -grs ../grs/UD_to_SUD.grs -i ud_02.conll -o _sud_02.conll
+	rm -rf _sud_02_auto
+	splitter _sud_02.conll _sud_02_auto
+	# ----
+	dep_diff -d1 _sud_02_gold -d2 _sud_02_auto -svg _sud_02_diff
+	dep_diff -d1 _ud_02_gold -d2 _ud_02_auto -svg _ud_02_diff
+
+
+
 gui_ud:
 	${GREW} gui -grs ../grs/SUD_to_UD.grs -i sud.conll
 
 gui_sud:
 	${GREW} gui -grs ../grs/UD_to_SUD.grs -i ud.conll
 
-gui_mud:
-	${GREW} gui -grs ../grs/SUD_to_UD.grs -i more_sud.conll
+gui_ud_02:
+	${GREW} gui -grs ../grs/SUD_to_UD.grs -i sud_02.conll
 
-gui_msud:
-	${GREW} gui -grs ../grs/UD_to_SUD.grs -i more_ud.conll
+gui_sud_02:
+	${GREW} gui -grs ../grs/UD_to_SUD.grs -i ud_02.conll
 
 sud:
 	${GREW} transform -grs ../grs/UD_to_SUD.grs -i ud.conll -o _sud_conv.conll
