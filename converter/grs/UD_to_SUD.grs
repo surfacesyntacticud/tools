@@ -401,8 +401,13 @@ package relations {
     commands {e.1=udep}
   }
 
-  rule udep_obl {
-    pattern { e:H -[1=obl, !deep]-> D} % TODO: replace !deep by without { e.deep=agent }
+% TODO: replace next to rules by "without { e.deep=agent }"
+  rule udep_obl1 {
+    pattern { e:H -[1=obl, !deep]-> D}
+    commands {e.1=udep}
+  }
+  rule udep_obl2 {
+    pattern { e:H -[1=obl, deep<>agent]-> D}
     commands {e.1=udep}
   }
 
