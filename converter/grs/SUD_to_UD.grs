@@ -301,6 +301,11 @@ package sub_relations {
     commands {e.1=csubj;e.2=pass; del_feat e.deep}
   }
 
+  rule expl{
+    pattern{ e:H -[unk@expl]-> D}
+    commands {e.1=expl; del_feat e.deep}
+  }
+
 % An expletive complement, which is a COMP:EXPL dependent in SUD, becomes an EXPL:COMP dependent in UD.
 % Ex: Les gens s'enfuient - Il s'agit d'un accident. - Les voitures se vendent bien. - Il s'est vendu une grande maison aujourd'hui. -  Il se dit que tu viendras.
   rule expl_comp{
@@ -346,6 +351,17 @@ package sub_relations {
   rule nsubj_expl_pass{
     pattern { e:H -[comp:obj@pass]-> D; D[nom=y]; H -[expl:subj]-> S}
     commands {e.1=nsubj; e.2=pass; del_feat e.deep}
+  }
+
+% comp@pass ==> expl:pass
+  rule comp_pass {
+    pattern {
+      e: H -[comp@pass]-> D
+    }
+    commands {
+      del_edge e;
+      add_edge H -[expl:pass]-> D
+    }
   }
 
    rule obj_nom{

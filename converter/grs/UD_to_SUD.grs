@@ -260,6 +260,17 @@ package sub_relations {
     commands {e.1=comp; e.2=obj; e.deep=pass}
   }
 
+% expl:pass ==> comp@pass
+  rule comp_pass {
+    pattern {
+      e: H -[expl:pass]-> D
+    }
+    commands {
+      del_edge e;
+      add_edge H -[comp@pass]-> D
+    }
+  }
+
   rule comp_obl {
     pattern { e:H -[1=obl, 2=arg]-> D; }
     commands {e.1=comp; e.2=obl}
@@ -283,6 +294,14 @@ package sub_relations {
     pattern { e:H -[expl:subj]-> D; }
     without { H -[nsubj:pass|csubj:pass]-> * } % ensure to apply after [comp_obj_expl_pass] if needed
     commands {e.1=subj;e.deep=expl; del_feat e.2}
+  }
+
+  rule other_expl {
+    pattern { e:H -[1=expl, 2<>subj|comp|pass]-> D; }
+    commands {
+      del_edge e;
+      add_edge H -[unk@expl]-> D;
+    }
   }
 
 }
@@ -417,6 +436,14 @@ package relations {
   rule unk {
     pattern { e:H -[1=dep]-> D; }
     commands {e.1=unk}
+  }
+
+  rule unk_expl {
+    pattern { e:H -[expl]-> D; }
+    commands {
+      del_edge e;
+      add_edge H -[unk@expl]-> D;
+    }
   }
 
   rule unk_fixed {
