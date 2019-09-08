@@ -349,7 +349,7 @@ package sub_relations {
   }
 
    rule obj_nom{
-    pattern { e:H -[1=comp, 2=obj]-> D; D[nom=y]}
+    pattern { e:H -[1=comp, 2=obj, !deep]-> D; D[nom=y]}
     without{ H -[comp:obj@expl]-> D}
     without{ D -[1=mark]-> *}
     commands {e.1=obj}

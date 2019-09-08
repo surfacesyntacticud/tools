@@ -281,6 +281,7 @@ package sub_relations {
 % Ex: Il arrive deux personnes. - Il faut un bilan. - Il s'agit d'une erreur. - Il a été vendu une grande maison. - il se dit que tu viendras.
   rule subj_expl {
     pattern { e:H -[expl:subj]-> D; }
+    without { H -[nsubj:pass|csubj:pass]-> * } % ensure to apply after [comp_obj_expl_pass] if needed
     commands {e.1=subj;e.deep=expl; del_feat e.2}
   }
 
