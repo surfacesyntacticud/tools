@@ -90,7 +90,7 @@ package head_reverse {
       del_edge e;
       shift_in H =[^TITLE|MWE]=> AUX;
       shift_out H =[1=aux|mark,!deep]=> AUX;
-      shift_out H =[1=advcl|advmod|cc|csubj|dislocated|nsubj|parataxis|punct|root]=> AUX;
+      shift_out H =[1=advcl|advmod|cc|csubj|dislocated|nsubj|parataxis|punct|root|expl]=> AUX;
       shift_out H =[1=obl,2=mod]=> AUX
     }
   }
@@ -256,8 +256,19 @@ package sub_relations {
   rule comp_obj_expl_pass {
     pattern {
       e:H -[1=csubj|nsubj, 2=pass]-> D;
-      H -[expl:subj]-> S}
-    commands {e.1=comp; e.2=obj; e.deep=pass}
+      H -[expl:subj]-> S
+    }
+    without { H -[comp@pass]-> * }
+    commands { del_edge e; add_edge H -[comp:obj@pass]-> D; }
+  }
+
+  rule comp_obj {
+    pattern {
+      e:H -[1=csubj|nsubj, 2=pass]-> D;
+      H -[expl:subj]-> S;
+      H -[comp@pass]-> *;
+    }
+    commands { del_edge e; add_edge H -[comp:obj]-> D; }
   }
 
 % expl:pass ==> comp@pass
@@ -344,6 +355,17 @@ package relations {
     commands { e.1=comp;e.2=obj }
   }
 
+  rule comp_obj_agent {
+    pattern { e:H -[1=nsubj|csubj]-> D; H -[subj@expl]-> * }
+    without { H -[comp@pass]-> * }
+    commands { del_edge e; add_edge H -[comp:obj@agent]-> D }
+  }
+
+  rule comp_obj_2 {
+    pattern { e:H -[1=nsubj|csubj]-> D; H -[subj@expl]-> *; H -[comp@pass]-> * }
+    commands { del_edge e; add_edge H -[comp:obj]-> D }
+  }
+
 % We make the assumption that a clausal complement that is not introduced with an adposition is a direct object.
   rule comp_obj_ccomp {
     pattern { e:H -[1=ccomp]-> D; D[upos <> ADP]; }
@@ -410,6 +432,7 @@ package relations {
 %=====
   rule subj {
     pattern { e:H -[1=nsubj|csubj]-> D}
+    without { H -[subj@expl]-> * } % if so: nsubj becomes comp:obj@agent, see rule [comp_obj_agent]
     commands {e.1=subj}
   }
 

@@ -269,6 +269,7 @@ package sub_relations {
   rule ccomp {
     pattern {e:H -[1=comp, 2=obj|obl]-> D; D[upos = AUX|VERB,!nom]}
     without{ H -[comp:obj@x|comp:obl@x]-> D}
+    without { H -[subj@expl|expl:subj]-> *; H -[comp@pass|expl:pass]-> * } % if so csubj:pass XXX
     commands {e.1=ccomp}
   }
 
@@ -285,6 +286,16 @@ package sub_relations {
   rule cop{
     pattern{ e:H -[1=comp,2=pred]-> D; H[upos=AUX]}
     commands {e.1=cop}
+  }
+
+  rule csubj {
+    pattern { e:H -[comp:obj@agent]-> D; D[upos=AUX|VERB]}
+    commands { del_edge e; add_edge H -[csubj]-> D }
+  }
+
+  rule csubj_2 {
+    pattern { e:H -[1=comp, 2=obj, !deep]-> D; D[nom=y]; H -[subj@expl|expl:subj]-> *; H -[comp@pass|expl:pass]-> *; }
+    commands {e.1=csubj}
   }
 
 % In an impersonal active construction, the deep clausal subject, which is a COMP:OBJ dependent in SUD, becomes a CSUBJ dependent in UD.
@@ -308,6 +319,18 @@ package sub_relations {
   rule csubj_expl_pass{
     pattern { e:H -[comp:obj@pass]-> D; D[upos=AUX|VERB]; H -[expl:subj]-> S}
     commands {e.1=csubj;e.2=pass; del_feat e.deep}
+  }
+
+  rule csubj_pass {
+    pattern {e:H -[1=comp, 2=obj]-> D; D[upos = AUX|VERB,!nom]; H -[subj@expl|expl:subj]-> *; H -[comp@pass|expl:pass]-> * }
+    commands {e.1=csubj; e.2=pass}
+  }
+
+  rule ccomp {
+    pattern {e:H -[1=comp, 2=obj|obl]-> D; D[upos = AUX|VERB,!nom]}
+    without { H -[comp:obj@x|comp:obl@x]-> D}
+    without { H -[subj@expl|expl:subj]-> * } % if so csubj:pass (see rules [csubj2], [csub_pass])
+    commands {e.1=ccomp}
   }
 
   rule expl{
@@ -346,6 +369,18 @@ package sub_relations {
     commands {e.1=nmod}
   }
 
+  rule nsubj {
+    pattern { e:H -[comp:obj@agent]-> D; D[nom=y]}
+    commands { del_edge e; add_edge H -[nsubj]-> D }
+  }
+
+  rule nsubj_2 {
+    pattern { e:H -[1=comp, 2=obj, !deep]-> D; D[nom=y]; H -[subj@expl|expl:subj]-> *}
+    commands {e.1=nsubj}
+  }
+
+
+
 % In an impersonal active construction, the deep nominal subject, which is a COMP:OBJ dependent in SUD, becomes a NSUBJ dependent in UD.
 % Ex: il arrive deux personnes.
   rule nsubj_expl{
@@ -377,6 +412,7 @@ package sub_relations {
     pattern { e:H -[1=comp, 2=obj, !deep]-> D; D[nom=y]}
     without{ H -[comp:obj@expl]-> D}
     without{ D -[1=mark]-> *}
+    without { H -[subj@expl|expl:subj]-> *; H -[comp@pass|expl:pass]-> *; } % if so, the relation becomes subj (see rules nsubj_2/csubj_2)
     commands {e.1=obj}
   }
 
