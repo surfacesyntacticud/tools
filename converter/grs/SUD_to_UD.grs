@@ -4,10 +4,19 @@ include "common.grs"
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % For the internal elements of MWE, the deep extension fixed on the incoming relation is replaced with feature INMWE=Yes.
-rule remove_deep_fixed{
-  pattern {e:H -[deep=fixed]-> D;D[!_MISC_INMWE]}
-  without { H -[1=unk]-> D}
-  commands {del_feat e.deep; D._MISC_INMWE=Yes}
+% rules modify annotation recursively from head to avoid to tranform the special SUD relation comp@fixed used for some expletives
+package remove_deep_fixed{
+  rule init {
+    pattern { H[EXTPOS]; e:H -[deep=fixed]-> D;D[!_MISC_INMWE]}
+    without { H -[1=unk]-> D}
+    commands {del_feat e.deep; D._MISC_INMWE=Yes}
+  }
+
+  rule propagate {
+    pattern { H[_MISC_INMWE=Yes]; e:H -[deep=fixed]-> D;D[!_MISC_INMWE]}
+    without { H -[1=unk]-> D}
+    commands {del_feat e.deep; D._MISC_INMWE=Yes}
+  }
 }
 
 
@@ -306,10 +315,10 @@ package sub_relations {
     commands {e.1=expl; del_feat e.deep}
   }
 
-% An expletive complement, which is a COMP:EXPL dependent in SUD, becomes an EXPL:COMP dependent in UD.
+% An expletive complement, which is a COMP:FIXED dependent in SUD, becomes an EXPL:COMP dependent in UD.
 % Ex: Les gens s'enfuient - Il s'agit d'un accident. - Les voitures se vendent bien. - Il s'est vendu une grande maison aujourd'hui. -  Il se dit que tu viendras.
   rule expl_comp{
-    pattern{ e:H -[comp@expl]-> D}
+    pattern{ e:H -[comp@fixed]-> D}
     commands {e.1=expl;e.2=comp; del_feat e.deep}
   }
 

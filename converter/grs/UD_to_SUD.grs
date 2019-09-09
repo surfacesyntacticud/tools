@@ -276,11 +276,11 @@ package sub_relations {
     commands {e.1=comp; e.2=obl}
   }
 
-% An expletive complement, which is an EXPL:COMP dependent in UD, becomes a COMP dependent in SUD with the deep extension EXPL.
+% An expletive complement, which is an EXPL:COMP dependent in UD, becomes a COMP@FIXED in SUD (see discussion https://gitlab.inria.fr/grew/SUD/issues/14)
 % Ex: Les gens s'enfuient - Il s'agit d'un accident. - Les voitures se vendent bien. - Il s'est vendu une grande maison aujourd'hui. -  Il se dit que tu viendras.
-  rule comp_expl {
+  rule comp_fixed {
     pattern { e:H -[expl:comp]-> D; }
-    commands {e.1=comp; e.deep=expl; del_feat e.2}
+    commands {e.1=comp; e.deep=fixed; del_feat e.2}
   }
 
   rule mod {
