@@ -326,13 +326,6 @@ package sub_relations {
     commands {e.1=csubj; e.2=pass}
   }
 
-  rule ccomp {
-    pattern {e:H -[1=comp, 2=obj|obl]-> D; D[upos = AUX|VERB,!nom]}
-    without { H -[comp:obj@x|comp:obl@x]-> D}
-    without { H -[subj@expl|expl:subj]-> * } % if so csubj:pass (see rules [csubj2], [csub_pass])
-    commands {e.1=ccomp}
-  }
-
   rule expl{
     pattern{ e:H -[unk@expl]-> D}
     commands {e.1=expl; del_feat e.deep}
@@ -425,7 +418,7 @@ package sub_relations {
 
   rule obl_agent {
     pattern { e:H -[1=comp,2=obl,deep=agent]-> D; D -[case]-> * }
-    commands {e.1=obl; e.2=agent; del_feat e.deep }
+    commands { e.1=obl; e.2=agent; del_feat e.deep }
   }
 
   rule obl_arg_nom {
