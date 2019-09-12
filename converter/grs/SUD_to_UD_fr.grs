@@ -1,18 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 include "SUD_to_UD.grs"
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-package FR_init{
-
-% The relative or interrogative pronoun "où" is translated into an adverb and the empty node with the category adverb must carry the feature "PronType=Rel", so that the relative or interrogative clause be detected.
-  rule prontype_rise{
-    pattern{
-      PRO[upos=PRON, PronType=Rel];
-      PRO1[!PronType]; PRO1 -[expr]-> PRO}
-    commands{PRO1.PronType=Rel}
-  }
-
-}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % After the universal determination of nominals, rectification specific to French.
@@ -154,7 +142,6 @@ package FR_subj {
 
 strat FR_core {
   Seq (
-    Onf (FR_init),
     Onf (nom_init),
     Onf (FR_nom_init),
     Onf (unchained_relations),
@@ -176,9 +163,9 @@ strat FR_core {
 strat FR_main{
   Seq(
     Onf (remove_deep_fixed), % in UD, @fixed becomes INMWE
-    ext_features_to_nodes, % Change all EXTPOS to a new node
+    specific_expr_init, % Initialization of a specific treatment for MWE, titles and translated words.
     FR_core,
-    ext_nodes_to_features, % Change all new nodes to EXTPOS
+    specific_expr_close, % Closing a specific treatment for MWE, titles and translated words.
   )
 }
 

@@ -512,7 +512,7 @@ rule add_deep_fixed{
 strat main {
   Seq (
     Onf (eud_to_ud),
-    ext_features_to_nodes, % Change all EXTPOS to a new node
+    specific_expr_init, % Initialization of a specific treatment for MWE, titles and translated words.
 %    Onf (minimize_conj_dep),
     Onf (head_reverse),
     Onf (gov_rise),% Package GOV_RISE must follow package HEAD_REVERSE because it corrects some wrong consequences of head changes.
@@ -520,7 +520,7 @@ strat main {
     Onf (rel_extensions),
     Onf (relations), % Package RELATIONS must follow package GOV_RISE because this package entails the change of category for the source and the target of some relations.
     Onf (chained_relations),% Package CHAINED_RELATIONS must follow package GOV_RISE because it can entail a wrong coordination between two elements because of errors in head changes (UD_French-GS: fr-ud-dev_00131).
-    ext_nodes_to_features, % Change all new nodes to EXTPOS
+    specific_expr_close, % Closing a specific treatment for MWE, titles and translated words.
     Onf(add_deep_fixed), % in SUD, INMWE becomes @fixed
   )
 }

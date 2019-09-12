@@ -1,32 +1,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 include "UD_to_SUD.grs"
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-package FR_head_reverse {
-% Impersonal construction with an adjective as a predicative complement and an infinitive introduced with "de" as a direct object. The head of the CCOMP relation is moved from the adjective to the copula.
-%Ex : il est difficile de trouver du travail.
-  rule impers_adj_de_inf{
-    pattern{
-     IL[upos=PRON,lemma=il,Gender=Masc,Number=Sing,Person=3];
-     V[upos=AUX,lemma="être"]; V -[nsubj]-> IL;
-     A[upos=ADJ]; V -[cop]-> A;
-     DE[upos=ADP,lemma=de]; e:A -[ccomp]-> DE;
-     INF[upos=VERB,VerbForm=Inf]; DE -[mark]-> INF}
-   commands{ add_edge e: V -> DE; del_edge e}
- }
-
-}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Relations in SUD that require the use of a lexicon to be determined from UD relations.
 package FR_relations {
-% Relation between an adjective and an argument in the form of a finite clause, which is an oblique complement introduced with "que". By default, CCOMP relations are transformed into COMP:OBJ relations. In this case, they are transformed into COMP:OBL relations.
-  rule adj_compobl_ccomp (lex from "lexicons/adj_with_deobj_fin-verb.lp") {
-    pattern {
-      H[upos=ADJ,lemma=lex.adj]; e:H -[ccomp]-> C;
-      C[upos=SCONJ,lemma=que]}
-    commands { del_edge e; add_edge H -[comp:obl]-> C }
-  }
 
 % When a NUM D depends on a word G in a NUMMOD relation and when D precedes G, D is a determiner of G.
   rule num_det{
@@ -37,7 +15,29 @@ package FR_relations {
     commands{ del_edge e; add_edge H -[det]-> D}
   }
 
-% Relation between a verb and an argument in the form of a finite clause, which is an oblique complement introduced with "que". By default, CCOMP relations are transformed into COMP:OBJ relations. In this case, they are transformed into COMP:OBL relations.
+% The subject SUBJ1 of a verb in the active mood is repeated in the form of a personal pronoun SUBJ2.
+% Ex: Jean vient-il ?
+  rule repeat_subj{
+    pattern{
+     e1:V -[csubj|nsubj]->  SUBJ1; SUBJ1 << V;
+     e2:V -[expl:subj]-> SUBJ2; SUBJ2[upos=PRON, lemma=il]; SUBJ2 >> V}
+    commands{
+      del_edge e1; add_edge V -[subj]-> SUBJ1;
+      del_edge e2; add_edge V -[subj@expl]-> SUBJ2;}
+  }
+  
+% The subject SUBJ1 of a verb in the passive mood is repeated in the form of a personal pronoun SUBJ2.
+% Ex: Jean a-t-il été contacté par Pierre ?
+  rule repeat_subj_passive{
+    pattern{
+     e1:V -[csubj:pass|nsubj:pass]->  SUBJ1; SUBJ1 << V;
+     e2:V -[expl:subj]-> SUBJ2; SUBJ2[upos=PRON, lemma=il]; SUBJ2 >> V}
+    commands{
+      del_edge e1; add_edge V -[subj@pass]-> SUBJ1;
+      del_edge e2; add_edge V -[subj@expl]-> SUBJ2;}
+  }
+  
+ % Relation between a verb and an argument in the form of a finite clause, which is an oblique complement introduced with "que". By default, CCOMP relations are transformed into COMP:OBJ relations. In this case, they are transformed into COMP:OBL relations.
   rule verb_compobl_ccomp (lex from "lexicons/verb_with_deobj_fin-verb.lp") {
     pattern {
       H[upos=VERB,lemma=lex.verb]; e:H -[ccomp]-> C;
@@ -58,62 +58,10 @@ package FR_relations {
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-package amalgam {
-  rule prep_det {
-    pattern {
-      P [upos=ADP, phon= lex.prep];
-      D [upos=DET, phon= lex.det];
-      P < D;
-    }
-    commands {
-      del_node D;
-      P.phon = lex.amalgam;
-      % The three next commands are needed to ensure correct CoNLLU output (without the x-y line for amalgam)
-      del_feat P._UD_mw_fusion;
-      del_feat P._UD_mw_span;
-      del_feat P._UD_MISC_SpaceAfter;
-    }
-  }
-#BEGIN lex
-prep	det	amalgam
-à	le	au
-à	les	aux
-de	le	du
-de	les	des
-#END
-
-  rule prep_pro {
-    pattern {
-      PREP [upos=ADP, phon= lex.prep];
-      PRON [upos=PRON, phon= lex.pron];
-      PREP < PRON;
-    }
-    commands {
-      del_node PRON;
-      PREP.phon = lex.amalgam;
-      % The three next commands are needed to ensure correct CoNLLU output (without the x-y line for amalgam)
-      del_feat PREP._UD_mw_fusion;
-      del_feat PREP._UD_mw_span;
-      del_feat PREP._UD_MISC_SpaceAfter;
-    }
-  }
-#BEGIN lex
-prep	pron	amalgam
-à	lequel	auquel
-à	lesquels	auxquels
-à	lesquelles	auxquelles
-de	lequel	duquel
-de	lesquelles	desquelles
-#END
-}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 strat FR_core{
   Seq (
 %    Onf (minimize_conj_dep),
     Onf (head_reverse),
-    Onf (FR_head_reverse),
     Onf (gov_rise),
     Onf (FR_relations),
     Onf (sub_relations),
@@ -125,9 +73,9 @@ strat FR_core{
 
 strat FR_main {
   Seq(
-    ext_features_to_nodes, % Change all EXTPOS to a new node
+    specific_expr_init, % Initialization of a specific treatment for MWE, titles and translated words.
     FR_core,
-    ext_nodes_to_features, % Change all new nodes to EXTPOS
+    specific_expr_close, % Closing a specific treatment for MWE, titles and translated words.
     Onf(add_deep_fixed), % in SUD, INMWE becomes @fixed
   )
 }

@@ -28,7 +28,6 @@ package add_edges {
 package add_nodes {
 	rule mwe {
 		pattern{ H [_MISC_EXTPOS,_MISC_Type=MWE] }
-		without{ * -[expr]-> H }
 		commands{
 			add_node MWE :< H;
 			add_edge MWE -[MWE]-> H; add_edge MWE -[HEAD]-> H;
@@ -75,19 +74,19 @@ package add_nodes {
 % The package [ext_dep] move dependencies external to the MWE/TITLE/TRANS, on the new node
 package ext_dep {
 	rule mwe {
-		pattern { H -[MWE]-> N; e:N -[^unk@fixed|fixed|flat:name|goeswith]-> M; }
+		pattern { H -[MWE]-> N; e: N -[^ unk@fixed]-> M}
 		without { H -[MWE]-> M; }
 		commands { add_edge e:H->M; del_edge e;}
 	}
 
 	rule title {
-		pattern { H -[TITLE]-> N; e:N -[^unk@fixed|fixed|flat:name|goeswith]-> M; }
+		pattern { H -[TITLE]-> N; e: N -[^ unk@fixed]-> M}
 		without { H -[TITLE]-> M; }
 		commands { add_edge e:H->M; del_edge e;}
 	}
 
 	rule trans {
-		pattern { H -[TRANS]-> N; e:N -[^unk@fixed|fixed|flat:name|goeswith]-> M; }
+		pattern { H -[TRANS]-> N; e:N -[^ unk@fixed]-> M}
 		without { H -[TRANS]-> M; }
 		commands { add_edge e:H->M; del_edge e;}
 	}
@@ -95,7 +94,7 @@ package ext_dep {
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % seq of the 3 previous packages into one strat
-strat ext_features_to_nodes {
+strat specific_expr_init {
 	Seq (
 		Onf(add_edges),
 		Onf(add_nodes),
@@ -169,7 +168,7 @@ package del_nodes {
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % seq of the 3 previous packages into one strat
-strat ext_nodes_to_features {
+strat specific_expr_close {
 	Seq (
 		Onf(del_edges),
 		Onf(del_nodes),
