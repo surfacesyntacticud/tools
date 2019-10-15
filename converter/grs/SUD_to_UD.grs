@@ -7,7 +7,7 @@ include "common.grs"
 % rules modify annotation recursively from head to avoid to tranform the special SUD relation comp@fixed used for some expletives
 package remove_deep_fixed{
   rule init {
-    pattern { H[_MISC_EXTPOS]; e:H -[deep=fixed]-> D;D[!_MISC_INMWE]}
+    pattern { H[_MISC_EXTPOS,_MISC_Type=MWE]; e:H -[deep=fixed]-> D;D[!_MISC_INMWE]}
     without { H -[1=unk]-> D}
     commands {del_feat e.deep; D._MISC_INMWE=Yes}
   }
@@ -146,8 +146,8 @@ package reverse_case_mark {
       H.reversed=y; D.reversed=y;
       add_edge e:D -> H;
       del_edge e;
-      shift_in H =[^MWE|TITLE]=> D;
-      shift_out H =[^conj:dicto|expr|goeswith|orphan|reparandum|unk:fixed|HEAD|MWE|TITLE]=> D;
+      shift_in H =[^MWE|TITLE|TRANS]=> D;
+      shift_out H =[^conj:dicto|expr|goeswith|orphan|reparandum|unk:fixed|HEAD|MWE|TITLE|TRANS]=> D;
     }
   }
 
@@ -545,6 +545,7 @@ package relations {
 
   rule advmod2 {
     pattern { e:H -[1=udep]-> D; H [nom=y]; D[upos=ADV, !nom] }
+    without{D -[1=mark]-> X}
     commands {e.1=advmod}
   }
 
