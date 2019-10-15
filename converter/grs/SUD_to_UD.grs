@@ -147,7 +147,7 @@ package reverse_case_mark {
       add_edge e:D -> H;
       del_edge e;
       shift_in H =[^MWE|TITLE|TRANS]=> D;
-      shift_out H =[^conj:dicto|expr|goeswith|orphan|reparandum|unk:fixed|HEAD|MWE|TITLE|TRANS]=> D;
+      shift_out H =[^conj:dicto|expr|goeswith|orphan|reparandum|unk@fixed|HEAD|MWE|TITLE|TRANS]=> D;
     }
   }
 
@@ -390,7 +390,7 @@ package sub_relations {
     pattern { e:H -[comp:obj@pass]-> D; D[nom=y]; H -[expl:subj]-> S}
     commands {e.1=nsubj; e.2=pass; del_feat e.deep}
   }
-  
+
   rule obj_agent {
     pattern { e:H -[comp:obj@agent]-> D}
     without{H -[subj@expl|expl:subj]-> *}
@@ -401,7 +401,7 @@ package sub_relations {
     pattern { e:H -[comp:obj@lvc]-> D}
     commands {del_edge e; add_edge H -[obj:lvc]-> D}
   }
-  
+
    rule obj_nom{
     pattern { e:H -[1=comp, 2=obj, !deep]-> D; D[nom=y]}
     without{ H -[comp:obj@expl]-> D}
@@ -668,7 +668,7 @@ package reverse_aux {
       add_edge e:D -> H;
       del_edge e;
       shift_in H =[^MWE|TITLE]=> D;
-      shift_out H =[^conj:dicto|expr|goeswith|orphan|reparandum|unk:fixed|MWE|TITLE]=> D;
+      shift_out H =[^conj:dicto|expr|goeswith|orphan|reparandum|unk@fixed|MWE|TITLE]=> D;
     }
   }
 
