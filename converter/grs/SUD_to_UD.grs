@@ -6,8 +6,21 @@ include "common.grs"
 % For the internal elements of MWE, the deep extension fixed on the incoming relation is replaced with feature INMWE=Yes.
 % rules modify annotation recursively from head to avoid to tranform the special SUD relation comp@fixed used for some expletives
 package remove_deep_fixed{
+
+  rule missing_expos { % if EXTPOS is not given --> it is supposed to be the equal to UPOS
+    pattern { H [!_MISC_EXTPOS]; e:H -[deep=fixed]-> D;D[!_MISC_INMWE]}
+    without { H -[1=unk]-> D}
+    commands { H._MISC_EXTPOS = H.upos; }
+  }
+
   rule init {
     pattern { H[_MISC_EXTPOS,_MISC_Type=MWE]; e:H -[deep=fixed]-> D;D[!_MISC_INMWE]}
+    without { H -[1=unk]-> D}
+    commands {del_feat e.deep; D._MISC_INMWE=Yes}
+  }
+
+  rule init_backoff { % if _MISC_Type feature is missing
+    pattern { H[_MISC_EXTPOS, !_MISC_Type]; e:H -[deep=fixed]-> D;D[!_MISC_INMWE]}
     without { H -[1=unk]-> D}
     commands {del_feat e.deep; D._MISC_INMWE=Yes}
   }
