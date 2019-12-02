@@ -283,7 +283,7 @@ package sub_relations {
   }
 
   rule comp_obl {
-    pattern { e:H -[1=obl, 2=arg]-> D; }
+    pattern { e:H -[1=obl, 2=arg|comp]-> D; } % comp pour Spoken
     commands {e.1=comp; e.2=obl}
   }
 
