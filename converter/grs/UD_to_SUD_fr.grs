@@ -25,7 +25,7 @@ package FR_relations {
       del_edge e1; add_edge V -[subj]-> SUBJ1;
       del_edge e2; add_edge V -[subj@expl]-> SUBJ2;}
   }
-  
+
 % The subject SUBJ1 of a verb in the passive mood is repeated in the form of a personal pronoun SUBJ2.
 % Ex: Jean a-t-il été contacté par Pierre ?
   rule repeat_subj_passive{
@@ -36,7 +36,7 @@ package FR_relations {
       del_edge e1; add_edge V -[subj@pass]-> SUBJ1;
       del_edge e2; add_edge V -[subj@expl]-> SUBJ2;}
   }
-  
+
  % Relation between a verb and an argument in the form of a finite clause, which is an oblique complement introduced with "que". By default, CCOMP relations are transformed into COMP:OBJ relations. In this case, they are transformed into COMP:OBL relations.
   rule verb_compobl_ccomp (lex from "lexicons/verb_with_deobj_fin-verb.lp") {
     pattern {
@@ -58,8 +58,9 @@ package FR_relations {
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-strat FR_core{
-  Seq (
+strat FR_old {
+  Seq(
+    specific_expr_init, % Initialization of a specific treatment for MWE, titles and translated words.
 %    Onf (minimize_conj_dep),
     Onf (head_reverse),
     Onf (gov_rise),
@@ -68,13 +69,20 @@ strat FR_core{
     Onf (rel_extensions),
     Onf (relations),
     Onf (chained_relations),
+    specific_expr_close, % Closing a specific treatment for MWE, titles and translated words.
+    Onf(add_deep_fixed), % in SUD, INMWE becomes @fixed
   )
 }
 
 strat FR_main {
   Seq(
     specific_expr_init, % Initialization of a specific treatment for MWE, titles and translated words.
-    FR_core,
+    reverse_new.main,
+    Onf (FR_relations),
+    Onf (sub_relations),
+    Onf (rel_extensions),
+    Onf (relations),
+    Onf (chained_relations),
     specific_expr_close, % Closing a specific treatment for MWE, titles and translated words.
     Onf(add_deep_fixed), % in SUD, INMWE becomes @fixed
   )

@@ -31,6 +31,242 @@ package minimize_conj_dep {
   }
 }
 
+%%%%%%%%%%%%%%%%%%%%%
+% New implementation of the reverse edges part
+% All the shift_out operations are postponed in the specific package
+% the new reverse procedure is done in 4 steps
+% 1) package [flat_caus_pass]: change aux:caus into cause and aux:pass into pass (doing this we have all relations to be reversed at the same top level)
+% 2) package [reverse_edges]: reverse edges, add the edge feature deep=REV. shift_in are done and shift_out is done only on the subsets of reversable relations (case, cop, caus, pass, aux, mark)
+% 3) package [shift_out_edges]: generic rules for selection of relations that should move from the old head onto the new head.
+% 4) rule [remove_rev]: remove the @REV extension
+% 5) package [restore_caus_pass]: symetric to step 1: change caus into aux:cause and pass into aux:pass
+package reverse_new {
+  package flat_caus_pass {
+    rule caus {
+      pattern { e:M -[aux:caus]-> N }
+      commands { del_edge e; add_edge M -[caus]-> N }
+    }
+
+    rule pass {
+      pattern { e:M -[aux:pass]-> N }
+      commands { del_edge e; add_edge M -[pass]-> N }
+    }
+  }
+
+  package reverse_edges {
+    rule case {
+      pattern { e:H -[1=case, !deep]-> AUX }
+      without { H -[1=case, !deep]-> AUX1; AUX << AUX1 ; AUX1 << H }
+      without { H -[1=case, !deep]-> AUX1; AUX >> AUX1 ; AUX1 >> H }
+      commands {
+        e.deep=REV;
+        add_edge e: AUX -> H;
+        del_edge e;
+        shift_in H =[^TITLE|MWE]=> AUX;
+        shift_out H =[1=case|cop|caus|pass|aux|mark,!deep]=> AUX;
+      }
+    }
+
+    rule cop {
+      pattern { e:H -[1=cop, !deep]-> AUX }
+      without { H -[1=case, !deep]-> AUX1 }
+      without { H -[1=cop, !deep]-> AUX1; AUX << AUX1 ; AUX1 << H }
+      without { H -[1=cop, !deep]-> AUX1; AUX >> AUX1 ; AUX1 >> H }
+      commands {
+        e.deep=REV;
+        add_edge e: AUX -> H;
+        del_edge e;
+        shift_in H =[^TITLE|MWE]=> AUX;
+        shift_out H =[1=case|cop|caus|pass|aux|mark,!deep]=> AUX;
+      }
+    }
+
+    rule caus {
+      pattern { e:H -[1=caus, !deep]-> AUX }
+      without { H -[1=case|cop, !deep]-> AUX1 }
+      without { H -[1=caus, !deep]-> AUX1; AUX << AUX1 ; AUX1 << H }
+      without { H -[1=caus, !deep]-> AUX1; AUX >> AUX1 ; AUX1 >> H }
+      commands {
+        e.deep=REV;
+        add_edge e: AUX -> H;
+        del_edge e;
+        shift_in H =[^TITLE|MWE]=> AUX;
+        shift_out H =[1=case|cop|caus|pass|aux|mark,!deep]=> AUX;
+      }
+    }
+
+
+    rule pass {
+      pattern { e:H -[1=pass, !deep]-> AUX }
+      without { H -[1=case|cop|caus, !deep]-> AUX1 }
+      without { H -[1=pass, !deep]-> AUX1; AUX << AUX1 ; AUX1 << H }
+      without { H -[1=pass, !deep]-> AUX1; AUX >> AUX1 ; AUX1 >> H }
+      commands {
+        e.deep=REV;
+        add_edge e: AUX -> H;
+        del_edge e;
+        shift_in H =[^TITLE|MWE]=> AUX;
+        shift_out H =[1=case|cop|caus|pass|aux|mark,!deep]=> AUX;
+      }
+    }
+
+    rule aux {
+      pattern { e:H -[1=aux, !deep]-> AUX }
+      without { H -[1=case|cop|caus|pass, !deep]-> AUX1 }
+      without { H -[1=aux, !deep]-> AUX1; AUX << AUX1 ; AUX1 << H }
+      without { H -[1=aux, !deep]-> AUX1; AUX >> AUX1 ; AUX1 >> H }
+      commands {
+        e.deep=REV;
+        add_edge e: AUX -> H;
+        del_edge e;
+        shift_in H =[^TITLE|MWE]=> AUX;
+        shift_out H =[1=case|cop|caus|pass|aux|mark,!deep]=> AUX;
+      }
+    }
+
+    rule mark {
+      pattern { e:H -[1=mark, !deep]-> AUX }
+      without { H -[1=case|cop|caus|pass|aux, !deep]-> AUX1 }
+      without { H -[1=mark, !deep]-> AUX1; AUX << AUX1 ; AUX1 << H }
+      without { H -[1=mark, !deep]-> AUX1; AUX >> AUX1 ; AUX1 >> H }
+      commands {
+        e.deep=REV;
+        add_edge e: AUX -> H;
+        del_edge e;
+        shift_in H =[^TITLE|MWE]=> AUX;
+        shift_out H =[1=case|cop|caus|pass|aux|mark,!deep]=> AUX;
+      }
+    }
+  }
+
+  package shift_out_edges {
+    rule punct {
+      pattern {
+        H -[deep=REV]-> D;
+        e: D -[punct]-> P;
+      }
+      without { D << P; P << H }
+      without { H << P; P << D }
+      commands {
+        add_edge e: H -> P;
+        del_edge e
+      }
+    }
+
+    rule cc_root {
+      pattern {
+        H -[deep=REV]-> D;
+        e: D -[cc|root]-> P;
+      }
+      commands {
+        add_edge e: H -> P;
+        del_edge e
+      }
+    }
+
+    rule misc {
+      pattern {
+        H -[1<>mark,deep=REV]-> D;
+        e: D -[1=advcl|advmod|csubj|dislocated|expl|nsubj|parataxis]-> P;
+      }
+      without { H -[1=case,deep=REV]-> D; D -[1=advmod]-> P }
+      commands {
+        add_edge e: H -> P;
+        del_edge e
+      }
+    }
+
+    rule agent {
+      pattern {
+        H -[1=caus,deep=REV]-> D;
+        e: D -[2=agent]-> P;
+      }
+      commands {
+        add_edge e: H -> P;
+        del_edge e
+      }
+    }
+
+    rule obl_mod {
+      pattern {
+        H -[1<>mark,deep=REV]-> D;
+        e: D -[obl:mod]-> P;
+      }
+      commands {
+        add_edge e: H -> P;
+        del_edge e
+      }
+    }
+
+
+
+
+% In a coordination, the head V1 of the second conjunct is a verb and the head V1 of the first conjunct depends on an auxiliary AUX, which has the same form as V2. The relation CONJ must raise from V1 to AUX.
+  rule conj_aux_rise{
+    pattern{
+      AUX -[1=aux|pass|caus,deep=REV]-> V1;
+      e: V1 -[conj]-> V2; V2[VerbForm];
+      AUX.VerbForm = V2.VerbForm
+    }
+    commands{del_edge e; add_edge AUX -[conj]-> V2}
+  }
+
+% In a coordination, the head PREP2 of the second conjunct is a preposition and the head C of the first conjunct depends on another preposition PREP1. The relation CONJ must raise from C to PREP1.
+  rule conj_case_rise{
+    pattern{
+      PREP1[upos=ADP]; PREP1 -[1=case,deep=REV]-> C;
+      e: C -[conj]-> PREP2; PREP2[upos=ADP]
+    }
+    commands{del_edge e; add_edge PREP1 -[conj]-> PREP2}
+  }
+
+% In a coordination, the head CS2 of the second conjunct is a subordination conjunction and the head C of the first conjunct depends on another subordination conjunction CS1. The relation CONJ must raise from C to CS1.
+  rule conj_mark_rise{
+    pattern{
+      CS1[upos=SCONJ]; CS1 -[1=mark,deep=REV]-> C;
+      e: C -[conj]-> CS2; CS2[upos=SCONJ]
+    }
+    commands{del_edge e; add_edge CS1 -[conj]-> CS2}
+  }
+
+% With a left-headed relation H -> D, a dependant of D on the left of a type that may be modifier is raised to H.
+  rule left_raise{
+    pattern {
+      H -[1=case|mark,deep=REV]-> D; H << D; D1 << H;
+      e:D -[1=acl|advcl|advmod|amod|nmod|obl]-> D1; D1[upos=ADP|ADV|NUM|SCONJ|SYM]
+    }
+    commands {add_edge e: H -> D1; del_edge e}
+  }
+
+  }
+  rule remove_rev {
+    pattern { e: M -[deep=REV]-> N }
+    commands{del_feat e.deep}
+  }
+
+  package restore_caus_pass {
+    rule caus {
+      pattern { e:M -[caus]-> N }
+      commands { del_edge e; add_edge M -[aux:caus]-> N }
+    }
+
+    rule pass {
+      pattern { e:M -[pass]-> N }
+      commands { del_edge e; add_edge M -[aux:pass]-> N }
+    }
+  }
+
+  strat main {
+    Seq (
+      Onf (flat_caus_pass),
+      Onf (reverse_edges),
+      Onf (shift_out_edges),
+      Onf (remove_rev),
+      Onf (restore_caus_pass),
+      )
+  }
+}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % When several dependents compete for replacing the same head, the rule of starting with the closest dependent does not work in the cases of extraposition of the predicate.
@@ -126,6 +362,7 @@ package head_reverse {
       del_edge e;
       shift_in H =[^TITLE|MWE]=> D;
       shift_out H =[1=aux|case|cop|mark,!deep]=> D;
+      shift_out H =[1=expl]=> D;
       shift_out H =[1=advcl|cc|csubj|nsubj|punct|root]=> D;
       shift_out H =[1=obl,2=mod]=> D
     }
@@ -183,12 +420,6 @@ package head_reverse {
       shift_out H =[1=mark,!deep]=> D;
       shift_out H =[1=cc|punct|root]=> D;
     }
-  }
-
-% Je suis obligé d'ajouter cette règle car dans les règles de changement de tête, la commande del_edge e ne fonctionne pas. Par ailleurs, la modification de l'étiquette par ajout de deep=reveresed n'est pas prise en compte dans la copie d'étiquette.
-  rule del_initial_rel{
-    pattern{ e1:H -[deep=reversed]-> D; e2:D-> H}
-    commands{del_edge e1; e2.deep=reversed}
   }
 }
 
@@ -509,13 +740,30 @@ rule add_deep_fixed{
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+strat old {
+  Seq (
+    Onf (eud_to_ud),
+    specific_expr_init, % Initialization of a specific treatment for MWE, titles and translated words.
+%    Onf (minimize_conj_dep),
+
+    Onf (head_reverse),
+    Onf (gov_rise),% Package GOV_RISE must follow package HEAD_REVERSE because it corrects some wrong consequences of head changes.
+
+    Onf (sub_relations), % Package SUB_RELATIONS must precede package REL_EXTENSIONS because this package swat extensions on level 2.
+    Onf (rel_extensions),
+    Onf (relations), % Package RELATIONS must follow package GOV_RISE because this package entails the change of category for the source and the target of some relations.
+    Onf (chained_relations),% Package CHAINED_RELATIONS must follow package GOV_RISE because it can entail a wrong coordination between two elements because of errors in head changes (UD_French-GS: fr-ud-dev_00131).
+    specific_expr_close, % Closing a specific treatment for MWE, titles and translated words.
+    Onf(add_deep_fixed), % in SUD, INMWE becomes @fixed
+  )
+}
+
 strat main {
   Seq (
     Onf (eud_to_ud),
     specific_expr_init, % Initialization of a specific treatment for MWE, titles and translated words.
 %    Onf (minimize_conj_dep),
-    Onf (head_reverse),
-    Onf (gov_rise),% Package GOV_RISE must follow package HEAD_REVERSE because it corrects some wrong consequences of head changes.
+    reverse_new.main,
     Onf (sub_relations), % Package SUB_RELATIONS must precede package REL_EXTENSIONS because this package swat extensions on level 2.
     Onf (rel_extensions),
     Onf (relations), % Package RELATIONS must follow package GOV_RISE because this package entails the change of category for the source and the target of some relations.
