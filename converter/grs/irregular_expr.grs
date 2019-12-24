@@ -1,5 +1,7 @@
+% The "irregular_expr.grs" file includes packages applying a specific treatment to multi-word expressions (MWE), titles (TITLE) and translated (TRANS). What they have in common is the fact that their syntactic behaviour towards the outside world is not regular.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% The package [add_edges] turns all features INMWE (resp. INTITLE) into a edge MWE (resp. TITLE) from the head to to node
+% The package [add_edges] turns all features INMWE (resp. INTITLE) into a edge MWE (resp. TITLE) from the head to internal nodes of irregular expressions.
 package add_edges {
 	rule init_mwe {
 		pattern { H [_MISC_Type=MWE]; H-> N; N[_MISC_INMWE=Yes] }
@@ -23,8 +25,8 @@ package add_edges {
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% The package [add_nodes] insert a new node for each MWE/TITLE/TRANS
-% The new node is linked to the head with the HEAD relation and to other elements by a MWE/TITLE relation
+% The package [add_nodes] insert a new node for each MWE/TITLE/TRANS expression.
+% The new node is linked to the head with the HEAD relation and to other elements by a MWE/TITLE relation.
 package add_nodes {
 	rule mwe {
 		pattern{ H [_MISC_EXTPOS,_MISC_Type=MWE] }
@@ -71,7 +73,7 @@ package add_nodes {
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% The package [ext_dep] move dependencies external to the MWE/TITLE/TRANS, on the new node
+% The package [ext_dep] move dependencies external to the MWE/TITLE/TRANS expresion, on the new node.
 package ext_dep {
 	rule mwe {
 		pattern { H -[MWE]-> N; e: N -[^ unk@fixed]-> M}
@@ -93,7 +95,7 @@ package ext_dep {
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% seq of the 3 previous packages into one strat
+% sequentialize the 3 previous packages into one strategy.
 strat specific_expr_init {
 	Seq (
 		Onf(add_edges),
@@ -167,7 +169,7 @@ package del_nodes {
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% seq of the 3 previous packages into one strat
+% sequentialize the 3 previous packages into one strategy.
 strat specific_expr_close {
 	Seq (
 		Onf(del_edges),
