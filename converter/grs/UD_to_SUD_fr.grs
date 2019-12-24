@@ -1,39 +1,33 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 include "UD_to_SUD.grs"
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Relations in SUD that require the use of a lexicon to be determined from UD relations.
+% The source of some relations must raise from the old head D to the new head H in cases specific to French.
+package FR_shift_out_edges{
+  rule cop_obl{
+    pattern{ H -[cop]-> D; e: D -[1=obl]-> D1; H << D1; D1 << D}
+    commands{add_edge e:H -> D1; del_edge e}
+  }
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Relations in SUD that are determined from UD relations with rules specific to French.
 package FR_relations {
 
 % When a NUM D depends on a word G in a NUMMOD relation and when D precedes G, D is a determiner of G.
   rule num_det{
-    pattern{
-      D[upos=NUM];
-      e:H -[nummod]-> D; D << H
-    }
+    pattern{D[upos=NUM]; e:H -[nummod]-> D; D << H}
     commands{ del_edge e; add_edge H -[det]-> D}
   }
 
-% The subject SUBJ1 of a verb in the active mood is repeated in the form of a personal pronoun SUBJ2.
+% The subject SUBJ1 of a verb is repeated in the form of a personal pronoun SUBJ2.
 % Ex: Jean vient-il ?
+% Ex : Jean est-il payé ?
   rule repeat_subj{
     pattern{
-     e1:V -[csubj|nsubj]->  SUBJ1; SUBJ1 << V;
+     e1:V -[1=csubj|nsubj]->  SUBJ1; SUBJ1 << V;
      e2:V -[expl:subj]-> SUBJ2; SUBJ2[upos=PRON, lemma=il]; SUBJ2 >> V}
     commands{
-      del_edge e1; add_edge V -[subj]-> SUBJ1;
-      del_edge e2; add_edge V -[subj@expl]-> SUBJ2;}
-  }
-
-% The subject SUBJ1 of a verb in the passive mood is repeated in the form of a personal pronoun SUBJ2.
-% Ex: Jean a-t-il été contacté par Pierre ?
-  rule repeat_subj_passive{
-    pattern{
-     e1:V -[csubj:pass|nsubj:pass]->  SUBJ1; SUBJ1 << V;
-     e2:V -[expl:subj]-> SUBJ2; SUBJ2[upos=PRON, lemma=il]; SUBJ2 >> V}
-    commands{
-      del_edge e1; add_edge V -[subj@pass]-> SUBJ1;
+      e1.1=subj;
       del_edge e2; add_edge V -[subj@expl]-> SUBJ2;}
   }
 
@@ -58,26 +52,12 @@ package FR_relations {
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-strat FR_old {
-  Seq(
-    specific_expr_init, % Initialization of a specific treatment for MWE, titles and translated words.
-%    Onf (minimize_conj_dep),
-    Onf (head_reverse),
-    Onf (gov_rise),
-    Onf (FR_relations),
-    Onf (sub_relations),
-    Onf (rel_extensions),
-    Onf (relations),
-    Onf (chained_relations),
-    specific_expr_close, % Closing a specific treatment for MWE, titles and translated words.
-    Onf(add_deep_fixed), % in SUD, INMWE becomes @fixed
-  )
-}
-
 strat FR_main {
   Seq(
     specific_expr_init, % Initialization of a specific treatment for MWE, titles and translated words.
-    reverse_new.main,
+%    Onf (minimize_conj_dep),
+    reverse_relations.main,
+    Onf(FR_shift_out_edges),
     Onf (FR_relations),
     Onf (sub_relations),
     Onf (rel_extensions),

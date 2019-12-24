@@ -7,11 +7,11 @@ include "common.grs"
 % rules modify annotation recursively from head to avoid to tranform the special SUD relation comp@fixed used for some expletives
 package remove_deep_fixed{
 
-  rule missing_expos { % if EXTPOS is not given --> it is supposed to be the equal to UPOS
-    pattern { H [!_MISC_EXTPOS]; e:H -[deep=fixed]-> D;D[!_MISC_INMWE]}
-    without { H -[1=unk]-> D}
-    commands { H._MISC_EXTPOS = H.upos; }
-  }
+  % rule missing_expos { % if EXTPOS is not given --> it is supposed to be the equal to UPOS
+  %   pattern { H [!_MISC_EXTPOS]; e:H -[deep=fixed]-> D;D[!_MISC_INMWE]}
+  %   without { H -[1=unk]-> D}
+  %   commands { H._MISC_EXTPOS = H.upos; }
+  % }
 
   rule init {
     pattern { H[_MISC_EXTPOS,_MISC_Type=MWE]; e:H -[deep=fixed]-> D;D[!_MISC_INMWE]}
@@ -373,7 +373,7 @@ package sub_relations {
 
   rule iobj {
     pattern { e:H -[1=comp,2=obl]-> D; D[upos=ADV|PRON]}
-    without { D -[^ MWE]-> X; X[upos=ADP] }
+   % without { D -[^ MWE]-> X; X[upos=ADP] }
     commands {e.1=iobj}
   }
 
@@ -424,7 +424,7 @@ package sub_relations {
   }
 
    rule obj_pred{
-    pattern { e:H -[1=comp, 2=obj]-> D; D[cat=ADJ|ADV,!nom]}
+    pattern { e:H -[1=comp, 2=obj]-> D; D[cat=ADJ|ADV|INTJ,!nom]}
     without{ H -[comp:obj@expl]-> D}
     without{ D -[1=mark]-> *}
     commands {e.1=obj}
