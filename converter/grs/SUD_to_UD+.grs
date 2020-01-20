@@ -112,7 +112,7 @@ package unchained_relations {
 
 % The second conjunct has neither subject nor determiner.
   rule conj {
-    pattern { H -[conj]-> D1;e: D1 -[conj]-> D2 }
+    pattern { H -[1=conj]-> D1;e: D1 -[conj]-> D2 }
     without { D1 -[1=det|subj]-> X }
     without { H -[conj]-> X; D1 << X; X << D2 }
     commands { del_edge e; add_edge H -[conj]-> D2 }
@@ -121,7 +121,7 @@ package unchained_relations {
 % The second and the third conjuncts have a determiner.
   rule conj_det1 {
     pattern {
-      H -[conj]-> D1;e: D1 -[conj]-> D2;
+      H -[1=conj]-> D1;e: D1 -[conj]-> D2;
       D1 -[1=det]-> X; D2 -[1=det]-> Y
     }
     without { H -[conj]-> X; D1 << X; X << D2 }
@@ -131,7 +131,7 @@ package unchained_relations {
 % The second conjunct has a determiner and the third conjunct is proper noun or a pronoun.
   rule conj_det2 {
     pattern {
-      H -[conj]-> D1; e: D1 -[conj]-> D2;
+      H -[1=conj]-> D1; e: D1 -[conj]-> D2;
       D1 -[1=det]-> X; D2[upos=PROPN|PRON]
     }
     without { H -[conj]-> X; D1 << X; X << D2 }
@@ -141,7 +141,7 @@ package unchained_relations {
 % The second and the third conjuncts have a subject.
   rule conj_subj {
     pattern {
-      H -[conj]-> D1;e: D1 -[conj]-> D2;
+      H -[1=conj]-> D1;e: D1 -[conj]-> D2;
       D1 -[1=subj]-> X; D2 -[1=subj]-> Y
     }
     commands {del_edge e;add_edge H -[conj]-> D2 }

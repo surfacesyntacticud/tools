@@ -74,7 +74,7 @@ package reverse_relations{
         shift_out H =[1=aux|mark,!deep]=> AUX;
       }
     }
-    
+
     rule case {
       pattern { e:H -[1=case, !deep]-> AUX }
       without { H -[1=case, !deep]-> AUX1; AUX << AUX1 ; AUX1 << H } % rule (5) above
@@ -101,7 +101,7 @@ package reverse_relations{
         shift_out H =[1=aux|caus|mark|pass,!deep]=> AUX;
       }
     }
-    
+
     rule cop {
       pattern { e:H -[1=cop, !deep]-> AUX }
       without { H -[1=case, !deep]-> AUX1 } % rule (3) above
@@ -128,8 +128,8 @@ package reverse_relations{
         shift_in H =[^TITLE|MWE]=> AUX;
         shift_out H =[1=mark,!deep]=> AUX;
       }
-    }      
-    
+    }
+
     rule pass {
       pattern { e:H -[1=pass, !deep]-> AUX }
      % without { H -[1=case|cop|caus, !deep]-> AUX1 }
@@ -153,7 +153,7 @@ package shift_out_edges{
     pattern {H -[deep=REV]-> D;e: D -[cc|discourse]-> D1}
     commands{add_edge e: H -> D1;del_edge e}
   }
-  
+
 % All relations that raise inside a clause.
   rule all_mark_embedded{
     pattern {
@@ -172,7 +172,7 @@ package shift_out_edges{
     }
     commands{add_edge e: H -> D1;del_edge e}
   }
-  
+
 % All relations that raise outside a clause, when their dependent is after the clause.
   rule all_mark_outside_right{
     pattern {
@@ -196,7 +196,7 @@ package shift_out_edges{
     without{D -[obl:agent|obl:arg]-> D1}
     commands{add_edge e: H -> D1; del_edge e}
   }
-  
+
 % Relations that raise when their source D is on the left of H and when their dependent D1 is on the right of H.
   rule var_left_right{
     pattern{H -[deep=REV]-> D;  H >> D; e: D -[1=punct|obl|advmod]-> D1; D1 >> H}
@@ -243,7 +243,7 @@ package shift_out_edges{
     without{D[upos=AUX|VERB]; D1[upos=AUX|VERB]}
     commands{add_edge e: H -> D1; del_edge e}
   }
-  
+
 % Conj relations when the conjunct heads are verbs.
   rule conj_verb{
     pattern{
@@ -264,7 +264,7 @@ package shift_out_edges{
   }
 
 %%%%%%%%%%%%%%%%%%%%%
-% Restoring the initial names of caus and pass relations 
+% Restoring the initial names of caus and pass relations
   package restore_caus_pass {
     rule caus {
       pattern { e:M -[caus]-> N }
@@ -276,7 +276,7 @@ package shift_out_edges{
       commands { del_edge e; add_edge M -[aux:pass]-> N }
     }
   }
-  
+
 %%%%%%%%%%%%%%%%%%%%%
   strat main {
     Seq (
@@ -378,6 +378,7 @@ package rel_extensions {
   rule change_ext{
     pattern{e: H -[1=*,2=*]-> D}
     without{ H -[1=comp|subj]-> D}
+    without{ H -[conj:emb]-> D}
     commands{ add_edge H -[1=e.1,deep=e.2]-> D; del_edge e}
   }
 
@@ -532,9 +533,9 @@ package relations {
 % Dependencies of type CONJ, FIXED and FLAT:NAME grouped into a bouquet are reorganized into a chain.
 package chained_relations {
   rule conj {
-    pattern {H -[conj]-> D1;e: H -[conj]-> D2;D1 << D2}
-    without {H -[conj]-> D;D1 << D; D << D2}
-    without {H -[conj]-> D;D2 << D}
+    pattern {H -[1=conj]-> D1;e: H -[conj]-> D2;D1 << D2}
+    without {H -[1=conj]-> D;D1 << D; D << D2}
+    without {H -[1=conj]-> D;D2 << D}
     commands {del_edge e;add_edge D1 -[conj]-> D2}
   }
 
