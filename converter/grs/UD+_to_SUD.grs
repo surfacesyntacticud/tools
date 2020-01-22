@@ -24,7 +24,7 @@ package minimize_conj_dep {
       C1 -[conj]-> C2;
       e:C1 -[^conj|discourse|parataxis|punct]-> D; C2 << D}
     without { C1 -[conj]-> C; C2 << C }
-    commands { add_edge e:C2 -> D; del_edge e }
+    commands { add_edge e:C2 -> D; del_edge e; D.Shared=Yes }
   }
 }
 
@@ -566,7 +566,7 @@ strat main {
   Seq (
     Onf (eud_to_ud),
     specific_expr_init, % Initialization of a specific treatment for MWE, titles and translated words.
-%    Onf (minimize_conj_dep),
+    Onf (minimize_conj_dep),
     reverse_relations.main, % Reversing aux, case, cop and mark relations.
     Onf (sub_relations), % Package SUB_RELATIONS must precede package REL_EXTENSIONS because this package swat extensions on level 2.
     Onf (rel_extensions),

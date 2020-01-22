@@ -685,7 +685,29 @@ package reverse_aux {
       shift_out H =[^conj:dicto|expr|goeswith|orphan|reparandum|unk@fixed|MWE|TITLE]=> D;
     }
   }
+}
 
+package shared {
+  rule move_relation {
+    pattern {
+      N1 -[1=conj]-> N2;
+      e: N2 -[^conj|discourse|parataxis|punct]-> D; D[Shared=Yes];
+    }
+    commands {
+      add_edge e: N1 -> D;
+      del_edge e;
+    }
+  }
+
+  rule remove_shared {
+    pattern {
+      e: N2 -[^conj|discourse|parataxis|punct]-> D; D[Shared=Yes];
+    }
+    without {N1 -[1=conj]-> N2}
+    commands {
+      del_feat D.Shared
+    }
+  }
 }
 
 
@@ -714,6 +736,7 @@ strat main {
     Onf (relations_backoff),
     Onf(reverse_aux),    % Package REVERSE_AUX follows packages SUB_RELATIONS and RELATIONS because of the dependencies H -> AUX in UD: if H is the target of a dependency, the label of the dependency may depend on the mood of AUX.
     Onf( reverse_close),
+    Onf(shared),
     Onf (final),
     specific_expr_close, % Closing a specific treatment for MWE, titles and translated words.
   )
