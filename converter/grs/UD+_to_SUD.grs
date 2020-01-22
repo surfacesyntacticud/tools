@@ -566,8 +566,8 @@ strat main {
   Seq (
     Onf (eud_to_ud),
     specific_expr_init, % Initialization of a specific treatment for MWE, titles and translated words.
-    Onf (minimize_conj_dep),
     reverse_relations.main, % Reversing aux, case, cop and mark relations.
+    Onf (minimize_conj_dep),
     Onf (sub_relations), % Package SUB_RELATIONS must precede package REL_EXTENSIONS because this package swat extensions on level 2.
     Onf (rel_extensions),
     Onf (relations), % Package RELATIONS must follow package GOV_RISE because this package entails the change of category for the source and the target of some relations.

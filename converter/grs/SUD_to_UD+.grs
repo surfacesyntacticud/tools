@@ -726,6 +726,7 @@ strat main {
     Onf (remove_deep_fixed), % in UD, @fixed becomes INMWE
     specific_expr_init, % Initialization of a specific treatment for MWE, titles and translated words.
     Onf (nom_init),
+    Onf(shared),
     Onf (unchained_relations), % For CONJ relations, chains must be transformed into bouquets before head changes because of conditions on the presence of prepositions, conjunctions and auxiliaries. It is easier to take these conditions into account before head changes (UD_French-GSD : fr-ud-dev_00751)
     Onf (reverse_case_mark),  % Package REVERSE_CASE_MARK precedes packages SUB_RELATIONS and RELATIONS because  UD labels of complement relations depend on the category of the complements introduced with a preposition or a conjunction
     Onf( reverse_close),
@@ -736,7 +737,6 @@ strat main {
     Onf (relations_backoff),
     Onf(reverse_aux),    % Package REVERSE_AUX follows packages SUB_RELATIONS and RELATIONS because of the dependencies H -> AUX in UD: if H is the target of a dependency, the label of the dependency may depend on the mood of AUX.
     Onf( reverse_close),
-    Onf(shared),
     Onf (final),
     specific_expr_close, % Closing a specific treatment for MWE, titles and translated words.
   )
