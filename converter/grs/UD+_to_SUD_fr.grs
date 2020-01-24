@@ -8,7 +8,19 @@ package FR_shift_out_edges{
     pattern{ H -[cop]-> D; e: D -[1=obl]-> D1; H << D1; D1 << D}
     commands{add_edge e:H -> D1; del_edge e}
   }
+
+  rule ne_pas {
+    pattern {
+      G -> N1; N1 [lemma="ne"];
+      N2 [Polarity=Neg, upos=ADV, lemma <> que];
+      G < N2; G -> H; e: H -[advmod]-> N2;
+    }
+    commands {
+      del_edge e; add_edge G -[mod]-> N2;
+    }
+  }
 }
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Relations in SUD that are determined from UD relations with rules specific to French.
 package FR_relations {
@@ -54,9 +66,10 @@ package FR_relations {
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 strat FR_main {
   Seq(
+    Onf (add_conj_emb),
     specific_expr_init, % Initialization of a specific treatment for MWE, titles and translated words.
-%    Onf (minimize_conj_dep),
     reverse_relations.main,
+    Onf (minimize_conj_dep),
     Onf(FR_shift_out_edges),
     Onf (FR_relations),
     Onf (sub_relations),
@@ -64,6 +77,7 @@ strat FR_main {
     Onf (relations),
     Onf (chained_relations),
     specific_expr_close, % Closing a specific treatment for MWE, titles and translated words.
+    Onf(remove_useless_emb),
     Onf(add_deep_fixed), % in SUD, INMWE becomes @fixed
   )
 }
