@@ -17,3 +17,9 @@
 ![](_sud_diff/left_embeding.svg)
 
 ![](_ud_diff/left_embeding.svg)
+
+## `aux_embeding`
+
+![](_sud_diff/fr-ud-train_04900.svg)
+
+![](_ud_diff/fr-ud-train_04900.svg)

@@ -1,0 +1,28 @@
+GREW=grew_dev
+
+doc:
+	@echo "----------------------------------------------------------------"
+	@echo "draw:  run both conversions & build figures"
+	@echo ""
+	@echo "ud:    run GUI on SUD_to_UD conversion"
+	@echo "sud:   run GUI on UD_to_SUD conversion"
+	@echo "----------------------------------------------------------------"
+
+draw:
+	${GREW} transform -grs ../../grs/SUD_to_UD+_fr.grs -strat FR_main -i sud.conll -o _ud.conll
+	${GREW} transform -grs ../../grs/UD+_to_SUD_fr.grs -strat FR_main -i ud.conll -o _sud.conll
+	splitter -f sud.conll _sud_gold
+	splitter -f ud.conll _ud_gold
+	splitter -f _sud.conll _sud_auto
+	splitter -f _ud.conll _ud_auto
+	dep_diff -d1 _sud_gold -d2 _sud_auto -svg _sud_diff
+	dep_diff -d1 _ud_gold -d2 _ud_auto -svg _ud_diff
+
+ud:
+	${GREW} gui -grs ../../grs/SUD_to_UD+_fr.grs -strat FR_main -i sud.conll
+
+sud:
+	${GREW} gui -grs ../../grs/UD+_to_SUD_fr.grs -strat FR_main -i ud.conll
+
+clean:
+	rm -rf _*
