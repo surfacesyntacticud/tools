@@ -170,9 +170,17 @@ package reverse_case_mark {
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % It is necessary to delete the reversed marks because there is another package reversing heads and it must start with no reversed marks.
 package reverse_close {
+
+  % if two conj are connected by a change of head, add the "emb" subtype
+  rule connect_conj {
+    pattern { L -[1=conj]-> N; e:N -[conj]-> R; N.reversed=y}
+    commands { e.2 = emb }
+  }
+
   rule del_reversed{
-    pattern {W[reversed=y]}
-    commands {del_feat W.reversed}
+    pattern { N[reversed=y]}
+    without { L -[1=conj]-> N; N -[conj]-> R; } % apply only if [connect_conj] cannot be applied
+    commands {del_feat N.reversed}
   }
 
 }
@@ -307,13 +315,6 @@ package sub_relations {
     commands { del_edge e; add_edge H -[csubj]-> D }
   }
 
-% Impersonal subject with passive pronominal.
-
-  rule csubj_obj {
-    pattern { e:H -[1=comp, 2=obj, !deep]-> D; D[nom=y]; H -[subj@expl|expl:subj]-> *; H -[comp@pass|expl:pass]-> *; }
-    commands {e.1=csubj}
-  }
-
 % In an impersonal active construction, the deep clausal subject, which is a COMP:OBJ dependent in SUD, becomes a CSUBJ dependent in UD.
 % Ex: il m'arrive de faire des erreurs.
   rule csubj_expl{
@@ -404,6 +405,13 @@ package sub_relations {
     pattern { e:H -[comp:obj@pass]-> D; D[nom=y]; H -[expl:subj]-> S}
     commands {e.1=nsubj; e.2=pass; del_feat e.deep}
   }
+
+% Impersonal subject with passive pronominal.
+  rule nsubj_obj {
+    pattern { e:H -[1=comp, 2=obj, !deep]-> D; D[nom=y]; H -[subj@expl|expl:subj]-> *; H -[comp@pass|expl:pass]-> *; }
+    commands {e.1=nsubj}
+  }
+
 
   rule obj_agent {
     pattern { e:H -[comp:obj@agent]-> D}
@@ -718,6 +726,10 @@ package final {
     commands {del_feat W.nom}
   }
 
+  rule rm_emb {
+    pattern { e:M -[conj:emb]-> N }
+    commands { del_edge e; add_edge M -[conj]-> N }
+  }
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -17,13 +17,25 @@ package eud_to_ud {
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+rule add_conj_emb{
+  pattern {
+    N1 -[conj|conj:emb]-> N2;
+    e: N2 -[conj]-> N3;
+  }
+  commands {
+    del_edge e; add_edge N2 -[conj:emb]-> N3;
+  }
+
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Move the dependents of a conjunction from the left conjunct to the right conjunct. Dependencies CONJ, DISCOURSE, PARATAXIS and PUNCT are not moved.
 package minimize_conj_dep {
   rule minimize {
     pattern {
-      C1 -[conj]-> C2;
-      e:C1 -[^conj|discourse|parataxis|punct]-> D; C2 << D}
-    without { C1 -[conj]-> C; C2 << C }
+      C1 -[1=conj]-> C2;
+      e:C1 -[^conj|conj:emb|discourse|parataxis|punct]-> D; C2 << D}
+    without { C1 -[1=conj]-> C; C2 << C }
     commands { add_edge e:C2 -> D; del_edge e; D.Shared=Yes }
   }
 }
@@ -234,7 +246,7 @@ package shift_out_edges{
   rule conj{
     pattern{
       H -[deep=REV]-> D;  H << D;
-      e: D -[conj]-> D1;
+      e: D -[1=conj]-> D1;
       D.upos <> D1.upos;
     }
     without{D[upos=NOUN|PRON|PROPN]; D1[upos=NOUN|PRON|PROPN]}
@@ -248,7 +260,7 @@ package shift_out_edges{
   rule conj_verb{
     pattern{
       H -[deep=REV]-> D;  H << D;
-      e: D -[conj]-> D1;
+      e: D -[1=conj]-> D1;
       D[upos=AUX|VERB,VerbForm]; D1[upos=AUX|VERB, VerbForm];
        D.VerbForm <> D1.VerbForm
     }
@@ -554,6 +566,12 @@ package chained_relations {
   }
 }
 
+rule remove_useless_emb {
+  pattern { e: M -[conj:emb]-> N }
+  without { _ -[1=conj]-> M }
+  commands { del_feat e.2 }
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % For the internal elements of MWE, feature INMWE=Yes is replaced with the deep extension fixed on the incoming relation.
 rule add_deep_fixed{
@@ -565,6 +583,7 @@ rule add_deep_fixed{
 strat main {
   Seq (
     Onf (eud_to_ud),
+    Onf (add_conj_emb),
     specific_expr_init, % Initialization of a specific treatment for MWE, titles and translated words.
     reverse_relations.main, % Reversing aux, case, cop and mark relations.
     Onf (minimize_conj_dep),
@@ -573,6 +592,7 @@ strat main {
     Onf (relations), % Package RELATIONS must follow package GOV_RISE because this package entails the change of category for the source and the target of some relations.
     Onf (chained_relations),% Package CHAINED_RELATIONS must follow package GOV_RISE because it can entail a wrong coordination between two elements because of errors in head changes (UD_French-GS: fr-ud-dev_00131).
     specific_expr_close, % Closing a specific treatment for MWE, titles and translated words.
+    Onf(remove_useless_emb),
     Onf(add_deep_fixed), % in SUD, INMWE becomes @fixed
   )
 }
