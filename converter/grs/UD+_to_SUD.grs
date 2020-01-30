@@ -17,6 +17,7 @@ package eud_to_ud {
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Mark embedded conj relations with the extension "emb".
 rule add_conj_emb{
   pattern {
     N1 -[conj|conj:emb]-> N2;
@@ -225,6 +226,7 @@ package shift_out_edges{
       e: D -[1=punct|obl|advmod]-> D1; D << D1
     }
     without{H -[1=mark]-> D;  D -[1=obl|advmod]-> D1}
+    without{H -[1=case]-> D; D -[1=obl]-> D1}
     without{D -[obl:agent|obl:arg]-> D1}
     without{D -> D2; D1 << D2}
     commands{add_edge e: H -> D1; del_edge e}
@@ -566,6 +568,7 @@ package chained_relations {
   }
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 rule remove_useless_emb {
   pattern { e: M -[conj:emb]-> N }
   without { _ -[1=conj]-> M }

@@ -13,7 +13,7 @@ package FR_shift_out_edges{
     pattern {
       G -> N1; N1 [lemma="ne"];
       N2 [Polarity=Neg, upos=ADV, lemma <> que];
-      G < N2; G -> H; e: H -[advmod]-> N2;
+      G << N2; G -[^conj]-> H; e: H -[advmod]-> N2;
     }
     commands {
       del_edge e; add_edge G -[mod]-> N2;

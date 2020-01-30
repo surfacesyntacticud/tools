@@ -96,6 +96,31 @@ package nom_init {
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Dependencies of coordinations to their right are marked in SUD with feature Shared=Yes and they are attached at the rightmost conjunct. In UD, they are attached at the head of the coordination and feature  Shared=Yes is useless.
+package shared {
+  rule move_relation {
+    pattern {
+      N1 -[1=conj]-> N2;
+      e: N2 -[^conj|discourse|parataxis|punct]-> D; D[Shared=Yes];
+    }
+    commands {
+      add_edge e: N1 -> D;
+      del_edge e;
+    }
+  }
+
+  rule remove_shared {
+    pattern {
+      e: N2 -[^conj|discourse|parataxis|punct]-> D; D[Shared=Yes];
+    }
+    without {N1 -[1=conj]-> N2}
+    commands {
+      del_feat D.Shared
+    }
+  }
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Dependencies of type FLAT_NAME, FIXED or CONJ that are chained are reorganized into bouquets.
 package unchained_relations {
   rule flat_name {
@@ -695,28 +720,6 @@ package reverse_aux {
   }
 }
 
-package shared {
-  rule move_relation {
-    pattern {
-      N1 -[1=conj]-> N2;
-      e: N2 -[^conj|discourse|parataxis|punct]-> D; D[Shared=Yes];
-    }
-    commands {
-      add_edge e: N1 -> D;
-      del_edge e;
-    }
-  }
-
-  rule remove_shared {
-    pattern {
-      e: N2 -[^conj|discourse|parataxis|punct]-> D; D[Shared=Yes];
-    }
-    without {N1 -[1=conj]-> N2}
-    commands {
-      del_feat D.Shared
-    }
-  }
-}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
