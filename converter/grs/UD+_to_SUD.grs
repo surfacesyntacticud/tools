@@ -561,10 +561,10 @@ package chained_relations {
   }
 
   rule flat_name {
-    pattern {H -[flat:name]-> D1;e: H -[flat:name]-> D2;D1 << D2}
-    without {H -[flat:name]-> D;D1 << D; D << D2}
-    without {H -[flat:name]-> D;D2 << D}
-    commands {del_edge e;add_edge D1 -[flat:name]-> D2}
+    pattern {H -[flat@name]-> D1;e: H -[flat@name]-> D2;D1 << D2}
+    without {H -[flat@name]-> D;D1 << D; D << D2}
+    without {H -[flat@name]-> D;D2 << D}
+    commands {del_edge e;add_edge D1 -[flat@name]-> D2}
   }
 }
 
