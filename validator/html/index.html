@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>SUD validation page</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+
+  <script>
+    $(document).ready(function() {
+      $.getJSON("validate.json").done(function(data) {
+        $("#corpus").html(data.corpus);
+        $("#date").html(data.date);
+        data.items.forEach((item) => {
+          let link = 'http://match.grew.fr/?corpus='+data.link+'&custom=validator/'+item.pattern;
+          let row = "";
+          if (item.count > 0) {
+            row += '<tr class="table-warning">';
+          } else {
+            row += '<tr class="table-success">';
+          }
+          row += '<td><a href="'+link+'" target="_blank"><button type="button" class="btn btn-sm btn-secondary">' + item.count + '</button></a></td>'
+          row += '<td>' + item.description + '</td>'
+          row += "</tr>";
+          $("#table").append(row);
+        });
+
+
+      });
+
+    })
+  </script>
+
+</head>
+
+<body>
+
+  <div class="container">
+    <div class="jumbotron">
+      <h1>SUD • Corpus validation</h1>
+      <h2>corpus: <span id="corpus"></span></h2>
+      <h2>date: <span id="date"></span></h2>
+    </div>
+
+    <table class="table" id="table">
+      <thead>
+        <tr>
+          <th>Occurrences</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="table-success">
+          <td><button type="button" class="btn btn-sm btn-secondary">0</button></td>
+          <td>Two <code>subj</code> relations with the same governor</td>
+        </tr>
+        <tr class="table-warning">
+          <td><button type="button" class="btn btn-sm btn-secondary">25</button></td>
+          <td>Two <code>comp:obk</code> relations with the same governor</td>
+        </tr>
+        <tr class="table-warning">
+          <td><button type="button" class="btn btn-sm btn-secondary">25</button></td>
+          <td>Two <code>comp:obk</code> relations with the same governor</td>
+        </tr>
+        <tr class="table-warning">
+          <td><button type="button" class="btn btn-sm btn-secondary">25</button></td>
+          <td>Two <code>comp:obk</code> relations with the same governor</td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+
+</body>
+
+</html>
