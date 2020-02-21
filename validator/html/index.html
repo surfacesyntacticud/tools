@@ -16,29 +16,24 @@
         $("#corpus").html(data.corpus);
         $("#date").html(data.date);
         data.items.forEach((item) => {
-          let link = 'http://match.grew.fr/?corpus='+data.link+'&custom=validator/'+item.pattern;
+          let link = 'http://match.grew.fr/?corpus=' + data.link + '&custom=validator/' + item.pattern;
           let row = "";
           if (item.count > 0) {
             row += '<tr class="table-warning">';
           } else {
             row += '<tr class="table-success">';
           }
-          row += '<td><a href="'+link+'" target="_blank"><button type="button" class="btn btn-sm btn-secondary">' + item.count + '</button></a></td>'
+          row += '<td><a href="' + link + '" target="_blank"><button type="button" class="btn btn-sm btn-secondary">' + item.count + '</button></a></td>'
           row += '<td>' + item.description + '</td>'
           row += "</tr>";
           $("#table").append(row);
         });
-
-
       });
-
     })
   </script>
-
 </head>
 
 <body>
-
   <div class="container">
     <div class="jumbotron">
       <h1>SUD • Corpus validation</h1>
@@ -54,27 +49,10 @@
         </tr>
       </thead>
       <tbody>
-        <tr class="table-success">
-          <td><button type="button" class="btn btn-sm btn-secondary">0</button></td>
-          <td>Two <code>subj</code> relations with the same governor</td>
-        </tr>
-        <tr class="table-warning">
-          <td><button type="button" class="btn btn-sm btn-secondary">25</button></td>
-          <td>Two <code>comp:obk</code> relations with the same governor</td>
-        </tr>
-        <tr class="table-warning">
-          <td><button type="button" class="btn btn-sm btn-secondary">25</button></td>
-          <td>Two <code>comp:obk</code> relations with the same governor</td>
-        </tr>
-        <tr class="table-warning">
-          <td><button type="button" class="btn btn-sm btn-secondary">25</button></td>
-          <td>Two <code>comp:obk</code> relations with the same governor</td>
-        </tr>
       </tbody>
     </table>
 
   </div>
-
 </body>
 
 </html>
