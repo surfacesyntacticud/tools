@@ -5,9 +5,11 @@ import urlparse
 import SocketServer
 from BaseHTTPServer import BaseHTTPRequestHandler
 
-dir = "/home/guillaum/webservice/"
 grew = "/home/guillaum/.opam/last/bin/grew"
-grs = "/home/guillaum/webservice/SUD/grs/SUD_to_UD.grs"
+
+dir = "/home/guillaum/webservice/"
+grs1 = dir + "converter/grs/SUD_to_UD+.grs"
+grs2 = dir + "converter/grs/UD+_to_UD.grs"
 
 def uniqid():
     from time import time
@@ -20,16 +22,17 @@ class MyHandler(BaseHTTPRequestHandler):
 
         id=uniqid()
         sud_file = dir+id+".sud.conll"
+        tmp_file = dir+id+".tmp.conll"
         ud_file = dir+id+".ud.conll"
         with open(sud_file, 'w') as f:
             f.write(post_body)
 
         try:
-            subprocess.call([grew, "transform", "-grs", grs, "-i", sud_file, "-o", ud_file])
+            subprocess.call([grew, "transform", "-grs", grs1, "-i", sud_file, "-o", tmp_file])
+            subprocess.call([grew, "transform", "-grs", grs2, "-i", tmp_file, "-o", ud_file])
         except:
             self.send_response(402)
             return
-
 
         self.send_response(200)
         self.send_header('Content-type', 'text/plain')
@@ -38,5 +41,5 @@ class MyHandler(BaseHTTPRequestHandler):
         file = open(ud_file, "r")
         self.wfile.write(file.read())
 
-httpd = SocketServer.TCPServer(("", 8080), MyHandler)
+httpd = SocketServer.TCPServer(("", 8383), MyHandler)
 httpd.serve_forever()
