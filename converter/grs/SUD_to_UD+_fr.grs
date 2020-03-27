@@ -127,6 +127,15 @@ package FR_udep {
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Re-labelling of some extensions not existing in French.
+package FR_rel_extensions {
+  rule comp_pass{
+    pattern{ e: V -[1=ccomp, 2=pass]-> O }
+    commands{del_feat e.2}
+  }
+
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Re-labelling of subject relations specific to French.
 package FR_subj {
 % Subjects of passive participles without auxiliary.
@@ -147,16 +156,19 @@ strat FR_core {
     Onf (shared),
     Onf (unchained_relations),
     Onf (reverse_case_mark),
-    Onf( reverse_close),
+    Onf(shift_out_edges),
     Onf(case_mark_relations),
+    Onf( reverse_close),
     Onf (sub_relations),
     Onf (FR_mod),
     Onf (FR_udep),
     Onf (rel_extensions),
+    Onf(FR_rel_extensions),
     Onf (relations),
     Onf (relations_backoff),
     Onf (FR_subj),
     Onf(reverse_aux),
+    Onf(shift_out_edges),
     Onf( reverse_close),
     Onf (final),
   )

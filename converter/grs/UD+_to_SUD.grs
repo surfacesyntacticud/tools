@@ -180,7 +180,7 @@ package shift_out_edges{
   rule all_mark_outside_left{
     pattern {
       H -[1=mark,deep=REV]-> D;
-      e: D -[1=advcl|csubj|dislocated|expl|nsubj|parataxis|vocative]-> D1;
+      e: D -[1=advcl|csubj|dislocated|expl|nsubj|vocative]-> D1;
       D1 << H; H << D
     }
     commands{add_edge e: H -> D1;del_edge e}
@@ -190,7 +190,7 @@ package shift_out_edges{
   rule all_mark_outside_right{
     pattern {
       H -[1=mark,deep=REV]-> D;
-      e: D -[1=advcl|csubj|dislocated|expl|nsubj|parataxis|vocative]-> D1;
+      e: D -[1=advcl|csubj|dislocated|expl|nsubj|vocative]-> D1;
       D1 >> H; H >> D
     }
     commands{add_edge e: H -> D1;del_edge e}
@@ -229,6 +229,7 @@ package shift_out_edges{
     without{H -[1=case]-> D; D -[1=obl]-> D1}
     without{D -[obl:agent|obl:arg]-> D1}
     without{D -> D2; D1 << D2}
+    without{D -[punct]-> D2; D2 << D; D -[punct]-> D1}
     commands{add_edge e: H -> D1; del_edge e}
   }
 

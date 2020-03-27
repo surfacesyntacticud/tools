@@ -103,6 +103,7 @@ package shared {
       N1 -[1=conj]-> N2;
       e: N2 -[^conj|discourse|parataxis|punct]-> D; D[Shared=Yes];
     }
+    without{ N2 -[orphan]-> D; H -[^ conj]-> N1} %Ex : SUD_FRENCH-GSD fr-ud-train_13715
     commands {
       add_edge e: N1 -> D;
       del_edge e;
@@ -153,11 +154,11 @@ package unchained_relations {
     commands {del_edge e;add_edge H -[conj]-> D2 }
   }
 
-% The second conjunct has a determiner and the third conjunct is proper noun or a pronoun.
+% The second conjunct has a determiner and the third conjunct is proper noun, a number or a pronoun.
   rule conj_det2 {
     pattern {
       H -[1=conj]-> D1; e: D1 -[conj]-> D2;
-      D1 -[1=det]-> X; D2[upos=PROPN|PRON]
+      D1 -[1=det]-> X; D2[upos=NUM|PROPN|PRON]
     }
     without { H -[conj]-> X; D1 << X; X << D2 }
     commands { del_edge e; add_edge H -[conj]-> D2 }
@@ -178,16 +179,109 @@ package unchained_relations {
 package reverse_case_mark {
 % The heads are reversed from the most internal to the most external. The source and the target of the reversed relation are marked "reversed = y" so that loops are not possible.
   rule rev_head {
-    pattern {e:H -[1=comp,2=obj]-> D; H[upos= ADP|CCONJ|PART|SCONJ]}
-    without{D[upos= ADP|CCONJ|PART|SCONJ]; D -[1=comp,2=obj]-> D1; D1[!reversed]}
-    without{H[reversed=y]; D[reversed=y]}
+    pattern {e:H -[1=comp,2=obj, !rev]-> D; H[upos= ADP|CCONJ|PART|SCONJ]}
+    without{D[upos= ADP|CCONJ|PART|SCONJ]; D -[1=comp,2=obj,rev=y]-> D1}
     commands {
-      H.reversed=y; D.reversed=y;
+      e.rev=y;
       add_edge e:D -> H;
       del_edge e;
       shift_in H =[^MWE|TITLE|TRANS]=> D;
-      shift_out H =[^conj:dicto|expr|goeswith|orphan|reparandum|unk@fixed|HEAD|MWE|TITLE|TRANS]=> D;
+      shift_out H =[1=case|mark]=> D;
+%      shift_out H =[^conj:dicto|expr|goeswith|orphan|reparandum|unk@fixed|HEAD|MWE|TITLE|TRANS]=> D;
     }
+  }
+
+}
+
+%%%%%%%%%%%%%%%%%%%%%
+% The source of some relations must raise from the old head D to the new head H.
+package shift_out_edges{
+  rule all{
+    pattern{
+      H -[rev=y]-> D;
+      e:D -[^ conj|conj:dicto|expr|goeswith|reparandum|unk@fixed|HEAD|MWE|TITLE|TRANS]-> D1}
+    commands{add_edge e: H -> D1; del_edge e}
+  }
+
+  rule conj{
+    pattern{H -[rev=y]-> D; e:D -[conj]-> D1; D.upos <> D1.upos}
+    without{D[upos=AUX]; D1[upos=VERB]; H1 -> D; H1 >> D1} %Ex: UD_French-GSD fr-ud-train_09763
+    commands{add_edge e: H -> D1; del_edge e}
+  }
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SUD relations with adpositions or conjonctions of subordination are renamed as case or mark UD relations.
+package case_mark_relations {
+% Nominal heads of relations with an adposition as its dependent.
+% Ex: à Paris - comme à Paris - il ira plutôt à Lyon qu'à Paris.
+  rule case_nom{
+    pattern{ e:H -[1=comp,2=obj,rev=y]-> D; H[nom=y];D[upos=ADP|PART] }
+    without{ H -[1=comp|mark]-> CONJ; CONJ[upos=CCONJ|SCONJ]; D << CONJ; CONJ << H}
+    without{ H -[1=comp|mark]-> CONJ; CONJ[upos=CCONJ|SCONJ]; D >> CONJ; CONJ >> H}
+    commands {e.1=case}
+  }
+
+% Nominal heads of relations with a conjunction and without adpositions as dependents.
+% Ex: Lyon est plus près que Paris.
+  rule case_nom_conj{
+    pattern{ e:H -[1=comp,2=obj,rev=y]-> D; H[nom=y];D[upos=CCONJ|SCONJ] }
+    without{H -> ADP; ADP[upos=ADP|PART]}
+    commands {e.1=case}
+  }
+
+% Adjectival or adverbial heads of relations with an adposition and without conjunctions as dependents between the head and the adposition.
+% Ex: dès demain - en continu
+  rule case_pred{
+    pattern{ e:H -[1=comp,2=obj,rev=y]-> D; H[upos=ADV|ADJ];D[upos=ADP|PART] }
+    without{ H -[1=comp|mark]-> CONJ; CONJ[upos=CCONJ|SCONJ]; D << CONJ; CONJ << H}
+    without{ H -[1=comp|mark]-> CONJ; CONJ[upos=CCONJ|SCONJ]; D >> CONJ; CONJ >> H}
+    commands {e.1=case}
+  }
+  rule mark{
+    pattern{ e:H -[1=comp,2=obj,rev=y]-> D; H[upos=AUX|VERB,!nom];D[upos=ADP|CCONJ|PART|SCONJ] }
+    commands {e.1=mark}
+  }
+
+% si possible
+  rule mark_pred_conj{
+    pattern{ e:H -[1=comp,2=obj,rev=y]-> D; H[upos=ADJ|ADV,!nom];D[upos=CCONJ|SCONJ] }
+    commands {e.1=mark}
+  }
+
+% Governors of an adposition, with a conjunction between the governor and the adposition.
+% Ex: dès que possible
+  rule mark_pred_adp1{
+    pattern{
+      e:H -[1=comp,2=obj,rev=y]-> D; D[upos=ADP|PART];
+      H -[1=comp|mark]-> CONJ; CONJ[upos=CCONJ|SCONJ]; D << CONJ; CONJ << H}
+    commands {e.1=mark}
+  }
+
+% Governors of an adposition, with a conjunction between the governor and the adposition.
+  rule mark_pred_adp2{
+    pattern{
+      e:H -[1=comp,2=obj,rev=y]-> D; D[upos=ADP|PART];
+      H -[1=comp|mark]-> CONJ; CONJ[upos=CCONJ|SCONJ]; D >> CONJ; CONJ >> H}
+    commands {e.1=mark}
+  }
+
+% comme à Paris
+  rule mark_nom1{
+    pattern{
+      e:H -[1=comp,2=obj,rev=y]-> D;
+      H[nom=y];D[upos=CCONJ|SCONJ];
+      H -[1=case]-> ADP; D << ADP; ADP << H}
+    commands {e.1=mark}
+  }
+
+  rule mark_nom2{
+    pattern{
+      e:H -[1=comp,2=obj,rev=y]-> D;
+      H[nom=y];D[upos=CCONJ|SCONJ];
+      H -[1=case]-> ADP; D >> ADP; ADP >> H}
+    commands {e.1=mark}
   }
 
 }
@@ -198,92 +292,18 @@ package reverse_close {
 
   % if two conj are connected by a change of head, add the "emb" subtype
   rule connect_conj {
-    pattern { L -[1=conj]-> N; e:N -[conj]-> R; N.reversed=y}
+    pattern { H -[1=conj,rev=y]-> D; e:D -[conj]-> D1}
     commands { e.2 = emb }
   }
 
   rule del_reversed{
-    pattern { N[reversed=y]}
-    without { L -[1=conj]-> N; N -[conj]-> R; } % apply only if [connect_conj] cannot be applied
-    commands {del_feat N.reversed}
+    pattern{e:H -[rev=y]-> D}
+    without {H -[1=conj]-> D; D -[conj]-> D1; } % apply only if [connect_conj] cannot be applied
+    commands {del_feat e.rev}
   }
 
 }
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SUD relations with adpositions or conjonctions of subordination are renamed as case or mark UD relations.
-package case_mark_relations {
-% Nominal heads of relations with an adposition as its dependent.
-% Ex: à Paris - comme à Paris - il ira plutôt à Lyon qu'à Paris.
-  rule case_nom{
-    pattern{ e:H -[1=comp,2=obj]-> D; H[nom=y];D[upos=ADP|PART] }
-    without{ H -[1=comp|mark]-> CONJ; CONJ[upos=CCONJ|SCONJ]; D << CONJ; CONJ << H}
-    without{ H -[1=comp|mark]-> CONJ; CONJ[upos=CCONJ|SCONJ]; D >> CONJ; CONJ >> H}
-    commands {e.1=case}
-  }
-
-% Nominal heads of relations with a conjunction and without adpositions as dependents.
-% Ex: Lyon est plus près que Paris.
-  rule case_nom_conj{
-    pattern{ e:H -[1=comp,2=obj]-> D; H[nom=y];D[upos=CCONJ|SCONJ] }
-    without{H -> ADP; ADP[upos=ADP|PART]}
-    commands {e.1=case}
-  }
-
-% Adjectival or adverbial heads of relations with an adposition and without conjunctions as dependents between the head and the adposition.
-% Ex: dès demain - en continu
-  rule case_pred{
-    pattern{ e:H -[1=comp,2=obj]-> D; H[upos=ADV|ADJ];D[upos=ADP|PART] }
-    without{ H -[1=comp|mark]-> CONJ; CONJ[upos=CCONJ|SCONJ]; D << CONJ; CONJ << H}
-    without{ H -[1=comp|mark]-> CONJ; CONJ[upos=CCONJ|SCONJ]; D >> CONJ; CONJ >> H}
-    commands {e.1=case}
-  }
-  rule mark{
-    pattern{ e:H -[1=comp,2=obj]-> D; H[upos=AUX|VERB,!nom];D[upos=ADP|CCONJ|PART|SCONJ] }
-    commands {e.1=mark}
-  }
-
-% si possible
-  rule mark_pred_conj{
-    pattern{ e:H -[1=comp,2=obj]-> D; H[upos=ADJ|ADV,!nom];D[upos=CCONJ|SCONJ] }
-    commands {e.1=mark}
-  }
-
-% Governors of an adposition, with a conjunction between the governor and the adposition.
-% Ex: dès que possible
-  rule mark_pred_adp1{
-    pattern{
-      e:H -[1=comp,2=obj]-> D; D[upos=ADP|PART];
-      H -[1=comp|mark]-> CONJ; CONJ[upos=CCONJ|SCONJ]; D << CONJ; CONJ << H}
-    commands {e.1=mark}
-  }
-
-% Governors of an adposition, with a conjunction between the governor and the adposition.
-  rule mark_pred_adp2{
-    pattern{
-      e:H -[1=comp,2=obj]-> D; D[upos=ADP|PART];
-      H -[1=comp|mark]-> CONJ; CONJ[upos=CCONJ|SCONJ]; D >> CONJ; CONJ >> H}
-    commands {e.1=mark}
-  }
-
-% comme à Paris
-  rule mark_nom1{
-    pattern{
-      e:H -[1=comp,2=obj]-> D;
-      H[nom=y];D[upos=CCONJ|SCONJ];
-      H -[1=case]-> ADP; D << ADP; ADP << H}
-    commands {e.1=mark}
-  }
-
-  rule mark_nom2{
-    pattern{
-      e:H -[1=comp,2=obj]-> D;
-      H[nom=y];D[upos=CCONJ|SCONJ];
-      H -[1=case]-> ADP; D >> ADP; ADP >> H}
-    commands {e.1=mark}
-  }
-
-}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SUD sub-relations  are renamed as UD relations or sub-relations.
 % Rem: the rules are ordered according to the alphabetic order of the names of the resulting relations
@@ -316,7 +336,7 @@ package sub_relations {
   rule ccomp {
     pattern {e:H -[1=comp, 2=obj|obl]-> D; D[upos = AUX|VERB,!nom]}
     without{ H -[comp:obj@x|comp:obl@x]-> D}
-    without { H -[subj@expl|expl:subj]-> *; H -[comp@pass|expl:pass]-> * } % if so csubj:pass XXX
+    without {H -[comp:obj@pass|expl:pass]-> * } % if so csubj:pass XXX
     commands {e.1=ccomp}
   }
 
@@ -359,7 +379,7 @@ package sub_relations {
 % In an impersonal passive construction, the deep clausan subject, which is a COMP:OBJ dependent in SUD, becomes a CSUBJ:PASS dependent in UD.
 % Ex: Il est prévu de continuer. - Il se dit que tu viendras.
   rule csubj_expl_pass{
-    pattern { e:H -[comp:obj@pass]-> D; D[upos=AUX|VERB]; H -[expl:subj]-> S}
+    pattern { e:H -[comp:obj@pass]-> D; D[upos=AUX|VERB]; G -[aux:pass]-> H}
     commands {e.1=csubj;e.2=pass; del_feat e.deep}
   }
 
@@ -707,15 +727,14 @@ rule relations_backoff {
 package reverse_aux {
 
   rule rev_head {
-    pattern {e:H -[1=aux|cop]-> D; H[upos= AUX]}
-    without{D[upos= AUX]; D -[1=aux|cop]-> D1; D1[!reversed]}
-    without{H[reversed=y]; D[reversed=y]}
+    pattern {e:H -[1=aux|cop,!rev]-> D; H[upos= AUX]}
+    without{D[upos= AUX]; D -[1=aux|cop,!rev]-> D1}
     commands {
-      H.reversed=y; D.reversed=y;
+      e.rev=y;
       add_edge e:D -> H;
       del_edge e;
       shift_in H =[^MWE|TITLE]=> D;
-      shift_out H =[^conj:dicto|expr|goeswith|orphan|reparandum|unk@fixed|MWE|TITLE]=> D;
+ %     shift_out H =[^conj|conj:dicto|expr|goeswith|reparandum|unk@fixed|MWE|TITLE]=> D;
     }
   }
 }
@@ -744,13 +763,15 @@ strat main {
     Onf(shared),
     Onf (unchained_relations), % For CONJ relations, chains must be transformed into bouquets before head changes because of conditions on the presence of prepositions, conjunctions and auxiliaries. It is easier to take these conditions into account before head changes (UD_French-GSD : fr-ud-dev_00751)
     Onf (reverse_case_mark),  % Package REVERSE_CASE_MARK precedes packages SUB_RELATIONS and RELATIONS because  UD labels of complement relations depend on the category of the complements introduced with a preposition or a conjunction
+    Onf(shift_out_edges),
+    Onf(case_mark_relations), %Package CASE_MARK_RELATIONS must precede package SUB_RELATIONS because renaming of some SUD relations requires the distinction between case and mark relations. The package must also precede package REVERSE_CLOSE because changes concern only reversed relations (Counter-example : SUD_French-GSD fr-ud-train_03238
     Onf( reverse_close),
-    Onf(case_mark_relations), %Package CASE_MARK_RELATIONS must precede package SUB_RELATIONS because renaming of some SUD relations requires the distinction between case and mark relations.
     Onf (sub_relations), % Package SUB_RELATIONS must precede package REL_EXTENSIONS because this package swat extensions on level 2.
     Onf (rel_extensions),
     Onf (relations),
     Onf (relations_backoff),
     Onf(reverse_aux),    % Package REVERSE_AUX follows packages SUB_RELATIONS and RELATIONS because of the dependencies H -> AUX in UD: if H is the target of a dependency, the label of the dependency may depend on the mood of AUX.
+    Onf(shift_out_edges),
     Onf( reverse_close),
     Onf (final),
     specific_expr_close, % Closing a specific treatment for MWE, titles and translated words.
