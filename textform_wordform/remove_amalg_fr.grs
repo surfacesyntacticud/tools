@@ -1,0 +1,44 @@
+package remove_amal {
+  rule left {
+    pattern {
+      N1 [_UD_mw_span = 2]; % N1 est un amalgame
+      N2 []; N1 < N2;       % N2 le mot qui suit
+      N2 -> N1;
+    }
+    commands {
+      N2.form = N1._UD_mw_fusion;  % on restaure la form dé-amalgamée sur la tête
+      del_node N1;                 % on efface le dépendant
+    }
+  }
+
+  rule right {
+    pattern {
+      N1 [_UD_mw_span = 2]; % N1 est un amalgame
+      N2 []; N1 < N2;       % N2 le mot qui suit
+      N1 -> N2;
+    }
+    commands {
+      N1.form = N1._UD_mw_fusion;  % on restaure la form dé-amalgamée sur la tête
+      del_feat N1._UD_mw_fusion; del_feat N1._UD_mw_span;
+      del_node N2;                 % on efface le dépendant
+    }
+  }
+
+% NB: règle pour le français, à adapter avant d'appliquer à d'autres langues !
+% en FR, on a toujours ADP + DET dans ce contexte
+  rule extern {
+    pattern {
+      N1 [_UD_mw_span = 2]; % N1 est un amalgame
+      N2 []; N1 < N2;       % N2 le mot qui suit
+    }
+    without { N1 -> N2 }    % N1 et N2 ne sont pas reliés
+    without { N2 -> N1 }
+    commands {
+      N1.form = N1._UD_mw_fusion;  % on restaure la form dé-amalgamée sur le premier
+      del_feat N1._UD_mw_fusion; del_feat N1._UD_mw_span;
+      del_node N2;                 % on efface le deuxième
+    }
+  }
+}
+
+strat main { Onf (remove_amal) }
