@@ -103,7 +103,7 @@ package shared {
       N1 -[1=conj]-> N2;
       e: N2 -[^conj|discourse|parataxis|punct]-> D; D[Shared=Yes];
     }
-    without{ N2 -[orphan]-> D; H -[^ conj]-> N1} %Ex : SUD_FRENCH-GSD fr-ud-train_13715
+  %  without{ N2 -[orphan]-> D; H -[^ conj]-> N1} %Ex : SUD_FRENCH-GSD fr-ud-train_13715
     commands {
       add_edge e: N1 -> D;
       del_edge e;
@@ -200,6 +200,25 @@ package shift_out_edges{
     pattern{
       H -[rev=y]-> D;
       e:D -[^ conj|conj:dicto|expr|goeswith|reparandum|unk@fixed|HEAD|MWE|TITLE|TRANS]-> D1}
+    without{D -[punct]-> D2; D -[punct]-> D1; D1.lemma = D2.lemma}
+    without{
+      D -[punct]-> D2; D -[punct]-> D1; D1.lemma = ")"; D2.lemma = "(";
+      D2 << D; D << D1}
+    without{
+      D -[punct]-> D2; D -[punct]-> D1; D1.lemma = "»"; D2.lemma = "«";
+      D2 << D; D << D1}
+    without{
+      D -[punct]-> D2; D -[punct]-> D1; D1.lemma = "]"; D2.lemma = "[";
+      D2 << D; D << D1}
+    without{
+      D -[punct]-> D2; D -[punct]-> D1; D2.lemma = ")"; D1.lemma = "(";
+      D1 << D; D << D2}
+    without{
+      D -[punct]-> D2; D -[punct]-> D1; D1.lemma = "»"; D2.lemma = "«";
+      D1 << D; D << D2}
+    without{
+      D -[punct]-> D2; D -[punct]-> D1; D1.lemma = "]"; D2.lemma = "[";
+      D1 << D; D << D2}
     commands{add_edge e: H -> D1; del_edge e}
   }
 
@@ -334,8 +353,8 @@ package sub_relations {
 
 % Complement that is a complete clause without control of its subject.
   rule ccomp {
-    pattern {e:H -[1=comp, 2=obj|obl]-> D; D[upos = AUX|VERB,!nom]}
-    without{ H -[comp:obj@x|comp:obl@x]-> D}
+    pattern {e:H -[1=comp, 2=obj|obl|pred]-> D; D[upos = AUX|VERB,!nom]}
+    without{ H -[comp:obj@x|comp:obl@x|comp:pred@x]-> D}
     without {H -[comp:obj@pass|expl:pass]-> * } % if so csubj:pass XXX
     commands {e.1=ccomp}
   }
@@ -379,7 +398,7 @@ package sub_relations {
 % In an impersonal passive construction, the deep clausan subject, which is a COMP:OBJ dependent in SUD, becomes a CSUBJ:PASS dependent in UD.
 % Ex: Il est prévu de continuer. - Il se dit que tu viendras.
   rule csubj_expl_pass{
-    pattern { e:H -[comp:obj@pass]-> D; D[upos=AUX|VERB]; G -[aux:pass]-> H}
+    pattern { e:H -[comp:obj@pass]-> D; D[upos=AUX|VERB]}
     commands {e.1=csubj;e.2=pass; del_feat e.deep}
   }
 
@@ -507,8 +526,9 @@ package sub_relations {
   }
 
   rule xcomp {
-    pattern { e:H -[comp:obj@x|comp:obl@x|comp:pred]-> D }
+    pattern { e:H -[comp:obj@x|comp:obl@x|comp:pred@x|comp:pred]-> D }
     without{ H[upos=AUX]}
+    without{ D[upos=AUX|VERB]; H -[comp:pred]-> D}
     commands {e.1=xcomp; del_feat e.2; del_feat e.deep}
   }
 

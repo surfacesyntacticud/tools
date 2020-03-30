@@ -34,6 +34,17 @@ package FR_nom_init {
  }
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Re-labelling of relations specific to French.
+package FR_relations {
+  rule pred{
+    pattern{
+      V[upos=VERB,lemma="être"];
+      INF[upos=AUX|VERB, VerbForm=Inf];
+      e: V -[comp:pred]-> INF}
+    commands{ del_edge e; add_edge V -[ccomp]-> INF}
+  }
+}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -135,6 +146,7 @@ package FR_rel_extensions {
   }
 
 }
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Re-labelling of subject relations specific to French.
 package FR_subj {
@@ -159,6 +171,7 @@ strat FR_core {
     Onf(shift_out_edges),
     Onf(case_mark_relations),
     Onf( reverse_close),
+    Onf(FR_relations),
     Onf (sub_relations),
     Onf (FR_mod),
     Onf (FR_udep),

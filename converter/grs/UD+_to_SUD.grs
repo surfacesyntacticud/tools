@@ -36,7 +36,7 @@ package minimize_conj_dep {
     pattern {
       C1 -[1=conj]-> C2;
       e:C1 -[^conj|conj:emb|discourse|parataxis|punct]-> D; C2 << D}
-    without { C1 -[1=conj]-> C; C2 << C }
+   % without { C1 -[1=conj]-> C; C2 << C }
     commands { add_edge e:C2 -> D; del_edge e; D.Shared=Yes }
   }
 }
@@ -229,7 +229,10 @@ package shift_out_edges{
     without{H -[1=case]-> D; D -[1=obl]-> D1}
     without{D -[obl:agent|obl:arg]-> D1}
     without{D -> D2; D1 << D2}
-    without{D -[punct]-> D2; D2 << D; D -[punct]-> D1}
+    without{D -[punct]-> D2; D2 << D; D -[punct]-> D1; D1.lemma = D2.lemma}
+    without{D -[punct]-> D2; D2 << D; D -[punct]-> D1; D1.lemma = ")"; D2.lemma = "("}
+    without{D -[punct]-> D2; D2 << D; D -[punct]-> D1; D1.lemma = "»"; D2.lemma = "«"}
+    without{D -[punct]-> D2; D2 << D; D -[punct]-> D1; D1.lemma = "]"; D2.lemma = "["}
     commands{add_edge e: H -> D1; del_edge e}
   }
 
@@ -248,7 +251,7 @@ package shift_out_edges{
 % Conj relations in the general case.
   rule conj{
     pattern{
-      H -[deep=REV]-> D;  H << D;
+      H -[deep=REV]-> D; % H << D;
       e: D -[1=conj]-> D1;
       D.upos <> D1.upos;
     }
@@ -473,8 +476,13 @@ package relations {
 % A direct argument with the control of its subject is considered  as a predicative complement in SUD.
   rule comp_pred {
     pattern { e:H -[1=xcomp]-> D; D[upos<>ADP]}
-    without{D[upos=AUX|VERB,VerbForm=Inf] }
+    without{D[upos=AUX|VERB] }
     commands {e.1=comp;e.2=pred}
+  }
+  
+  rule comp_pred_part {
+    pattern { e:H -[1=xcomp]-> D; D[upos=AUX|VERB,VerbForm=Part]}
+    commands {add_edge H -[comp:pred@x]-> D; del_edge e}
   }
 
   rule comp_pred_cop {
