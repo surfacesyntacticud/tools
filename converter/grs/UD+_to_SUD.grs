@@ -575,6 +575,13 @@ package chained_relations {
     without {H -[flat@name]-> D;D2 << D}
     commands {del_edge e;add_edge D1 -[flat@name]-> D2}
   }
+
+  rule flat_foreign {
+    pattern {H -[flat@foreign]-> D1;e: H -[flat@foreign]-> D2;D1 << D2}
+    without {H -[flat@foreign]-> D;D1 << D; D << D2}
+    without {H -[flat@foreign]-> D;D2 << D}
+    commands {del_edge e;add_edge D1 -[flat@foreign]-> D2}
+  }
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
