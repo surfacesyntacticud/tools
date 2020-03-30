@@ -1,0 +1,31 @@
+{
+  "title": "Check consistency of relations",
+  "items": [{
+      "pattern": "pattern { N -[1<>appos|cc|comp|conj|det|discourse|dislocated|flat|goeswith|mod|orphan|parataxis|punct|reparandum|root|subj|udep|unk|vocative]-> M }",
+      "description": "Non valid SUD relations (see [guidelines](https://surfacesyntacticud.github.io/guidelines/u/))"
+    },
+    {
+      "pattern": [
+        "pattern { N -[1=subj]-> N1; N -[1=subj]-> N2; N1 << N2; }",
+        "without { N -[subj@expl]-> N1}",
+        "without { N -[subj@expl]-> N2}"
+      ],
+      "description": "Two `subj` relations with the same governor"
+    },
+    {
+      "pattern": [
+        "pattern { GOV -[subj]-> DEP; GOV[upos <> VERB|AUX] }",
+        "without { GOV.EXPTPOS=VERB|AUX }"
+      ],
+      "description": "The governor of a `subj` relation different from a verb or an auxiliary"
+    },
+    {
+      "pattern": "pattern { N -[comp:obj]-> N1; N -[comp:obj]-> N2; N1 << N2; }",
+      "description": "Two `comp:obj` relations with the same governor"
+    },
+    {
+      "pattern": "pattern { N -[1=flat]-> N1; N -[1=flat]-> N2; N1 << N2; }",
+      "description": "Two `flat` relations with the same governor"
+    }
+  ]
+}

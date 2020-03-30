@@ -9,28 +9,64 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
-
+  <script src="https://cdn.jsdelivr.net/remarkable/1.7.1/remarkable.min.js"></script>
   <script>
+    // find on: https://davidwalsh.name/query-string-javascript
+    var urlParams = new URLSearchParams(window.location.search);
+    var md = new Remarkable();
+
+    var current_corpus;
     $(document).ready(function() {
-      $.getJSON("validate.json").done(function(data) {
-        $("#corpus").html(data.corpus);
-        $("#date").html(data.date);
-        data.items.forEach((item) => {
-          let link = 'http://match.grew.fr/?corpus=' + data.link + '&custom=validator/' + item.pattern;
-          let row = "";
-          if (item.count > 0) {
-            row += '<tr class="table-warning">';
-          } else {
-            row += '<tr class="table-success">';
-          }
-          row += '<td><a href="' + link + '" target="_blank"><button type="button" class="btn btn-sm btn-secondary">' + item.count + '</button></a></td>'
-          row += '<td>' + item.description + '</td>'
-          row += "</tr>";
-          $("#table").append(row);
+
+      // corpus get parameter
+      if (urlParams.has('corpus')) {
+        current_corpus = urlParams.get('corpus');
+        console.log(current_corpus);
+        $.getJSON(current_corpus + ".json").done(function(data) {
+          $("#corpus").html(data.corpus);
+          $("#date").html(data.date);
+
+          data.modules.forEach((module) => {
+            $("#main").append("<h3>" + module.title + "</h3>");
+            var table = $('<table class="table"/>');
+            $("#main").append(table);
+            table.append('<colgroup><col style="width: 10%;"><col style="width: 90%;"></colgroup>');
+
+            module.items.forEach((item) => {
+              let pattern_uri = encodeURIComponent(item.pattern.join('\n'));
+              let link = 'http://match.grew.fr/?corpus=' + data.corpus + '&pattern=' + pattern_uri;
+              let row = "";
+              if (item.count > 0) {
+                row += '<tr class="table-warning">';
+              } else {
+                row += '<tr class="table-success">';
+              }
+              row += '<td><a href="' + link + '" target="_blank"><button type="button" class="btn btn-sm btn-secondary">' + item.count + '</button></a></td>'
+              row += '<td>' + md.render(item.description) + '</td>'
+              row += "</tr>";
+              table.append(row);
+            });
+          });
         });
-      });
+      }
     })
   </script>
+  <style>
+    table,
+    td {
+      border: 1px solid black;
+    }
+
+    .table td {
+      vertical-align: middle;
+    }
+
+    p {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+  </style>
+
 </head>
 
 <body>
@@ -41,18 +77,22 @@
       <h2>date: <span id="date"></span></h2>
     </div>
 
-    <table class="table" id="table">
+    <div id="main">
+
+
+      <!-- <table class="table" id="table">
       <thead>
         <tr>
           <th>Occurrences</th>
           <th>Description</th>
         </tr>
+        <tr><td>XXX</td><td>YYY</td></tr>
       </thead>
       <tbody>
       </tbody>
     </table>
-
-  </div>
+ -->
+    </div>
 </body>
 
 </html>
