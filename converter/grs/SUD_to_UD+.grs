@@ -101,7 +101,7 @@ package shared {
   rule move_relation {
     pattern {
       N1 -[1=conj]-> N2;
-      e: N2 -[^conj|discourse|parataxis|punct]-> D; D[Shared=Yes];
+      e: N2 -[^conj|discourse|parataxis]-> D; D[Shared=Yes];
     }
   %  without{ N2 -[orphan]-> D; H -[^ conj]-> N1} %Ex : SUD_FRENCH-GSD fr-ud-train_13715
     commands {
@@ -112,7 +112,7 @@ package shared {
 
   rule remove_shared {
     pattern {
-      e: N2 -[^conj|discourse|parataxis|punct]-> D; D[Shared=Yes];
+      e: N2 -[^conj|discourse|parataxis]-> D; D[Shared=Yes];
     }
     without {N1 -[1=conj]-> N2}
     commands {
@@ -200,7 +200,7 @@ package shift_out_edges{
     pattern{
       H -[rev=y]-> D;
       e:D -[^ conj|conj:dicto|expr|goeswith|reparandum|unk@fixed|HEAD|MWE|TITLE|TRANS]-> D1}
-    without{D -[punct]-> D2; D -[punct]-> D1; D1.lemma = D2.lemma}
+    without{D -[punct]-> D2; D -[punct]-> D1; D1.lemma = D2.lemma; D >> D1; D << D2}
     without{
       D -[punct]-> D2; D -[punct]-> D1; D1.lemma = ")"; D2.lemma = "(";
       D2 << D; D << D1}
@@ -222,8 +222,26 @@ package shift_out_edges{
     commands{add_edge e: H -> D1; del_edge e}
   }
 
+  rule embedding_punct{
+    pattern{
+      H -[rev=y]-> D;
+      e1: D -[punct]-> P1; P1 << D; P1 << H;
+      e2: D -[punct]-> P2; P2 >> D; P2 >> H}
+    without{P1[lemma="."|";"|":"|"\'"]}
+    without{P2[lemma="."|";"|":"|"\'"]}
+    without{P1.lemma = "("; P2.lemma <> ")"}
+    without{P1.lemma = "«"; P2.lemma <> "»"}
+    without{P1.lemma = "["; P2.lemma <> "]"}
+    without{P1.lemma = "{"; P2.lemma <> "}"}    
+    commands{
+      add_edge H -[punct]-> P1; del_edge e1;
+      add_edge H -[punct]-> P2; del_edge e2}
+  }
+      
+
   rule conj{
     pattern{H -[rev=y]-> D; e:D -[conj]-> D1; D.upos <> D1.upos}
+    without{D[upos=AUX]; D1[upos=VERB]; H >> D1}%Ex: UD_French-GSD fr-ud-train_06092
     without{D[upos=AUX]; D1[upos=VERB]; H1 -> D; H1 >> D1} %Ex: UD_French-GSD fr-ud-train_09763
     commands{add_edge e: H -> D1; del_edge e}
   }
