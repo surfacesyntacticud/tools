@@ -3,6 +3,18 @@
   "items": [{
       "pattern": "global { is_not_tree }",
       "description": "The stucture is not a tree"
+    },
+    {
+      "pattern": "pattern { ROOT[!upos]; ROOT -[root]-> N1; ROOT -[root]-> N2; N1 << N2 }",
+      "description": "More than one node used as root"
+    },
+    {
+      "pattern": "pattern { ROOT[!upos] } without { ROOT -[root]-> N }",
+      "description": "The ROOT node is not linked with a root relation"
+    },
+    {
+      "pattern": "pattern { N -[root]-> M; N[upos] }",
+      "description": "The root relation is used inside the tree"
     }
   ]
 }
