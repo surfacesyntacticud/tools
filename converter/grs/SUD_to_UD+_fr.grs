@@ -163,9 +163,9 @@ package FR_subj {
 
 strat FR_core {
   Seq (
+    Onf (shared),
     Onf (nom_init),
     Onf (FR_nom_init),
-    Onf (shared),
     Onf (unchained_relations),
     Onf (reverse_case_mark),
     Onf(shift_out_edges),
@@ -190,8 +190,28 @@ strat FR_core {
 strat FR_main{
   Seq(
     Onf (remove_deep_fixed), % in UD, @fixed becomes INMWE
+    Onf (shared),
     specific_expr_init, % Initialization of a specific treatment for MWE, titles and translated words.
-    FR_core,
+    Onf (nom_init),
+    Onf (FR_nom_init),
+    Onf (unchained_relations),
+    Onf (reverse_case_mark),
+    Onf(shift_out_edges),
+    Onf(case_mark_relations),
+    Onf( reverse_close),
+    Onf(FR_relations),
+    Onf (sub_relations),
+    Onf (FR_mod),
+    Onf (FR_udep),
+    Onf (rel_extensions),
+    Onf(FR_rel_extensions),
+    Onf (relations),
+    Onf (relations_backoff),
+    Onf (FR_subj),
+    Onf(reverse_aux),
+    Onf(shift_out_edges),
+    Onf( reverse_close),
+    Onf (final),
     specific_expr_close, % Closing a specific treatment for MWE, titles and translated words.
   )
 }

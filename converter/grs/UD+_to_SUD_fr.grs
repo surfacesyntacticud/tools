@@ -5,10 +5,15 @@ include "UD+_to_SUD.grs"
 % The source of some relations must raise from the old head D to the new head H in cases specific to French.
 package FR_shift_out_edges{
   rule cop_obl{
-    pattern{ H -[cop]-> D; e: D -[1=obl]-> D1; H << D1; D1 << D}
+    pattern{ H -[cop]-> D; e: D -[obl:mod]-> D1; H << D1; D1 << D}
     commands{add_edge e:H -> D1; del_edge e}
   }
 
+  % rule aux_obl{
+  %   pattern{ H -[1=aux]-> D; e: D -[obl:mod]-> D1}
+  %   commands{add_edge e:H -> D1; del_edge e}
+  % }
+  
   rule ne_pas {
     pattern {
       G -> N1; N1 [lemma="ne"];
@@ -26,8 +31,10 @@ package FR_shift_out_edges{
 package FR_relations {
 
 % When a NUM D depends on a word G in a NUMMOD relation and when D precedes G, D is a determiner of G.
+% Ex :  fr-ud-train_05544 -  Paris génère chaque jour, par temps sec, entre 800.000 et 900.000 m3 d'eaux usées.
   rule num_det{
-    pattern{D[upos=NUM]; e:H -[nummod]-> D; D << H}
+    pattern{e:H -[nummod]-> D; D << H}
+    without{H -[det]-> *}
     commands{ del_edge e; add_edge H -[det]-> D}
   }
 
@@ -43,7 +50,16 @@ package FR_relations {
       del_edge e2; add_edge V -[subj@expl]-> SUBJ2;}
   }
 
- % Relation between a verb and an argument in the form of a finite clause, which is an oblique complement introduced with "que". By default, CCOMP relations are transformed into COMP:OBJ relations, but in this case, they are transformed into COMP:OBL relations.
+ % Relation between the verb "avoir" and a direct object in the form of an infinitive clause introduced with "de". By default, CCOMP relations introduced with "de" are transformed into COMP:OBL relations, but in this case, they are transformed into COMP:OBJ relations.
+  rule verb-avoir_compobj_ccomp {
+    pattern {
+      H[upos=VERB,lemma=avoir]; e:H -[ccomp]-> C;
+      C[upos=ADP,lemma=de]}
+    without{H -[1=obj]-> *}
+    commands { del_edge e; add_edge H -[comp:obj]-> C }
+  }
+
+% Relation between a verb and an argument in the form of a finite clause, which is an oblique complement introduced with "que". By default, CCOMP relations are transformed into COMP:OBJ relations, but in this case, they are transformed into COMP:OBL relations.
   rule verb_compobl_ccomp (lex from "lexicons/verb_with_deobj_fin-verb.lp") {
     pattern {
       H[upos=VERB,lemma=lex.verb]; e:H -[ccomp]-> C;
@@ -60,6 +76,7 @@ package FR_relations {
     commands { del_edge e; add_edge H -[comp:obl]-> C }
   }
 
+
  % Relation between a verb and an argument in the form of an infinitive clause, which is a direct object introduced with "de". By default, these relations, which are XCOMP relations in UD, are transformed into COMP:OBL@X relations, but in this case, they are transformed into COMP:OBJ@X relations.
   rule verb_compobj_xcomp (lex from "lexicons/verb_with_obj_de_inf.lp") {
     pattern {
@@ -70,25 +87,39 @@ package FR_relations {
   }
 
  % Relation between a verb and an argument in the form of an infinitive clause, which is a direct predicative complement, the subject of the infinitive being the subject of the governor verb. In this case, the XCOMP relation is transformed into COMP:PRED@X relation.
-  rule verb_comppred_xcomp (lex from "lexicons/verb_with_pred_inf.lp") {
+  rule verb_comppred_xcomp-inf (lex from "lexicons/verb_with_pred_inf.lp") {
     pattern {
       H[upos=VERB,lemma=lex.verb]; e:H -[xcomp]-> C;
       C[upos=AUX|VERB,VerbForm=Inf] }
     commands { del_edge e; add_edge H -[comp:pred@x]-> C }
   }
   
+ % Relation between a verb and an argument in the form of a participial clause introduced with a conjunction, which is a predicative complement, the subject of the participle being the subject of the governor verb. In this case, the XCOMP relation is transformed into COMP:PRED@X relation.
+  rule verb_comppred_xcomp-part(lex from "lexicons/verb_with_pred-ind_part.lp"){
+    pattern {
+      H[upos=VERB,lemma=lex.verb]; e:H -[xcomp]-> C;
+      C[upos=SCONJ,lemma=lex.conj]; C -[mark]-> D;
+      D[upos=AUX|VERB,VerbForm=Part] }
+    commands { del_edge e; add_edge H -[comp:pred@x]-> C }
+  }
+  
  % Relation between the verb "être" and an argument in the form of a clause, which is a predicative complement. In this case, the CCOMP relation is transformed into COMP:PRED relation.
-  rule verb_comppred_ccomp  {
+  rule verb-etre_comppred_ccomp  {
     pattern {H[upos=VERB,lemma="être"]; e:H -[ccomp]-> C}
     commands { del_edge e; add_edge H -[comp:pred]-> C }
   }
+  
+ % % Relation between the verb "être" and an argument in the form of a clause, which is a predicative complement. In this case, the CCOMP relation is transformed into COMP:PRED relation.
+ %  rule verb-etre_comppred_xcomp  {
+ %    pattern {H[upos=VERB,lemma="être"]; e:H -[xcomp]-> C}
+ %    commands { del_edge e; add_edge H -[comp:pred@x]-> C }
+ %  }
 }
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 strat FR_main {
   Seq(
-    Onf (add_conj_emb),
     specific_expr_init, % Initialization of a specific treatment for MWE, titles and translated words.
     reverse_relations.main,
     Onf (minimize_conj_dep),
@@ -97,6 +128,7 @@ strat FR_main {
     Onf (sub_relations),
     Onf (rel_extensions),
     Onf (relations),
+    Onf (add_conj_emb),
     Onf (chained_relations),
     specific_expr_close, % Closing a specific treatment for MWE, titles and translated words.
     Onf(remove_useless_emb),

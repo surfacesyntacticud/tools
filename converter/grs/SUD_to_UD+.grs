@@ -8,12 +8,6 @@ include "irregular_expr.grs"
 % rules modify annotation recursively from head to avoid to tranform the special SUD relation comp@fixed used for some expletives
 package remove_deep_fixed{
 
-  % rule missing_expos { % if EXTPOS is not given --> it is supposed to be the equal to UPOS
-  %   pattern { H [!_MISC_EXTPOS]; e:H -[deep=fixed]-> D;D[!_MISC_INMWE]}
-  %   without { H -[1=unk]-> D}
-  %   commands { H._MISC_EXTPOS = H.upos; }
-  % }
-
   rule init {
     pattern { H[_MISC_EXTPOS,_MISC_Type=MWE]; e:H -[deep=fixed]-> D;D[!_MISC_INMWE]}
     without { H -[1=unk]-> D}
@@ -33,12 +27,49 @@ package remove_deep_fixed{
   }
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Dependencies of coordinations to their right are marked in SUD with feature Shared=Yes and they are attached at the rightmost conjunct. In UD, they are attached at the head of the coordination and feature  Shared=Yes is useless.
+package shared {
+  rule move_relation {
+    pattern {
+      N1 -[1=conj]-> N2;
+      e: N2 -> D; D[Shared=Yes]}
+  %  without{ N2 -[orphan]-> D; H -[^ conj]-> N1} %Ex : SUD_FRENCH-GSD fr-ud-train_13715
+    commands {add_edge e: N1 -> D; del_edge e}
+  }
+
+  rule move_distant1-relation {
+    pattern {
+      N1 -[1=conj]-> N2;
+      N2 -[^conj]-> D1;
+      e: D1 -> D; D[Shared=Yes]}
+    commands {add_edge e: N1 -> D;del_edge e;}
+  }
+   
+  rule move_distant2-relation {
+    pattern {
+      N1 -[1=conj]-> N2;
+      N2 -[^conj]-> D1;
+      D1 -[^conj]-> D2;
+      e: D2 -> D; D[Shared=Yes]}
+    commands {add_edge e: N1 -> D;del_edge e;}
+  }
+  
+  rule remove_shared {
+    pattern {
+      e: N2 -[^conj|discourse|parataxis]-> D; D[Shared=Yes];
+      N2 -[conj]-> *
+    }
+    without {N1 -[1=conj]-> N2}
+    commands {
+      del_feat D.Shared
+    }
+  }
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Feature "nom" is used to deal with all nominals in a uniform way.
 package nom_init {
-
-
 % All adverbs, numerals and symbols with a COMP:OBJ function are nominals.
   rule nom_comp_obj {
     pattern {A[upos=ADV|SYM|NUM,!nom]; H -[1=comp, 2=obj]-> A}
@@ -95,31 +126,6 @@ package nom_init {
 
 }
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Dependencies of coordinations to their right are marked in SUD with feature Shared=Yes and they are attached at the rightmost conjunct. In UD, they are attached at the head of the coordination and feature  Shared=Yes is useless.
-package shared {
-  rule move_relation {
-    pattern {
-      N1 -[1=conj]-> N2;
-      e: N2 -[^conj|discourse|parataxis]-> D; D[Shared=Yes];
-    }
-  %  without{ N2 -[orphan]-> D; H -[^ conj]-> N1} %Ex : SUD_FRENCH-GSD fr-ud-train_13715
-    commands {
-      add_edge e: N1 -> D;
-      del_edge e;
-    }
-  }
-
-  rule remove_shared {
-    pattern {
-      e: N2 -[^conj|discourse|parataxis]-> D; D[Shared=Yes];
-    }
-    without {N1 -[1=conj]-> N2}
-    commands {
-      del_feat D.Shared
-    }
-  }
-}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Dependencies of type FLAT_NAME, FIXED or CONJ that are chained are reorganized into bouquets.
@@ -136,42 +142,17 @@ package unchained_relations {
     commands { del_edge e; add_edge H -[unk@fixed]-> D2; }
   }
 
-% The second conjunct has neither subject nor determiner.
   rule conj {
-    pattern { H -[1=conj]-> D1;e: D1 -[conj]-> D2 }
-    without { D1 -[1=det|subj]-> X }
-    without { H -[conj]-> X; D1 << X; X << D2 }
+    pattern { H -[1=conj]-> D1;e: D1 -[conj]-> D2 }% Dependency H -> D1 can be an embedded coordination.
     commands { del_edge e; add_edge H -[conj]-> D2 }
   }
-
-% The second and the third conjuncts have a determiner.
-  rule conj_det1 {
-    pattern {
-      H -[1=conj]-> D1;e: D1 -[conj]-> D2;
-      D1 -[1=det]-> X; D2 -[1=det]-> Y
-    }
-    without { H -[conj]-> X; D1 << X; X << D2 }
-    commands {del_edge e;add_edge H -[conj]-> D2 }
+  
+% Embedded coordinations.
+  rule conj_emb {
+    pattern { H -[conj:emb]-> D1;e: D1 -[conj:emb]-> D2 } 
+    commands { del_edge e; add_edge H -[conj:emb]-> D2 }
   }
 
-% The second conjunct has a determiner and the third conjunct is proper noun, a number or a pronoun.
-  rule conj_det2 {
-    pattern {
-      H -[1=conj]-> D1; e: D1 -[conj]-> D2;
-      D1 -[1=det]-> X; D2[upos=NUM|PROPN|PRON]
-    }
-    without { H -[conj]-> X; D1 << X; X << D2 }
-    commands { del_edge e; add_edge H -[conj]-> D2 }
-  }
-
-% The second and the third conjuncts have a subject.
-  rule conj_subj {
-    pattern {
-      H -[1=conj]-> D1;e: D1 -[conj]-> D2;
-      D1 -[1=subj]-> X; D2 -[1=subj]-> Y
-    }
-    commands {del_edge e;add_edge H -[conj]-> D2 }
-  }
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -238,9 +219,9 @@ package shift_out_edges{
       add_edge H -[punct]-> P2; del_edge e2}
   }
       
-
   rule conj{
     pattern{H -[rev=y]-> D; e:D -[conj]-> D1; D.upos <> D1.upos}
+    without{D[upos=ADP]} %Ex : UD_French-GSD  fr-ud-train_14326
     without{D[upos=AUX]; D1[upos=VERB]; H >> D1}%Ex: UD_French-GSD fr-ud-train_06092
     without{D[upos=AUX]; D1[upos=VERB]; H1 -> D; H1 >> D1} %Ex: UD_French-GSD fr-ud-train_09763
     commands{add_edge e: H -> D1; del_edge e}
@@ -544,10 +525,15 @@ package sub_relations {
   }
 
   rule xcomp {
-    pattern { e:H -[comp:obj@x|comp:obl@x|comp:pred@x|comp:pred]-> D }
+    pattern { e:H -[comp:obj@x|comp:obl@x|comp:pred@x|comp:pred|comp:pred@lvc]-> D }
     without{ H[upos=AUX]}
     without{ D[upos=AUX|VERB]; H -[comp:pred]-> D}
     commands {e.1=xcomp; del_feat e.2; del_feat e.deep}
+  }
+
+   rule xcomp_lvc{
+    pattern { e:H -[comp:pred@lvc]-> D}
+    commands {del_edge e; add_edge H -[xcomp:lvc]-> D}
   }
 
 }
@@ -561,7 +547,7 @@ package rel_extensions {
   }
 
   rule del_ext{
-    pattern{e: H -[1=*,2=aux|obj|obl|pred,!deep]-> D}
+    pattern{e: H -[1=*,2=aux|emb|obj|obl|pred,!deep]-> D}
     commands{del_feat e.2}
   }
 
@@ -671,7 +657,7 @@ package relations {
 % Clausal subject.
   rule csubj {
     pattern { e:V -[1=subj]-> S; S[upos=AUX|VERB, !nom] }
-    without { V -[aux:pass]-> * }
+   % without { V -[aux:pass]-> * }
     commands {e.1=csubj}
   }
 
@@ -796,9 +782,9 @@ package final {
 strat main {
   Seq (
     Onf (remove_deep_fixed), % in UD, @fixed becomes INMWE
+    Onf(shared), % Package SHARED must precede SPECIFIC_EXPR_INIT so that feature Shared=Yes is not embedded in MWE.
     specific_expr_init, % Initialization of a specific treatment for MWE, titles and translated words.
     Onf (nom_init),
-    Onf(shared),
     Onf (unchained_relations), % For CONJ relations, chains must be transformed into bouquets before head changes because of conditions on the presence of prepositions, conjunctions and auxiliaries. It is easier to take these conditions into account before head changes (UD_French-GSD : fr-ud-dev_00751)
     Onf (reverse_case_mark),  % Package REVERSE_CASE_MARK precedes packages SUB_RELATIONS and RELATIONS because  UD labels of complement relations depend on the category of the complements introduced with a preposition or a conjunction
     Onf(shift_out_edges),

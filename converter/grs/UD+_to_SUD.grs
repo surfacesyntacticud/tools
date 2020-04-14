@@ -36,7 +36,7 @@ package minimize_conj_dep {
     pattern {
       C1 -[1=conj]-> C2;
       e:C1 -[^conj|conj:emb|discourse|parataxis|punct]-> D; C2 << D}
-   % without { C1 -[1=conj]-> C; C2 << C }
+    without { C1 -[1=conj]-> C; C2 << C ; C << D} % Ex :fr-ud-train_03266, fr-ud-train_02016
     commands { add_edge e:C2 -> D; del_edge e; D.Shared=Yes }
   }
 }
@@ -204,7 +204,7 @@ package shift_out_edges{
 
 % Relations that raise when their source D is on the right of H and when their dependent D1 is on the left of H.
   rule var_right_left{
-    pattern{H -[deep=REV]-> D;  H << D; e: D -[1=punct|obl|advmod]-> D1; D1 << H}
+    pattern{H -[deep=REV]-> D;  H << D; e: D -[1=advmod|obl|orphan|punct]-> D1; D1 << H}
     without{D -[deep=REV]-> D1}
     without{D -[obl:agent|obl:arg]-> D1}
     commands{add_edge e: H -> D1; del_edge e}
@@ -441,6 +441,8 @@ package relations {
 % We make the assumption that a clausal complement that is not introduced with an adposition is a direct object.
   rule comp_obj_ccomp {
     pattern { e:H -[1=ccomp]-> D; D[upos <> ADP]; }
+    without{H -[1=comp,2=obj]-> D1}
+    without{H -[1=obj]-> D1}
     commands {e.1=comp;e.2=obj}
   }
 
@@ -456,13 +458,28 @@ package relations {
     commands {e.1=comp;e.2=obl}
   }
 
+  rule comp_obl_ccomp-dir {
+    pattern {
+      e:H -[1=ccomp]-> D; D[upos <> ADP];
+      H -[1=comp,2=obj]-> D1
+    }
+    commands {e.1=comp;e.2=obl}
+  }
+  
   rule comp_obl {
     pattern { e:H -[1=iobj]-> D; }
     commands {e.1=comp;e.2=obl}
   }
 
-  rule comp_oblx {
+  rule comp_obl_x {
     pattern { e:H -[1=xcomp]-> D; D[upos=ADP]}
+    commands {e.1=comp;e.2=obl;e.deep=x}
+  }
+  
+  rule comp_obl-dir_x {
+    pattern {
+      e:H -[1=xcomp]-> D;D[upos=AUX|VERB,VerbForm=Inf];
+       H -[1=comp,2=obj]-> D1}
     commands {e.1=comp;e.2=obl;e.deep=x}
   }
 
@@ -556,10 +573,10 @@ package relations {
 % Dependencies of type CONJ, FIXED and FLAT:NAME grouped into a bouquet are reorganized into a chain.
 package chained_relations {
   rule conj {
-    pattern {H -[1=conj]-> D1;e: H -[conj]-> D2;D1 << D2}
+    pattern {H -[1=conj]-> D1;e: H -[1=conj]-> D2;D1 << D2}
     without {H -[1=conj]-> D;D1 << D; D << D2}
     without {H -[1=conj]-> D;D2 << D}
-    commands {del_edge e;add_edge D1 -[conj]-> D2}
+    commands {add_edge e:D1 -> D2;del_edge e;}
   }
 
   rule fixed {
@@ -602,13 +619,13 @@ rule add_deep_fixed{
 strat main {
   Seq (
     Onf (eud_to_ud),
-    Onf (add_conj_emb),
     specific_expr_init, % Initialization of a specific treatment for MWE, titles and translated words.
     reverse_relations.main, % Reversing aux, case, cop and mark relations.
     Onf (minimize_conj_dep),
     Onf (sub_relations), % Package SUB_RELATIONS must precede package REL_EXTENSIONS because this package swat extensions on level 2.
     Onf (rel_extensions),
     Onf (relations), % Package RELATIONS must follow package GOV_RISE because this package entails the change of category for the source and the target of some relations.
+    Onf (add_conj_emb), % Package ADD_CONJ_EMB must follow REVERSE_RELATIONS.MAIN because it depends on head changes ; Ex: UD_French-GSD fr-ud-dev_00751
     Onf (chained_relations),% Package CHAINED_RELATIONS must follow package GOV_RISE because it can entail a wrong coordination between two elements because of errors in head changes (UD_French-GS: fr-ud-dev_00131).
     specific_expr_close, % Closing a specific treatment for MWE, titles and translated words.
     Onf(remove_useless_emb),
