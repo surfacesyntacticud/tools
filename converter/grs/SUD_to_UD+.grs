@@ -180,7 +180,7 @@ package shift_out_edges{
   rule all{
     pattern{
       H -[rev=y]-> D;
-      e:D -[^ conj|conj:dicto|expr|goeswith|reparandum|unk@fixed|HEAD|MWE|TITLE|TRANS]-> D1}
+      e:D -[^ conj|conj:dicto|expr|goeswith|reparandum|unk@fixed|HEAD|MWE|TITLE|CONV]-> D1}
     without{D -[punct]-> D2; D -[punct]-> D1; D1.lemma = D2.lemma; D >> D1; D << D2}
     without{
       D -[punct]-> D2; D -[punct]-> D1; D1.lemma = ")"; D2.lemma = "(";
