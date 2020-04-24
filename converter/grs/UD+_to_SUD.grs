@@ -147,74 +147,82 @@ package reverse_relations{
   }
 
 %%%%%%%%%%%%%%%%%%%%%
-% The source of some relations must raise from the old head D to the new head H.
+% The source of some relations must rise from the old head D to the new head H.
 package shift_out_edges{
-% All relations that raise without any restriction.
+% All relations that rise without any restriction.
   rule all{
-    pattern {H -[deep=REV]-> D;e: D -[cc|discourse]-> D1}
+    pattern {H -[deep=REV]-> D;e: D -[cc|discourse|vocative]-> D1}
+    commands{add_edge e: H -> D1;del_edge e}}
+
+% Oblique agent relations in causative constructions.
+  rule caus_agent {
+    pattern{H -[1=caus,deep=REV]-> D; e: D -[1=iobj|obj|obl, 2=agent]-> D1}
     commands{add_edge e: H -> D1;del_edge e}
   }
 
-% All relations that raise inside a clause.
+% All relations that rise inside a clause.
   rule all_mark_embedded{
     pattern {
       H -[1<>mark,deep=REV]-> D;
-      e: D -[1=advcl|csubj|dislocated|expl|nsubj|parataxis|vocative]-> D1;
+      e: D -[1=csubj|dislocated|expl|nsubj|parataxis|vocative]-> D1; % In UD_French-GSD 1/3 of the parataxis must not move up.
     }
     commands{add_edge e: H -> D1;del_edge e}
   }
 
-% All relations that raise outside a clause, when their dependent is before the clause.
+% ADVCL:CLEFT relations rise inside a clause.
+  rule advclcleft_mark_embedded{
+    pattern {
+      H -[1<>mark,deep=REV]-> D;
+      e: D -[advcl:cleft]-> D1}
+    commands{add_edge e: H -> D1;del_edge e}
+  }
+  
+% All relations that rise outside a clause, when their dependent D1 is before the clause.
   rule all_mark_outside_left{
     pattern {
       H -[1=mark,deep=REV]-> D;
-      e: D -[1=advcl|csubj|dislocated|expl|nsubj|vocative]-> D1;
+      e: D -[1=csubj|dislocated|expl|nsubj|vocative]-> D1;
       D1 << H; H << D
     }
     commands{add_edge e: H -> D1;del_edge e}
   }
 
-% All relations that raise outside a clause, when their dependent is after the clause.
+% All relations that rise outside a clause, when their dependent D1 is after the clause.
   rule all_mark_outside_right{
     pattern {
       H -[1=mark,deep=REV]-> D;
-      e: D -[1=advcl|csubj|dislocated|expl|nsubj|vocative]-> D1;
+      e: D -[1=csubj|dislocated|expl|nsubj|vocative]-> D1;
       D1 >> H; H >> D
     }
     commands{add_edge e: H -> D1;del_edge e}
   }
 
-% Agent relations in causative constructions.
-  rule caus_agent {
-    pattern{H -[1=caus,deep=REV]-> D; e: D -[2=agent]-> D1}
-    commands{add_edge e: H -> D1;del_edge e}
-  }
 
-% Relations that raise when their source D is on the right of H and when their dependent D1 is on the left of H.
-  rule var_right_left{
-    pattern{H -[deep=REV]-> D;  H << D; e: D -[1=advmod|obl|orphan|punct]-> D1; D1 << H}
-    without{D -[deep=REV]-> D1}
-    without{D -[obl:agent|obl:arg]-> D1}
-    commands{add_edge e: H -> D1; del_edge e}
-  }
-
-% Relations that raise when their source D is on the left of H and when their dependent D1 is on the right of H.
-  rule var_left_right{
-    pattern{H -[deep=REV]-> D;  H >> D; e: D -[1=punct|obl|advmod]-> D1; D1 >> H}
-    without{D -[obl:agent|obl:arg]-> D1}
-    without{D -[deep=REV]-> D1}
-    commands{add_edge e: H -> D1; del_edge e}
-  }
-
-
-% Relations that raise when their source D is on the right of H and when their dependent D1 is on the right of D.
-  rule var_right_right{
+% Relations that rise when their source D is on the right of H and when their dependent D1 is on the left of H.
+  rule right_to_left{
     pattern{
       H -[deep=REV]-> D;  H << D;
-      e: D -[1=punct|obl|advmod]-> D1; D << D1
-    }
-    without{H -[1=mark]-> D;  D -[1=obl|advmod]-> D1}
-    without{H -[1=case]-> D; D -[1=obl]-> D1}
+      e: D -[1=advcl|advmod|obl|orphan|punct]-> D1; D1 << H}
+    without{D -[obl:agent|obl:arg]-> D1}
+    commands{add_edge e: H -> D1; del_edge e}
+  }
+
+% Relations that rise when their source D is on the left of H and when their dependent D1 is on the right of H.
+  rule left_to_right{
+    pattern{H -[deep=REV]-> D;  H >> D; e: D -[1=advcl|advmod|obl|punct]-> D1; D1 >> H}
+    without{D -[obl:agent|obl:arg]-> D1}
+    commands{add_edge e: H -> D1; del_edge e}
+  }
+
+
+% Relations that rise when their source D is on the right of H and when their dependent D1 is on the right of D.
+  rule right_to_right{
+    pattern{
+      H -[deep=REV]-> D;  H << D;
+      e: D -[1=advcl|advmod|punct|obl]-> D1; D << D1}
+    without{H -[1=case]-> D;  D -[advmod]-> D1}
+    without{H -[1=case]-> D;  D -[1=obl]-> D1; D[upos=ADV]}
+    without{H -[1=mark]-> D;  D -[1=advcl|advmod|obl]-> D1}
     without{D -[obl:agent|obl:arg]-> D1}
     without{D -> D2; D1 << D2}
     without{D -[punct]-> D2; D2 << D; D -[punct]-> D1; D1.lemma = D2.lemma}
@@ -224,15 +232,15 @@ package shift_out_edges{
     commands{add_edge e: H -> D1; del_edge e}
   }
 
-% Relations that raise when their source D is on the left of H and when their dependent D1 is on the left of D.
-  rule var_left_left{
+% Relations that rise when their source D is on the left of H and when their dependent D1 is on the left of D.
+  rule left_to_left{
     pattern{
       H -[deep=REV]-> D;  H >> D;
-      e: D -[1=punct|obl|advmod]-> D1; D >> D1
+      e: D -[1=advmod|obl|punct]-> D1; D >> D1
     }
-    without{H -[1=mark]-> D;  D -[1=obl|advmod]-> D1}
+%    without{H -[1=mark]-> D;  D -[1=obl|advmod]-> D1}
     without{D -[obl:agent|obl:arg]-> D1}
-    without{D -> D2; D1 >> D2}
+%    without{D -> D2; D1 >> D2}
     commands{add_edge e: H -> D1; del_edge e}
   }
 
@@ -243,7 +251,7 @@ package shift_out_edges{
       e: D -[1=conj]-> D1;
       D.upos <> D1.upos;
     }
-    without{D[upos=NOUN|PRON|PROPN]; D1[upos=NOUN|PRON|PROPN]}
+    without{D[upos=NOUN|PRON|PROPN|X]; D1[upos=NOUN|PRON|PROPN|X]}
     without{D[upos=ADJ]; D1[upos=VERB,VerbForm=Part]}
     without{D1[upos=ADJ]; D[upos=VERB,VerbForm=Part]}
     without{D[upos=AUX|VERB]; D1[upos=AUX|VERB]}

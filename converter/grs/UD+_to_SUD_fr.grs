@@ -2,18 +2,14 @@
 include "UD+_to_SUD.grs"
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% The source of some relations must raise from the old head D to the new head H in cases specific to French.
+% The source of some relations must rise from the old head D to the new head H in cases specific to French.
 package FR_shift_out_edges{
   rule cop_obl{
     pattern{ H -[cop]-> D; e: D -[obl:mod]-> D1; H << D1; D1 << D}
+    without{ D -> D2; D2 << D1} % Ex: UD_French-GSD, fr-ud-test_00008 - leur coeur serait comme les montres : 100% Waterproof
     commands{add_edge e:H -> D1; del_edge e}
   }
-
-  % rule aux_obl{
-  %   pattern{ H -[1=aux]-> D; e: D -[obl:mod]-> D1}
-  %   commands{add_edge e:H -> D1; del_edge e}
-  % }
-  
+ 
   rule ne_pas {
     pattern {
       G -> N1; N1 [lemma="ne"];
@@ -26,6 +22,31 @@ package FR_shift_out_edges{
   }
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Some relations have moved up from the old head D to the new head H incorrectly in specific cases in French. The move must be cancelled.
+package FR_shift_out_back_edges{
+
+   rule comparative_que{
+     pattern{
+       H[upos=AUX];
+       H -[1=aux|cop]-> D;
+       e: H -[1=obl]-> D1;
+       D1[upos=SCONJ,lemma=que]}
+    commands{add_edge e: D -> D1;del_edge e}
+   }
+  
+  rule dont_en{
+    pattern {
+      H[upos=ADP|AUX];
+      H -[obj]-> D;
+      D1[upos=PRON];
+      e: H -> D1;
+      D1 << H}
+    commands{add_edge e: D -> D1;del_edge e}
+  }
+
+
+}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Relations in SUD that are determined from UD relations with rules specific to French.
 package FR_relations {
@@ -124,6 +145,7 @@ strat FR_main {
     reverse_relations.main,
     Onf (minimize_conj_dep),
     Onf(FR_shift_out_edges),
+    Onf(FR_shift_out_back_edges),
     Onf (FR_relations),
     Onf (sub_relations),
     Onf (rel_extensions),
