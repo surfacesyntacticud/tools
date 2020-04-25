@@ -411,14 +411,15 @@ package sub_relations {
     commands {e.1=expl; del_feat e.deep}
   }
 
-% An expletive complement, which is a COMP:FIXED dependent in SUD, becomes an EXPL:COMP dependent in UD.
-% Ex: Les gens s'enfuient - Il s'agit d'un accident. - Les voitures se vendent bien. - Il s'est vendu une grande maison aujourd'hui. -  Il se dit que tu viendras.
+% An expletive complement, which is a COMP:EXPL dependent in SUD, becomes an EXPL:COMP dependent in UD.
+% Ex: Les gens s'enfuient - Il s'agit d'un accident.
   rule expl_comp{
-    pattern{ e:H -[comp@fixed]-> D}
+    pattern{ e:H -[comp@expl]-> D}
     commands {e.1=expl;e.2=comp; del_feat e.deep}
   }
 
-% comp@pass ==> expl:pass
+% An expletive complement in a passive construction, which is a COMP:PASS dependent in SUD, becomes an EXPL:PASS dependent in UD.
+% Ex:  Les voitures se vendent bien. - Il s'est vendu une grande maison aujourd'hui. -  Il se dit que tu viendras.
   rule expl_pass {
     pattern {e: H -[comp@pass]-> D}
     commands {del_edge e;add_edge H -[expl:pass]-> D}

@@ -305,10 +305,29 @@ package shift_out_edges{
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % UD sub-relations are renamed as SUD sub-relations.
+% The rules are arranged int the alphabetic order of the resulting relations.
 package sub_relations {
   rule comp {
     pattern { e:H -[advcl:cleft|ccomp:obj|ccomp:obl]-> D; }
     commands {e.1=comp}
+  }
+  
+% Relation betweew a verb and a clitic expressing a pronominal passive construction.
+% Ex: Les voitures se vendent bien. - Que tu renonces se discute. - Il s'est vendu une grande maison aujourd'hui  - Il se dit que tu viendras.
+  rule comp_pass {
+    pattern {e: H -[expl:pass]-> D}
+    commands {del_edge e;add_edge H -[comp@pass]-> D}
+  }
+
+% In an impersonal pronominal passive construction, the deep subject, which is a NSUBJ or CSUBJ dependent in UD, becomes a simple direct object in SUD.
+% Ex: Il s'est vendu une grande maison aujourd'hui  - Il se dit que tu viendras.
+  rule comp_obj {
+    pattern {
+      e:H -[1=csubj|nsubj, 2=pass]-> D;
+      H -[expl:subj]-> S;
+      H -[comp@pass]-> *;
+    }
+    commands { del_edge e; add_edge H -[comp:obj]-> D; }
   }
 
 % In an impersonal active construction, the deep subject, which is a NSUBJ or CSUBJ dependent in UD, becomes a direct object in SUD with the deep extension expl.
@@ -319,7 +338,7 @@ package sub_relations {
   }
 
 % In an impersonal passive construction, the deep passive subject, which is a NSUBJ:PASS or CSUBJ:PASS dependent in UD, becomes a direct object in SUD with the deep extension expl.
-% Ex: Il a été vendu une grande maison aujourd'hui - Il s'est vendu une grande maison aujourd'hui - Il est prévu de continuer. - Il se dit que tu viendras.
+% Ex: Il a été vendu une grande maison aujourd'hui -  Il est prévu de continuer.
   rule comp_obj_expl_pass {
     pattern {
       e:H -[1=csubj|nsubj, 2=pass]-> D;
@@ -329,36 +348,16 @@ package sub_relations {
     commands { del_edge e; add_edge H -[comp:obj@pass]-> D; }
   }
 
-  rule comp_obj {
-    pattern {
-      e:H -[1=csubj|nsubj, 2=pass]-> D;
-      H -[expl:subj]-> S;
-      H -[comp@pass]-> *;
-    }
-    commands { del_edge e; add_edge H -[comp:obj]-> D; }
-  }
-
-% expl:pass ==> comp@pass
-  rule comp_pass {
-    pattern {
-      e: H -[expl:pass]-> D
-    }
-    commands {
-      del_edge e;
-      add_edge H -[comp@pass]-> D
-    }
-  }
-
   rule comp_obl {
     pattern { e:H -[1=obl, 2=arg|comp]-> D; } % comp pour Spoken
     commands {e.1=comp; e.2=obl}
   }
 
-% An expletive complement, which is an EXPL:COMP dependent in UD, becomes a COMP@FIXED in SUD (see discussion https://gitlab.inria.fr/grew/SUD/issues/14)
+% An expletive complement, which is an EXPL:COMP dependent in UD, becomes a COMP@EXPL in SUD
 % Ex: Les gens s'enfuient - Il s'agit d'un accident. - Les voitures se vendent bien. - Il s'est vendu une grande maison aujourd'hui. -  Il se dit que tu viendras.
-  rule comp_fixed {
+  rule comp_expl {
     pattern { e:H -[expl:comp]-> D; }
-    commands {e.1=comp; e.deep=fixed; del_feat e.2}
+    commands {e.1=comp; e.deep=expl; del_feat e.2}
   }
 
   rule mod {
