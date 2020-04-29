@@ -4,46 +4,70 @@ include "UD+_to_SUD.grs"
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % The source of some relations must rise from the old head D to the new head H in cases specific to French.
 package FR_shift_out_edges{
-  rule cop_obl{
-    pattern{ H -[cop]-> D; e: D -[obl:mod]-> D1; H << D1; D1 << D}
-    without{ D -> D2; D2 << D1} % Ex: UD_French-GSD, fr-ud-test_00008 - leur coeur serait comme les montres : 100% Waterproof
-    commands{add_edge e:H -> D1; del_edge e}
+
+  rule prep_noun_adv-judgment(lex from "lexicons/adv_judgment.lp") {
+    pattern{
+      H -[case]-> D;
+      e:D -[advmod]-> ADV;
+      ADV[upos=ADV,lemma=lex.adv];
+      H << D; D << ADV}
+    without{D -> D1; D1 << ADV}
+    commands{add_edge H -[advmod]-> ADV; del_edge e}
   }
- 
-  rule ne_pas {
-    pattern {
-      G -> N1; N1 [lemma="ne"];
-      N2 [Polarity=Neg, upos=ADV, lemma <> que];
-      G << N2; G -[1=aux|cop]-> H; e: H -[advmod]-> N2;
-    }
-    commands {
-      del_edge e; add_edge G -[mod]-> N2;
-    }
+  
+  rule prep_noun_adv-tense(lex from "lexicons/adv_tense.lp") {
+    pattern{
+      H -[case]-> D;
+      e:D -[advmod]-> ADV;
+      ADV[upos=ADV,lemma=lex.adv];
+      H << D; D << ADV}
+    without{D -> D1; D1 << ADV}
+    commands{add_edge H -[advmod]-> ADV; del_edge e}
   }
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Some relations have moved up from the old head D to the new head H incorrectly in specific cases in French. The move must be cancelled.
 package FR_shift_out_back_edges{
-
-   rule comparative_que{
-     pattern{
-       H[upos=AUX];
-       H -[1=aux|cop]-> D;
-       e: H -[1=obl]-> D1;
-       D1[upos=SCONJ,lemma=que]}
-    commands{add_edge e: D -> D1;del_edge e}
-   }
   
   rule dont_en{
     pattern {
       H[upos=ADP|AUX];
-      H -[obj]-> D;
-      D1[upos=PRON];
+      H -[1=aux|case|cop]-> D;
+      D1[upos=PRON,lemma=dont|en];
       e: H -> D1;
       D1 << H}
     commands{add_edge e: D -> D1;del_edge e}
   }
+
+  rule aux_adv-quant_comp(lex from "lexicons/adv_quant.lp"){
+    pattern{
+      H -[1=aux|cop]-> D;
+      D1[upos=ADV,lemma=lex.adv];
+      e: H -[advmod]-> D1;
+      H << D1}
+    commands{add_edge D -[advmod]-> D1;del_edge e}
+  }
+
+  rule aux_adv-manner_comp(lex from "lexicons/adv_manner.lp"){
+    pattern{
+      H -[1=aux|cop]-> D;
+      D1[upos=ADV,lemma=lex.adv];
+      e: H -[advmod]-> D1;
+      H << D1}
+    commands{add_edge D -[advmod]-> D1;del_edge e}
+  }
+
+  rule aux_aussi_comp{
+    pattern{
+      H -[1=aux|cop]-> D;  D[upos=ADJ|ADV];
+      e:H -[advmod]-> D1;
+      D1[upos=ADV,lemma=aussi];
+      H << D1; 
+      CONJ[upos=SCONJ,lemma=que]; H -> CONJ}
+    commands{add_edge D -[advmod]-> D1; del_edge e}
+  }
+
 
 
 }

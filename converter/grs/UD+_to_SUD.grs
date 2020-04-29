@@ -164,20 +164,13 @@ package shift_out_edges{
   rule all_mark_embedded{
     pattern {
       H -[1<>mark,deep=REV]-> D;
-      e: D -[1=csubj|dislocated|expl|nsubj|parataxis|vocative]-> D1; % In UD_French-GSD 1/3 of the parataxis must not move up.
+      e: D -[1=advcl|csubj|dislocated|expl|nsubj|parataxis|vocative]-> D1;
     }
     commands{add_edge e: H -> D1;del_edge e}
   }
 
-% ADVCL:CLEFT relations rise inside a clause.
-  rule advclcleft_mark_embedded{
-    pattern {
-      H -[1<>mark,deep=REV]-> D;
-      e: D -[advcl:cleft]-> D1}
-    commands{add_edge e: H -> D1;del_edge e}
-  }
   
-% All relations that rise outside a clause, when their dependent D1 is before the clause.
+% Relations with their source D after the head of a subordinated clause and their dependent D1 before.
   rule all_mark_outside_left{
     pattern {
       H -[1=mark,deep=REV]-> D;
@@ -187,44 +180,25 @@ package shift_out_edges{
     commands{add_edge e: H -> D1;del_edge e}
   }
 
-% All relations that rise outside a clause, when their dependent D1 is after the clause.
+% Relations with their source D before the head of a subordinated clause and their dependent D1 afterwards.
   rule all_mark_outside_right{
     pattern {
       H -[1=mark,deep=REV]-> D;
-      e: D -[1=csubj|dislocated|expl|nsubj|vocative]-> D1;
+      e: D -[1=csubj|dislocated|expl|nsubj]-> D1;
       D1 >> H; H >> D
     }
     commands{add_edge e: H -> D1;del_edge e}
   }
 
-
-% Relations that rise when their source D is on the right of H and when their dependent D1 is on the left of H.
-  rule right_to_left{
-    pattern{
-      H -[deep=REV]-> D;  H << D;
-      e: D -[1=advcl|advmod|obl|orphan|punct]-> D1; D1 << H}
-    without{D -[obl:agent|obl:arg]-> D1}
-    commands{add_edge e: H -> D1; del_edge e}
-  }
-
-% Relations that rise when their source D is on the left of H and when their dependent D1 is on the right of H.
-  rule left_to_right{
-    pattern{H -[deep=REV]-> D;  H >> D; e: D -[1=advcl|advmod|obl|punct]-> D1; D1 >> H}
-    without{D -[obl:agent|obl:arg]-> D1}
-    commands{add_edge e: H -> D1; del_edge e}
-  }
-
-
 % Relations that rise when their source D is on the right of H and when their dependent D1 is on the right of D.
-  rule right_to_right{
+  rule H_D_D1{
     pattern{
       H -[deep=REV]-> D;  H << D;
-      e: D -[1=advcl|advmod|punct|obl]-> D1; D << D1}
+      e: D -[1=advmod|punct|obl]-> D1; D << D1}
     without{H -[1=case]-> D;  D -[advmod]-> D1}
-    without{H -[1=case]-> D;  D -[1=obl]-> D1; D[upos=ADV]}
-    without{H -[1=mark]-> D;  D -[1=advcl|advmod|obl]-> D1}
+    without{H -[1=mark]-> D;  D -[1=advmod|obl]-> D1}
     without{D -[obl:agent|obl:arg]-> D1}
-    without{D -> D2; D1 << D2}
+    without{D -> D2; D1 << D2} 
     without{D -[punct]-> D2; D2 << D; D -[punct]-> D1; D1.lemma = D2.lemma}
     without{D -[punct]-> D2; D2 << D; D -[punct]-> D1; D1.lemma = ")"; D2.lemma = "("}
     without{D -[punct]-> D2; D2 << D; D -[punct]-> D1; D1.lemma = "»"; D2.lemma = "«"}
@@ -232,8 +206,35 @@ package shift_out_edges{
     commands{add_edge e: H -> D1; del_edge e}
   }
 
+% Relations that rise when their source D is on the right of H and when their dependent D1 is between D and H.
+  rule H_D1_D{
+    pattern{
+      H -[1=aux|caus|cop|pass,deep=REV]-> D;
+      e: D -[1=advmod|obl]-> D1;
+      H << D1; D1 << D}
+    %without{ H -[1=aux|cop]-> D; D -[advmod]-> D1 }
+    without{ D -> D2; H << D2; D2 << D1}
+    commands{add_edge e: H -> D1; del_edge e}
+  }
+
+% Relations that rise when their source D is on the left of H and when their dependent D1 is on the right of H.
+  rule D_H_D1{
+    pattern{H -[deep=REV]-> D;  H >> D; e: D -[1=advcl|advmod|obl|punct]-> D1; D1 >> H}
+    without{D -[obl:agent|obl:arg]-> D1}
+    commands{add_edge e: H -> D1; del_edge e}
+  }
+
+% Relations that rise when their source D is on the right of H and when their dependent D1 is on the left of H.
+  rule D1_H_D{
+    pattern{
+      H -[deep=REV]-> D;  H << D;
+      e: D -[1=advcl|advmod|nmod|obl|orphan|punct]-> D1; D1 << H}
+    without{D -[obl:agent|obl:arg]-> D1}
+    commands{add_edge e: H -> D1; del_edge e}
+  }
+
 % Relations that rise when their source D is on the left of H and when their dependent D1 is on the left of D.
-  rule left_to_left{
+  rule D1_D_H{
     pattern{
       H -[deep=REV]-> D;  H >> D;
       e: D -[1=advmod|obl|punct]-> D1; D >> D1
