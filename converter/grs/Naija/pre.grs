@@ -1,0 +1,30 @@
+package Naija_pre_SUD_to_UD {
+
+  rule na {
+    pattern { X[lemma=na, upos = PART] }
+    commands  { X.upos=AUX }
+  }
+
+  rule its {
+    pattern { X[lemma="it's"|"dat's", upos = PART] }
+    commands  { X.upos=VERB }
+  }
+
+  rule be {
+    pattern { X[lemma=be, upos = VERB] ; X -[comp:pred]-> Y }
+    commands  { X.upos=AUX }
+  }
+
+  rule rootisroot {
+    pattern { ROOT[!upos] ; e: ROOT -[root@scrap]-> X }
+    commands { del_edge e ; add_edge ROOT -[root]-> X }
+  }
+
+  % supprimer les liens @xxx qui sont dans la colonne 9
+  rule deep { % remove enhanced relations
+    pattern { e:N -[re"E:.*"]-> M }
+    commands { del_edge e}
+  }
+}
+
+strat main { Onf (Naija_pre_SUD_to_UD) }
