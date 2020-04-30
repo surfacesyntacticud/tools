@@ -25,6 +25,12 @@ package Naija_pre_SUD_to_UD {
     pattern { e:N -[re"E:.*"]-> M }
     commands { del_edge e}
   }
+
+  rule scrap {
+    pattern { e: N -[deep=scrap]-> M; }
+    commands { del_feat e.deep }
+  }
+
 }
 
 strat main { Onf (Naija_pre_SUD_to_UD) }
