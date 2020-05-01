@@ -31,6 +31,15 @@ package Naija_pre_SUD_to_UD {
     commands { del_feat e.deep }
   }
 
+  rule conjcoord {
+  pattern { e: N -[conj:coord]-> M; }
+  commands { del_edge e; add_edge N -[conj]-> M; }
+  }
+  rule conjappos {
+  pattern { e: N -[conj:appos]-> M; }
+  commands { del_edge e; add_edge N -[appos]-> M; }
+  }
+
 }
 
 strat main { Onf (Naija_pre_SUD_to_UD) }
