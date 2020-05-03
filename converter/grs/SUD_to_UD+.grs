@@ -45,7 +45,7 @@ package shared {
       e: D1 -> D; D[Shared=Yes]}
     commands {add_edge e: N1 -> D;del_edge e;}
   }
-   
+
   rule move_distant2-relation {
     pattern {
       N1 -[1=conj]-> N2;
@@ -54,7 +54,7 @@ package shared {
       e: D2 -> D; D[Shared=Yes]}
     commands {add_edge e: N1 -> D;del_edge e;}
   }
-  
+
   rule remove_shared {
     pattern {
       e: N2 -[^conj|discourse|parataxis]-> D; D[Shared=Yes];
@@ -142,14 +142,19 @@ package unchained_relations {
     commands { del_edge e; add_edge H -[unk@fixed]-> D2; }
   }
 
+  rule flat {
+    pattern { H -[flat]-> D1;e: D1 -[flat]-> D2 }
+    commands { del_edge e; add_edge H -[flat]-> D2 }
+  }
+
   rule conj {
     pattern { H -[1=conj]-> D1;e: D1 -[conj]-> D2 }% Dependency H -> D1 can be an embedded coordination.
     commands { del_edge e; add_edge H -[conj]-> D2 }
   }
-  
+
 % Embedded coordinations.
   rule conj_emb {
-    pattern { H -[conj:emb]-> D1;e: D1 -[conj:emb]-> D2 } 
+    pattern { H -[conj:emb]-> D1;e: D1 -[conj:emb]-> D2 }
     commands { del_edge e; add_edge H -[conj:emb]-> D2 }
   }
 
@@ -213,12 +218,12 @@ package shift_out_edges{
     without{P1.lemma = "("; P2.lemma <> ")"}
     without{P1.lemma = "«"; P2.lemma <> "»"}
     without{P1.lemma = "["; P2.lemma <> "]"}
-    without{P1.lemma = "{"; P2.lemma <> "}"}    
+    without{P1.lemma = "{"; P2.lemma <> "}"}
     commands{
       add_edge H -[punct]-> P1; del_edge e1;
       add_edge H -[punct]-> P2; del_edge e2}
   }
-      
+
   rule conj{
     pattern{H -[rev=y]-> D; e:D -[conj]-> D1; D.upos <> D1.upos}
     without{D1 << H} %Ex : UD_French-GSD  fr-ud-train_14326
