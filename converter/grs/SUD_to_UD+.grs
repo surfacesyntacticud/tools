@@ -221,7 +221,7 @@ package shift_out_edges{
       
   rule conj{
     pattern{H -[rev=y]-> D; e:D -[conj]-> D1; D.upos <> D1.upos}
-    without{D[upos=ADP]} %Ex : UD_French-GSD  fr-ud-train_14326
+    without{D1 << H} %Ex : UD_French-GSD  fr-ud-train_14326
     without{D[upos=AUX]; D1[upos=VERB]; H >> D1}%Ex: UD_French-GSD fr-ud-train_06092
     without{D[upos=AUX]; D1[upos=VERB]; H1 -> D; H1 >> D1} %Ex: UD_French-GSD fr-ud-train_09763
     commands{add_edge e: H -> D1; del_edge e}
