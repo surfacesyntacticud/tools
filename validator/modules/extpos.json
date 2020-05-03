@@ -1,0 +1,27 @@
+{
+  "title": "Check consistency of EXTPOS feature",
+  "items": [{
+      "pattern": [
+        "pattern { N [EXTPOS] }",
+        "without { N -[deep=fixed]-> M }",
+        "without { N -[goeswith]-> M }",
+        "without { N [upos=SYM] }",
+        "without { N [Type=Title] }"
+      ],
+      "description": "The `EXTPOS` feature in an unexpected context",
+      "level": "warning"
+    },
+    {
+      "pattern": [
+        "pattern { HEAD [!EXTPOS]; HEAD -[deep=fixed]-> N;  }",
+        "without { * -[deep=fixed]-> HEAD  }"
+      ],
+      "description": "The head of a MWE does not have an `EXTPOS`",
+      "level": "warning"
+    }
+
+
+
+
+  ]
+}

@@ -37,7 +37,11 @@
               let link = 'http://match.grew.fr/?corpus=' + data.corpus + '&pattern=' + pattern_uri;
               let row = "";
               if (item.count > 0) {
-                row += '<tr class="table-warning">';
+                if (item.level == "error") {
+                  row += '<tr class="table-danger">';
+                } else {
+                  row += '<tr class="table-warning">';
+                }
               } else {
                 row += '<tr class="table-success">';
               }
