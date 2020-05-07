@@ -39,13 +39,56 @@ package Naija_pre_SUD_to_UD {
   pattern { e: N -[conj:appos]-> M; }
   commands { del_edge e; add_edge N -[appos]-> M; }
   }
+}
 
-  rule fixed_in_fixed {
-    pattern { N1 -[deep=fixed]-> N2; e: N2 -> N3 }
-    without { N2 -[deep=fixed]-> N3 }
-    commands { add_edge e: N1 -> N3; del_edge e }
+rule fixed_in_fixed {
+  pattern { N1 -[deep=fixed]-> N2; e: N2 -> N3 }
+  without { N2 -[deep=fixed]-> N3 }
+  commands { add_edge e: N1 -> N3; del_edge e }
+}
+
+package revert {
+  rule with_extpos {
+    pattern { e: N -[deep=fixed, 1<>unk]-> M; N[_MISC_EXTPOS]; M << N  }
+    commands {
+      add_edge e:M -> N; shift N ==> M; del_edge e;
+      M._MISC_EXTPOS = N._MISC_EXTPOS;
+      del_feat N._MISC_EXTPOS;
+    }
+  }
+
+  rule without_extpos {
+    pattern { e: N -[deep=fixed, 1<>unk]-> M; N[!_MISC_EXTPOS]; M << N  }
+    commands {
+      add_edge e:M -> N; shift N ==> M; del_edge e;
+    }
   }
 
 }
 
-strat main { Onf (Naija_pre_SUD_to_UD) }
+rule chain {
+  pattern {
+    N0 -[deep=fixed, 1<>unk]-> N1;
+    e: N0 -[deep=fixed, 1<>unk]-> N2;
+    N1 << N2;
+  }
+  commands {
+    add_edge e: N1 -> N2; del_edge e
+  }
+}
+
+rule rename {
+  pattern { e: N -[deep=fixed, 1<>unk]-> M; }
+  commands { del_edge e; add_edge N -[unk@fixed]-> M; }
+}
+
+strat main {
+  Seq (
+    Onf (Naija_pre_SUD_to_UD),
+    % change annotation of "SYNT" into "FIXED"
+    Onf (fixed_in_fixed),
+    Onf(revert),
+    Onf (chain),
+    Onf(rename)
+  )
+}
