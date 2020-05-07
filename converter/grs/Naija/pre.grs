@@ -40,6 +40,12 @@ package Naija_pre_SUD_to_UD {
   commands { del_edge e; add_edge N -[appos]-> M; }
   }
 
+  rule fixed_in_fixed {
+    pattern { N1 -[deep=fixed]-> N2; e: N2 -> N3 }
+    without { N2 -[deep=fixed]-> N3 }
+    commands { add_edge e: N1 -> N3; del_edge e }
+  }
+
 }
 
 strat main { Onf (Naija_pre_SUD_to_UD) }
