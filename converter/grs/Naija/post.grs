@@ -1,6 +1,6 @@
 package Naija_post_SUD_to_UD {
   rule cc {
-    pattern { X -[cc|aux]-> Y ; e : Y -[^fixed]-> Z }
+    pattern { X -[cc|aux]-> Y ; e : Y -[^fixed|conj:dicto]-> Z }
     commands { add_edge e : X -> Z; del_edge  e;  }
   }
 }
