@@ -454,6 +454,11 @@ package sub_relations {
     commands {e.1=nmod}
   }
 
+  rule nmod_poss {
+    pattern { e:H -[1=mod, 2=poss]-> A; A[upos=ADJ] }
+    commands {e.1=nmod}
+  }
+
   rule nsubj {
     pattern { e:H -[comp:obj@agent]-> D; D[nom=y]; H -[subj@expl|expl:subj]-> *}
     commands { del_edge e; add_edge H -[nsubj]-> D }
@@ -481,6 +486,17 @@ package sub_relations {
     commands {e.1=nsubj}
   }
 
+  % added for Naija
+  rule nummod_det {
+    pattern { e:H -[1=det, 2=num]-> D; }
+    commands { e.1=nummod; e.2=det}
+  }
+
+  % added for Naija
+  rule nummod_mod {
+    pattern { e:H -[1=mod, 2=num]-> D; }
+    commands { e.1=nummod; e.2=mod}
+  }
 
   rule obj_agent {
     pattern { e:H -[comp:obj@agent]-> D}
