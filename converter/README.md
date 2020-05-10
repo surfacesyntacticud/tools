@@ -12,11 +12,11 @@ You first have to install the Grew software (see [instructions](http://grew.fr/i
 ### Conversion from UD to SUD
 
 ```
-grew transform -grs UD+_to_SUD.grs -i <input_UD_file.conllu> -o <output_SUD_file.conllu>
+grew transform -grs grs/UD+_to_SUD.grs -i <input_UD_file.conllu> -o <output_SUD_file.conllu>
 ```
 
 ### Conversion from SUD to UD
 
 ```
-grew transform -grs SUD_to_UD+.grs -i <input_SUD_file.conllu> -o <output_UD_file.conllu>
+grew transform -grs grs/SUD_to_UD+.grs -i <input_SUD_file.conllu> -o <output_UD_file.conllu>
 ```
