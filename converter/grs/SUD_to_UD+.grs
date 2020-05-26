@@ -30,6 +30,7 @@ package remove_deep_fixed{
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Dependencies of coordinations to their right are marked in SUD with feature Shared=Yes and they are attached at the rightmost conjunct. In UD, they are attached at the head of the coordination and feature  Shared=Yes is useless.
 package shared {
+% The shared dependent is directly attached at the head of the last conjunct.
   rule move_relation {
     pattern {
       N1 -[1=conj]-> N2;
@@ -38,32 +39,43 @@ package shared {
     commands {add_edge e: N1 -> D; del_edge e}
   }
 
-  rule move_distant1-relation {
+% The shared dependent is attached at the head of the last conjunct via a COMP:OBJ relation.
+  rule move_compobj_distant-relation {
     pattern {
       N1 -[1=conj]-> N2;
-      N2 -[^conj]-> D1;
-      e: D1 -> D; D[Shared=Yes]}
-    commands {add_edge e: N1 -> D;del_edge e;}
-  }
-
-  rule move_distant2-relation {
-    pattern {
-      N1 -[1=conj]-> N2;
-      N2 -[^conj]-> D1;
-      D1 -[^conj]-> D2;
+      N1 -[1=comp,2=obj]-> D1;
+      N2 -[1=comp,2=obj]-> D2;
       e: D2 -> D; D[Shared=Yes]}
-    commands {add_edge e: N1 -> D;del_edge e;}
+    commands {add_edge e: D1 -> D;del_edge e;}
   }
 
-  rule remove_shared {
+% The shared dependent is attached at the head of the last conjunct via a MOD relation.
+  rule move_mod_distant-relation {
     pattern {
-      e: N2 -[^conj|discourse|parataxis]-> D; D[Shared=Yes];
-      N2 -[conj]-> *
-    }
-    without {N1 -[1=conj]-> N2}
-    commands {
-      del_feat D.Shared
-    }
+      N1 -[1=conj]-> N2;
+      N1 -[1=mod]-> D1;
+      N2 -[1=mod]-> D2;
+      e: D2 -> D; D[Shared=Yes]}
+    commands {add_edge e: D1 -> D;del_edge e;}
+  }
+  
+% % The shared dependent is attached at the head of the last conjunct via a relation different from COMP:OBJ and MOD.
+%   rule move_other_distant-relation {
+%     pattern {
+%       N1 -[1=conj]-> N2;
+%       N2 -> D2;
+%       e: D2 -> D; D[Shared=Yes]}
+%     without{N2 -[1=mod]-> D2}
+%     without{N2 -[1=comp,2=obj]-> D2}
+%     commands {add_edge e: N1 -> D;del_edge e;}
+%   }
+
+% After the shared dependent has moved to the first conjunct, all features "Shared" are removed.
+  rule remove_shared {
+    pattern {D[Shared=Yes]}
+    without {N1 -[1=conj]-> N2; N2 -> D}
+    without{N1 -[1=conj]-> N2; N2 -> D2; D2 ->D}
+    commands {del_feat D.Shared}
   }
 }
 
@@ -166,7 +178,7 @@ package reverse_case_mark {
 % The heads are reversed from the most internal to the most external. The source and the target of the reversed relation are marked "reversed = y" so that loops are not possible.
   rule rev_head {
     pattern {e:H -[1=comp,2=obj, !rev]-> D; H[upos= ADP|CCONJ|PART|SCONJ]}
-    without{D[upos= ADP|CCONJ|PART|SCONJ]; D -[1=comp,2=obj,rev=y]-> D1}
+    without{D[upos= ADP|CCONJ|PART|SCONJ]; D -[1=comp,2=obj]-> D1}
     commands {
       e.rev=y;
       add_edge e:D -> H;
@@ -185,7 +197,9 @@ package shift_out_edges{
   rule all{
     pattern{
       H -[rev=y]-> D;
-      e:D -[^ conj|conj:dicto|expr|goeswith|reparandum|unk@fixed|HEAD|MWE|TITLE|CONV]-> D1}
+      e: D -> D1}
+     % e:D -[^ conj|conj:dicto|expr|goeswith|reparandum|unk@fixed|HEAD|MWE|TITLE|CONV]-> D1}
+    without{ D -[1=comp|conj|expr|goeswith|reparandum|HEAD|MWE|TITLE|CONV]-> D1}
     without{D -[punct]-> D2; D -[punct]-> D1; D1.lemma = D2.lemma; D >> D1; D << D2}
     without{
       D -[punct]-> D2; D -[punct]-> D1; D1.lemma = ")"; D2.lemma = "(";
@@ -363,13 +377,11 @@ package sub_relations {
     commands {e.1=ccomp}
   }
 
-% Clausal complement  with an adjectival or adverb as its head without control of its subject.
-  rule ccomp_adv_adj {
+% Clausal complement  with a non-verbal head.
+  rule ccomp_non-verb {
     pattern {
-      e:H -[1=comp, 2=obj|obl]-> D; D[upos = ADJ|ADV,!nom];
+      e:H -[1=comp, 2=obj|obl]-> D; D[upos<> AUX|VERB];
       D -[1=mark]-> CONJ}
-    without{ H -[comp:obj@x|comp:obl@x]-> D}
-    without{ H -[comp:obj@expl]-> D}
     commands {e.1=ccomp}
   }
 
@@ -442,12 +454,12 @@ package sub_relations {
     commands {e.1=fixed; del_feat e.deep}
   }
 
+% iobj is used for any argument of a non-nominal governor, which is an adverb or a pronoun not introduced by a preposition 
   rule iobj {
-    pattern { e:H -[1=comp,2=obl]-> D; D[upos=ADV|PRON]}
-   % without { D -[^ MWE]-> X; X[upos=ADP] }
+    pattern {H[!nom]; e:H -[1=comp,2=obl]-> D; D[upos=ADV|PRON]}
+    without{D -[case]-> *}
     commands {e.1=iobj}
   }
-
 
   rule nmod{
     pattern { e:H -[1=comp, 2=obl]-> D; H[nom=y]; D[nom=y];  }

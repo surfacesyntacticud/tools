@@ -11,17 +11,31 @@ package FR_shift_out_edges{
       e:D -[advmod]-> ADV;
       ADV[upos=ADV,lemma=lex.adv];
       H << D; D << ADV}
-    without{D -> D1; D1 << ADV}
+    without{D -> D1; D1 >> ADV}
     commands{add_edge H -[advmod]-> ADV; del_edge e}
   }
   
+  rule prep_noun_adv-loc-judgment(lex from "lexicons/adv-loc_judgment.lp") {
+    pattern{
+      H -[case]-> D;
+      e:D -[advmod]-> ADV;
+      ADV -[HEAD]-> H1;
+      H1[lemma=lex.head];
+      ADV -[fixed|MWE]-> D1;
+      D1[lemma=lex.dep];
+      H << D; D << ADV}
+    without{D -> D2; D2 >> ADV}
+    commands{add_edge H -[advmod]-> ADV; del_edge e}
+  }
+
+
   rule prep_noun_adv-tense(lex from "lexicons/adv_tense.lp") {
     pattern{
       H -[case]-> D;
       e:D -[advmod]-> ADV;
       ADV[upos=ADV,lemma=lex.adv];
       H << D; D << ADV}
-    without{D -> D1; D1 << ADV}
+    without{D -> D1; D1 >> ADV}
     commands{add_edge H -[advmod]-> ADV; del_edge e}
   }
 }
@@ -49,6 +63,19 @@ package FR_shift_out_back_edges{
     commands{add_edge D -[advmod]-> D1;del_edge e}
   }
 
+  rule aux_adv-loc-quant_comp(lex from "lexicons/adv-loc_quant.lp"){
+    pattern{
+      H -[1=aux|cop]-> D;
+      e: H -[advmod]-> D1;
+      D1[upos=ADV];
+      D1 -[HEAD]-> H1;
+      H1[lemma=lex.head];
+      D1 -[MWE|fixed]-> D2;
+      D2[lemma=lex.dep];
+      H << D1}
+    commands{add_edge D -[advmod]-> D1;del_edge e}
+  }
+  
   rule aux_adv-manner_comp(lex from "lexicons/adv_manner.lp"){
     pattern{
       H -[1=aux|cop]-> D;
@@ -64,7 +91,7 @@ package FR_shift_out_back_edges{
       e:H -[advmod]-> D1;
       D1[upos=ADV,lemma=aussi];
       H << D1; 
-      CONJ[upos=SCONJ,lemma=que]; H -> CONJ}
+      CONJ[upos=SCONJ,lemma=que]; D1 -> CONJ}
     commands{add_edge D -[advmod]-> D1; del_edge e}
   }
 
@@ -95,6 +122,24 @@ package FR_relations {
       del_edge e2; add_edge V -[subj@expl]-> SUBJ2;}
   }
 
+% Adverbs with a direct object.By default, the relation between an adverb and one of its arguments is COMP:OBL
+  rule adv_obj(lex from "lexicons/adv_obj.lp") {
+    pattern{
+      ADV[upos=ADV,lemma=lex.adv];
+      e:ADV -[ccomp]-> ARG}
+    commands{ del_edge e; add_edge ADV -[comp:obj]-> ARG}
+  }
+  
+% Adverbial locutions with a direct object.By default, the relation between an adverbial locution and one of its arguments is COMP:OBL
+  rule adv-loc_obj(lex from "lexicons/adv-loc_obj.lp") {
+    pattern{
+      LOC[upos=ADV];
+      LOC -[HEAD]-> H; H[lemma=lex.head];
+      LOC -[MWE|fixed]-> D; D[lemma=lex.dep];
+      e:LOC -[ccomp]-> ARG}
+    commands{ del_edge e; add_edge LOC -[comp:obj]-> ARG}
+  }
+  
  % Relation between the verb "avoir" and a direct object in the form of an infinitive clause introduced with "de". By default, CCOMP relations introduced with "de" are transformed into COMP:OBL relations, but in this case, they are transformed into COMP:OBJ relations.
   rule verb-avoir_compobj_ccomp {
     pattern {
@@ -167,9 +212,9 @@ strat FR_main {
   Seq(
     specific_expr_init, % Initialization of a specific treatment for MWE, titles and converted words.
     reverse_relations.main,
-    Onf (minimize_conj_dep),
     Onf(FR_shift_out_edges),
     Onf(FR_shift_out_back_edges),
+    Onf (minimize_conj_dep),% package MINIMIZE_CONJ_DEP must follow shift packages because a dependance can shift from a coordination to an ascendant. Ex: fr-ud-dev_00446 -entre 3 et 6 généralement
     Onf (FR_relations),
     Onf (sub_relations),
     Onf (rel_extensions),

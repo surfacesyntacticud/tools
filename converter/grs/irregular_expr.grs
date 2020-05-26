@@ -158,14 +158,15 @@ package del_edges {
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % remove nodes
 package del_nodes {
-	rule del_specif_expr{
-		pattern{ e: N -[HEAD]-> H }
-		commands{
-			del_edge e;
-			shift N ==> H;
-			del_node N
-		}
-	}
+  rule del_specif_expr{
+    pattern{ N[!Shared];e: N -[HEAD]-> H }
+    commands{del_edge e; shift N ==> H;del_node N}
+  }
+  
+  rule del_shared_specif_expr_{
+    pattern{ N[Shared=Yes]; e: N -[HEAD]-> H }
+    commands{del_edge e; shift N ==> H;del_node N; H.Shared=Yes}
+  }
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

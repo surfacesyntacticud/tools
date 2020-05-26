@@ -124,7 +124,6 @@ spontanément
 systématiquement
 totalement
 unilatéralement
-véritablement
 violemment
 visuellement
 vite
