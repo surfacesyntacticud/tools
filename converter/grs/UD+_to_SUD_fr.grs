@@ -14,7 +14,7 @@ package FR_shift_out_edges{
     without{D -> D1; D1 >> ADV}
     commands{add_edge H -[advmod]-> ADV; del_edge e}
   }
-  
+
   rule prep_noun_adv-loc-judgment(lex from "lexicons/adv-loc_judgment.lp") {
     pattern{
       H -[case]-> D;
@@ -43,7 +43,7 @@ package FR_shift_out_edges{
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Some relations have moved up from the old head D to the new head H incorrectly in specific cases in French. The move must be cancelled.
 package FR_shift_out_back_edges{
-  
+
   rule dont_en{
     pattern {
       H[upos=ADP|AUX];
@@ -51,7 +51,7 @@ package FR_shift_out_back_edges{
       D1[upos=PRON,lemma=dont|en];
       e: H -> D1;
       D1 << H}
-    commands{add_edge e: D -> D1;del_edge e}
+    commands{add_edge f: D -> D1; f.label = e.label; del_edge e}
   }
 
   rule aux_adv-quant_comp(lex from "lexicons/adv_quant.lp"){
@@ -75,7 +75,7 @@ package FR_shift_out_back_edges{
       H << D1}
     commands{add_edge D -[advmod]-> D1;del_edge e}
   }
-  
+
   rule aux_adv-manner_comp(lex from "lexicons/adv_manner.lp"){
     pattern{
       H -[1=aux|cop]-> D;
@@ -90,7 +90,7 @@ package FR_shift_out_back_edges{
       H -[1=aux|cop]-> D;  D[upos=ADJ|ADV];
       e:H -[advmod]-> D1;
       D1[upos=ADV,lemma=aussi];
-      H << D1; 
+      H << D1;
       CONJ[upos=SCONJ,lemma=que]; D1 -> CONJ}
     commands{add_edge D -[advmod]-> D1; del_edge e}
   }
@@ -129,7 +129,7 @@ package FR_relations {
       e:ADV -[ccomp]-> ARG}
     commands{ del_edge e; add_edge ADV -[comp:obj]-> ARG}
   }
-  
+
 % Adverbial locutions with a direct object.By default, the relation between an adverbial locution and one of its arguments is COMP:OBL
   rule adv-loc_obj(lex from "lexicons/adv-loc_obj.lp") {
     pattern{
@@ -139,7 +139,7 @@ package FR_relations {
       e:LOC -[ccomp]-> ARG}
     commands{ del_edge e; add_edge LOC -[comp:obj]-> ARG}
   }
-  
+
  % Relation between the verb "avoir" and a direct object in the form of an infinitive clause introduced with "de". By default, CCOMP relations introduced with "de" are transformed into COMP:OBL relations, but in this case, they are transformed into COMP:OBJ relations.
   rule verb-avoir_compobj_ccomp {
     pattern {
@@ -183,7 +183,7 @@ package FR_relations {
       C[upos=AUX|VERB,VerbForm=Inf] }
     commands { del_edge e; add_edge H -[comp:pred@x]-> C }
   }
-  
+
  % Relation between a verb and an argument in the form of a participial clause introduced with a conjunction, which is a predicative complement, the subject of the participle being the subject of the governor verb. In this case, the XCOMP relation is transformed into COMP:PRED@X relation.
   rule verb_comppred_xcomp-part(lex from "lexicons/verb_with_pred-ind_part.lp"){
     pattern {
@@ -192,13 +192,13 @@ package FR_relations {
       D[upos=AUX|VERB,VerbForm=Part] }
     commands { del_edge e; add_edge H -[comp:pred@x]-> C }
   }
-  
+
  % Relation between the verb "être" and an argument in the form of a clause, which is a predicative complement. In this case, the CCOMP relation is transformed into COMP:PRED relation.
   rule verb-etre_comppred_ccomp  {
     pattern {H[upos=VERB,lemma="être"]; e:H -[ccomp]-> C}
     commands { del_edge e; add_edge H -[comp:pred]-> C }
   }
-  
+
  % % Relation between the verb "être" and an argument in the form of a clause, which is a predicative complement. In this case, the CCOMP relation is transformed into COMP:PRED relation.
  %  rule verb-etre_comppred_xcomp  {
  %    pattern {H[upos=VERB,lemma="être"]; e:H -[xcomp]-> C}

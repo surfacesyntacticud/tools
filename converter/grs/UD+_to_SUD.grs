@@ -58,7 +58,7 @@ package reverse_relations{
       without { H -[1=aux, !deep]-> AUX1; AUX >> AUX1 ; AUX1 >> H } % rule (5) above
       commands {
         e.deep=REV;
-        add_edge e: AUX -> H;
+        add_edge f: AUX -> H; f.label = e.label;
         del_edge e;
         shift_in H =[^TITLE|MWE]=> AUX;
         shift_out H =[1=aux|mark,!deep]=> AUX;
@@ -71,7 +71,7 @@ package reverse_relations{
       without { H -[1=case, !deep]-> AUX1; AUX >> AUX1 ; AUX1 >> H } % rule (5) above
       commands {
         e.deep=REV;
-        add_edge e: AUX -> H;
+        add_edge f: AUX -> H; f.label = e.label;
         del_edge e;
         shift_in H =[^TITLE|MWE]=> AUX;
         shift_out H =[1=aux|case|caus|cop|mark|pass,!deep]=> AUX;
@@ -85,7 +85,7 @@ package reverse_relations{
       without { H -[1=caus, !deep]-> AUX1; AUX >> AUX1 ; AUX1 >> H } % rule (5) above
       commands {
         e.deep=REV;
-        add_edge e: AUX -> H;
+        add_edge f: AUX -> H; f.label = e.label;
         del_edge e;
         shift_in H =[^TITLE|MWE]=> AUX;
         shift_out H =[1=aux|caus|mark|pass,!deep]=> AUX;
@@ -99,7 +99,7 @@ package reverse_relations{
       without { H -[1=cop, !deep]-> AUX1; AUX >> AUX1 ; AUX1 >> H } % rule (5) above
       commands {
         e.deep=REV;
-        add_edge e: AUX -> H;
+        add_edge f: AUX -> H; f.label = e.label;
         del_edge e;
         shift_in H =[^TITLE|MWE]=> AUX;
         shift_out H =[1=aux|caus|cop|mark|pass,!deep]=> AUX;
@@ -113,7 +113,7 @@ package reverse_relations{
       without { H -[1=mark, !deep]-> AUX1; AUX >> AUX1 ; AUX1 >> H } % rule (5) above
       commands {
         e.deep=REV;
-        add_edge e: AUX -> H;
+        add_edge f: AUX -> H; f.label = e.label;
         del_edge e;
         shift_in H =[^TITLE|MWE]=> AUX;
         shift_out H =[1=mark,!deep]=> AUX;
@@ -127,7 +127,7 @@ package reverse_relations{
       without { H -[1=pass, !deep]-> AUX1; AUX >> AUX1 ; AUX1 >> H } % rule (5) above
       commands {
         e.deep=REV;
-        add_edge e: AUX -> H;
+        add_edge f: AUX -> H; f.label = e.label;
         del_edge e;
         shift_in H =[^TITLE|MWE]=> AUX;
         shift_out H =[1=aux|caus|case|cop|mark|pass,!deep]=> AUX;
@@ -141,12 +141,13 @@ package shift_out_edges{
 % All relations that rise without any restriction.
   rule all{
     pattern {H -[deep=REV]-> D;e: D -[cc|discourse|vocative]-> D1}
-    commands{add_edge e: H -> D1;del_edge e}}
+    commands{add_edge f: H -> D1; f.label = e.label; del_edge e}
+  }
 
 % Oblique agent relations in causative constructions.
   rule caus_agent {
     pattern{H -[1=caus,deep=REV]-> D; e: D -[1=iobj|obj|obl, 2=agent]-> D1}
-    commands{add_edge e: H -> D1;del_edge e}
+    commands{add_edge f: H -> D1; f.label = e.label; del_edge e}
   }
 
 % All relations that rise inside a clause.
@@ -155,10 +156,10 @@ package shift_out_edges{
       H -[1<>mark,deep=REV]-> D;
       e: D -[1=advcl|csubj|dislocated|expl|nsubj|parataxis|vocative]-> D1;
     }
-    commands{add_edge e: H -> D1;del_edge e}
+    commands{add_edge f: H -> D1; f.label = e.label; del_edge e}
   }
 
-  
+
 % Relations with their source D after the head of a subordinated clause and their dependent D1 before.
   rule all_mark_outside_left{
     pattern {
@@ -166,7 +167,7 @@ package shift_out_edges{
       e: D -[1=csubj|dislocated|expl|nsubj|vocative]-> D1;
       D1 << H; H << D
     }
-    commands{add_edge e: H -> D1;del_edge e}
+    commands{add_edge f: H -> D1; f.label = e.label; del_edge e}
   }
 
 % Relations with their source D before the head of a subordinated clause and their dependent D1 afterwards.
@@ -176,7 +177,7 @@ package shift_out_edges{
       e: D -[1=csubj|dislocated|expl|nsubj]-> D1;
       D1 >> H; H >> D
     }
-    commands{add_edge e: H -> D1;del_edge e}
+    commands{add_edge f: H -> D1; f.label = e.label; del_edge e}
   }
 
 % Relations that rise when their source D is on the right of H and when their dependent D1 is on the right of D.
@@ -187,12 +188,12 @@ package shift_out_edges{
     without{H -[1=case]-> D;  D -[advmod]-> D1}
     without{H -[1=mark]-> D;  D -[1=advmod|obl]-> D1}
     without{D -[obl:agent|obl:arg]-> D1}
-    without{D -> D2; D1 << D2} 
+    without{D -> D2; D1 << D2}
     without{D -[punct]-> D2; D2 << D; D -[punct]-> D1; D1.lemma = D2.lemma}
     without{D -[punct]-> D2; D2 << D; D -[punct]-> D1; D1.lemma = ")"; D2.lemma = "("}
     without{D -[punct]-> D2; D2 << D; D -[punct]-> D1; D1.lemma = "»"; D2.lemma = "«"}
     without{D -[punct]-> D2; D2 << D; D -[punct]-> D1; D1.lemma = "]"; D2.lemma = "["}
-    commands{add_edge e: H -> D1; del_edge e}
+    commands{add_edge f: H -> D1; f.label = e.label; del_edge e}
   }
 
 % Relations that rise when their source D is on the right of H and when their dependent D1 is between D and H.
@@ -203,14 +204,14 @@ package shift_out_edges{
       H << D1; D1 << D}
     %without{ H -[1=aux|cop]-> D; D -[advmod]-> D1 }
     without{ D -> D2; H << D2; D2 << D1}
-    commands{add_edge e: H -> D1; del_edge e}
+    commands{add_edge f: H -> D1; f.label = e.label; del_edge e}
   }
 
 % Relations that rise when their source D is on the left of H and when their dependent D1 is on the right of H.
   rule D_H_D1{
     pattern{H -[deep=REV]-> D;  H >> D; e: D -[1=advcl|advmod|obl|punct]-> D1; D1 >> H}
     without{D -[obl:agent|obl:arg]-> D1}
-    commands{add_edge e: H -> D1; del_edge e}
+    commands{add_edge f: H -> D1; f.label = e.label; del_edge e}
   }
 
 % Relations that rise when their source D is on the right of H and when their dependent D1 is on the left of H.
@@ -219,7 +220,7 @@ package shift_out_edges{
       H -[deep=REV]-> D;  H << D;
       e: D -[1=advcl|advmod|nmod|obl|orphan|punct]-> D1; D1 << H}
     without{D -[obl:agent|obl:arg]-> D1}
-    commands{add_edge e: H -> D1; del_edge e}
+    commands{add_edge f: H -> D1; f.label = e.label; del_edge e}
   }
 
 % Relations that rise when their source D is on the left of H and when their dependent D1 is on the left of D.
@@ -231,7 +232,7 @@ package shift_out_edges{
 %    without{H -[1=mark]-> D;  D -[1=obl|advmod]-> D1}
     without{D -[obl:agent|obl:arg]-> D1}
 %    without{D -> D2; D1 >> D2}
-    commands{add_edge e: H -> D1; del_edge e}
+    commands{add_edge f: H -> D1; f.label = e.label; del_edge e}
   }
 
 % Conj relations in the general case.
@@ -246,7 +247,7 @@ package shift_out_edges{
     without{D1[upos=ADJ]; D[upos=VERB,VerbForm=Part]}
     without{D[upos=ADP|ADV]; D1[upos=ADP|ADV]}
     without{D[upos=AUX|VERB]; D1[upos=AUX|VERB]}
-    commands{add_edge e: H -> D1; del_edge e}
+    commands{add_edge f: H -> D1; f.label = e.label; del_edge e}
   }
 
 % Conj relations when the conjunct heads are verbs.
@@ -257,7 +258,7 @@ package shift_out_edges{
       D[upos=AUX|VERB,VerbForm]; D1[upos=AUX|VERB, VerbForm];
        D.VerbForm <> D1.VerbForm
     }
-    commands{add_edge e: H -> D1; del_edge e}
+    commands{add_edge f: H -> D1; f.label = e.label; del_edge e}
   }
 
   rule shared{
@@ -308,9 +309,9 @@ package minimize_conj_dep {
       C1 -[1=conj]-> C2;
       e:C1 -[^conj|conj:emb|discourse|parataxis|punct]-> D; C2 << D}
     without { C1 -[1=conj]-> C; C2 << C ; C << D} % Ex :fr-ud-train_03266, fr-ud-train_02016
-    commands { add_edge e:C2 -> D; del_edge e; D.Shared=Yes }
+    commands { add_edge f:C2 -> D; f.label = e.label; del_edge e; D.Shared=Yes }
   }
-  
+
 % The shared element depends on the head of the first conjunct via an OBJ dependency.
   rule minimize_indirect_obj {
     pattern {
@@ -319,7 +320,7 @@ package minimize_conj_dep {
       C2 -[obj]-> D2;
       e:D1 -[^conj|conj:emb|discourse|parataxis|punct]-> D; C2 << D}
     without { C1 -[1=conj]-> C; C2 << C ; C << D} % Ex :fr-ud-train_03266, fr-ud-train_02016
-    commands { add_edge e:D2 -> D; del_edge e; D.Shared=Yes }
+    commands { add_edge f:D2 -> D; f.label = e.label; del_edge e; D.Shared=Yes }
   }
 
 % The shared element depends on the head of the first conjunct via an ADVMOD dependency.
@@ -330,9 +331,9 @@ package minimize_conj_dep {
       C2 -[advmod]-> D2;
       e:D1 -[^conj|conj:emb|discourse|parataxis|punct]-> D; C2 << D}
     without { C1 -[1=conj]-> C; C2 << C ; C << D} % Ex :fr-ud-train_03266, fr-ud-train_02016
-    commands { add_edge e:D2 -> D; del_edge e; D.Shared=Yes }
+    commands { add_edge f:D2 -> D; f.label = e.label; del_edge e; D.Shared=Yes }
   }
-  
+
 % The shared element depends on the head of the first conjunct via a  CASE dependency.
   rule minimize_indirect_case {
     pattern {
@@ -341,9 +342,9 @@ package minimize_conj_dep {
       C2 -[case]-> D2;
       e:D1 -[^conj|conj:emb|discourse|parataxis|punct]-> D; C2 << D}
     without { C1 -[1=conj]-> C; C2 << C ; C << D} % Ex :fr-ud-train_03266, fr-ud-train_02016
-    commands { add_edge e:D2 -> D; del_edge e; D.Shared=Yes }
+    commands { add_edge f:D2 -> D; f.label = e.label; del_edge e; D.Shared=Yes }
   }
-  
+
 % The shared element depends on the head of the first conjunct via a MARK dependency.
   rule minimize_indirect_mark {
     pattern {
@@ -352,7 +353,7 @@ package minimize_conj_dep {
       C2 -[mark]-> D2;
       e:D1 -[^conj|conj:emb|discourse|parataxis|punct]-> D; C2 << D}
     without { C1 -[1=conj]-> C; C2 << C ; C << D} % Ex :fr-ud-train_03266, fr-ud-train_02016
-    commands { add_edge e:D2 -> D; del_edge e; D.Shared=Yes }
+    commands { add_edge f:D2 -> D; f.label = e.label; del_edge e; D.Shared=Yes }
   }
 }
 
@@ -364,12 +365,12 @@ package sub_relations {
     pattern { e:H -[advcl:cleft|ccomp:obj|ccomp:obl]-> D; }
     commands {e.1=comp}
   }
-  
+
 % Relation betweew a verb and a clitic expressing a pronominal passive construction.
 % Ex: Les voitures se vendent bien. - Que tu renonces se discute. - Il s'est vendu une grande maison aujourd'hui  - Il se dit que tu viendras.
   rule comp_pass {
     pattern {e: H -[expl:pass]-> D}
-    commands {del_edge e;add_edge H -[comp@pass]-> D}
+    commands {del_edge e; add_edge H -[comp@pass]-> D}
   }
 
 % In an impersonal pronominal passive construction, the deep subject, which is a NSUBJ or CSUBJ dependent in UD, becomes a simple direct object in SUD.
@@ -510,7 +511,7 @@ package relations {
     pattern { e:H -[1=ccomp]-> D; H[upos = ADJ|ADV]; }
     commands {e.1=comp;e.2=obl}
   }
-  
+
   rule comp_obl_ccomp-dir {
     pattern {
       e:H -[1=ccomp]-> D; D[upos <> ADP];
@@ -518,7 +519,7 @@ package relations {
     }
     commands {e.1=comp;e.2=obl}
   }
-  
+
   rule comp_obl {
     pattern { e:H -[1=iobj]-> D; }
     commands {e.1=comp;e.2=obl}
@@ -528,7 +529,7 @@ package relations {
     pattern { e:H -[1=xcomp]-> D; D[upos=ADP]}
     commands {e.1=comp;e.2=obl;e.deep=x}
   }
-  
+
   rule comp_obl-dir_x {
     pattern {
       e:H -[1=xcomp]-> D;D[upos=AUX|VERB,VerbForm=Inf];
@@ -549,7 +550,7 @@ package relations {
     without{D[upos=AUX|VERB] }
     commands {e.1=comp;e.2=pred}
   }
-  
+
   rule comp_pred_part {
     pattern { e:H -[1=xcomp]-> D; D[upos=AUX|VERB,VerbForm=Part]}
     commands {add_edge H -[comp:pred@x]-> D; del_edge e}
@@ -642,28 +643,28 @@ package chained_relations {
     pattern {H -[1=conj]-> D1;e: H -[1=conj]-> D2;D1 << D2}
     without {H -[1=conj]-> D;D1 << D; D << D2}
     without {H -[1=conj]-> D;D2 << D}
-    commands {add_edge e:D1 -> D2;del_edge e;}
+    commands {add_edge f:D1 -> D2; f.label = e.label; del_edge e;}
   }
 
   rule fixed {
     pattern {H -[unk@fixed]-> D1;e: H -[unk@fixed]-> D2;D1 << D2}
     without {H -[unk@fixed]-> D;D1 << D; D << D2}
     without {H -[unk@fixed]-> D;D2 << D;}
-    commands {del_edge e;add_edge D1 -[unk@fixed]-> D2}
+    commands {del_edge e; add_edge D1 -[unk@fixed]-> D2}
   }
 
   rule flat_name {
     pattern {H -[flat@name]-> D1;e: H -[flat@name]-> D2;D1 << D2}
     without {H -[flat@name]-> D;D1 << D; D << D2}
     without {H -[flat@name]-> D;D2 << D}
-    commands {del_edge e;add_edge D1 -[flat@name]-> D2}
+    commands {del_edge e; add_edge D1 -[flat@name]-> D2}
   }
 
   rule flat_foreign {
     pattern {H -[flat@foreign]-> D1;e: H -[flat@foreign]-> D2;D1 << D2}
     without {H -[flat@foreign]-> D;D1 << D; D << D2}
     without {H -[flat@foreign]-> D;D2 << D}
-    commands {del_edge e;add_edge D1 -[flat@foreign]-> D2}
+    commands {del_edge e; add_edge D1 -[flat@foreign]-> D2}
   }
 }
 

@@ -56,7 +56,7 @@ package raise{
 % Raise the external dependencies.
   rule dep_raise{
     pattern{H -[unk@fixed]-> D; e: D -[^ unk@fixed]-> D1}
-    commands{ add_edge e: H -> D1; del_edge e}
+    commands{ add_edge f: H -> D1; f.label = e.label; del_edge e}
   }
 }
 

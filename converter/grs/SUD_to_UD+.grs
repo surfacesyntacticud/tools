@@ -36,7 +36,7 @@ package shared {
       N1 -[1=conj]-> N2;
       e: N2 -> D; D[Shared=Yes]}
   %  without{ N2 -[orphan]-> D; H -[^ conj]-> N1} %Ex : SUD_FRENCH-GSD fr-ud-train_13715
-    commands {add_edge e: N1 -> D; del_edge e}
+    commands {add_edge f: N1 -> D; f.label = e.label; del_edge e}
   }
 
 % The shared dependent is attached at the head of the last conjunct via a COMP:OBJ relation.
@@ -46,7 +46,7 @@ package shared {
       N1 -[1=comp,2=obj]-> D1;
       N2 -[1=comp,2=obj]-> D2;
       e: D2 -> D; D[Shared=Yes]}
-    commands {add_edge e: D1 -> D;del_edge e;}
+    commands {add_edge f: D1 -> D; f.label = e.label; del_edge e;}
   }
 
 % The shared dependent is attached at the head of the last conjunct via a MOD relation.
@@ -56,9 +56,9 @@ package shared {
       N1 -[1=mod]-> D1;
       N2 -[1=mod]-> D2;
       e: D2 -> D; D[Shared=Yes]}
-    commands {add_edge e: D1 -> D;del_edge e;}
+    commands {add_edge f: D1 -> D; f.label = e.label; del_edge e;}
   }
-  
+
 % % The shared dependent is attached at the head of the last conjunct via a relation different from COMP:OBJ and MOD.
 %   rule move_other_distant-relation {
 %     pattern {
@@ -67,7 +67,7 @@ package shared {
 %       e: D2 -> D; D[Shared=Yes]}
 %     without{N2 -[1=mod]-> D2}
 %     without{N2 -[1=comp,2=obj]-> D2}
-%     commands {add_edge e: N1 -> D;del_edge e;}
+%     commands {add_edge f: N1 -> D; f.label = e.label; del_edge e;}
 %   }
 
 % After the shared dependent has moved to the first conjunct, all features "Shared" are removed.
@@ -181,7 +181,7 @@ package reverse_case_mark {
     without{D[upos= ADP|CCONJ|PART|SCONJ]; D -[1=comp,2=obj]-> D1}
     commands {
       e.rev=y;
-      add_edge e:D -> H;
+      add_edge f:D -> H; f.label = e.label;
       del_edge e;
       shift_in H =[^MWE|TITLE|CONV]=> D;
       shift_out H =[1=case|mark]=> D;
@@ -219,7 +219,7 @@ package shift_out_edges{
     without{
       D -[punct]-> D2; D -[punct]-> D1; D1.lemma = "]"; D2.lemma = "[";
       D1 << D; D << D2}
-    commands{add_edge e: H -> D1; del_edge e}
+    commands{add_edge f: H -> D1; f.label = e.label; del_edge e}
   }
 
   rule embedding_punct{
@@ -243,7 +243,7 @@ package shift_out_edges{
     without{D1 << H} %Ex : UD_French-GSD  fr-ud-train_14326
     without{D[upos=AUX]; D1[upos=VERB]; H >> D1}%Ex: UD_French-GSD fr-ud-train_06092
     without{D[upos=AUX]; D1[upos=VERB]; H1 -> D; H1 >> D1} %Ex: UD_French-GSD fr-ud-train_09763
-    commands{add_edge e: H -> D1; del_edge e}
+    commands{add_edge f: H -> D1; f.label = e.label; del_edge e}
   }
 }
 
@@ -454,7 +454,7 @@ package sub_relations {
     commands {e.1=fixed; del_feat e.deep}
   }
 
-% iobj is used for any argument of a non-nominal governor, which is an adverb or a pronoun not introduced by a preposition 
+% iobj is used for any argument of a non-nominal governor, which is an adverb or a pronoun not introduced by a preposition
   rule iobj {
     pattern {H[!nom]; e:H -[1=comp,2=obl]-> D; D[upos=ADV|PRON]}
     without{D -[case]-> *}
@@ -789,7 +789,7 @@ package reverse_aux {
     without{D[upos= AUX]; D -[1=aux|cop,!rev]-> D1}
     commands {
       e.rev=y;
-      add_edge e:D -> H;
+      add_edge f:D -> H;  f.label = e.label;
       del_edge e;
       shift_in H =[^MWE|TITLE]=> D;
  %     shift_out H =[^conj|conj:dicto|expr|goeswith|reparandum|unk@fixed|MWE|TITLE]=> D;

@@ -78,19 +78,19 @@ package ext_dep {
 	rule mwe {
 		pattern { H -[MWE]-> N; e: N -[^ unk@fixed]-> M}
 		without { H -[MWE]-> M; }
-		commands { add_edge e:H->M; del_edge e;}
+		commands { add_edge f:H->M; f.label=e.label; del_edge e;}
 	}
 
 	rule title {
 		pattern { H -[TITLE]-> N; e: N -[^ unk@fixed]-> M}
 		without { H -[TITLE]-> M; }
-		commands { add_edge e:H->M; del_edge e;}
+		commands { add_edge f:H->M; f.label=e.label; del_edge e;}
 	}
 
 	rule trans {
 		pattern { H -[CONV]-> N; e:N -[^ unk@fixed]-> M}
 		without { H -[CONV]-> M; }
-		commands { add_edge e:H->M; del_edge e;}
+		commands { add_edge f:H->M; f.label=e.label; del_edge e;}
 	}
 }
 
@@ -162,7 +162,7 @@ package del_nodes {
     pattern{ N[!Shared];e: N -[HEAD]-> H }
     commands{del_edge e; shift N ==> H;del_node N}
   }
-  
+
   rule del_shared_specif_expr_{
     pattern{ N[Shared=Yes]; e: N -[HEAD]-> H }
     commands{del_edge e; shift N ==> H;del_node N; H.Shared=Yes}
