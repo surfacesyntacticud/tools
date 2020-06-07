@@ -141,11 +141,12 @@ package shift_out_edges{
 % All relations that rise without any restriction.
   rule all{
     pattern {H -[deep=REV]-> D;e: D -[cc|discourse|vocative]-> D1}
+    without{ D -[cc]-> D1; H << D1} %Ex:  fr-ud-train_12306 - ... sont soit des fanatiques, soit des hypocrites,
     commands{add_edge e: H -> D1;del_edge e}}
 
-% Oblique agent relations in causative constructions.
-  rule caus_agent {
-    pattern{H -[1=caus,deep=REV]-> D; e: D -[1=iobj|obj|obl, 2=agent]-> D1}
+% Agent relations in causative and impersonal constructions.
+  rule agent {
+    pattern{H -[1=caus|cop,deep=REV]-> D; e: D -[1=iobj|obj|obl, 2=agent]-> D1}
     commands{add_edge e: H -> D1;del_edge e}
   }
 
@@ -155,6 +156,12 @@ package shift_out_edges{
       H -[1<>mark,deep=REV]-> D;
       e: D -[1=advcl|csubj|dislocated|expl|nsubj|parataxis|vocative]-> D1;
     }
+    without{H1 -[1 <> cop]-> H; H -[1=case]-> D; D -[parataxis]-> D1}
+    without{H -[1=aux|pass]-> D; H -[expl:subj]-> D2}
+    without{H -[1=aux|pass]-> D; D -[expl:subj]-> D2}
+    without{H1 -[1=aux|pass]-> H;H -[1=aux|pass]-> D; H1 -[expl:subj]-> D2}
+    without{H1 -[1=aux|pass]-> H;H -[1=aux|pass]-> D; H -[expl:subj]-> D2}
+    without{H1 -[1=aux|pass]-> H;H -[1=aux|pass]-> D; D -[expl:subj]-> D2}
     commands{add_edge e: H -> D1;del_edge e}
   }
 
@@ -164,8 +171,7 @@ package shift_out_edges{
     pattern {
       H -[1=mark,deep=REV]-> D;
       e: D -[1=csubj|dislocated|expl|nsubj|vocative]-> D1;
-      D1 << H; H << D
-    }
+      D1 << H; H << D}
     commands{add_edge e: H -> D1;del_edge e}
   }
 
@@ -174,8 +180,7 @@ package shift_out_edges{
     pattern {
       H -[1=mark,deep=REV]-> D;
       e: D -[1=csubj|dislocated|expl|nsubj]-> D1;
-      D1 >> H; H >> D
-    }
+      D1 >> H; H >> D}
     commands{add_edge e: H -> D1;del_edge e}
   }
 
@@ -184,7 +189,7 @@ package shift_out_edges{
     pattern{
       H -[deep=REV]-> D;  H << D;
       e: D -[1=advmod|punct|obl]-> D1; D << D1}
-    without{H -[1=case]-> D;  D -[advmod]-> D1}
+    without{H -[1=case]-> D;  D -[advmod|obl]-> D1}
     without{H -[1=mark]-> D;  D -[1=advmod|obl]-> D1}
     without{D -[obl:agent|obl:arg]-> D1}
     without{D -> D2; D1 << D2} 
@@ -199,9 +204,9 @@ package shift_out_edges{
   rule H_D1_D{
     pattern{
       H -[1=aux|caus|cop|pass,deep=REV]-> D;
-      e: D -[1=advmod|obl]-> D1;
+      e: D -[advmod|obl|obl:mod]-> D1;
       H << D1; D1 << D}
-    %without{ H -[1=aux|cop]-> D; D -[advmod]-> D1 }
+    without{ H -[1=case]-> D; D -[obl|obl:mod]-> D1 }
     without{ D -> D2; H << D2; D2 << D1}
     commands{add_edge e: H -> D1; del_edge e}
   }
@@ -210,6 +215,12 @@ package shift_out_edges{
   rule D_H_D1{
     pattern{H -[deep=REV]-> D;  H >> D; e: D -[1=advcl|advmod|obl|punct]-> D1; D1 >> H}
     without{D -[obl:agent|obl:arg]-> D1}
+    commands{add_edge e: H -> D1; del_edge e}
+  }
+
+% Relations that rise when their source D is on the left of D1 and when their dependent D1 is also on the left of H.
+  rule D_D1_D{
+    pattern{H -[1=cop,deep=REV]-> D; D << D1; e: D -[1=advmod|obl]-> D1; D1 << H}
     commands{add_edge e: H -> D1; del_edge e}
   }
 
@@ -241,7 +252,7 @@ package shift_out_edges{
       e: D -[1=conj]-> D1;
       D.upos <> D1.upos;
     }
-    without{D[upos=NOUN|PRON|PROPN|X]; D1[upos=NOUN|PRON|PROPN|X]}
+    without{D[upos=NOUN|PRON|PROPN|NUM|X]; D1[upos=NOUN|PRON|PROPN|NUM|X]}
     without{D[upos=ADJ]; D1[upos=VERB,VerbForm=Part]}
     without{D1[upos=ADJ]; D[upos=VERB,VerbForm=Part]}
     without{D[upos=ADP|ADV]; D1[upos=ADP|ADV]}
@@ -311,22 +322,12 @@ package minimize_conj_dep {
     commands { add_edge e:C2 -> D; del_edge e; D.Shared=Yes }
   }
   
-% The shared element depends on the head of the first conjunct via an OBJ dependency.
-  rule minimize_indirect_obj {
-    pattern {
-      C1 -[1=conj]-> C2;
-      C1 -[obj]-> D1;
-      C2 -[obj]-> D2;
-      e:D1 -[^conj|conj:emb|discourse|parataxis|punct]-> D; C2 << D}
-    without { C1 -[1=conj]-> C; C2 << C ; C << D} % Ex :fr-ud-train_03266, fr-ud-train_02016
-    commands { add_edge e:D2 -> D; del_edge e; D.Shared=Yes }
-  }
 
 % The shared element depends on the head of the first conjunct via an ADVMOD dependency.
   rule minimize_indirect_advmod {
     pattern {
       C1 -[1=conj]-> C2;
-      C1 -[advmod]-> D1;
+      C1 -[advmod]-> D1; D1 << C2;
       C2 -[advmod]-> D2;
       e:D1 -[^conj|conj:emb|discourse|parataxis|punct]-> D; C2 << D}
     without { C1 -[1=conj]-> C; C2 << C ; C << D} % Ex :fr-ud-train_03266, fr-ud-train_02016
@@ -337,7 +338,7 @@ package minimize_conj_dep {
   rule minimize_indirect_case {
     pattern {
       C1 -[1=conj]-> C2;
-      C1 -[case]-> D1;
+      C1 -[case]-> D1; D1 << C2;
       C2 -[case]-> D2;
       e:D1 -[^conj|conj:emb|discourse|parataxis|punct]-> D; C2 << D}
     without { C1 -[1=conj]-> C; C2 << C ; C << D} % Ex :fr-ud-train_03266, fr-ud-train_02016
@@ -348,12 +349,35 @@ package minimize_conj_dep {
   rule minimize_indirect_mark {
     pattern {
       C1 -[1=conj]-> C2;
-      C1 -[mark]-> D1;
+      C1 -[mark]-> D1; D1 << C2;
       C2 -[mark]-> D2;
       e:D1 -[^conj|conj:emb|discourse|parataxis|punct]-> D; C2 << D}
     without { C1 -[1=conj]-> C; C2 << C ; C << D} % Ex :fr-ud-train_03266, fr-ud-train_02016
     commands { add_edge e:D2 -> D; del_edge e; D.Shared=Yes }
   }
+
+% The shared element depends on the head of the first conjunct via a NMOD dependency.
+  rule minimize_indirect_nmod {
+    pattern {
+      C1 -[1=conj]-> C2;
+      C1 -[nmod]-> D1; D1 << C2;
+      C2 -[nmod]-> D2;
+      e:D1 -[^conj|conj:emb|discourse|parataxis|punct]-> D; C2 << D}
+    without { C1 -[1=conj]-> C; C2 << C ; C << D} % Ex :fr-ud-train_03266, fr-ud-train_02016
+    commands { add_edge e:D2 -> D; del_edge e; D.Shared=Yes }
+  }
+
+% The shared element depends on the head of the first conjunct via an OBJ dependency.
+  rule minimize_indirect_obj {
+    pattern {
+      C1 -[1=conj]-> C2;
+      C1 -[obj]-> D1; D1 << C2;
+      C2 -[obj]-> D2;
+      e:D1 -[^conj|conj:emb|discourse|parataxis|punct]-> D; C2 << D}
+    without { C1 -[1=conj]-> C; C2 << C ; C << D} % Ex :fr-ud-train_03266, fr-ud-train_02016
+    commands { add_edge e:D2 -> D; del_edge e; D.Shared=Yes }
+  }
+
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -525,7 +549,7 @@ package relations {
   }
 
   rule comp_obl_x {
-    pattern { e:H -[1=xcomp]-> D; D[upos=ADP]}
+    pattern { e:H -[1=xcomp]-> D; D[upos=ADP];D -[comp:obj]-> D1; D1[upos=AUX|VERB]}
     commands {e.1=comp;e.2=obl;e.deep=x}
   }
   
@@ -545,7 +569,8 @@ package relations {
 %==========
 % A direct argument with the control of its subject is considered  as a predicative complement in SUD.
   rule comp_pred {
-    pattern { e:H -[1=xcomp]-> D; D[upos<>ADP]}
+    pattern { e:H -[1=xcomp]-> D}
+    without{D[upos=ADP]; D -[mark|comp:obj]-> D1; D1[upos=AUX|VERB]}
     without{D[upos=AUX|VERB] }
     commands {e.1=comp;e.2=pred}
   }
@@ -580,6 +605,11 @@ package relations {
   rule subj {
     pattern { e:H -[1=nsubj|csubj]-> D}
     without { H -[subj@expl]-> * } % if so: nsubj becomes comp:obj@agent, see rule [comp_obj_agent]
+    without { AUX -[1=comp, 2=aux|pred]-> H; AUX -[subj@expl]-> * }
+    without {
+      AUX1 -[1=comp, 2=aux]-> AUX2;
+      AUX2 -[1=comp, 2=aux|pred]-> H;
+      AUX2 -[subj@expl]-> * }
     commands {e.1=subj}
   }
 

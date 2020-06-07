@@ -87,7 +87,7 @@ package FR_mod {
 
 % Finite clauses, which are not relative clauses and which are not introduced with a conjunction, modifying a nominal expression.
   rule noun_mod_fin-clause{
-    pattern{N[nom=y]; V[upos=VERB]; e: N -[mod]->V}
+    pattern{N[nom=y]; V[upos=VERB]; e: N -[mod]->V ; N << V}
     without{PRO[PronType=Rel]; V -> PRO; N << PRO}
     without{PRO[PronType=Rel]; V -> X; X -> PRO;  N << PRO}
     without{PRO[PronType=Rel]; V -> X; X -> Y; Y -> PRO;  N << PRO}
@@ -153,7 +153,7 @@ package FR_subj {
 % Subjects of passive participles without auxiliary.
   rule nsubj_pass (lex from "lexicons/passivable_verb.lp") {
     pattern {e:V -[nsubj]-> S; V [VerbForm=Part,Tense=Past,lemma=lex.verb] }
-    without {V -[aux|aux:pass]-> *}
+    without {* -[1=aux]-> V}
     commands { del_edge e; add_edge V -[nsubj:pass]-> S }
   }
 
@@ -164,6 +164,7 @@ package FR_subj {
 strat FR_core {
   Seq (
     Onf (shared),
+    Onf(remove_shared),
     Onf (nom_init),
     Onf (FR_nom_init),
     Onf (unchained_relations),
@@ -191,6 +192,7 @@ strat FR_main{
   Seq(
     Onf (remove_deep_fixed), % in UD, @fixed becomes INMWE
     Onf (shared),
+    Onf(remove_shared),
     specific_expr_init, % Initialization of a specific treatment for MWE, titles and converted words.
     Onf (nom_init),
     Onf (FR_nom_init),

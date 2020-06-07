@@ -5,9 +5,9 @@ include "UD+_to_SUD.grs"
 % The source of some relations must rise from the old head D to the new head H in cases specific to French.
 package FR_shift_out_edges{
 
-  rule prep_noun_adv-judgment(lex from "lexicons/adv_judgment.lp") {
+  rule adv-judgment(lex from "lexicons/adv_judgment.lp") {
     pattern{
-      H -[case]-> D;
+      H -[case|cop]-> D;
       e:D -[advmod]-> ADV;
       ADV[upos=ADV,lemma=lex.adv];
       H << D; D << ADV}
@@ -15,9 +15,9 @@ package FR_shift_out_edges{
     commands{add_edge H -[advmod]-> ADV; del_edge e}
   }
   
-  rule prep_noun_adv-loc-judgment(lex from "lexicons/adv-loc_judgment.lp") {
+  rule adv-mwe-judgment(lex from "lexicons/adv-mwe_judgment.lp") {
     pattern{
-      H -[case]-> D;
+      H -[case|cop]-> D;
       e:D -[advmod]-> ADV;
       ADV -[HEAD]-> H1;
       H1[lemma=lex.head];
@@ -29,9 +29,9 @@ package FR_shift_out_edges{
   }
 
 
-  rule prep_noun_adv-tense(lex from "lexicons/adv_tense.lp") {
+  rule adv-tense(lex from "lexicons/adv_tense.lp") {
     pattern{
-      H -[case]-> D;
+      H -[case|cop]-> D;
       e:D -[advmod]-> ADV;
       ADV[upos=ADV,lemma=lex.adv];
       H << D; D << ADV}
@@ -43,6 +43,17 @@ package FR_shift_out_edges{
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Some relations have moved up from the old head D to the new head H incorrectly in specific cases in French. The move must be cancelled.
 package FR_shift_out_back_edges{
+
+  rule double_subj{
+    pattern{
+      e1:V -[1= nsubj|csubj]-> SUBJ1;
+      e2:V -[expl:subj]-> SUBJ2; 
+      AUX -[1=aux]-> V;
+      SUBJ1 << AUX; AUX << SUBJ2; SUBJ2 << V}
+    commands{
+      add_edge e1: AUX -> SUBJ1; add_edge e2: AUX -> SUBJ2;
+      del_edge e1; del_edge e2}
+  }
   
   rule dont_en{
     pattern {
@@ -51,6 +62,7 @@ package FR_shift_out_back_edges{
       D1[upos=PRON,lemma=dont|en];
       e: H -> D1;
       D1 << H}
+    without{H -[cop]-> D; H -[obl|obl:mod]-> D1} %Ex: fr-ud-dev_01506 - ...la sortie de leur pays de la zone Euro en sera inéluctable
     commands{add_edge e: D -> D1;del_edge e}
   }
 
@@ -60,10 +72,11 @@ package FR_shift_out_back_edges{
       D1[upos=ADV,lemma=lex.adv];
       e: H -[advmod]-> D1;
       H << D1}
+    without{D1[Polarity=Neg]}
     commands{add_edge D -[advmod]-> D1;del_edge e}
   }
 
-  rule aux_adv-loc-quant_comp(lex from "lexicons/adv-loc_quant.lp"){
+  rule aux_adv-mwe-quant_comp(lex from "lexicons/adv-mwe_quant.lp"){
     pattern{
       H -[1=aux|cop]-> D;
       e: H -[advmod]-> D1;
@@ -116,7 +129,7 @@ package FR_relations {
   rule repeat_subj{
     pattern{
      e1:V -[1=csubj|nsubj]->  SUBJ1; SUBJ1 << V;
-     e2:V -[expl:subj]-> SUBJ2; SUBJ2[upos=PRON, lemma=il]; SUBJ2 >> V}
+     e2:V -[expl:subj]-> SUBJ2; SUBJ2[upos=PRON, lemma=il]; SUBJ2 >> SUBJ1}
     commands{
       e1.1=subj;
       del_edge e2; add_edge V -[subj@expl]-> SUBJ2;}
@@ -131,7 +144,7 @@ package FR_relations {
   }
   
 % Adverbial locutions with a direct object.By default, the relation between an adverbial locution and one of its arguments is COMP:OBL
-  rule adv-loc_obj(lex from "lexicons/adv-loc_obj.lp") {
+  rule adv-loc_obj(lex from "lexicons/adv-mwe_obj.lp") {
     pattern{
       LOC[upos=ADV];
       LOC -[HEAD]-> H; H[lemma=lex.head];
@@ -176,6 +189,7 @@ package FR_relations {
     commands { del_edge e; add_edge H -[comp:obj@x]-> C }
   }
 
+  
  % Relation between a verb and an argument in the form of an infinitive clause, which is a direct predicative complement, the subject of the infinitive being the subject of the governor verb. In this case, the XCOMP relation is transformed into COMP:PRED@X relation.
   rule verb_comppred_xcomp-inf (lex from "lexicons/verb_with_pred_inf.lp") {
     pattern {

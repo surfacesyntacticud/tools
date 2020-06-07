@@ -11,6 +11,7 @@ se	effarer	subj
 se	enchanter	subj
 se	enorgueillir	subj
 se	excuser	subj
+se	étonner	subj
 se	formaliser	subj
 se	foutre	subj
 se	indigner	subj

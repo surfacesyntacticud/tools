@@ -40,12 +40,14 @@ package shared {
   }
 
 % The shared dependent is attached at the head of the last conjunct via a COMP:OBJ relation.
+% Counterexample: fr-ud-train_13095 - sur 165 patients traités pour une borréliose de Lyme en phase 2 ou 3, et malgré 3 mois ou plus de traitements antibiotiques (dont au minimum deux semaines au ceftriaxone)
   rule move_compobj_distant-relation {
     pattern {
       N1 -[1=conj]-> N2;
-      N1 -[1=comp,2=obj]-> D1;
-      N2 -[1=comp,2=obj]-> D2;
+      N1 -[1=comp,2=obj]-> D1; N1 << D1;
+      N2 -[1=comp,2=obj]-> D2; N2 << D2;
       e: D2 -> D; D[Shared=Yes]}
+    without{D1 -[^det]-> D3}
     commands {add_edge e: D1 -> D;del_edge e;}
   }
 
@@ -53,31 +55,22 @@ package shared {
   rule move_mod_distant-relation {
     pattern {
       N1 -[1=conj]-> N2;
-      N1 -[1=mod]-> D1;
-      N2 -[1=mod]-> D2;
+      N1 -[mod]-> D1; N1 << D1;
+      N2 -[mod]-> D2; N2 << D2;
       e: D2 -> D; D[Shared=Yes]}
+    without{D1 -[^ det]-> D3}
     commands {add_edge e: D1 -> D;del_edge e;}
   }
-  
-% % The shared dependent is attached at the head of the last conjunct via a relation different from COMP:OBJ and MOD.
-%   rule move_other_distant-relation {
-%     pattern {
-%       N1 -[1=conj]-> N2;
-%       N2 -> D2;
-%       e: D2 -> D; D[Shared=Yes]}
-%     without{N2 -[1=mod]-> D2}
-%     without{N2 -[1=comp,2=obj]-> D2}
-%     commands {add_edge e: N1 -> D;del_edge e;}
-%   }
 
-% After the shared dependent has moved to the first conjunct, all features "Shared" are removed.
-  rule remove_shared {
-    pattern {D[Shared=Yes]}
-    without {N1 -[1=conj]-> N2; N2 -> D}
-    without{N1 -[1=conj]-> N2; N2 -> D2; D2 ->D}
-    commands {del_feat D.Shared}
-  }
 }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% After the shared dependent has moved to the first conjunct, all features "Shared" are removed.
+rule remove_shared {
+  pattern {D[Shared=Yes]}
+  commands {del_feat D.Shared}
+}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Feature "nom" is used to deal with all nominals in a uniform way.
@@ -395,21 +388,21 @@ package sub_relations {
     commands { del_edge e; add_edge H -[csubj]-> D }
   }
 
-% In an impersonal active construction, the deep clausal subject, which is a COMP:OBJ dependent in SUD, becomes a CSUBJ dependent in UD.
-% Ex: il m'arrive de faire des erreurs.
-  rule csubj_expl{
-    pattern { e:H -[comp:obj@expl]-> D; D[upos=AUX|VERB]}
-    commands {e.1=csubj;e.2=expl; del_feat e.deep}
-  }
+%%  In an impersonal active construction, the deep clausal subject, which is a COMP:OBJ dependent in SUD, becomes a CSUBJ dependent in UD.
+% % Ex: il m'arrive de faire des erreurs.
+%   rule csubj_expl{
+%     pattern { e:H -[comp:obj@expl]-> D; D[upos=AUX|VERB]}
+%     commands {e.1=csubj;e.2=expl; del_feat e.deep}
+%   }
 
-% In an impersonal active construction, the deep clausal subject introduced with a conjunction, which is a COMP:OBJ dependent in SUD, becomes a CSUBJ dependent in UD.
-% Ex: il m'arrive de faire des erreurs.
-  rule csubj_expl_conj{
-    pattern {
-      e:H -[comp:obj@expl]-> D;D[upos <>AUX|VERB];
-      D -[1=mark]-> CONJ}
-    commands {e.1=csubj;e.2=expl; del_feat e.deep}
-  }
+% % In an impersonal active construction, the deep clausal subject introduced with a conjunction, which is a COMP:OBJ dependent in SUD, becomes a CSUBJ dependent in UD.
+% % Ex: il m'arrive de faire des erreurs.
+%   rule csubj_expl_conj{
+%     pattern {
+%       e:H -[comp:obj@expl]-> D;D[upos <>AUX|VERB];
+%       D -[1=mark]-> CONJ}
+%     commands {e.1=csubj;e.2=expl; del_feat e.deep}
+%   }
 
 % In an impersonal passive construction, the deep clausan subject, which is a COMP:OBJ dependent in SUD, becomes a CSUBJ:PASS dependent in UD.
 % Ex: Il est prévu de continuer. - Il se dit que tu viendras.
@@ -462,7 +455,8 @@ package sub_relations {
   }
 
   rule nmod{
-    pattern { e:H -[1=comp, 2=obl]-> D; H[nom=y]; D[nom=y];  }
+    pattern { e:H -[1=comp, 2=obl]-> D; H[nom=y]; D[nom=y];}
+    without{D-[1=mark]-> *}
     commands {e.1=nmod}
   }
 
@@ -472,7 +466,8 @@ package sub_relations {
   }
 
   rule nsubj {
-    pattern { e:H -[comp:obj@agent]-> D; D[nom=y]; H -[subj@expl|expl:subj]-> *}
+    pattern { e:H -[comp:obj@agent]-> D; D[nom=y]}
+    without{ H -[comp:aux@caus|aux:caus]-> AUX}
     commands { del_edge e; add_edge H -[nsubj]-> D }
   }
 
@@ -510,9 +505,10 @@ package sub_relations {
     commands { e.1=nummod; e.2=mod}
   }
 
+% Object of a causative auxiliary being the agent of the verb caused
   rule obj_agent {
-    pattern { e:H -[comp:obj@agent]-> D}
-    without{H -[subj@expl|expl:subj]-> *}
+    pattern { e:H -[comp:obj@agent]-> D; H -[aux:caus]-> AUX}
+   % without{H -[subj@expl|expl:subj]-> *}
     commands {del_edge e; add_edge H -[obj:agent]-> D }
   }
 
@@ -611,6 +607,7 @@ package relations {
       e:H -[1=mod|udep]-> D; H[nom=y];
       D -[1=mark]-> *
     }
+   % without{ D -[1=case]-> *} %fr-ud-train_13185 -  Plats de type routier comme dans les années 1970.
     commands {e.1=acl}
   }
 
@@ -656,12 +653,18 @@ package relations {
 % Ex: fr-ud-train_01058 - Son équipe en difficulté, il est remplacé à la mi-temps ...
 % Ex: fr-ud-dev_00890 - ... les restes du château d'Eaucourt étaient plus considérables qu'aujourd'hui.
 % Ex: fr-ud-test_00158 - Comme chaque soir à 18h40, il tranche, malmène et détourne l'actualité.
-  rule advcl_ellipsis {
-    pattern {H[!nom]; e:H -[1=mod]-> D; D -[1=mark|nsubj]-> X }
-    without{D[upos=VERB]}
+  rule advcl_ellipsis1 {
+    pattern {H[!nom]; e:H -[1=mod]-> D; D -[1=mark|nsubj]-> * }
+    without{D[upos=AUX|VERB]}
     commands {e.1=advcl}
   }
 
+%Ex: fr-ud-train_06732 - ou, si l'ordinateur ne possède pas la réponse (par ex, si on demande au devin des nouvelles de sa famille), à un autre devin
+  rule advcl_ellipsis2 {
+    pattern {H[nom]; e:H -[1=mod]-> D; H -[case]-> *; D -[1=mark]-> * }
+    commands {e.1=advcl}
+  }
+  
   rule advmod {
     pattern { e:H -[1=mod]-> D; D[upos=ADV|CCONJ|INTJ|PART|SYM, !nom] }
     without{D -[1=mark]-> X}
@@ -817,6 +820,7 @@ strat main {
   Seq (
     Onf (remove_deep_fixed), % in UD, @fixed becomes INMWE
     Onf(shared), % Package SHARED must precede SPECIFIC_EXPR_INIT so that feature Shared=Yes is not embedded in MWE.
+    Onf(remove_shared),
     specific_expr_init, % Initialization of a specific treatment for MWE, titles and translated words.
     Onf (nom_init),
     Onf (unchained_relations), % For CONJ relations, chains must be transformed into bouquets before head changes because of conditions on the presence of prepositions, conjunctions and auxiliaries. It is easier to take these conditions into account before head changes (UD_French-GSD : fr-ud-dev_00751)

@@ -1,9 +1,11 @@
 % judgment adverbs
 adv
+afin
 ainsi
 alors
 apparemment
 assurément
+aussi
 bien
 cependant
 certainement
