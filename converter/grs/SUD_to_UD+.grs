@@ -388,24 +388,19 @@ package sub_relations {
     commands {e.1=cop}
   }
 
-%  In an impersonal active construction, the deep clausal subject, which is a COMP:OBJ dependent in SUD, becomes a CSUBJ:IMPERS dependent in UD.
+%  In an impersonal construction, the deep clausal subject, which is a COMP:OBJ dependent in SUD, becomes a CSUBJ:IMPERS dependent in UD.
 % Ex: il m'arrive de faire des erreurs.
+% Ex: Il est prévu de continuer. - Il se dit que tu viendras.
   rule csubj_impers {
-    pattern {e:H -[comp:obj@agent]-> D; D[upos=AUX|VERB]}
+    pattern {e:H -[comp:obj@agent|comp:obj@pass]-> D; D[upos=AUX|VERB]}
     commands {del_edge e; add_edge H -[csubj:impers]-> D }
   }
-
 
 % In an impersonal passive construction, the deep clausan subject, which is a COMP:OBJ dependent in SUD, becomes a CSUBJ:PASS dependent in UD.
 % Ex: Il est prévu de continuer. - Il se dit que tu viendras.
   rule csubj_expl_pass{
     pattern { e:H -[comp:obj@pass]-> D; D[upos=AUX|VERB]}
     commands {del_edge e; add_edge H -[csubj:pass]-> D }
-  }
-
-  rule csubj_pass {
-    pattern {e:H -[1=comp, 2=obj]-> D; D[upos = AUX|VERB,!nom]; H -[subj@expl|expl:subj]-> *; H -[comp@pass|expl:pass]-> * }
-    commands {e.1=csubj; e.2=pass}
   }
 
   rule expl{

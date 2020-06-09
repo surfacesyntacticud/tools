@@ -157,11 +157,7 @@ package shift_out_edges{
       e: D -[1=advcl|csubj|dislocated|expl|nsubj|parataxis|vocative]-> D1;
     }
     without{H1 -[1 <> cop]-> H; H -[1=case]-> D; D -[parataxis]-> D1}
-    without{D -[csubj:impers]-> D1}
-    without{D -[nsubj:impers]-> D1}
-    without{H1 -[1=aux|pass]-> H;H -[1=aux|pass]-> D; H1 -[expl:subj]-> D2}
-    without{H1 -[1=aux|pass]-> H;H -[1=aux|pass]-> D; H -[expl:subj]-> D2}
-    without{H1 -[1=aux|pass]-> H;H -[1=aux|pass]-> D; D -[expl:subj]-> D2}
+    without{D -[csubj:impers|nsubj:impers|expl:comp]-> D1}
     commands{add_edge e: H -> D1;del_edge e}
   }
 
@@ -489,7 +485,6 @@ package relations {
     pattern { e:H -[1=case|mark|obj]-> D; }
     commands { e.1=comp;e.2=obj }
   }
-
 
 % We make the assumption that a clausal complement that is not introduced with an adposition is a direct object.
   rule comp_obj_ccomp {
