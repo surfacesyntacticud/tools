@@ -110,7 +110,7 @@ strat specific_expr_init {
 % NB in UD_to_SUD, the deep features "@fixed" is introduced in a later step
 package del_edges {
 	rule mwe_head {
-		pattern { MWE -[HEAD]-> H; e:MWE -[MWE]-> H; }
+		pattern { MWE[Type]; MWE -[HEAD]-> H; e:MWE -[MWE]-> H; }
 		commands {
 			del_edge e;
 			H._MISC_EXTPOS = MWE.upos;
@@ -145,7 +145,7 @@ package del_edges {
 		}
 	}
 
-	rule trans_head {
+	rule conv_head {
 		pattern { CONV -[HEAD]-> H; e:CONV -[CONV]-> H }
 		commands {
 			del_edge e;

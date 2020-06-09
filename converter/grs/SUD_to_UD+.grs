@@ -170,7 +170,7 @@ package unchained_relations {
 package reverse_case_mark {
 % The heads are reversed from the most internal to the most external. The source and the target of the reversed relation are marked "reversed = y" so that loops are not possible.
   rule rev_head {
-    pattern {e:H -[1=comp,2=obj, !rev]-> D; H[upos= ADP|CCONJ|PART|SCONJ]}
+    pattern {e:H -[comp:obj]-> D; H[upos= ADP|CCONJ|PART|SCONJ]}
     without{D[upos= ADP|CCONJ|PART|SCONJ]; D -[1=comp,2=obj]-> D1}
     commands {
       e.rev=y;
@@ -215,6 +215,11 @@ package shift_out_edges{
     commands{add_edge e: H -> D1; del_edge e}
   }
 
+  rule prep_dep{
+    pattern{ D[upos=ADP]; H -[1=comp,2=obj,rev=y]-> D; e:D -[^ conj|CONV|HEAD|MWE|TITLE]-> D1}
+    commands{add_edge e:H -> D1; del_edge e}
+  }
+  
   rule embedding_punct{
     pattern{
       H -[rev=y]-> D;
@@ -383,32 +388,19 @@ package sub_relations {
     commands {e.1=cop}
   }
 
-  rule csubj {
-    pattern { e:H -[comp:obj@agent]-> D; D[upos=AUX|VERB]}
-    commands { del_edge e; add_edge H -[csubj]-> D }
+%  In an impersonal active construction, the deep clausal subject, which is a COMP:OBJ dependent in SUD, becomes a CSUBJ:IMPERS dependent in UD.
+% Ex: il m'arrive de faire des erreurs.
+  rule csubj_impers {
+    pattern {e:H -[comp:obj@agent]-> D; D[upos=AUX|VERB]}
+    commands {del_edge e; add_edge H -[csubj:impers]-> D }
   }
 
-%%  In an impersonal active construction, the deep clausal subject, which is a COMP:OBJ dependent in SUD, becomes a CSUBJ dependent in UD.
-% % Ex: il m'arrive de faire des erreurs.
-%   rule csubj_expl{
-%     pattern { e:H -[comp:obj@expl]-> D; D[upos=AUX|VERB]}
-%     commands {e.1=csubj;e.2=expl; del_feat e.deep}
-%   }
-
-% % In an impersonal active construction, the deep clausal subject introduced with a conjunction, which is a COMP:OBJ dependent in SUD, becomes a CSUBJ dependent in UD.
-% % Ex: il m'arrive de faire des erreurs.
-%   rule csubj_expl_conj{
-%     pattern {
-%       e:H -[comp:obj@expl]-> D;D[upos <>AUX|VERB];
-%       D -[1=mark]-> CONJ}
-%     commands {e.1=csubj;e.2=expl; del_feat e.deep}
-%   }
 
 % In an impersonal passive construction, the deep clausan subject, which is a COMP:OBJ dependent in SUD, becomes a CSUBJ:PASS dependent in UD.
 % Ex: Il est prévu de continuer. - Il se dit que tu viendras.
   rule csubj_expl_pass{
     pattern { e:H -[comp:obj@pass]-> D; D[upos=AUX|VERB]}
-    commands {e.1=csubj;e.2=pass; del_feat e.deep}
+    commands {del_edge e; add_edge H -[csubj:pass]-> D }
   }
 
   rule csubj_pass {
@@ -465,10 +457,10 @@ package sub_relations {
     commands {e.1=nmod}
   }
 
-  rule nsubj {
+  rule nsubj_impers {
     pattern { e:H -[comp:obj@agent]-> D; D[nom=y]}
     without{ H -[comp:aux@caus|aux:caus]-> AUX}
-    commands { del_edge e; add_edge H -[nsubj]-> D }
+    commands { del_edge e; add_edge H -[nsubj:impers]-> D }
   }
 
 % In an impersonal active construction, the deep nominal subject, which is a COMP:OBJ dependent in SUD, becomes a NSUBJ dependent in UD.
@@ -483,7 +475,7 @@ package sub_relations {
 % In an impersonal passive construction, the deep nominal subject, which is a COMP:OBJ dependent in SUD, becomes a NSUBJ:PASS dependent in UD.
 % Ex: Il a été vendu une grande maison. - Il s'est vendu une grande maison.
   rule nsubj_expl_pass{
-    pattern { e:H -[comp:obj@pass]-> D; D[nom=y]; H -[expl:subj]-> S}
+    pattern { e:H -[comp:obj@pass]-> D; D[nom=y]}
     commands {e.1=nsubj; e.2=pass; del_feat e.deep}
   }
 
@@ -611,36 +603,36 @@ package relations {
     commands {e.1=acl}
   }
 
-%  A nominal governs a finite verb in a MOD relation and the hypothesis is that this verb is always the head of a relative clause.
-  rule aclrel {
-    pattern {
-      e:H -[1=mod]-> D; H[upos <> AUX|VERB];
-     % H[nom=y]; H can be an adverb
-      D[upos=AUX|VERB,VerbForm=Fin]  }
-    without { D -[1=mark]-> X}
-    commands {e.1=acl; e.2=relcl}
-  }
+% %  A nominal governs a finite verb in a MOD relation and the hypothesis is that this verb is always the head of a relative clause.
+%   rule aclrel {
+%     pattern {
+%       e:H -[1=mod]-> D; H[upos <> AUX|VERB];
+%      % H[nom=y]; H can be an adverb
+%       D[upos=AUX|VERB,VerbForm=Fin]  }
+%     without { D -[1=mark]-> X}
+%     commands {e.1=acl; e.2=relcl}
+%   }
 
 
-% A word H has a modifier D, which is not a finite verb and itself governs a relative pronoun and the relative pronoun is located between H and D. The hypothesis is that D is  the head of a relative clause.
-  rule aclrel_relpro1{
-    pattern{
-      e: H -[1=mod]-> D; H[upos <> AUX|VERB];
-      D -> PRO; H << PRO; PRO << D; PRO[PronType=Rel]
-    }
-    without{D[upos=AUX|VERB,VerbForm=Fin]}
-    commands {e.1=acl; e.2=relcl}
-  }
+% % A word H has a modifier D, which is not a finite verb and itself governs a relative pronoun and the relative pronoun is located between H and D. The hypothesis is that D is  the head of a relative clause.
+%   rule aclrel_relpro1{
+%     pattern{
+%       e: H -[1=mod]-> D; H[upos <> AUX|VERB];
+%       D -> PRO; H << PRO; PRO << D; PRO[PronType=Rel]
+%     }
+%     without{D[upos=AUX|VERB,VerbForm=Fin]}
+%     commands {e.1=acl; e.2=relcl}
+%   }
 
-% A word H has a modifier D, which is not a finite verb and itself indirectly governs a relative pronoun via an intermediate word and the relative pronoun is located between H and D. The hypothesis is that D is  the head of a relative clause.
-  rule aclrel_relpro2{
-    pattern{
-      e: H -[1=mod]-> D;  H[upos <> AUX|VERB];
-      D -> X; X -> PRO; H << PRO; PRO << D; PRO[PronType=Rel]
-    }
-    without{D[upos=AUX|VERB,VerbForm=Fin]}
-    commands {e.1=acl; e.2=relcl}
-  }
+% % A word H has a modifier D, which is not a finite verb and itself indirectly governs a relative pronoun via an intermediate word and the relative pronoun is located between H and D. The hypothesis is that D is  the head of a relative clause.
+%   rule aclrel_relpro2{
+%     pattern{
+%       e: H -[1=mod]-> D;  H[upos <> AUX|VERB];
+%       D -> X; X -> PRO; H << PRO; PRO << D; PRO[PronType=Rel]
+%     }
+%     without{D[upos=AUX|VERB,VerbForm=Fin]}
+%     commands {e.1=acl; e.2=relcl}
+%   }
 
   rule advcl {
     pattern { H[!nom]; e:H -[1=mod]-> D; D[upos=ADJ|AUX|VERB,!nom] }
