@@ -129,7 +129,7 @@ package FR_relations {
   rule repeat_subj{
     pattern{
      e1:V -[1=csubj|nsubj]->  SUBJ1; SUBJ1 << V;
-     e2:V -[expl:subj]-> SUBJ2; SUBJ2[upos=PRON, lemma=il]; SUBJ2 >> SUBJ1}
+     e2:V -[expl:subj]-> SUBJ2; SUBJ2[upos=PRON, lemma=il]; SUBJ2 >> V}
     commands{
       e1.1=subj;
       del_edge e2; add_edge V -[subj@expl]-> SUBJ2;}

@@ -157,7 +157,7 @@ package shift_out_edges{
       e: D -[1=advcl|csubj|dislocated|expl|nsubj|parataxis|vocative]-> D1;
     }
     without{H1 -[1 <> cop]-> H; H -[1=case]-> D; D -[parataxis]-> D1}
-    without{D -[csubj:impers|nsubj:impers|expl:comp]-> D1}
+    without{H -[1=aux|cop]->D; D -[csubj:impers|nsubj:impers|expl:comp]-> D1}
     commands{add_edge e: H -> D1;del_edge e}
   }
 
@@ -224,7 +224,7 @@ package shift_out_edges{
   rule D1_H_D{
     pattern{
       H -[deep=REV]-> D;  H << D;
-      e: D -[1=advcl|advmod|nmod|obl|orphan|punct]-> D1; D1 << H}
+      e: D -[1=advcl|advmod|nmod|obl|orphan|punct|reparandum]-> D1; D1 << H}
     without{D -[obl:agent|obl:arg]-> D1}
     commands{add_edge e: H -> D1; del_edge e}
   }
@@ -394,18 +394,19 @@ package sub_relations {
   }
 
 % In an impersonal active construction, the deep subject, which is a NSUBJ:IMPERS or CSUBJ:IMPERS dependent in UD, becomes a direct object in SUD with the deep extension AGENT.
-% Ex: Il arrive deux personnes. - Il m'arrive de faire des erreurs.
-  rule comp_obj_agent {
+% Ex: Il arrive deux personnes. - Il m'arrive de faire des erreurs - Il s'est vendu une grande maison aujourd'hui  - Il se dit que tu viendras
+  rule comp_obj_impers_agent {
     pattern { e:H -[nsubj:impers|csubj:impers]-> D}
+    without{ * -[aux:pass]-> H}
     commands { del_edge e; add_edge H -[comp:obj@agent]-> D }
   }
   
 % In an impersonal (pronominal) passive construction, the deep subject, which is a NSUBJ or CSUBJ dependent in UD, becomes a simple direct object in SUD.
-% Ex: Il s'est vendu une grande maison aujourd'hui  - Il a été vendu une grande maison aujourd'hui - Il se dit que tu viendras -  Il est prévu de continuer.
-  rule comp_obj_expl_pass {
+% Ex:  Il a été vendu une grande maison aujourd'hui - Il est prévu de continuer.
+  rule comp_obj_impers_pass {
     pattern {
-      e:H -[1=csubj|nsubj, 2=pass]-> D;
-      H -[comp@pass|comp:aux@pass]-> *;
+      e:H -[1=csubj|nsubj, 2=impers]-> D;
+      * -[aux:pass]-> H;
     }
     commands { del_edge e; add_edge H -[comp:obj]-> D; }
   }
@@ -525,7 +526,8 @@ package relations {
   }
 
   rule comp_obl_x {
-    pattern { e:H -[1=xcomp]-> D; D[upos=ADP];D -[comp:obj]-> D1; D1[upos=AUX|VERB]}
+    pattern { e:H -[1=xcomp]-> D; D[upos=ADP];D -[comp:obj]-> D1; D1[upos=ADP|AUX|VERB]}
+    without{D1[upos=ADP]; D1 -[case|comp:obj]-> D2; D2[upos <> AUX|VERB]}
     commands {e.1=comp;e.2=obl;e.deep=x}
   }
   
@@ -547,6 +549,9 @@ package relations {
   rule comp_pred {
     pattern { e:H -[1=xcomp]-> D}
     without{D[upos=ADP]; D -[mark|comp:obj]-> D1; D1[upos=AUX|VERB]}
+    without{
+      D[upos=ADP]; D -[mark|comp:obj]-> D1;
+      D1[upos=ADP]; D1 -[mark|comp:obj]-> D2;D2[upos = AUX|VERB]}
     without{D[upos=AUX|VERB] }
     commands {e.1=comp;e.2=pred}
   }
