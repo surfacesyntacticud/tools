@@ -437,12 +437,6 @@ package sub_relations {
     commands {e.1=iobj}
   }
 
-  rule nmod{
-    pattern { e:H -[1=comp, 2=obl]-> D; H[nom=y]; D[nom=y];}
-    without{D-[1=mark]-> *}
-    commands {e.1=nmod}
-  }
-
   rule nmod_poss {
     pattern { e:H -[1=mod, 2=poss]-> A; A[upos=ADJ] }
     commands {e.1=nmod}
@@ -463,11 +457,11 @@ package sub_relations {
     commands {e.1=nsubj; e.2=expl; del_feat e.deep}
   }
 
-% In an impersonal passive construction, the deep nominal subject, which is a COMP:OBJ dependent in SUD, becomes a NSUBJ:PASS dependent in UD.
+% In an impersonal passive construction, the deep nominal subject, which is a COMP:OBJ dependent in SUD, becomes a NSUBJ:IMPERS dependent in UD.
 % Ex: Il a été vendu une grande maison. - Il s'est vendu une grande maison.
   rule nsubj_expl_pass{
     pattern { e:H -[comp:obj@pass]-> D; D[nom=y]}
-    commands {e.1=nsubj; e.2=pass; del_feat e.deep}
+    commands {e.1=nsubj; e.2=impers; del_feat e.deep}
   }
 
 % Impersonal subject with passive pronominal.
@@ -521,13 +515,13 @@ package sub_relations {
   }
 
   rule obl_arg_nom {
-    pattern { e:H -[1=comp,2=obl]-> D; H[upos=ADJ|ADV|AUX|INTJ|VERB]; D[upos <> ADV|PRON,nom=y] }
+    pattern { e:H -[1=comp,2=obl]-> D; D[upos <> ADV|PRON,nom=y] }
     without{ D -[1=mark]-> *}
     commands {e.1=obl; e.2=arg}
   }
 
   rule obl_arg {
-    pattern { e:H -[1=comp,2=obl]-> D; H[upos=ADJ|ADV|AUX|INTJ|VERB]; D[upos=ADJ] }
+    pattern { e:H -[1=comp,2=obl]-> D; D[upos=ADJ] }
     without{ D -[1=mark]-> *}
     commands {e.1=obl; e.2=arg}
   }

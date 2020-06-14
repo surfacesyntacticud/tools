@@ -157,7 +157,7 @@ package shift_out_edges{
       e: D -[1=advcl|csubj|dislocated|expl|nsubj|parataxis|vocative]-> D1;
     }
     without{H1 -[1 <> cop]-> H; H -[1=case]-> D; D -[parataxis]-> D1}
-    without{H -[1=aux|cop]->D; D -[csubj:impers|nsubj:impers|expl:comp]-> D1}
+    without{H -[1=aux|caus|pass|cop]->D; D -[csubj:impers|nsubj:impers|expl:comp]-> D1}
     commands{add_edge e: H -> D1;del_edge e}
   }
 
@@ -408,7 +408,7 @@ package sub_relations {
       e:H -[1=csubj|nsubj, 2=impers]-> D;
       * -[aux:pass]-> H;
     }
-    commands { del_edge e; add_edge H -[comp:obj]-> D; }
+    commands { del_edge e; add_edge H -[comp:obj@pass]-> D; }
   }
 
 % Oblique argument.
@@ -417,6 +417,12 @@ package sub_relations {
     commands {e.1=comp; e.2=obl}
   }
 
+% Finite clause, which is an agent complement of a passive verb.
+  rule comp_obl_agent {
+    pattern { e:H -[ccomp:agent]-> D; } %
+    commands {del_edge e; add_edge H -[comp:obl@agent]-> D}
+  }
+  
 % Relation betweew a verb and a clitic expressing a pronominal passive construction.
 % Ex: Les voitures se vendent bien. - Que tu renonces se discute. - Il s'est vendu une grande maison aujourd'hui  - Il se dit que tu viendras.
   rule comp_pass {
@@ -489,14 +495,16 @@ package relations {
 
 % We make the assumption that a clausal complement that is not introduced with an adposition is a direct object.
   rule comp_obj_ccomp {
-    pattern {e:H -[1=ccomp]-> D; H[upos <> ADJ|ADV];D[upos <> ADP]; }
+    pattern {e:H -[1=ccomp]-> D; H[upos <> ADJ|ADV|NOUN];D[upos <> ADP]; }
     without{H -[1=comp,2=obj]-> D1}
     without{H -[1=obj]-> D1}
+    without{H1 -[aux@pass|comp:aux@pass]-> H}
     commands{e.1=comp;e.2=obj}
   }
 
   rule comp_obj_x {
     pattern { e:H -[1=xcomp]-> D;D[upos=AUX|VERB,VerbForm=Inf] }
+    without{ AUX -[comp:aux@pass|aux@pass]-> H}
     commands {e.1=comp;e.2=obj;e.deep=x}
   }
 
@@ -507,8 +515,8 @@ package relations {
     commands {e.1=comp;e.2=obl}
   }
 
-  rule comp_obl_ccomp_adj-adv {
-    pattern { e:H -[1=ccomp]-> D; H[upos = ADJ|ADV]; }
+  rule comp_obl_ccomp_non-verb {
+    pattern { e:H -[1=ccomp]-> D; H[upos = ADJ|ADV|NOUN]; }
     commands {e.1=comp;e.2=obl}
   }
   
@@ -519,7 +527,15 @@ package relations {
     }
     commands {e.1=comp;e.2=obl}
   }
-  
+
+  rule comp_obl_ccomp_pass {
+    pattern {
+      e:H -[1=ccomp]-> D; D[upos <> ADP];
+      H1 -[comp:aux@pass]-> H
+    }
+    commands {e.1=comp;e.2=obl}
+  }
+
   rule comp_obl {
     pattern { e:H -[1=iobj]-> D; }
     commands {e.1=comp;e.2=obl}
@@ -531,10 +547,17 @@ package relations {
     commands {e.1=comp;e.2=obl;e.deep=x}
   }
   
-  rule comp_obl-dir_x {
+  rule comp_obl-dir1_x {
     pattern {
       e:H -[1=xcomp]-> D;D[upos=AUX|VERB,VerbForm=Inf];
        H -[1=comp,2=obj]-> D1}
+    commands {e.1=comp;e.2=obl;e.deep=x}
+  }
+
+  rule comp_obl-dir2_x {
+    pattern {
+      e:H -[1=xcomp]-> D;D[upos=AUX|VERB,VerbForm=Inf];
+       AUX -[comp:aux@pass]-> H}
     commands {e.1=comp;e.2=obl;e.deep=x}
   }
 
@@ -581,6 +604,7 @@ package relations {
     commands {e.1=mod}
   }
 
+
 % subj
 %=====
   rule subj {
@@ -613,10 +637,21 @@ package relations {
     commands {e.1=udep}
   }
 
+  rule udep_dep{
+    pattern{
+      H[upos=ADJ|ADV|NOUN|PRON|PROPN|VERB];
+      D[upos=ADJ|ADP|ADV|NOUN|PRON|PROPN|SCONJ|VERB];
+      e:H -[dep]-> D}
+    commands {del_edge e; add_edge H -[udep]-> D}
+  }
+
 % unk
 %=====
   rule unk {
     pattern { e:H -[1=dep]-> D; }
+    without{
+      H[upos=ADJ|ADV|NOUN|PRON|PROPN|VERB];
+      D[upos=ADJ|ADP|ADV|NOUN|PRON|PROPN|SCONJ|VERB]}   
     commands {e.1=unk}
   }
 
