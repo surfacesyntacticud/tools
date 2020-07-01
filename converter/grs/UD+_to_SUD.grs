@@ -1,5 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% The "irregular_expr.grs" file includes packages applying a specific treatment to multi-word expressions (MWE), titles and translated. What they have in common is the fact that their syntactic behaviour towards the outside world is not regular.
+% The "irregular_expr.grs" file includes packages applying a specific treatment to idioms, titles and translated. What they have in common is the fact that their syntactic behaviour towards the outside world is not regular.
 include "irregular_expr.grs"
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -60,7 +60,7 @@ package reverse_relations{
         e.deep=REV;
         add_edge e: AUX -> H;
         del_edge e;
-        shift_in H =[^TITLE|MWE]=> AUX;
+        shift_in H =[^TITLE|IDIOM]=> AUX;
         shift_out H =[1=aux|mark,!deep]=> AUX;
       }
     }
@@ -73,7 +73,7 @@ package reverse_relations{
         e.deep=REV;
         add_edge e: AUX -> H;
         del_edge e;
-        shift_in H =[^TITLE|MWE]=> AUX;
+        shift_in H =[^TITLE|IDIOM]=> AUX;
         shift_out H =[1=aux|case|caus|cop|mark|pass,!deep]=> AUX;
       }
     }
@@ -87,7 +87,7 @@ package reverse_relations{
         e.deep=REV;
         add_edge e: AUX -> H;
         del_edge e;
-        shift_in H =[^TITLE|MWE]=> AUX;
+        shift_in H =[^TITLE|IDIOM]=> AUX;
         shift_out H =[1=aux|caus|mark|pass,!deep]=> AUX;
       }
     }
@@ -101,7 +101,7 @@ package reverse_relations{
         e.deep=REV;
         add_edge e: AUX -> H;
         del_edge e;
-        shift_in H =[^TITLE|MWE]=> AUX;
+        shift_in H =[^TITLE|IDIOM]=> AUX;
         shift_out H =[1=aux|caus|cop|mark|pass,!deep]=> AUX;
       }
     }
@@ -115,7 +115,7 @@ package reverse_relations{
         e.deep=REV;
         add_edge e: AUX -> H;
         del_edge e;
-        shift_in H =[^TITLE|MWE]=> AUX;
+        shift_in H =[^TITLE|IDIOM]=> AUX;
         shift_out H =[1=mark,!deep]=> AUX;
       }
     }
@@ -129,7 +129,7 @@ package reverse_relations{
         e.deep=REV;
         add_edge e: AUX -> H;
         del_edge e;
-        shift_in H =[^TITLE|MWE]=> AUX;
+        shift_in H =[^TITLE|IDIOM]=> AUX;
         shift_out H =[1=aux|caus|case|cop|mark|pass,!deep]=> AUX;
       }
     }
@@ -637,21 +637,21 @@ package relations {
     commands {e.1=udep}
   }
 
-  rule udep_dep{
-    pattern{
-      H[upos=ADJ|ADV|NOUN|PRON|PROPN|VERB];
-      D[upos=ADJ|ADP|ADV|NOUN|PRON|PROPN|SCONJ|VERB];
-      e:H -[dep]-> D}
-    commands {del_edge e; add_edge H -[udep]-> D}
-  }
+  % rule udep_dep{
+  %   pattern{
+  %     H[upos=ADJ|ADV|NOUN|PRON|PROPN|VERB];
+  %     D[upos=ADJ|ADP|ADV|NOUN|PRON|PROPN|SCONJ|VERB];
+  %     e:H -[dep]-> D}
+  %   commands {del_edge e; add_edge H -[udep]-> D}
+  %}
 
 % unk
 %=====
   rule unk {
     pattern { e:H -[1=dep]-> D; }
-    without{
-      H[upos=ADJ|ADV|NOUN|PRON|PROPN|VERB];
-      D[upos=ADJ|ADP|ADV|NOUN|PRON|PROPN|SCONJ|VERB]}   
+    % without{
+    %   H[upos=ADJ|ADV|NOUN|PRON|PROPN|VERB];
+    %   D[upos=ADJ|ADP|ADV|NOUN|PRON|PROPN|SCONJ|VERB]}   
     commands {e.1=unk}
   }
 
@@ -693,10 +693,12 @@ package chained_relations {
   }
 
   rule fixed {
-    pattern {H -[unk@fixed]-> D1;e: H -[unk@fixed]-> D2;D1 << D2}
-    without {H -[unk@fixed]-> D;D1 << D; D << D2}
-    without {H -[unk@fixed]-> D;D2 << D;}
-    commands {del_edge e;add_edge D1 -[unk@fixed]-> D2}
+    pattern {
+      H -[unk]-> D1; * -[IDIOM]-> D1;
+      e: H -[unk]-> D2;* -[IDIOM]-> D2;D1 << D2}
+    without {H -[unk]-> D;* -[IDIOM]-> D;D1 << D; D << D2}
+    without {H -[unk]-> D;* -[IDIOM]-> D;D2 << D;}
+    commands {del_edge e;add_edge D1 -[unk]-> D2}
   }
 
   rule flat_name {
@@ -721,12 +723,6 @@ rule remove_useless_emb {
   commands { del_feat e.2 }
 }
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% For the internal elements of MWE, feature INMWE=Yes is replaced with the deep extension fixed on the incoming relation.
-rule add_deep_fixed{
-  pattern { e:H -> D;D[_MISC_INMWE=Yes] }
-  commands {e.deep=fixed; del_feat D._MISC_INMWE}
-}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 strat main {
@@ -742,6 +738,5 @@ strat main {
     Onf (chained_relations),% Package CHAINED_RELATIONS must follow package GOV_RISE because it can entail a wrong coordination between two elements because of errors in head changes (UD_French-GS: fr-ud-dev_00131).
     specific_expr_close, % Closing a specific treatment for MWE, titles and translated words.
     Onf(remove_useless_emb),
-    Onf(add_deep_fixed), % in SUD, INMWE becomes @fixed
   )
 }

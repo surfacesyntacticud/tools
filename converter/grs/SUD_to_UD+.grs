@@ -1,31 +1,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% The "irregular_expr.grs" file includes packages applying a specific treatment to multi-word expressions (MWE), titles (TITLE) and translated (TRANS). What they have in common is the fact that their syntactic behaviour towards the outside world is not regular.
+% The "irregular_expr.grs" file includes packages applying a specific treatment to idioms, titles and converted words. What they have in common is the fact that their syntactic behaviour towards the outside world is not regular.
 include "irregular_expr.grs"
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% For the internal elements of MWE, the deep extension fixed on the incoming relation is replaced with feature INMWE=Yes.
-% rules modify annotation recursively from head to avoid to tranform the special SUD relation comp@fixed used for some expletives
-package remove_deep_fixed{
-
-  rule init {
-    pattern { H[_MISC_EXTPOS,_MISC_Type=MWE]; e:H -[deep=fixed]-> D;D[!_MISC_INMWE]}
-    without { H -[1=unk]-> D}
-    commands {del_feat e.deep; D._MISC_INMWE=Yes}
-  }
-
-  rule init_backoff { % if _MISC_Type feature is missing
-    pattern { H[_MISC_EXTPOS, !_MISC_Type]; e:H -[deep=fixed]-> D;D[!_MISC_INMWE]}
-    without { H -[1=unk]-> D}
-    commands {del_feat e.deep; D._MISC_INMWE=Yes}
-  }
-
-  rule propagate {
-    pattern { H[_MISC_INMWE=Yes]; e:H -[deep=fixed]-> D;D[!_MISC_INMWE]}
-    without { H -[1=unk]-> D}
-    commands {del_feat e.deep; D._MISC_INMWE=Yes}
-  }
-}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Dependencies of coordinations to their right are marked in SUD with feature Shared=Yes and they are attached at the rightmost conjunct. In UD, they are attached at the head of the coordination and feature  Shared=Yes is useless.
@@ -113,15 +90,15 @@ package nom_init {
     pattern {N[upos=NUM,!nom]; H[upos=AUX|VERB]; H -[mod]-> N}
     commands {N.nom=y}
   }
-% When a MWE is a nominal, the node representing this expression is marked as a nominal.
+% When a Idiom is a nominal, the node representing this expression is marked as a nominal.
   rule nom_mwe{
-    pattern{H -[expr]-> N; H[!nom]; N[_MISC_Type=MWE, _MISC_EXTPOS=NOUN|PRON|PROPN|SYM|X]}
+    pattern{H -[expr]-> N; H[!nom]; N[_MISC_PhraseType=Idiom, _MISC_EXTPOS=NOUN|PRON|PROPN|SYM|X]}
     commands{H.nom=y}
   }
 
 % A node representing a title is marked as a nominal.
   rule nom_title{
-    pattern{H -[expr]-> N; H[!nom]; N[_MISC_Type=Title]}
+    pattern{H -[expr]-> N; H[!nom]; N[_MISC_PhraseType=Title]}
     commands{H.nom=y}
   }
 
@@ -144,9 +121,11 @@ package unchained_relations {
   }
 
   rule fixed {
-    pattern { H -[unk@fixed]-> D1; e: D1 -[unk@fixed]-> D2; }
-    without { * -[unk@fixed]-> H; }
-    commands { del_edge e; add_edge H -[unk@fixed]-> D2; }
+    pattern {
+      H -[unk]-> D1; * -[IDIOM]-> D1;
+      e: D1 -[unk]-> D2; * -[IDIOM]-> D2}
+    without { * -[unk]-> H;  * -[IDIOM]-> H}
+    commands { del_edge e; add_edge H -[unk]-> D2; }
   }
 
   rule flat {
@@ -178,9 +157,9 @@ package reverse_case_mark {
       e.rev=y;
       add_edge e:D -> H;
       del_edge e;
-      shift_in H =[^MWE|TITLE|CONV]=> D;
+      shift_in H =[^IDIOM|TITLE|CONV]=> D;
       shift_out H =[1=case|mark]=> D;
-%      shift_out H =[^conj:dicto|expr|goeswith|orphan|reparandum|unk@fixed|HEAD|MWE|TITLE|TRANS]=> D;
+%      shift_out H =[^conj:dicto|expr|goeswith|orphan|reparandum|unk@fixed|HEAD|Idiom|TITLE|TRANS]=> D;
     }
   }
 
@@ -193,8 +172,8 @@ package shift_out_edges{
     pattern{
       H -[rev=y]-> D;
       e: D -> D1}
-     % e:D -[^ conj|conj:dicto|expr|goeswith|reparandum|unk@fixed|HEAD|MWE|TITLE|CONV]-> D1}
-    without{ D -[1=comp|conj|expr|goeswith|reparandum|HEAD|MWE|TITLE|CONV]-> D1}
+     % e:D -[^ conj|conj:dicto|expr|goeswith|reparandum|unk@fixed|HEAD|Idiom|TITLE|CONV]-> D1}
+    without{ D -[1=comp|conj|expr|goeswith|reparandum|HEAD|IDIOM|TITLE|CONV]-> D1}
     without{D -[punct]-> D2; D -[punct]-> D1; D1.lemma = D2.lemma; D >> D1; D << D2}
     without{
       D -[punct]-> D2; D -[punct]-> D1; D1.lemma = ")"; D2.lemma = "(";
@@ -218,7 +197,7 @@ package shift_out_edges{
   }
 
   rule prep_dep{
-    pattern{ D[upos=ADP]; H -[1=comp,2=obj,rev=y]-> D; e:D -[^ conj|CONV|HEAD|MWE|TITLE]-> D1}
+    pattern{ D[upos=ADP]; H -[1=comp,2=obj,rev=y]-> D; e:D -[^ conj|CONV|HEAD|IDIOM|TITLE]-> D1}
     commands{add_edge e:H -> D1; del_edge e}
   }
   
@@ -771,8 +750,8 @@ package reverse_aux {
       e.rev=y;
       add_edge e:D -> H;
       del_edge e;
-      shift_in H =[^MWE|TITLE]=> D;
- %     shift_out H =[^conj|conj:dicto|expr|goeswith|reparandum|unk@fixed|MWE|TITLE]=> D;
+      shift_in H =[^IDIOM|TITLE]=> D;
+ %     shift_out H =[^conj|conj:dicto|expr|goeswith|reparandum|unk@fixed|Idiom|TITLE]=> D;
     }
   }
 }
@@ -795,10 +774,9 @@ package final {
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 strat main {
   Seq (
-    Onf (remove_deep_fixed), % in UD, @fixed becomes INMWE
-    Onf(shared), % Package SHARED must precede SPECIFIC_EXPR_INIT so that feature Shared=Yes is not embedded in MWE.
+    Onf(shared), % Package SHARED must precede SPECIFIC_EXPR_INIT so that feature Shared=Yes is not embedded in Idiom.
     Onf(remove_shared),
-    specific_expr_init, % Initialization of a specific treatment for MWE, titles and translated words.
+    specific_expr_init, % Initialization of a specific treatment for Idiom, titles and translated words.
     Onf (nom_init),
     Onf (unchained_relations), % For CONJ relations, chains must be transformed into bouquets before head changes because of conditions on the presence of prepositions, conjunctions and auxiliaries. It is easier to take these conditions into account before head changes (UD_French-GSD : fr-ud-dev_00751)
     Onf (reverse_case_mark),  % Package REVERSE_CASE_MARK precedes packages SUB_RELATIONS and RELATIONS because  UD labels of complement relations depend on the category of the complements introduced with a preposition or a conjunction
@@ -813,6 +791,6 @@ strat main {
     Onf(shift_out_edges),
     Onf( reverse_close),
     Onf (final),
-    specific_expr_close, % Closing a specific treatment for MWE, titles and translated words.
+    specific_expr_close, % Closing a specific treatment for Idiom, titles and translated words.
   )
 }
