@@ -624,6 +624,11 @@ package relations {
     commands {e.1=csubj}
   }
 
+  rule depcomp{
+    pattern{ e: H -[comp]-> D}
+    commands{del_edge e; add_edge H -[dep:comp]-> D}
+  }
+  
   rule dep{
     pattern{ e: H -[unk]-> D}
     commands{e.1=dep}
