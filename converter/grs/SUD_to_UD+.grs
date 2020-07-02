@@ -567,36 +567,6 @@ package relations {
     commands {e.1=acl}
   }
 
-% %  A nominal governs a finite verb in a MOD relation and the hypothesis is that this verb is always the head of a relative clause.
-%   rule aclrel {
-%     pattern {
-%       e:H -[1=mod]-> D; H[upos <> AUX|VERB];
-%      % H[nom=y]; H can be an adverb
-%       D[upos=AUX|VERB,VerbForm=Fin]  }
-%     without { D -[1=mark]-> X}
-%     commands {e.1=acl; e.2=relcl}
-%   }
-
-
-% % A word H has a modifier D, which is not a finite verb and itself governs a relative pronoun and the relative pronoun is located between H and D. The hypothesis is that D is  the head of a relative clause.
-%   rule aclrel_relpro1{
-%     pattern{
-%       e: H -[1=mod]-> D; H[upos <> AUX|VERB];
-%       D -> PRO; H << PRO; PRO << D; PRO[PronType=Rel]
-%     }
-%     without{D[upos=AUX|VERB,VerbForm=Fin]}
-%     commands {e.1=acl; e.2=relcl}
-%   }
-
-% % A word H has a modifier D, which is not a finite verb and itself indirectly governs a relative pronoun via an intermediate word and the relative pronoun is located between H and D. The hypothesis is that D is  the head of a relative clause.
-%   rule aclrel_relpro2{
-%     pattern{
-%       e: H -[1=mod]-> D;  H[upos <> AUX|VERB];
-%       D -> X; X -> PRO; H << PRO; PRO << D; PRO[PronType=Rel]
-%     }
-%     without{D[upos=AUX|VERB,VerbForm=Fin]}
-%     commands {e.1=acl; e.2=relcl}
-%   }
 
   rule advcl {
     pattern { H[!nom]; e:H -[1=mod]-> D; D[upos=ADJ|AUX|VERB,!nom] }

@@ -3,153 +3,153 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % The package [add_edges] turns all features InIdiom (resp. InTitle) into a edge IDIOM (resp. TITLE) from the head to internal nodes of irregular expressions.
 package add_edges {
-	rule init_idiom {
-		pattern { H [_MISC_PhraseType=Idiom]; H-> N; N[_MISC_InIdiom=Yes] }
-		commands { del_feat N._MISC_InIdiom; add_edge H -[IDIOM]-> N }
-	}
+  rule init_idiom {
+    pattern { H [_MISC_PhraseType=Idiom]; H-> N; N[_MISC_InIdiom=Yes] }
+    commands { del_feat N._MISC_InIdiom; add_edge H -[IDIOM]-> N }
+  }
 
-	rule iter_idiom {
-		pattern { H -[IDIOM]-> M; M -> N; N[_MISC_InIdiom=Yes] }
-		commands { del_feat N._MISC_InIdiom; add_edge H -[IDIOM]-> N }
-	}
+  rule iter_idiom {
+    pattern { H -[IDIOM]-> M; M -> N; N[_MISC_InIdiom=Yes] }
+    commands { del_feat N._MISC_InIdiom; add_edge H -[IDIOM]-> N }
+  }
 
-	rule init_title {
-		pattern { H [_MISC_PhraseType=Title]; H-> N; N[_MISC_InTitle=Yes] }
-		commands { del_feat N._MISC_InTitle; add_edge H -[TITLE]-> N }
-	}
+  rule init_title {
+    pattern { H [_MISC_PhraseType=Title]; H-> N; N[_MISC_InTitle=Yes] }
+    commands { del_feat N._MISC_InTitle; add_edge H -[TITLE]-> N }
+  }
 
-	rule iter_title {
-		pattern { H -[TITLE]-> M; M -> N; N[_MISC_InTitle=Yes] }
-		commands { del_feat N._MISC_InTitle; add_edge H -[TITLE]-> N }
-	}
+  rule iter_title {
+    pattern { H -[TITLE]-> M; M -> N; N[_MISC_InTitle=Yes] }
+    commands { del_feat N._MISC_InTitle; add_edge H -[TITLE]-> N }
+  }
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % The package [add_nodes] insert a new node for each Idiom/Title/Conv expression.
 % The new node is linked to the head with the HEAD relation and to other elements by a IDIOM/TITLE relation.
 package add_nodes {
-	rule idiom {
-		pattern{ H [_MISC_ExtPos,_MISC_PhraseType=Idiom] }
-		commands{
-			add_node I :< H;
-			add_edge I -[IDIOM]-> H; add_edge I -[HEAD]-> H;
-			shift_in H =[^IDIOM|TITLE]=> I;
-			shift_out H =[IDIOM]=> I;
-			I.upos = H._MISC_ExtPos; del_feat H._MISC_ExtPos;
-			I.Type = H._MISC_PhraseType; del_feat H._MISC_PhraseType;
-		}
-	}
+  rule idiom {
+    pattern{ H [_MISC_ExtPos,_MISC_PhraseType=Idiom] }
+    commands{
+      add_node I :< H;
+      add_edge I -[IDIOM]-> H; add_edge I -[HEAD]-> H;
+      shift_in H =[^IDIOM|TITLE]=> I;
+      shift_out H =[IDIOM]=> I;
+      I.upos = H._MISC_ExtPos; del_feat H._MISC_ExtPos;
+      I.Type = H._MISC_PhraseType; del_feat H._MISC_PhraseType;
+    }
+  }
 
-	rule title {
-		pattern{ H [_MISC_ExtPos,_MISC_PhraseType=Title] }
-		without{ * -[expr]-> H }
-		commands{
-			add_node T :< H; add_edge T -[TITLE]-> H; add_edge T -[HEAD]-> H;
-			shift_in H =[^IDIOM|TITLE]=> T;
-			shift_out H =[TITLE]=> T;
-			T.upos = H._MISC_ExtPos; del_feat H._MISC_ExtPos;
-			T.Type = H._MISC_PhraseType; del_feat H._MISC_PhraseType;
-		}
-	}
+  rule title {
+    pattern{ H [_MISC_ExtPos,_MISC_PhraseType=Title] }
+    without{ * -[expr]-> H }
+    commands{
+      add_node T :< H; add_edge T -[TITLE]-> H; add_edge T -[HEAD]-> H;
+      shift_in H =[^IDIOM|TITLE]=> T;
+      shift_out H =[TITLE]=> T;
+      T.upos = H._MISC_ExtPos; del_feat H._MISC_ExtPos;
+      T.Type = H._MISC_PhraseType; del_feat H._MISC_PhraseType;
+    }
+  }
 
-	rule conv {
-		pattern{ H [_MISC_ExtPos,!_MISC_PhraseType] }
-		without{ * -[HEAD]-> H }
-		commands{
-			add_node C :< H; add_edge C -[CONV]-> H; add_edge C -[HEAD]-> H;
-			shift_in H =[^IDIOM|TITLE]=> C;
-			C.upos = H._MISC_ExtPos; del_feat H._MISC_ExtPos;
-			C.lemma = H.lemma
-		}
-	}
+  rule conv {
+    pattern{ H [_MISC_ExtPos,!_MISC_PhraseType] }
+    without{ * -[HEAD]-> H }
+    commands{
+      add_node C :< H; add_edge C -[CONV]-> H; add_edge C -[HEAD]-> H;
+      shift_in H =[^IDIOM|TITLE]=> C;
+      C.upos = H._MISC_ExtPos; del_feat H._MISC_ExtPos;
+      C.lemma = H.lemma
+    }
+  }
 
-	% When an idiom is included in a title, the new node must receive a TITLE relation
-	rule mwe_in_title {
-		pattern { E -[HEAD]-> N; T -[TITLE]-> N; }
-		without { T -[TITLE]-> E; }
-		commands { add_edge T -[TITLE]-> E; }
-	}
+  % When an idiom is included in a title, the new node must receive a TITLE relation
+  rule mwe_in_title {
+    pattern { E -[HEAD]-> N; T -[TITLE]-> N; }
+    without { T -[TITLE]-> E; }
+    commands { add_edge T -[TITLE]-> E; }
+  }
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % The package [ext_dep] move dependencies external to the idiom, title, conv expresion, on the new node.
 package ext_dep {
-	rule idiom {
-		pattern { H -[IDIOM]-> N; e: N -> M; M[!_MISC_InIdiom]}
-		without { H -[IDIOM]-> M; }
-		commands { add_edge e:H->M; del_edge e;}
-	}
+  rule idiom {
+    pattern { H -[IDIOM]-> N; e: N -> M; M[!_MISC_InIdiom]}
+    without { H -[IDIOM]-> M; }
+    commands { add_edge e:H->M; del_edge e;}
+  }
 
-	rule title {
-		pattern { H -[TITLE]-> N; e: N -> M; M[!_MISC_InTitle]}
-		without { H -[TITLE]-> M; }
-		commands { add_edge e:H->M; del_edge e;}
-	}
+  rule title {
+    pattern { H -[TITLE]-> N; e: N -> M; M[!_MISC_InTitle]}
+    without { H -[TITLE]-> M; }
+    commands { add_edge e:H->M; del_edge e;}
+  }
 
-	rule conv {
-		pattern { H -[CONV]-> N; e:N -> M}
-		without { H -[CONV]-> M; }
-		commands { add_edge e:H->M; del_edge e;}
-	}
+  rule conv {
+    pattern { H -[CONV]-> N; e:N -> M}
+    without { H -[CONV]-> M; }
+    commands { add_edge e:H->M; del_edge e;}
+  }
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % sequentialize the 3 previous packages into one strategy.
 strat specific_expr_init {
-	Seq (
-		Onf(add_edges),
-		Onf(add_nodes),
-		Onf(ext_dep),
-	)
+  Seq (
+    Onf(add_edges),
+    Onf(add_nodes),
+    Onf(ext_dep),
+  )
 }
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % replace edges IDIOM, TITLE by features
 package del_edges {
-	rule idiom_head {
-		pattern { I[Type]; I -[HEAD]-> H; e:I -[IDIOM]-> H; }
-		commands {
-			del_edge e;
-			H._MISC_ExtPos = I.upos;
-			H._MISC_PhraseType = I.Type;
-		}
-	}
+  rule idiom_head {
+    pattern { I[Type]; I -[HEAD]-> H; e:I -[IDIOM]-> H; }
+    commands {
+      del_edge e;
+      H._MISC_ExtPos = I.upos;
+      H._MISC_PhraseType = I.Type;
+    }
+  }
 
-	rule idiom {
-		pattern { e:I -[IDIOM]-> H }
-		without { I -[HEAD]-> H }
-		commands {
-			del_edge e;
-			H._MISC_InIdiom = Yes;
-		}
-	}
+  rule idiom {
+    pattern { e:I -[IDIOM]-> H }
+    without { I -[HEAD]-> H }
+    commands {
+      del_edge e;
+      H._MISC_InIdiom = Yes;
+    }
+  }
 
-	rule title_head {
-		pattern { T -[HEAD]-> H; e:T -[TITLE]-> H }
-		commands {
-			del_edge e;
-			H._MISC_ExtPos = T.upos;
-			H._MISC_PhraseType = T.Type;
-		}
-	}
+  rule title_head {
+    pattern { T -[HEAD]-> H; e:T -[TITLE]-> H }
+    commands {
+      del_edge e;
+      H._MISC_ExtPos = T.upos;
+      H._MISC_PhraseType = T.Type;
+    }
+  }
 
-	rule title {
-		pattern { e:T -[TITLE]-> H }
-		without { T -[HEAD]-> H }
-		commands {
-			del_edge e;
-			H._MISC_InTitle = Yes;
-		}
-	}
+  rule title {
+    pattern { e:T -[TITLE]-> H }
+    without { T -[HEAD]-> H }
+    commands {
+      del_edge e;
+      H._MISC_InTitle = Yes;
+    }
+  }
 
-	rule conv_head {
-		pattern { C -[HEAD]-> H; e:C -[CONV]-> H }
-		commands {
-			del_edge e;
-			H._MISC_ExtPos = C.upos;
-		}
-	}
+  rule conv_head {
+    pattern { C -[HEAD]-> H; e:C -[CONV]-> H }
+    commands {
+      del_edge e;
+      H._MISC_ExtPos = C.upos;
+    }
+  }
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -169,8 +169,8 @@ package del_nodes {
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % sequentialize the 3 previous packages into one strategy.
 strat specific_expr_close {
-	Seq (
-		Onf(del_edges),
-		Onf(del_nodes),
-	)
+  Seq (
+    Onf(del_edges),
+    Onf(del_nodes),
+  )
 }
