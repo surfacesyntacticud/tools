@@ -57,7 +57,7 @@ package add_nodes {
     without{ * -[HEAD]-> H }
     commands{
       add_node C :< H; add_edge C -[CONV]-> H; add_edge C -[HEAD]-> H;
-      shift_in H =[^IDIOM|TITLE]=> C;
+      shift H =[^IDIOM|TITLE]=> C;
       C.upos = H._MISC_ExtPos; del_feat H._MISC_ExtPos;
       C.lemma = H.lemma
     }

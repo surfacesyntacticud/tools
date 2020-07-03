@@ -252,7 +252,7 @@ package shift_out_edges{
     without{D[upos=ADJ]; D1[upos=VERB,VerbForm=Part]}
     without{D1[upos=ADJ]; D[upos=VERB,VerbForm=Part]}
     without{D[upos=ADP|ADV]; D1[upos=ADP|ADV]}
-    without{D[upos=AUX|VERB]; D1[upos=AUX|VERB]}
+    without{D[upos=AUX|VERB]; D1[upos=AUX|VERB]; D1.VerbForm=D.VerbForm}
     commands{add_edge e: H -> D1; del_edge e}
   }
 
@@ -377,19 +377,27 @@ package minimize_conj_dep {
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% UD sub-relations are renamed as SUD sub-relations.
-% The rules are arranged int the alphabetic order of the resulting relations.
+% UD sub-relations are renamed as SUD sub-relations or relations.
+% The rules are arranged in the alphabetic order of the SUD resulting relations or sub-relations.
 package sub_relations {
+% comp
+%=========
+% Sub-relations DEP:COMP are renamed COMP in SUD.
+  rule comp_dep {
+    pattern { e:H -[dep:comp]-> D; }
+    commands {del_edge e; add_edge H -[comp]-> D}
+  }
+  
 % All sub-relations of COMP, for which the extension does not change from UD to SUD.
   rule comp {
     pattern { e:H -[advcl:cleft|ccomp:obj|ccomp:obl]-> D; }
     commands {e.1=comp}
   }
 
-% Sub-relations  DEP:COMP are renamed COMP in SUD.
-  rule comp_dep {
-    pattern { e:H -[dep:comp]-> D; }
-    commands {del_edge e; add_edge H -[comp]-> D}
+% UD XCOMP direct object or oblique argument.
+  rule comp-obj-obl_xcomp {
+    pattern { e:H -[xcomp:obj|xcomp:obl]-> D; }
+    commands {e.1=comp;e.deep=x}
   }
   
 % An expletive complement, which is an EXPL:COMP dependent in UD, becomes a COMP@EXPL in SUD
@@ -399,9 +407,15 @@ package sub_relations {
     commands{e.1=comp; e.deep=expl; del_feat e.2}
   }
 
+% Clausal argument.
+  rule comp-obj-obl-pred_ccomp {
+    pattern { e:H -[1=ccomp,2=obj|obl|pred]-> D; }
+    commands {e.1=comp}
+  }
+  
 % In an impersonal active construction, the deep subject, which is a NSUBJ:IMPERS or CSUBJ:IMPERS dependent in UD, becomes a direct object in SUD with the deep extension AGENT.
 % Ex: Il arrive deux personnes. - Il m'arrive de faire des erreurs - Il s'est vendu une grande maison aujourd'hui  - Il se dit que tu viendras
-  rule comp_obj_impers_agent {
+  rule comp-obj-agent_subj-impers {
     pattern { e:H -[nsubj:impers|csubj:impers]-> D}
     without{ * -[aux:pass]-> H}
     commands { del_edge e; add_edge H -[comp:obj@agent]-> D }
@@ -409,7 +423,7 @@ package sub_relations {
   
 % In an impersonal (pronominal) passive construction, the deep subject, which is a NSUBJ or CSUBJ dependent in UD, becomes a simple direct object in SUD.
 % Ex:  Il a été vendu une grande maison aujourd'hui - Il est prévu de continuer.
-  rule comp_obj_impers_pass {
+  rule comp-obj-pass_impers {
     pattern {
       e:H -[1=csubj|nsubj, 2=impers]-> D;
       * -[aux:pass]-> H;
@@ -422,21 +436,61 @@ package sub_relations {
     pattern { e:H -[1=obl, 2=arg|comp]-> D; } % comp pour Spoken
     commands {e.1=comp; e.2=obl}
   }
-
+  
 % Finite clause, which is an agent complement of a passive verb.
-  rule comp_obl_agent {
+  rule comp-obl-agent_ccomp {
     pattern { e:H -[ccomp:agent]-> D; } %
     commands {del_edge e; add_edge H -[comp:obl@agent]-> D}
   }
   
 % Relation betweew a verb and a clitic expressing a pronominal passive construction.
 % Ex: Les voitures se vendent bien. - Que tu renonces se discute. - Il s'est vendu une grande maison aujourd'hui  - Il se dit que tu viendras.
-  rule comp_pass {
+  rule comp-pass_expl {
     pattern {e: H -[expl:pass]-> D}
     commands {del_edge e;add_edge H -[comp@pass]-> D}
   }
 
-% Oblique modifier.
+% Predicative non clausal argument.
+  rule comp-pred_xcomp {
+    pattern { e:H -[xcomp:pred]-> D}
+    without{D[upos=ADP|SCONJ]; D -[mark|comp:obj]-> D1; D1[upos=AUX|VERB]}
+    without{
+      D[upos=ADP|SCONJ]; D -[mark|comp:obj]-> D1;
+      D1[upos=ADP|SCONJ]; D1 -[mark|comp:obj]-> D2;D2[upos = AUX|VERB]}
+    without{D[upos=AUX|VERB] }
+    commands {e.1=comp;e.2=pred}
+  }
+
+% Predicative clausal argument.
+  rule comp-pred_ccomp {
+    pattern { e:H -[ccomp:pred]-> D; }
+    commands {e.1=comp; e.2=pred}
+  }
+  
+% Predicative clausal argument.
+  rule comp-pred-x_xcomp1 {
+    pattern { e:H -[xcomp:pred]-> D;D[upos=AUX|VERB] }
+    commands {del_edge e; add_edge H -[comp:pred@x]-> D}
+  }
+  
+  rule comp-pred-x_xcomp2 {
+    pattern {
+      e:H -[xcomp:pred]-> D;
+      D[upos=ADP|SCONJ]; D -[mark|comp:obj]-> D1;
+      D1[upos=AUX|VERB] }
+    commands {del_edge e; add_edge H -[comp:pred@x]-> D}
+  }
+  
+  rule comp-pred-x_xcomp3 {
+    pattern {
+      e:H -[xcomp:pred]-> D;
+      D[upos=ADP|SCONJ]; D -[mark|comp:obj]-> D1;
+      D1[upos=ADP|SCONJ]; D1 -[mark|comp:obj]-> D2;
+      D2[upos = AUX|VERB]}
+    commands {del_edge e; add_edge H -[comp:pred@x]-> D}
+  }
+  
+ % Oblique modifier.
   rule mod {
     pattern { e:H -[obl:mod]-> D; }
     commands {e.1=mod; del_feat e.2}
@@ -638,9 +692,15 @@ package relations {
     pattern { e:H -[1=obl, !deep]-> D}
     commands {e.1=udep}
   }
+  
   rule udep_obl2 {
-    pattern { e:H -[1=obl, deep<>agent]-> D}
+    pattern { e:H -[1=obl, deep<>agent|lvc]-> D}
     commands {e.1=udep}
+  }
+    
+  rule udep_obl-lvc {
+    pattern { e:H -[1=obl, deep=lvc]-> D}
+    commands {e.1=comp;e.2=obl}
   }
 
 % unk

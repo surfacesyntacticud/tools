@@ -500,13 +500,13 @@ package sub_relations {
   }
 
   rule obl_arg {
-    pattern { e:H -[1=comp,2=obl]-> D; D[upos=ADJ] }
+    pattern { e:H -[1=comp,2=obl]-> D; D[upos=ADJ|ADV] }
     without{ D -[1=mark]-> *}
     commands {e.1=obl; e.2=arg}
   }
 
   rule obl_arg_adv-pron {
-    pattern { e:H -[1=comp,2=obl]-> D; D[upos=ADV|PRON]; D -[1=case]-> * }
+    pattern { e:H -[1=comp,2=obl]-> D; D[upos=PRON]; D -[1=case]-> * }
     commands {e.1=obl; e.2=arg}
   }
 
@@ -514,7 +514,7 @@ package sub_relations {
     pattern { e:H -[comp:obj@x|comp:obl@x|comp:pred@x|comp:pred|comp:pred@lvc]-> D }
     without{ H[upos=AUX]}
     without{ D[upos=AUX|VERB]; H -[comp:pred]-> D}
-    commands {e.1=xcomp; del_feat e.2; del_feat e.deep}
+    commands {e.1=xcomp; del_feat e.deep}
   }
 
    rule xcomp_lvc{
@@ -534,6 +534,7 @@ package rel_extensions {
 
   rule del_ext{
     pattern{e: H -[1=*,2=aux|emb|obj|obl|pred,!deep]-> D}
+    without{ H -[1=ccomp|xcomp,2=obj|obl|pred]-> D}
     commands{del_feat e.2}
   }
 
