@@ -3,7 +3,6 @@
 include "irregular_expr.grs"
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Dependencies of coordinations to their right are marked in SUD with feature Shared=Yes and they are attached at the rightmost conjunct. In UD, they are attached at the head of the coordination and feature  Shared=Yes is useless.
 package shared {
@@ -172,7 +171,6 @@ package shift_out_edges{
     pattern{
       H -[rev=y]-> D;
       e: D -> D1}
-     % e:D -[^ conj|conj:dicto|expr|goeswith|reparandum|unk@fixed|HEAD|Idiom|TITLE|CONV]-> D1}
     without{ D -[1=comp|conj|expr|goeswith|reparandum|HEAD|IDIOM|TITLE|CONV]-> D1}
     without{D -[punct]-> D2; D -[punct]-> D1; D1.lemma = D2.lemma; D >> D1; D << D2}
     without{
@@ -283,7 +281,7 @@ package case_mark_relations {
     commands {e.1=mark}
   }
 
-% comme à Paris
+% Ex: comme à Paris
   rule mark_nom1{
     pattern{
       e:H -[1=comp,2=obj,rev=y]-> D;
@@ -334,29 +332,21 @@ package sub_relations {
     commands {e.1=advcl; e.2=cleft}
   }
 
-% All auxiliaries except tense auxiliaries.
   rule aux{
-    pattern{ e:H -[1=comp,2=aux, !deep]-> D }
+    pattern{ e:H -[1=comp,2=aux]-> D }
     commands {e.1=aux}
   }
 
-  rule aux_deep{
-    pattern{ e:H -[1=comp,2=aux,deep=*]-> D }
-    commands {
-      add_edge H -[1=aux, 2=e.deep]-> D;
-      del_edge e;
-    }
-  }
 
-% Complement that is a complete clause without control of its subject.
+% Argument that is a complete clause without control of its subject.
   rule ccomp {
     pattern {e:H -[1=comp, 2=obj|obl|pred]-> D; D[upos = AUX|VERB,!nom]}
     without{ H -[comp:obj@x|comp:obl@x|comp:pred@x]-> D}
-    without {H -[comp:obj@pass|expl:pass]-> * } % if so csubj:pass XXX
+    without {H -[comp:obj@pass|comp:obj@agent]-> D } % Impersonal diathesis
     commands {e.1=ccomp}
   }
 
-% Clausal complement  with a non-verbal head.
+% Clausal argument with a non-verbal head.
   rule ccomp_non-verb {
     pattern {
       e:H -[1=comp, 2=obj|obl]-> D; D[upos<> AUX|VERB];
@@ -369,44 +359,25 @@ package sub_relations {
     commands {e.1=cop}
   }
 
-%  In an impersonal construction, the deep clausal subject, which is a COMP:OBJ dependent in SUD, becomes a CSUBJ:IMPERS dependent in UD.
-% Ex: il m'arrive de faire des erreurs.
-% Ex: Il est prévu de continuer. - Il se dit que tu viendras.
-  rule csubj_impers {
-    pattern {e:H -[comp:obj@agent|comp:obj@pass]-> D; D[upos=AUX|VERB]}
-    commands {del_edge e; add_edge H -[csubj:impers]-> D }
+%  In the impersonal diathesis, the deep clausal subject, which is a COMP:OBJ dependent in SUD, becomes a CSUBJ dependent in UD.
+% Ex: il m'arrive de faire des erreurs. - Il se dit que tu viendras.
+  rule csubj_comp-obj {
+    pattern {e:H -[comp:obj@agent]-> D; D[upos=AUX|VERB]}
+    commands {del_edge e; add_edge H -[csubj]-> D }
   }
 
 
-  rule expl{
-    pattern{ e:H -[unk@expl]-> D}
-    commands {e.1=expl; del_feat e.deep}
+%  In the impersonal passive diathesis, the deep clausal object, which is a COMP:OBJ@PASS dependent in SUD, becomes a CSUBJ:PASS dependent in UD.
+% Ex: Il est prévu de continuer.
+  rule csubj_comp-obj-pass {
+    pattern {e:H -[comp:obj@pass]-> D; D[upos=AUX|VERB]}
+    commands {del_edge e; add_edge H -[csubj:pass]-> D }
   }
-
-% An expletive complement, which is a COMP:EXPL dependent in SUD, becomes an EXPL:COMP dependent in UD.
-% Ex: Les gens s'enfuient - Il s'agit d'un accident.
-  rule expl_comp{
-    pattern{ e:H -[comp@expl]-> D}
-    commands {e.1=expl;e.2=comp; del_feat e.deep}
-  }
-
-% An expletive complement in a passive construction, which is a COMP:PASS dependent in SUD, becomes an EXPL:PASS dependent in UD.
-% Ex:  Les voitures se vendent bien. - Il s'est vendu une grande maison aujourd'hui. -  Il se dit que tu viendras.
-  rule expl_pass {
-    pattern {e: H -[comp@pass]-> D}
-    commands {del_edge e;add_edge H -[expl:pass]-> D}
-  }
-
 % In an impersonal construction, the impersonal subject, which is a SUBJ:EXPL dependent in SUD, becomes an  EXPL:SUBJ dependent in UD.
 % Ex: Il arrive deux personnes. - Il faut un bilan. - Il s'agit d'une erreur. - Il a été vendu une grande maison. - il se dit que tu viendras.
   rule expl_subj{
     pattern{ e:H -[subj@expl]-> D}
     commands {e.1=expl;e.2=subj; del_feat e.deep}
-  }
-
-  rule fixed{
-    pattern{ e:H -[unk@fixed]-> D}
-    commands {e.1=fixed; del_feat e.deep}
   }
 
 % iobj is used for any argument of a non-nominal governor, which is an adverb or a pronoun not introduced by a preposition 
@@ -421,41 +392,28 @@ package sub_relations {
     commands {e.1=nmod}
   }
 
+% Deep subject in the impersonal resdistribution.
+% Ex: il arrive deux personnes.
   rule nsubj_impers {
     pattern { e:H -[comp:obj@agent]-> D; D[nom=y]}
-    without{ H -[comp:aux@caus|aux:caus]-> AUX}
-    commands { del_edge e; add_edge H -[nsubj:impers]-> D }
+    without{ H -[comp:aux@caus|aux:aux@caus|aux:caus]-> AUX}
+    commands { del_edge e; add_edge H -[nsubj]-> D }
   }
 
-% In an impersonal active construction, the deep nominal subject, which is a COMP:OBJ dependent in SUD, becomes a NSUBJ dependent in UD.
-% Ex: il arrive deux personnes.
-  rule nsubj_expl{
-    pattern { e:H -[comp:obj@expl]-> D; D[nom=y]}
-    without{ H -[comp@pass]-> AUX}
-    without{D -[1=mark]-> CONJ}
-    commands {e.1=nsubj; e.2=expl; del_feat e.deep}
-  }
-
-% In an impersonal passive construction, the deep nominal subject, which is a COMP:OBJ dependent in SUD, becomes a NSUBJ:IMPERS dependent in UD.
+% Object in the impersonal passive redistribution.
 % Ex: Il a été vendu une grande maison. - Il s'est vendu une grande maison.
   rule nsubj_expl_pass{
     pattern { e:H -[comp:obj@pass]-> D; D[nom=y]}
     commands {e.1=nsubj; e.2=impers; del_feat e.deep}
   }
 
-% Impersonal subject with passive pronominal.
-  rule nsubj_obj {
-    pattern { e:H -[1=comp, 2=obj, !deep]-> D; D[nom=y]; H -[subj@expl|expl:subj]-> *; H -[comp@pass|expl:pass]-> *; }
-    commands {e.1=nsubj}
-  }
-
-  % added for Naija
+% added for Naija
   rule nummod_det {
     pattern { e:H -[1=det, 2=num]-> D; }
     commands { e.1=nummod; e.2=det}
   }
 
-  % added for Naija
+% added for Naija
   rule nummod_mod {
     pattern { e:H -[1=mod, 2=num]-> D; }
     commands { e.1=nummod; e.2=mod}
@@ -463,12 +421,12 @@ package sub_relations {
 
 % Object of a causative auxiliary being the agent of the verb caused
   rule obj_agent {
-    pattern { e:H -[comp:obj@agent]-> D; H -[aux:caus]-> AUX}
+    pattern { e:H -[comp:obj@agent]-> D; H -[aux:caus|aux:aux@caus]-> AUX}
    % without{H -[subj@expl|expl:subj]-> *}
     commands {del_edge e; add_edge H -[obj:agent]-> D }
   }
 
-   rule obj_lvc{
+  rule obj_lvc{
     pattern { e:H -[comp:obj@lvc]-> D}
     commands {del_edge e; add_edge H -[obj:lvc]-> D}
   }
@@ -477,13 +435,12 @@ package sub_relations {
     pattern { e:H -[1=comp, 2=obj, !deep]-> D; D[nom=y]}
     without{ H -[comp:obj@expl]-> D}
     without{ D -[1=mark]-> *}
-    without { H -[subj@expl|expl:subj]-> *; H -[comp@pass|expl:pass]-> *; } % if so, the relation becomes subj (see rules nsubj_2/csubj_2)
     commands {e.1=obj}
   }
 
    rule obj_pred{
     pattern { e:H -[1=comp, 2=obj]-> D; D[cat=ADJ|ADV|INTJ,!nom]}
-    without{ H -[comp:obj@expl]-> D}
+    %without{ H -[comp:obj@expl]-> D}
     without{ D -[1=mark]-> *}
     commands {e.1=obj}
   }
@@ -511,24 +468,19 @@ package sub_relations {
   }
 
   rule xcomp {
-    pattern { e:H -[comp:obj@x|comp:obl@x|comp:pred@x|comp:pred|comp:pred@lvc]-> D }
+    pattern { e:H -[comp:obj@x|comp:obl@x|comp:pred@x|comp:pred]-> D }
     without{ H[upos=AUX]}
     without{ D[upos=AUX|VERB]; H -[comp:pred]-> D}
     commands {e.1=xcomp; del_feat e.deep}
   }
 
-   rule xcomp_lvc{
-    pattern { e:H -[comp:pred@lvc]-> D}
-    commands {del_edge e; add_edge H -[xcomp:lvc]-> D}
-  }
-
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SUD deep extensions of relations are transformed into  extensions of UD relations
+% SUD deep extensions of relations are transformed into extensions of UD relations
 package rel_extensions {
   rule change_ext{
-    pattern{e: H -[1=*, deep <> fixed]-> D}
+    pattern{e: H -[1=*, deep=*]-> D}
     commands{ add_edge H -[1=e.1,2=e.deep]-> D; del_edge e}
   }
 
@@ -625,7 +577,7 @@ package relations {
     commands {e.1=csubj}
   }
 
-  rule depcomp{
+  rule dep-comp{
     pattern{ e: H -[comp]-> D}
     commands{del_edge e; add_edge H -[dep:comp]-> D}
   }
@@ -727,7 +679,6 @@ package reverse_aux {
       add_edge e:D -> H;
       del_edge e;
       shift_in H =[^IDIOM|TITLE]=> D;
- %     shift_out H =[^conj|conj:dicto|expr|goeswith|reparandum|unk@fixed|Idiom|TITLE]=> D;
     }
   }
 }

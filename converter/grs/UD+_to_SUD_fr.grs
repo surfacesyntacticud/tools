@@ -2,116 +2,6 @@
 include "UD+_to_SUD.grs"
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% The source of some relations must rise from the old head D to the new head H in cases specific to French.
-package FR_shift_out_edges{
-
-  rule adv-judgment(lex from "lexicons/adv_judgment.lp") {
-    pattern{
-      H -[case|cop]-> D;
-      e:D -[advmod]-> ADV;
-      ADV[upos=ADV,lemma=lex.adv];
-      H << D; D << ADV}
-    without{D -> D1; D1 >> ADV}
-    commands{add_edge H -[advmod]-> ADV; del_edge e}
-  }
-  
-  rule adv-mwe-judgment(lex from "lexicons/adv-mwe_judgment.lp") {
-    pattern{
-      H -[case|cop]-> D;
-      e:D -[advmod]-> ADV;
-      ADV -[HEAD]-> H1;
-      H1[lemma=lex.head];
-      ADV -[IDIOM]-> D1;
-      D1[lemma=lex.dep];
-      H << D; D << ADV}
-    without{D -> D2; D2 >> ADV}
-    commands{add_edge H -[advmod]-> ADV; del_edge e}
-  }
-
-
-  rule adv-tense(lex from "lexicons/adv_tense.lp") {
-    pattern{
-      H -[case|cop]-> D;
-      e:D -[advmod]-> ADV;
-      ADV[upos=ADV,lemma=lex.adv];
-      H << D; D << ADV}
-    without{D -> D1; D1 >> ADV}
-    commands{add_edge H -[advmod]-> ADV; del_edge e}
-  }
-}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Some relations have moved up from the old head D to the new head H incorrectly in specific cases in French. The move must be cancelled.
-package FR_shift_out_back_edges{
-
-  rule double_subj{
-    pattern{
-      e1:V -[1= nsubj|csubj]-> SUBJ1;
-      e2:V -[expl:subj]-> SUBJ2; 
-      AUX -[1=aux]-> V;
-      SUBJ1 << AUX; AUX << SUBJ2; SUBJ2 << V}
-    commands{
-      add_edge e1: AUX -> SUBJ1; add_edge e2: AUX -> SUBJ2;
-      del_edge e1; del_edge e2}
-  }
-  
-  rule dont_en{
-    pattern {
-      H[upos=ADP|AUX];
-      H -[1=aux|case|cop]-> D;
-      D1[upos=PRON,lemma=dont|en];
-      e: H -> D1;
-      D1 << H}
-    without{H -[cop]-> D; H -[obl|obl:mod]-> D1} %Ex: fr-ud-dev_01506 - ...la sortie de leur pays de la zone Euro en sera inéluctable
-    commands{add_edge e: D -> D1;del_edge e}
-  }
-
-  rule aux_adv-quant_comp(lex from "lexicons/adv_quant.lp"){
-    pattern{
-      H -[1=aux|cop]-> D;
-      D1[upos=ADV,lemma=lex.adv];
-      e: H -[advmod]-> D1;
-      H << D1}
-    without{D1[Polarity=Neg]}
-    commands{add_edge D -[advmod]-> D1;del_edge e}
-  }
-
-  rule aux_adv-mwe-quant_comp(lex from "lexicons/adv-mwe_quant.lp"){
-    pattern{
-      H -[1=aux|cop]-> D;
-      e: H -[advmod]-> D1;
-      D1[upos=ADV];
-      D1 -[HEAD]-> H1;
-      H1[lemma=lex.head];
-      D1 -[IDIOM]-> D2;
-      D2[lemma=lex.dep];
-      H << D1}
-    commands{add_edge D -[advmod]-> D1;del_edge e}
-  }
-  
-  rule aux_adv-manner_comp(lex from "lexicons/adv_manner.lp"){
-    pattern{
-      H -[1=aux|cop]-> D;
-      D1[upos=ADV,lemma=lex.adv];
-      e: H -[advmod]-> D1;
-      H << D1}
-    commands{add_edge D -[advmod]-> D1;del_edge e}
-  }
-
-  rule aux_aussi_comp{
-    pattern{
-      H -[1=aux|cop]-> D;  D[upos=ADJ|ADV];
-      e:H -[advmod]-> D1;
-      D1[upos=ADV,lemma=aussi];
-      H << D1; 
-      CONJ[upos=SCONJ,lemma=que]; D1 -> CONJ}
-    commands{add_edge D -[advmod]-> D1; del_edge e}
-  }
-
-
-
-}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Relations in SUD that are determined from UD relations with rules specific to French.
 package FR_relations {
 
@@ -128,8 +18,10 @@ package FR_relations {
 % Ex : Jean est-il payé ?
   rule repeat_subj{
     pattern{
-     e1:V -[1=csubj|nsubj]->  SUBJ1; SUBJ1 << V;
-     e2:V -[expl:subj]-> SUBJ2; SUBJ2[upos=PRON, lemma=il]; SUBJ2 >> V}
+     e1:V -[1=csubj|nsubj]->  SUBJ1;
+     e2:V -[expl:subj]-> SUBJ2; SUBJ2[upos=PRON, lemma=il];
+     SUBJ1 << V}
+    without{SUBJ1[PronType=Int|Rel,lemma=que]}
     commands{
       e1.1=subj;
       del_edge e2; add_edge V -[subj@expl]-> SUBJ2;}
@@ -215,19 +107,130 @@ package FR_relations {
   
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% The source of some relations must rise from the old head D to the new head H in cases specific to French.
+package FR_shift_out_edges{
+
+  rule adv-judgment(lex from "lexicons/adv_judgment.lp") {
+    pattern{
+      H -[case|cop]-> D;
+      e:D -[mod]-> ADV;
+      ADV[upos=ADV,lemma=lex.adv];
+      H << D; D << ADV}
+    without{D -> D1; D1 >> ADV}
+    commands{add_edge H -[mod]-> ADV; del_edge e}
+  }
+  
+  rule adv-mwe-judgment(lex from "lexicons/adv-mwe_judgment.lp") {
+    pattern{
+      H -[case|cop]-> D;
+      e:D -[mod]-> ADV;
+      ADV -[HEAD]-> H1;
+      H1[lemma=lex.head];
+      ADV -[IDIOM]-> D1;
+      D1[lemma=lex.dep];
+      H << D; D << ADV}
+    without{D -> D2; D2 >> ADV}
+    commands{add_edge H -[mod]-> ADV; del_edge e}
+  }
+
+
+  rule adv-tense(lex from "lexicons/adv_tense.lp") {
+    pattern{
+      H -[case|cop]-> D;
+      e:D -[mod]-> ADV;
+      ADV[upos=ADV,lemma=lex.adv];
+      H << D; D << ADV}
+    without{D -> D1; D1 >> ADV}
+    commands{add_edge H -[mod]-> ADV; del_edge e}
+  }
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Some relations have moved up from the old head D to the new head H incorrectly in specific cases in French. The move must be cancelled.
+package FR_shift_out_back_edges{
+
+  rule double_subj{
+    pattern{
+      e1:V -[1= subj]-> SUBJ1;
+      e2:V -[expl:subj]-> SUBJ2; 
+      AUX -[1=comp,2=aux]-> V;
+      SUBJ1 << AUX; AUX << SUBJ2; SUBJ2 << V}
+    commands{
+      add_edge e1: AUX -> SUBJ1; add_edge e2: AUX -> SUBJ2;
+      del_edge e1; del_edge e2}
+  }
+  
+  rule dont_en{
+    pattern {
+      H[upos=ADP|AUX];
+      H -[1=comp,2=aux|obj]-> D;
+      D1[upos=PRON,lemma=dont|en];
+      e: H -> D1;
+      D1 << H}
+    without{H -[cop]-> D; H -[mod]-> D1} %Ex: fr-ud-dev_01506 - ...la sortie de leur pays de la zone Euro en sera inéluctable
+    commands{add_edge e: D -> D1;del_edge e}
+  }
+
+  rule aux_adv-quant_comp(lex from "lexicons/adv_quant.lp"){
+    pattern{
+      H -[1=comp,2=aux|pred]-> D;
+      D1[upos=ADV,lemma=lex.adv];
+      e: H -[mod]-> D1;
+      H << D1}
+    without{D1[Polarity=Neg]}
+    commands{add_edge D -[mod]-> D1;del_edge e}
+  }
+
+  rule aux_adv-mwe-quant_comp(lex from "lexicons/adv-mwe_quant.lp"){
+    pattern{
+      H -[1=comp,2=aux|pred]-> D;
+      e: H -[mod]-> D1;
+      D1[upos=ADV];
+      D1 -[HEAD]-> H1;
+      H1[lemma=lex.head];
+      D1 -[IDIOM]-> D2;
+      D2[lemma=lex.dep];
+      H << D1}
+    commands{add_edge D -[mod]-> D1;del_edge e}
+  }
+  
+  rule aux_adv-manner_comp(lex from "lexicons/adv_manner.lp"){
+    pattern{
+      H -[1=comp,2=aux|pred]-> D;
+      D1[upos=ADV,lemma=lex.adv];
+      e: H -[mod]-> D1;
+      H << D1}
+    commands{add_edge D -[mod]-> D1;del_edge e}
+  }
+
+  rule aux_aussi_comp{
+    pattern{
+      H -[1=comp,2=aux|pred]-> D;  D[upos=ADJ|ADV];
+      e:H -[mod]-> D1;
+      D1[upos=ADV,lemma=aussi];
+      H << D1; 
+      CONJ[upos=SCONJ,lemma=que]; D1 -> CONJ}
+    commands{add_edge D -[mod]-> D1; del_edge e}
+  }
+
+
+
+}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 strat FR_main {
   Seq(
     specific_expr_init, % Initialization of a specific treatment for MWE, titles and converted words.
-    reverse_relations.main,
-    Onf(FR_shift_out_edges),
-    Onf(FR_shift_out_back_edges),
-    Onf (minimize_conj_dep),% package MINIMIZE_CONJ_DEP must follow shift packages because a dependance can shift from a coordination to an ascendant. Ex: fr-ud-dev_00446 -entre 3 et 6 généralement
     Onf (FR_relations),
     Onf (sub_relations),
     Onf (rel_extensions),
     Onf (relations),
+    reverse_relations.main,
+    Onf(FR_shift_out_edges),
+    Onf(FR_shift_out_back_edges),
+    Onf (minimize_conj_dep),% package MINIMIZE_CONJ_DEP must follow shift packages because a dependance can shift from a coordination to an ascendant. Ex: fr-ud-dev_00446 -entre 3 et 6 généralement
     Onf (add_conj_emb),
     Onf (chained_relations),
     specific_expr_close, % Closing a specific treatment for MWE, titles and translated words.
