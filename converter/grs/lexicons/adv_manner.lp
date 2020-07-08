@@ -78,6 +78,7 @@ largement
 lentement
 légèrement
 localement
+longtemps
 longuement
 mal
 massivement

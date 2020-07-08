@@ -30,6 +30,8 @@ package add_edges {
 package add_nodes {
   rule idiom {
     pattern{ H [_MISC_ExtPos,_MISC_PhraseType=Idiom] }
+    without{H[upos=AUX|VERB, VerbForm, _MISC_ExtPos=VERB]}
+    without{H -[IDIOM]-> AUX; AUX[upos=AUX,VerbForm]}
     commands{
       add_node I :< H;
       add_edge I -[IDIOM]-> H; add_edge I -[HEAD]-> H;
@@ -40,6 +42,34 @@ package add_nodes {
     }
   }
 
+  rule idiom_verb {
+    pattern{ H [upos=AUX|VERB, VerbForm,_MISC_ExtPos=VERB,_MISC_PhraseType=Idiom] }
+    commands{
+      add_node I :< H;
+      add_edge I -[IDIOM]-> H; add_edge I -[HEAD]-> H;
+      shift_in H =[^IDIOM|TITLE]=> I;
+      shift_out H =[IDIOM]=> I;
+      I.upos = H._MISC_ExtPos; del_feat H._MISC_ExtPos;
+      I.Type = H._MISC_PhraseType; del_feat H._MISC_PhraseType;
+      I.VerbForm = H.VerbForm
+    }
+  }
+  
+  rule idiom_cop {
+    pattern{
+      H [_MISC_ExtPos=VERB,_MISC_PhraseType=Idiom];
+      e:H -[IDIOM]-> AUX; AUX[upos=AUX,VerbForm]}
+    commands{
+      add_node I :< H;
+      add_edge I -[IDIOM]-> H; add_edge I -[HEAD]-> H;
+      shift_in H =[^IDIOM|TITLE]=> I;
+      shift_out H =[IDIOM]=> I;
+      del_edge e; add_edge I -[IDIOM]-> AUX;
+      I.upos = H._MISC_ExtPos; del_feat H._MISC_ExtPos;
+      I.Type = H._MISC_PhraseType; del_feat H._MISC_PhraseType;
+      I.VerbForm = AUX.VerbForm
+    }
+  }
   rule title {
     pattern{ H [_MISC_ExtPos,_MISC_PhraseType=Title] }
     without{ * -[expr]-> H }
@@ -75,22 +105,19 @@ package add_nodes {
 % The package [ext_dep] move dependencies external to the idiom, title, conv expresion, on the new node.
 package ext_dep {
   rule idiom {
-    pattern { H -[IDIOM]-> N; e: N -> M; M[!_MISC_InIdiom]}
+    pattern { H -[IDIOM]-> N; e: N -> M}
     without { H -[IDIOM]-> M; }
+    without{ * -[IDIOM]-> M}
     commands { add_edge e:H->M; del_edge e;}
   }
 
   rule title {
-    pattern { H -[TITLE]-> N; e: N -> M; M[!_MISC_InTitle]}
+    pattern { H -[TITLE]-> N; e: N -> M;}
     without { H -[TITLE]-> M; }
-    commands { add_edge e:H->M; del_edge e;}
+     without{ * -[TITLE]-> M}
+   commands { add_edge e:H->M; del_edge e;}
   }
 
-  rule conv {
-    pattern { H -[CONV]-> N; e:N -> M}
-    without { H -[CONV]-> M; }
-    commands { add_edge e:H->M; del_edge e;}
-  }
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

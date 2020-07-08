@@ -27,6 +27,11 @@ package FR_relations {
       del_edge e2; add_edge V -[subj@expl]-> SUBJ2;}
   }
 
+  rule udep_dont-en{
+    pattern{ e:H -[nmod]-> D; D[upos=PRON, lemma=dont|en]}
+    commands{del_edge e; add_edge H -[udep]-> D}
+  }
+
 % Adverbs with a direct object.By default, the relation between an adverb and one of its arguments is COMP:OBL
   rule adv_obj(lex from "lexicons/adv_obj.lp") {
     pattern{
@@ -45,65 +50,6 @@ package FR_relations {
     commands{ del_edge e; add_edge LOC -[comp:obj]-> ARG}
   }
   
-%  % Relation between the verb "avoir" and a direct object in the form of an infinitive clause introduced with "de". By default, CCOMP relations introduced with "de" are transformed into COMP:OBL relations, but in this case, they are transformed into COMP:OBJ relations.
-%   rule verb-avoir_compobj_ccomp {
-%     pattern {
-%       H[upos=VERB,lemma=avoir]; e:H -[ccomp]-> C;
-%       C[upos=ADP,lemma=de]}
-%     without{H -[1=obj]-> *}
-%     commands { del_edge e; add_edge H -[comp:obj]-> C }
-%   }
-
-% % Relation between a verb and an argument in the form of a finite clause, which is an oblique complement introduced with "que". By default, CCOMP relations are transformed into COMP:OBJ relations, but in this case, they are transformed into COMP:OBL relations.
-%   rule verb_compobl_ccomp (lex from "lexicons/verb_with_deobj_fin-verb.lp") {
-%     pattern {
-%       H[upos=VERB,lemma=lex.verb]; e:H -[ccomp]-> C;
-%       C[upos=SCONJ,lemma=que]}
-%     commands { del_edge e; add_edge H -[comp:obl]-> C }
-%   }
-
-% % Relation between a verb with affix and an argument in the form of a finite clause, which is an oblique complement introduced with "que". By default, CCOMP relations are transformed into COMP:OBJ relations, but in this case, they are transformed into COMP:OBL relations.
-%   rule verb_aff_compobl_ccomp (lex from "lexicons/aff_verb_with_deobj_fin-verb.lp") {
-%     pattern {
-%       H[upos=VERB,lemma=lex.verb]; e:H -[ccomp]-> C;
-%       C[upos=SCONJ,lemma=que];
-%       AFF[upos=PRON, lemma=lex.aff]; H -[expl]-> AFF}
-%     commands { del_edge e; add_edge H -[comp:obl]-> C }
-%   }
-
-
-%  % Relation between a verb and an argument in the form of an infinitive clause, which is a direct object introduced with "de". By default, these relations, which are XCOMP relations in UD, are transformed into COMP:OBL@X relations, but in this case, they are transformed into COMP:OBJ@X relations.
-%   rule verb_compobj_xcomp (lex from "lexicons/verb_with_obj_de_inf.lp") {
-%     pattern {
-%       H[upos=VERB,lemma=lex.verb]; e:H -[xcomp]-> C;
-%       C[upos=ADP,lemma=de]}
-%     without{H -[1=obj]-> OBJ}
-%     commands { del_edge e; add_edge H -[comp:obj@x]-> C }
-%   }
-
-  
-%  % Relation between a verb and an argument in the form of an infinitive clause, which is a direct predicative complement, the subject of the infinitive being the subject of the governor verb. In this case, the XCOMP relation is transformed into COMP:PRED@X relation.
-%   rule verb_comppred_xcomp-inf (lex from "lexicons/verb_with_pred_inf.lp") {
-%     pattern {
-%       H[upos=VERB,lemma=lex.verb]; e:H -[xcomp]-> C;
-%       C[upos=AUX|VERB,VerbForm=Inf] }
-%     commands { del_edge e; add_edge H -[comp:pred@x]-> C }
-%   }
-  
-%  % Relation between a verb and an argument in the form of a participial clause introduced with a conjunction, which is a predicative complement, the subject of the participle being the subject of the governor verb. In this case, the XCOMP relation is transformed into COMP:PRED@X relation.
-%   rule verb_comppred_xcomp-part(lex from "lexicons/verb_with_pred-ind_part.lp"){
-%     pattern {
-%       H[upos=VERB,lemma=lex.verb]; e:H -[xcomp]-> C;
-%       C[upos=SCONJ,lemma=lex.conj]; C -[mark]-> D;
-%       D[upos=AUX|VERB,VerbForm=Part] }
-%     commands { del_edge e; add_edge H -[comp:pred@x]-> C }
-%   }
-  
-%  % Relation between the verb "être" and an argument in the form of a clause, which is a predicative complement. In this case, the CCOMP relation is transformed into COMP:PRED relation.
-%   rule verb-etre_comppred_ccomp  {
-%     pattern {H[upos=VERB,lemma="être"]; e:H -[ccomp]-> C}
-%     commands { del_edge e; add_edge H -[comp:pred]-> C }
-%   }
   
 }
 
@@ -113,7 +59,7 @@ package FR_shift_out_edges{
 
   rule adv-judgment(lex from "lexicons/adv_judgment.lp") {
     pattern{
-      H -[case|cop]-> D;
+      H[upos=AUX];H -[1=comp,2=aux|pred]-> D;
       e:D -[mod]-> ADV;
       ADV[upos=ADV,lemma=lex.adv];
       H << D; D << ADV}
@@ -123,7 +69,7 @@ package FR_shift_out_edges{
   
   rule adv-mwe-judgment(lex from "lexicons/adv-mwe_judgment.lp") {
     pattern{
-      H -[case|cop]-> D;
+      H[upos=AUX];H -[1=comp,2=aux|pred]-> D;
       e:D -[mod]-> ADV;
       ADV -[HEAD]-> H1;
       H1[lemma=lex.head];
@@ -137,7 +83,7 @@ package FR_shift_out_edges{
 
   rule adv-tense(lex from "lexicons/adv_tense.lp") {
     pattern{
-      H -[case|cop]-> D;
+      H[upos=AUX];H -[1=comp,2=aux|pred]-> D;
       e:D -[mod]-> ADV;
       ADV[upos=ADV,lemma=lex.adv];
       H << D; D << ADV}
@@ -150,41 +96,31 @@ package FR_shift_out_edges{
 % Some relations have moved up from the old head D to the new head H incorrectly in specific cases in French. The move must be cancelled.
 package FR_shift_out_back_edges{
 
-  rule double_subj{
-    pattern{
-      e1:V -[1= subj]-> SUBJ1;
-      e2:V -[expl:subj]-> SUBJ2; 
-      AUX -[1=comp,2=aux]-> V;
-      SUBJ1 << AUX; AUX << SUBJ2; SUBJ2 << V}
-    commands{
-      add_edge e1: AUX -> SUBJ1; add_edge e2: AUX -> SUBJ2;
-      del_edge e1; del_edge e2}
-  }
-  
   rule dont_en{
     pattern {
       H[upos=ADP|AUX];
-      H -[1=comp,2=aux|obj]-> D;
+      H -[1=comp,2=aux|pred]-> D;
       D1[upos=PRON,lemma=dont|en];
       e: H -> D1;
       D1 << H}
-    without{H -[cop]-> D; H -[mod]-> D1} %Ex: fr-ud-dev_01506 - ...la sortie de leur pays de la zone Euro en sera inéluctable
+    without{ H -[1=comp,2=pred]-> D; H[upos <> AUX]}
+    without{H -[1=comp,2=pred]-> D; H -[mod]-> D1} %Ex: fr-ud-dev_01506 - ...la sortie de leur pays de la zone Euro en sera inéluctable
     commands{add_edge e: D -> D1;del_edge e}
   }
 
   rule aux_adv-quant_comp(lex from "lexicons/adv_quant.lp"){
     pattern{
-      H -[1=comp,2=aux|pred]-> D;
+      H[upos=AUX]; H -[1=comp,2=aux|pred]-> D; 
       D1[upos=ADV,lemma=lex.adv];
       e: H -[mod]-> D1;
-      H << D1}
+      H << D1; D1 << D}
     without{D1[Polarity=Neg]}
     commands{add_edge D -[mod]-> D1;del_edge e}
   }
 
   rule aux_adv-mwe-quant_comp(lex from "lexicons/adv-mwe_quant.lp"){
     pattern{
-      H -[1=comp,2=aux|pred]-> D;
+      H[upos=AUX]; H -[1=comp,2=aux|pred]-> D;
       e: H -[mod]-> D1;
       D1[upos=ADV];
       D1 -[HEAD]-> H1;
@@ -197,7 +133,7 @@ package FR_shift_out_back_edges{
   
   rule aux_adv-manner_comp(lex from "lexicons/adv_manner.lp"){
     pattern{
-      H -[1=comp,2=aux|pred]-> D;
+      H[upos=AUX];H -[1=comp,2=aux|pred]-> D;
       D1[upos=ADV,lemma=lex.adv];
       e: H -[mod]-> D1;
       H << D1}
@@ -206,11 +142,11 @@ package FR_shift_out_back_edges{
 
   rule aux_aussi_comp{
     pattern{
-      H -[1=comp,2=aux|pred]-> D;  D[upos=ADJ|ADV];
+      H[upos=AUX];H -[1=comp,2=pred]-> D;  D[upos=ADJ|ADV];
       e:H -[mod]-> D1;
       D1[upos=ADV,lemma=aussi];
-      H << D1; 
-      CONJ[upos=SCONJ,lemma=que]; D1 -> CONJ}
+      H << D1; D1 << D;
+      CONJ[upos=SCONJ,lemma=que]; D1 -[comp:obl]-> CONJ}
     commands{add_edge D -[mod]-> D1; del_edge e}
   }
 

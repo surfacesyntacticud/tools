@@ -70,12 +70,18 @@ package sub_relations {
     pattern { e:H -[1=obl, 2=arg|comp]-> D; } % comp pour Spoken
     commands {e.1=comp; e.2=obl}
   }
+
+% Clitic pronouns expressing the mediopassive redistribution.
+  rule dep-comp_comp{
+    pattern{e: H -[dep:pass]-> D}
+    commands{del_edge e; add_edge H -[comp@pass]-> D}
+  }
   
 % Predicative non clausal argument.
   rule comp-pred_xcomp {
     pattern { e:H -[xcomp:pred]-> D}
     without{D[upos=AUX|VERB] }
-    commands {e.1=comp;e.2=pred}
+    commands {del_edge e; add_edge H -[comp:pred]-> D}
   }
 
 % Predicative clausal argument.
@@ -85,17 +91,26 @@ package sub_relations {
   }
   
 % Predicative clausal argument.
-  rule comp-pred-x_xcomp {
-    pattern { e:H -[xcomp:pred]-> D;D[upos=AUX|VERB] }
+  rule comp-pred-x_xcomp1 {
+    pattern { e:H -[xcomp:pred]-> D;D[upos=VERB] }
     commands {del_edge e; add_edge H -[comp:pred@x]-> D}
   }
     
+  rule comp-pred-x_xcomp2 {
+    pattern { e:H -[xcomp:pred]-> D;D -[cop]-> D1; D1[upos=AUX] }
+    commands {del_edge e; add_edge H -[comp:pred@x]-> D}
+  }
  % Oblique modifier.
   rule mod {
     pattern { e:H -[obl:mod]-> D; }
     commands {e.1=mod; del_feat e.2}
   }
 
+   rule mod-relcl{
+     pattern { e:H -[acl:relcl]-> D; }
+     commands {del_edge e; add_edge H -[mod@relcl]-> D}
+   }
+  
 % In an impersonal construction, the impersonal subject, which is an EXPL dependent in UD, becomes an  explicit subject in SUD with the deep extension expl.
 % Ex: Il arrive deux personnes. - Il faut un bilan. - Il s'agit d'une erreur. - Il a été vendu une grande maison. - il se dit que tu viendras.
   rule subj_expl {
@@ -232,17 +247,15 @@ package relations {
 % This rule is too strong for nummod, because in many languages, the relation is DET when D precedes H.
   rule mod {
     pattern { e:H -[1=advcl|advmod|amod|nummod]-> D; }
+    without{H[upos=NOUN|NUM|PRON|PROPN|X]; H -[advmod]-> D; D -[case]-> *}
     commands {e.1=mod}
   }
 
-% An ACL or NMOD complement of a noun that is not introduced with an adposition or a conjunction is a modifier.
-  rule mod_noun {
-    pattern { e:H -[1=acl|nmod]-> D}
-    without{ D-[case]-> PREP; PREP[upos=ADP]}
+  rule mod_acl-nmod {
+    pattern { e:H -[1=acl|nmod]-> D; }
+    without{ D -[case|mark]-> *}
     commands {e.1=mod}
   }
-
-
 % subj
 %=====
   rule subj {
@@ -252,27 +265,32 @@ package relations {
 
 % udep
 %=====
-% An ACL or NMOD complement of a noun that is introduced with an adposition or a conjunction is a modifier or an argument.
   rule udep {
-    pattern { e:H -[1=acl|nmod]-> D; D -[case]-> PREP; PREP[upos=ADP|SCONJ]}
+    pattern { e:H -[1=acl|nmod]-> D; D -[case|mark]-> *}
     commands {e.1=udep}
   }
 
-% TODO: replace next to rules by "without { e.deep=agent }"
-  rule udep_obl1 {
-    pattern { e:H -[1=obl, !deep]-> D}
-    commands {e.1=udep}
-  }
+   rule udep_advmod {
+     pattern { H -[det]-> *; e:H -[advmod]-> D; D -[case|mark]-> *}
+     commands {del_edge e; add_edge H -[udep]-> D}
+   }
+   
+   rule udep_advmod-noun {
+     pattern { H[upos=NOUN|NUM|PRON|PROPN|X]; e:H -[advmod]-> D; D -[case|mark]-> *}
+     commands {del_edge e; add_edge H -[udep]-> D}
+   }
+% % TODO: replace next to rules by "without { e.deep=agent }"
+%   rule udep_obl1 {
+%     pattern { e:H -[1=obl, !deep]-> D}
+%     commands {e.1=udep}
+%   }
   
-  rule udep_obl2 {
-    pattern { e:H -[1=obl, deep<>agent|lvc]-> D}
-    commands {e.1=udep}
-  }
+   rule udep_obl {
+     pattern { e:H -[1=obl]-> D}
+     without{H -[deep=agent]-> D}
+     commands {e.1=udep}
+   }
     
-  rule udep_obl-lvc {
-    pattern { e:H -[1=obl, deep=lvc]-> D}
-    commands {e.1=comp;e.2=obl}
-  }
 
 % unk
 %=====
@@ -419,7 +437,7 @@ package shift_out_edges{
 
 % Agent relations in causative and impersonal constructions.
   rule agent {
-    pattern{H -[1=caus|cop,deep=REV]-> D; e: D -[deep=agent]-> D1}
+    pattern{H -[1=caus,deep=REV]-> D; e: D -[deep=agent]-> D1}
     commands{add_edge e: H -> D1;del_edge e}
   }
 
@@ -437,13 +455,6 @@ package shift_out_edges{
     pattern {
       H -[1<>mark,deep=REV]-> D;
       e: D -[1=subj]-> D1}
-    commands{add_edge e: H -> D1;del_edge e}
-  }
-  rule mod_clause_mark_embedded{
-    pattern {
-      H -[1<>mark,deep=REV]-> D;
-      e: D -[1=mod]-> D1;D1[upos=SCONJ]
-    }
     commands{add_edge e: H -> D1;del_edge e}
   }
   
@@ -469,11 +480,11 @@ package shift_out_edges{
   rule H_D_D1{
     pattern{
       H -[deep=REV]-> D;  H << D;
-      e: D -[1=mod|udep|punct]-> D1; D << D1}
+      e: D -[1=mod|punct]-> D1; D << D1}
     without{D -[mod@relcl]-> D1}
-    without{D[upos=NOUN|NUM|PRON|PROPN|X]; D -[mod|udep]-> D1; D1[upos=ADJ|NOUN|NUM|PRON|PROPN|X]}
-    without{H -[1=case|mark]-> D;  D -[mod|udep]-> D1; D1[upos=ADP]}
-    without{D -[1=comp]-> D1}
+    without{H -[1=case]-> D;D -[1=mod]-> D1; D1[upos <> ADP]}
+    without{H -[1=mark]-> D;D -[1=mod]-> D1}
+    without{H -[1=cop]-> D; D -[mod]-> D1; D1[upos<>ADP|ADV|SCONJ]}
     without{D -> D2; D1 << D2} 
     without{D -[punct]-> D2; D2 << D; D -[punct]-> D1; D1.lemma = D2.lemma}
     without{D -[punct]-> D2; D2 << D; D -[punct]-> D1; D1.lemma = ")"; D2.lemma = "("}
@@ -488,7 +499,6 @@ package shift_out_edges{
       H -[1=aux|caus|cop|pass,deep=REV]-> D;
       e: D -[mod]-> D1;
       H << D1; D1 << D}
-    without{ H -[1=case]-> D; D -[mod]-> D1 }
     without{ D -> D2; H << D2; D2 << D1}
     commands{add_edge e: H -> D1; del_edge e}
   }
@@ -511,7 +521,6 @@ package shift_out_edges{
     pattern{
       H -[deep=REV]-> D;  H << D;
       e: D -[1=mod|orphan|punct|reparandum|udep]-> D1; D1 << H}
-    without{D -[obl:agent|obl:arg]-> D1}
     commands{add_edge e: H -> D1; del_edge e}
   }
 
@@ -625,7 +634,7 @@ package minimize_conj_dep {
     pattern {
       C1 -[1=conj]-> C2;
       C1 -[mod]-> D1; D1 << C2;
-      C2 -[mod]-> D2;
+      C2 -[mod]-> D2; D2 << C2; %Ex:fr-ud-dev_01562 - ... plus savoureuse (73%) et plus sucrée (68%) que les autres fraises
       e:D1 -[^conj|conj:emb|discourse|parataxis|punct]-> D; C2 << D}
     without { C1 -[1=conj]-> C; C2 << C ; C << D} % Ex :fr-ud-train_03266, fr-ud-train_02016
     commands { add_edge e:D2 -> D; del_edge e; D.Shared=Yes }

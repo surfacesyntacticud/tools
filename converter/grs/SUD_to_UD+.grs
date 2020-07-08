@@ -29,7 +29,7 @@ package shared {
   }
 
 % The shared dependent is attached at the head of the last conjunct via a MOD relation.
-  rule move_mod_distant-relation {
+  rule move_mod_distant-relation1 {
     pattern {
       N1 -[1=conj]-> N2;
       N1 -[mod]-> D1; N1 << D1;
@@ -40,6 +40,17 @@ package shared {
     commands {add_edge e: D1 -> D;del_edge e;}
   }
 
+% The shared dependent is attached at the head of the last conjunct via a MOD relation.
+  rule move_mod_distant-relation2 {
+    pattern {
+      N1 -[1=conj]-> N2;
+      N1 -[mod]-> D1; N1 >> D1;
+      N2 -[mod]-> D2; N2 >> D2;
+      e: D2  -[1=comp|mod]-> D; D[Shared=Yes]}
+    without{D2 -[1=comp]-> D; D1 -[1=comp]-> D3}
+    without{D2 -[1=mod]-> D; D1 -[1=mod]-> D3}
+    commands {add_edge e: D1 -> D;del_edge e;}
+  }
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -373,6 +384,15 @@ package sub_relations {
     pattern {e:H -[comp:obj@pass]-> D; D[upos=AUX|VERB]}
     commands {del_edge e; add_edge H -[csubj:pass]-> D }
   }
+  
+% clitic pronoun expressing the mediopassive redistribution.
+% Ex: Les voitures se sont bien vendues.
+  rule dep-pass_comp{
+    pattern{e: H -[comp@pass]-> D}
+    commands{del_edge e; add_edge H -[dep:pass]-> D}
+  }
+
+
 % In an impersonal construction, the impersonal subject, which is a SUBJ:EXPL dependent in SUD, becomes an  EXPL:SUBJ dependent in UD.
 % Ex: Il arrive deux personnes. - Il faut un bilan. - Il s'agit d'une erreur. - Il a été vendu une grande maison. - il se dit que tu viendras.
   rule expl_subj{

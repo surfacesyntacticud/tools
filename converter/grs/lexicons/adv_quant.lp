@@ -8,7 +8,6 @@ approximativement
 beaucoup
 carrément
 combien
-comme
 complètement
 davantage
 diablement

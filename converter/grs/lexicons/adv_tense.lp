@@ -35,7 +35,6 @@ illico
 immédiatement
 initialement
 jadis
-longtemps
 lors
 maintenant
 naguère
