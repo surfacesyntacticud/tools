@@ -1,14 +1,14 @@
 % Choose one MWE in the sentence
 rule choose_mwepos {
-  pattern { N[_MISC_EXTPOS,_MISC_Type=MWE] }
+  pattern { N[_MISC_ExtPos,_MISC_PhraseType=Idiom] }
   without { N -[fixed]-> * }
   commands { N.fix=Head}
 }
 
 % Mark all components of the chosen MWE with feature fix=Part and remove the internal dependencies.
 rule propagate{
-  pattern { N [fix]; e:N -> M; M[_MISC_INMWE] }
-  commands { M.fix=Part; del_feat M._MISC_INMWE; del_edge e; }
+  pattern { N [fix]; e:N -> M; M[_MISC_InIdiom] }
+  commands { M.fix=Part; del_feat M._MISC_InIdiom; del_edge e; }
 }
 
 % Mark the leftmost component of the MWE with fix=First.
@@ -22,13 +22,13 @@ package first {
 
 %The leftmost component is not the head of the MWE.
   rule head_not_first {
-    pattern { N[fix=Part]; H[fix=Head, _MISC_Type]; }
+    pattern { N[fix=Part]; H[fix=Head, _MISC_PhraseType]; }
     without { H < N }
     without { M[fix]; M < N }
     commands {
       N.fix=First;
-      N._MISC_EXTPOS = H._MISC_EXTPOS; del_feat H._MISC_EXTPOS;
-      N._MISC_Type = H._MISC_Type; del_feat H._MISC_Type;
+      N._MISC_ExtPos = H._MISC_ExtPos; del_feat H._MISC_ExtPos;
+      N._MISC_PhraseType = H._MISC_PhraseType; del_feat H._MISC_PhraseType;
       shift H ==> N}
   }
 }

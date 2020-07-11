@@ -61,7 +61,7 @@ package sub_relations {
 % The impersonal diathesis is detected by means of the impersonal subject,which may not be a direct dependent of the main verb, hence the need for several rules.
 % Il sera vendu une grande maison aujourd'hui - Il est prévu de continuer. - Il a été vendu une grande maison aujourd'hui. - Il a été prévu de continuer. - Il peut avoir été vendu une grande maison aujourd'hui.
   rule comp-obj-pass_subj {
-    pattern{e:H -[1=csubj, 2=pass]-> D; H -[expl:subj]-> *}
+    pattern{e:H -[1=csubj|nsubj, 2=pass]-> D; H -[expl:subj]-> *}
     commands{del_edge e; add_edge H -[comp:obj@pass]-> D; }
   }
   
@@ -157,6 +157,7 @@ package relations {
   rule comp_obj_ccomp {
     pattern {e:H -[1=ccomp]-> D; H[upos <> ADJ|ADV|NOUN];}
     without{H -[obj|comp:obj]-> *}
+    without{H -[deep=agent]-> D}
     without{ D -[mark]-> PREP; PREP[upos=ADP]}
     without{H -[aux@pass|comp:aux@pass]-> *}
     commands{e.1=comp;e.2=obj}
@@ -177,6 +178,12 @@ package relations {
 
   rule comp_obl_ccomp_non-verb {
     pattern { e:H -[1=ccomp]-> D; H[upos = ADJ|ADV|NOUN]; }
+    commands {e.1=comp;e.2=obl}
+  }
+
+%Ex: fr-ud-train_03013 -  La fédération italienne se dit choquée que le joueur français ait été choisi
+  rule comp_obl_ccomp_agent {
+    pattern {e:H -[1=ccomp,deep=agent]-> D}
     commands {e.1=comp;e.2=obl}
   }
   
@@ -260,6 +267,7 @@ package relations {
 %=====
   rule subj {
     pattern { e:H -[1=nsubj|csubj]-> D}
+    %without{ H1 -[comp:pred]-> H; H1 -[subj@expl]-> *}
     commands {e.1=subj}
   }
 
@@ -482,7 +490,7 @@ package shift_out_edges{
       H -[deep=REV]-> D;  H << D;
       e: D -[1=mod|punct]-> D1; D << D1}
     without{D -[mod@relcl]-> D1}
-    without{H -[1=case]-> D;D -[1=mod]-> D1; D1[upos <> ADP]}
+    without{H -[1=case]-> D;D -[1=mod]-> D1; D1[upos <> ADP|SCONJ]}
     without{H -[1=mark]-> D;D -[1=mod]-> D1}
     without{H -[1=cop]-> D; D -[mod]-> D1; D1[upos<>ADP|ADV|SCONJ]}
     without{D -> D2; D1 << D2} 
@@ -490,6 +498,8 @@ package shift_out_edges{
     without{D -[punct]-> D2; D2 << D; D -[punct]-> D1; D1.lemma = ")"; D2.lemma = "("}
     without{D -[punct]-> D2; D2 << D; D -[punct]-> D1; D1.lemma = "»"; D2.lemma = "«"}
     without{D -[punct]-> D2; D2 << D; D -[punct]-> D1; D1.lemma = "]"; D2.lemma = "["}
+    without{D1[_MISC_InTitle=Yes]; H[!_MISC_InTitle]}% A vérifier
+    without{H -[1=case|mark]-> D; H1 -[IDIOM]-> D1; H1 -[HEAD]-> H}
     commands{add_edge e: H -> D1; del_edge e}
   }
 
@@ -499,6 +509,7 @@ package shift_out_edges{
       H -[1=aux|caus|cop|pass,deep=REV]-> D;
       e: D -[mod]-> D1;
       H << D1; D1 << D}
+    without{H -[1=cop]-> D; D -[mod]-> D1; D1[upos=ADJ]; D[upos=NOUN]}
     without{ D -> D2; H << D2; D2 << D1}
     commands{add_edge e: H -> D1; del_edge e}
   }

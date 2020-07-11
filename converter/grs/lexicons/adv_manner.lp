@@ -11,7 +11,7 @@ anormalement
 architecturalement
 automatiquement
 âprement
-bien
+%bien % a plusieurs sens
 biologiquement
 brutalement
 catégoriquement

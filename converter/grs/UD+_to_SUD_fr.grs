@@ -2,6 +2,29 @@
 include "UD+_to_SUD.grs"
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+package pron_verb{
+  rule verb1{
+    pattern{
+      V[upos=VERB,!_MISC_ExtPos, !_MISC_PhraseType];
+      V -[dep:comp]-> PRON; PRON [upos=PRON]}
+    without{V -[dep:comp]-> PRON1; PRON1 [upos=PRON]}
+    commands{
+      V._MISC_ExtPos=VERB; V._MISC_PhraseType=Idiom;
+      PRON._MISC_InIdiom=Yes}
+  }
+
+  rule verb2{
+    pattern{
+      V[upos=VERB,!_MISC_ExtPos, !_MISC_PhraseType];
+      V -[dep:comp]-> PRON1; PRON1 [upos=PRON];
+      V -[dep:comp]-> PRON2; PRON2 [upos=PRON]; PRON1 << PRON2}
+    commands{
+      V._MISC_ExtPos=VERB; V._MISC_PhraseType=Idiom;
+      PRON1._MISC_InIdiom=Yes; PRON2._MISC_InIdiom=Yes;}
+  }
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Relations in SUD that are determined from UD relations with rules specific to French.
 package FR_relations {
 
@@ -18,13 +41,11 @@ package FR_relations {
 % Ex : Jean est-il payé ?
   rule repeat_subj{
     pattern{
-     e1:V -[1=csubj|nsubj]->  SUBJ1;
-     e2:V -[expl:subj]-> SUBJ2; SUBJ2[upos=PRON, lemma=il];
-     SUBJ1 << V}
+     V -[1=csubj|nsubj]->  SUBJ1;
+     e:V -[expl:subj]-> SUBJ2; SUBJ2[upos=PRON, lemma=il];
+     SUBJ1 << V; SUBJ1 << SUBJ2}
     without{SUBJ1[PronType=Int|Rel,lemma=que]}
-    commands{
-      e1.1=subj;
-      del_edge e2; add_edge V -[subj@expl]-> SUBJ2;}
+    commands{del_edge e; add_edge V -[subj@expl]-> SUBJ2;}
   }
 
   rule udep_dont-en{
@@ -56,10 +77,20 @@ package FR_relations {
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % The source of some relations must rise from the old head D to the new head H in cases specific to French.
 package FR_shift_out_edges{
-
-  rule adv-judgment(lex from "lexicons/adv_judgment.lp") {
+   
+  rule adv-judgment_aux(lex from "lexicons/adv_judgment.lp") {
     pattern{
       H[upos=AUX];H -[1=comp,2=aux|pred]-> D;
+      e:D -[mod]-> ADV;
+      ADV[upos=ADV,lemma=lex.adv];
+      H << D; D << ADV}
+    without{D -> D1; D1 >> ADV}
+    commands{add_edge H -[mod]-> ADV; del_edge e}
+  }
+  
+  rule adv-judgment_case(lex from "lexicons/adv_judgment.lp") {
+    pattern{
+      H[upos=ADP];H -[1=comp,2=obj]-> D; D[upos <> AUX|VERB];
       e:D -[mod]-> ADV;
       ADV[upos=ADV,lemma=lex.adv];
       H << D; D << ADV}
@@ -80,10 +111,33 @@ package FR_shift_out_edges{
     commands{add_edge H -[mod]-> ADV; del_edge e}
   }
 
+  rule adv-mwe-judgment_case(lex from "lexicons/adv-mwe_judgment.lp") {
+    pattern{
+      H[upos=ADP];H -[1=comp,2=obj]-> D; D[upos <> AUX|VERB];
+      e:D -[mod]-> ADV;
+      ADV -[HEAD]-> H1;
+      H1[lemma=lex.head];
+      ADV -[IDIOM]-> D1;
+      D1[lemma=lex.dep];
+      H << D; D << ADV}
+    without{D -> D2; D2 >> ADV}
+    commands{add_edge H -[mod]-> ADV; del_edge e}
+  }
 
-  rule adv-tense(lex from "lexicons/adv_tense.lp") {
+
+  rule aux_adv-tense(lex from "lexicons/adv_tense.lp") {
     pattern{
       H[upos=AUX];H -[1=comp,2=aux|pred]-> D;
+      e:D -[mod]-> ADV;
+      ADV[upos=ADV,lemma=lex.adv];
+      H << D; D << ADV}
+    without{D -> D1; D1 >> ADV}
+    commands{add_edge H -[mod]-> ADV; del_edge e}
+  }
+
+  rule case_adv-tense(lex from "lexicons/adv_tense.lp") {
+    pattern{
+      H[upos=ADP];H -[comp:obj]-> D;  D[upos <> AUX|VERB];
       e:D -[mod]-> ADV;
       ADV[upos=ADV,lemma=lex.adv];
       H << D; D << ADV}
@@ -96,9 +150,9 @@ package FR_shift_out_edges{
 % Some relations have moved up from the old head D to the new head H incorrectly in specific cases in French. The move must be cancelled.
 package FR_shift_out_back_edges{
 
-  rule dont_en{
+  rule aux_dont_en{
     pattern {
-      H[upos=ADP|AUX];
+      H[upos=AUX];
       H -[1=comp,2=aux|pred]-> D;
       D1[upos=PRON,lemma=dont|en];
       e: H -> D1;
@@ -108,12 +162,22 @@ package FR_shift_out_back_edges{
     commands{add_edge e: D -> D1;del_edge e}
   }
 
+  rule case_dont_en{
+    pattern {
+      H[upos=ADP];
+      H -[comp:obj]-> D;
+      D1[upos=PRON,lemma=dont|en];
+      e: H -> D1;
+      D1 << H}
+    commands{add_edge e: D -> D1;del_edge e}
+  }
+  
   rule aux_adv-quant_comp(lex from "lexicons/adv_quant.lp"){
     pattern{
       H[upos=AUX]; H -[1=comp,2=aux|pred]-> D; 
       D1[upos=ADV,lemma=lex.adv];
       e: H -[mod]-> D1;
-      H << D1; D1 << D}
+      H << D1}
     without{D1[Polarity=Neg]}
     commands{add_edge D -[mod]-> D1;del_edge e}
   }
@@ -146,7 +210,7 @@ package FR_shift_out_back_edges{
       e:H -[mod]-> D1;
       D1[upos=ADV,lemma=aussi];
       H << D1; D1 << D;
-      CONJ[upos=SCONJ,lemma=que]; D1 -[comp:obl]-> CONJ}
+      CONJ[upos=SCONJ,lemma=que]; D1 -[comp:obj]-> CONJ}
     commands{add_edge D -[mod]-> D1; del_edge e}
   }
 
@@ -158,6 +222,7 @@ package FR_shift_out_back_edges{
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 strat FR_main {
   Seq(
+    Onf(pron_verb),
     specific_expr_init, % Initialization of a specific treatment for MWE, titles and converted words.
     Onf (FR_relations),
     Onf (sub_relations),

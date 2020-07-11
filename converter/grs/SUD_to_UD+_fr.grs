@@ -1,6 +1,28 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 include "SUD_to_UD+.grs"
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+package pron_verb{
+  rule verb1{
+    pattern{
+      V[upos=VERB,_MISC_ExtPos=VERB, _MISC_PhraseType=Idiom];
+      V -[comp]-> PRON; PRON [upos=PRON,_MISC_InIdiom=Yes]}
+    without{V -[comp]-> PRON1; PRON1 [upos=PRON,_MISC_InIdiom=Yes]}
+    commands{
+      del_feat V._MISC_ExtPos; del_feat  V._MISC_PhraseType;
+      del_feat PRON._MISC_InIdiom}
+  }
+
+  rule verb2{
+    pattern{
+      V[upos=VERB,_MISC_ExtPos=VERB, _MISC_PhraseType=Idiom];
+      V -[comp]-> PRON1; PRON1 [upos=PRON,_MISC_InIdiom=Yes];
+      V -[comp]-> PRON2; PRON2 [upos=PRON,_MISC_InIdiom=Yes]; PRON1 << PRON2}
+    commands{
+      del_feat V._MISC_ExtPos; del_feat  V._MISC_PhraseType;
+      del_feat PRON1._MISC_InIdiom; del_feat PRON2._MISC_InIdiom;}
+  }
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % After the universal determination of nominals, rectification specific to French.
@@ -180,6 +202,7 @@ strat FR_main{
   Seq(
     Onf (shared),
     Onf(remove_shared),
+    Onf(pron_verb),
     specific_expr_init, % Initialization of a specific treatment for MWE, titles and converted words.
     Onf (nom_init),
     Onf (FR_nom_init),

@@ -22,6 +22,7 @@ package shared {
       N1 -[1=conj]-> N2;
       N1 -[1=comp,2=obj]-> D1; N1 << D1;
       N2 -[1=comp,2=obj]-> D2; N2 << D2;
+      N1.upos=N2.upos;
       e: D2 -[1=comp|mod|udep]-> D; D[Shared=Yes]}
     without{D2 -[1=comp]-> D; D1 -[1=comp]-> D3}
     without{D2 -[1=mod|udep]-> D; D1 -[1=mod|udep]-> D3}
@@ -34,7 +35,8 @@ package shared {
       N1 -[1=conj]-> N2;
       N1 -[mod]-> D1; N1 << D1;
       N2 -[mod]-> D2; N2 << D2;
-      e: D2  -[1=comp|mod]-> D; D[Shared=Yes]}
+      e: D2  -[1=comp|mod]-> D; D[Shared=Yes]; D2 << D}
+    without{D1 -> D3; D1 << D3}
     without{D2 -[1=comp]-> D; D1 -[1=comp]-> D3}
     without{D2 -[1=mod]-> D; D1 -[1=mod]-> D3}
     commands {add_edge e: D1 -> D;del_edge e;}
@@ -424,7 +426,7 @@ package sub_relations {
 % Ex: Il a été vendu une grande maison. - Il s'est vendu une grande maison.
   rule nsubj_expl_pass{
     pattern { e:H -[comp:obj@pass]-> D; D[nom=y]}
-    commands {e.1=nsubj; e.2=impers; del_feat e.deep}
+    commands {e.1=nsubj; e.2=pass; del_feat e.deep}
   }
 
 % added for Naija

@@ -31,7 +31,7 @@ package add_nodes {
   rule idiom {
     pattern{ H [_MISC_ExtPos,_MISC_PhraseType=Idiom] }
     without{H[upos=AUX|VERB, VerbForm, _MISC_ExtPos=VERB]}
-    without{H -[IDIOM]-> AUX; AUX[upos=AUX,VerbForm]}
+    without{H[_MISC_ExtPos=VERB]; H -[IDIOM]-> AUX; AUX[upos=AUX,VerbForm]}
     commands{
       add_node I :< H;
       add_edge I -[IDIOM]-> H; add_edge I -[HEAD]-> H;
@@ -70,6 +70,7 @@ package add_nodes {
       I.VerbForm = AUX.VerbForm
     }
   }
+  
   rule title {
     pattern{ H [_MISC_ExtPos,_MISC_PhraseType=Title] }
     without{ * -[expr]-> H }
@@ -164,12 +165,21 @@ package del_edges {
   rule title {
     pattern { e:T -[TITLE]-> H }
     without { T -[HEAD]-> H }
+    without{T -[HEAD]-> H1; H1 -[HEAD]-> H; H1[Type=Idiom]}
     commands {
       del_edge e;
       H._MISC_InTitle = Yes;
     }
   }
 
+%The title head is also an idiom head
+  rule title_idiom {
+    pattern { e:T -[TITLE]-> H;T -[HEAD]-> H1; H1 -[HEAD]-> H; H[Type=Idiom]  }
+    without { T -[HEAD]-> H }
+    commands {
+      del_edge e;
+    }
+  }
   rule conv_head {
     pattern { C -[HEAD]-> H; e:C -[CONV]-> H }
     commands {
