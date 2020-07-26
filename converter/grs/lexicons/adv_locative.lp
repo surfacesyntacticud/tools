@@ -1,0 +1,27 @@
+% locative adverbs
+adv
+ailleurs
+alentour
+auprès
+autour
+au-delà
+au-dessous
+au-dessus
+au-devant
+contre
+deça
+dedans
+dehors
+derrière
+dessous
+dessus
+devant
+ici
+là
+là-haut
+loin
+outre
+partout
+près
+proche
+sus

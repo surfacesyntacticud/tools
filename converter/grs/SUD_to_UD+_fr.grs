@@ -2,7 +2,10 @@
 include "SUD_to_UD+.grs"
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-package pron_verb{
+% French pronominal verbs are considered as idioms. In the conversion to UD, their idiomatic characteristic is removed.
+package FR_pron_verb{
+% The pronominal verb has a unique clitic pronoun marking its pronominal feature.
+% Ex: les gens s'enfuient.
   rule verb1{
     pattern{
       V[upos=VERB,_MISC_ExtPos=VERB, _MISC_PhraseType=Idiom];
@@ -13,6 +16,8 @@ package pron_verb{
       del_feat PRON._MISC_InIdiom}
   }
 
+% The pronominal verb has two clitic pronouns marking its pronominal feature.
+% Ex: ils s'en prennent aux plus faibles.
   rule verb2{
     pattern{
       V[upos=VERB,_MISC_ExtPos=VERB, _MISC_PhraseType=Idiom];
@@ -24,55 +29,19 @@ package pron_verb{
   }
 }
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% After the universal determination of nominals, rectification specific to French.
-package FR_nom_init {
-
-% Adjectives or verbs that are attributive of nouns are considered as non nominals.
-  rule attr_det{
-    pattern{
-      N0[upos=NOUN|PRON]; N0 -[mod|udep]-> N;
-      N[upos=ADJ|VERB,nom]; N -[det]-> *}
-    without{ PRO[PronType=Rel]; N -> PRO; N0 << N} % N is not the head of a relative clause with N0 as the antecedent of the relative pronoun.
-    commands{del_feat N.nom}
-  }
-
-% Numbers that follow a measure unity
-  rule unity_num(lex from "lexicons/measure_unit.lp"){
-    pattern{N[upos=NUM,nom]; H[lemma=lex.unity]; H -[mod]-> N }
-    commands{del_feat N.nom}
-  }
-
-% Simple quantity adverbs with a complement introduced with the preposition "de" are considered as nominals.
-  rule adv_de_nom(lex from "lexicons/quant_adv.lp"){
-    pattern{
-     A[upos=ADV,lemma=lex.adv,!nom];
-     A -[comp:obl]-> P; P[upos=ADP,lemma=de];
-     N[upos=NOUN|NUM|SYM]; P -[comp:obj]-> N
-   }
-   without{ A[lemma=moins|plus]; P0 -[comp:obj]-> A; P0[lemma=en]} % Ex: en plus de lui
-   without{ A[lemma="près"]; * -[mod]-> A} % Il marche près de la rivière
-   commands{ A.nom=y}
- }
-}
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Re-labelling of MOD relations specific to French
 package FR_mod {
-
-
 % Adjectival, verbal or nominal expressions that are hightlighted at the beginning of a clause are considered as incomplete clauses.
 % Ex: fr-ud-dev_00407 - Spécialiste des six jours, il a remporté 38 compétitions entre 1931 et 1942.
-  rule left_extraposition(lex from "lexicons/nouns_adv.lp") {
+  rule left_extraposition(lex from "lexicons/noun_adv.lp") {
     pattern{
       APP[upos=ADJ|NOUN|PRON|PROPN|VERB];
       V -[1=subj]-> SUBJ; APP << SUBJ; SUBJ << V;
       e: V -[mod]-> APP}
     without{ APP -[1=case]-> *}
     without{APP[upos=NOUN]; APP -[det]-> *}
-    without{APP[PronType=Rel|Int]}
     without{APP[upos=NOUN,lemma= lex.noun]}
     without{% Modifiers in the form NOUN + PREP + NOUN.
             % Ex: fr-ud-dev_00322 - Couche par couche, Morin arrange ...
@@ -87,7 +56,8 @@ package FR_mod {
   }
 
 % Nouns behaving as circumstancial complements and heads of modifiers in the form of adverbial clauses.
-  rule conj_adv-noun(lex from "lexicons/nouns_adv.lp") {
+% Ex: Il pleut cette année comme l'an dernier.
+  rule conj_adv-noun(lex from "lexicons/noun_adv.lp") {
     pattern{
       N[upos=NOUN,lemma=lex.noun];
       e: N -[1=case]-> C; C[upos=SCONJ];
@@ -96,20 +66,8 @@ package FR_mod {
     commands{e.1=mark}
   }
 
-% Finite clauses, which are not relative clauses and which are not introduced with a conjunction, modifying a nominal expression.
-  rule noun_mod_fin-clause{
-    pattern{N[nom=y]; V[upos=VERB]; e: N -[mod]->V ; N << V}
-    without{PRO[PronType=Rel]; V -> PRO; N << PRO}
-    without{PRO[PronType=Rel]; V -> X; X -> PRO;  N << PRO}
-    without{PRO[PronType=Rel]; V -> X; X -> Y; Y -> PRO;  N << PRO}
-    without{ADV[upos=ADV,lemma=pourquoi]; V -> ADV; N << ADV}
-    without{ADV[upos=ADV,lemma=pourquoi]; V -> X; X -> ADV;  N << ADV}
-    without{ADV[upos=ADV,lemma=pourquoi]; V -> X; X -> Y; Y -> ADV;  N << ADV}
-    commands{ del_edge e; add_edge N -[acl]-> V}
-  }
-
 % Numbers that follow a measure unity
-  rule unity_num(lex from "lexicons/measure_unit.lp"){
+  rule unity_num(lex from "lexicons/noun_measure_unit.lp"){
     pattern{D[upos=NUM]; H[lemma=lex.unity]; e:H -[mod]-> D }
     commands{del_edge e; add_edge H -[nummod]-> D}
   }
@@ -118,51 +76,35 @@ package FR_mod {
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Re-labelling of UDEP relations specific to French
-% Expressions in the form "rien de" ou "quelque chose de"
 package FR_udep {
-  rule amod_de{
+% Expressions in the form "quelque/grand chose de" + ADJ
+  rule chose_de_adj{
     pattern{
-      H[upos=NOUN|PRON,lemma=chose|rien]; D[upos=ADJ]; e: H -[udep]-> D;
+      H[upos=PRON]; D[lemma=chose]; H -[HEAD]-> D;
+      A[upos=ADJ|DET,lemma=grand|quelque]; D -[det|mod]-> A;
+      D1[upos=ADJ];e: H -[mod]-> D1; 
+      D1 -[1=case]-> DE; DE[upos=ADP,lemma=de]
+    }
+    commands{ del_edge e; add_edge H -[amod]-> D1}
+  }
+
+% Expressions in the form "rien de" + ADJ
+  rule rien_de_adj{
+    pattern{
+      H[upos=NOUN|PRON,lemma=rien]; D[upos=ADJ]; e: H -[mod]-> D;
       D -[1=case]-> DE; DE[upos=ADP,lemma=de]
     }
     commands{ del_edge e; add_edge H -[amod]-> D}
   }
-
-% D is a numeral modifier of a nominal H that precedes it. In this case, it does not express a modifier of H in the form of a quantity.
-  rule nmod_num_after {
-    pattern { e:H -[udep]-> D; H[nom=y]; D[upos=NUM]; H << D }
-    without{H[lemma=heure]}
-    without{D -> PRO; H << PRO; PRO[PronType=Rel]}
-    without{D -[1=mark]-> *}
-    commands { del_edge e; add_edge H -[nmod]-> D }
-  }
-
-% D is a modifier of a nominal H and it is separated from H with a preposition P. In this case, it does not express a quantity on H.
-% Ex: fr-ud-test_00133 - ... Ben Spies et Jorge Lorenzo, tous deux sur Yamaha M1 ...
-  rule nmod_num_prep{
-    pattern {
-      e:H -[udep]-> D; H[nom=y]; D[upos=NUM];
-      H -[1=case]-> P; D << P; P << H }
-    commands { del_edge e; add_edge H -[nmod]-> D }
-  }
-
+  
 }
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Re-labelling of some extensions not existing in French.
-package FR_rel_extensions {
-  rule comp_pass{
-    pattern{ e: V -[1=ccomp, 2=pass]-> O }
-    commands{del_feat e.2}
-  }
-
-}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Re-labelling of subject relations specific to French.
 package FR_subj {
 % Subjects of passive participles without auxiliary.
-  rule nsubj_pass (lex from "lexicons/passivable_verb.lp") {
+  rule nsubj_pass (lex from "lexicons/verb_passivable.lp") {
     pattern {e:V -[nsubj]-> S; V [VerbForm=Part,Tense=Past,lemma=lex.verb] }
     without {* -[1=aux]-> V}
     commands { del_edge e; add_edge V -[nsubj:pass]-> S }
@@ -171,52 +113,22 @@ package FR_subj {
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-strat FR_core {
-  Seq (
-    Onf (shared),
-    Onf(remove_shared),
-    Onf (nom_init),
-    Onf (FR_nom_init),
-    Onf (unchained_relations),
-    Onf (reverse_case_mark),
-    Onf(shift_out_edges),
-    Onf(case_mark_relations),
-    Onf( reverse_close),
-    Onf (sub_relations),
-    Onf (FR_mod),
-    Onf (FR_udep),
-    Onf (rel_extensions),
-    %Onf(FR_rel_extensions),
-    Onf (relations),
-    Onf (relations_backoff),
-    Onf (FR_subj),
-    Onf(reverse_aux),
-    Onf(shift_out_edges),
-    Onf( reverse_close),
-    Onf (final),
-  )
-}
-
 strat FR_main{
   Seq(
     Onf (shared),
     Onf(remove_shared),
-    Onf(pron_verb),
-    specific_expr_init, % Initialization of a specific treatment for MWE, titles and converted words.
+    Onf(FR_pron_verb), % Specific treatment of pronominal verbs in French
+    specific_expr_init, 
     Onf (nom_init),
-    Onf (FR_nom_init),
     Onf (unchained_relations),
     Onf (reverse_case_mark),
     Onf(shift_out_edges),
     Onf(case_mark_relations),
     Onf( reverse_close),
-    %Onf(FR_relations),
     Onf (sub_relations),
     Onf (FR_mod),
     Onf (FR_udep),
     Onf (rel_extensions),
-    Onf(FR_rel_extensions),
     Onf (relations),
     Onf (relations_backoff),
     Onf (FR_subj),
@@ -224,7 +136,7 @@ strat FR_main{
     Onf(shift_out_edges),
     Onf( reverse_close),
     Onf (final),
-    specific_expr_close, % Closing a specific treatment for MWE, titles and translated words.
+    specific_expr_close, 
   )
 }
 

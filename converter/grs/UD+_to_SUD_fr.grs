@@ -1,28 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 include "UD+_to_SUD.grs"
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-package pron_verb{
-  rule verb1{
-    pattern{
-      V[upos=VERB,!_MISC_ExtPos, !_MISC_PhraseType];
-      V -[dep:comp]-> PRON; PRON [upos=PRON]}
-    without{V -[dep:comp]-> PRON1; PRON1 [upos=PRON]}
-    commands{
-      V._MISC_ExtPos=VERB; V._MISC_PhraseType=Idiom;
-      PRON._MISC_InIdiom=Yes}
-  }
-
-  rule verb2{
-    pattern{
-      V[upos=VERB,!_MISC_ExtPos, !_MISC_PhraseType];
-      V -[dep:comp]-> PRON1; PRON1 [upos=PRON];
-      V -[dep:comp]-> PRON2; PRON2 [upos=PRON]; PRON1 << PRON2}
-    commands{
-      V._MISC_ExtPos=VERB; V._MISC_PhraseType=Idiom;
-      PRON1._MISC_InIdiom=Yes; PRON2._MISC_InIdiom=Yes;}
-  }
-}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Relations in SUD that are determined from UD relations with rules specific to French.
@@ -30,7 +8,7 @@ package FR_relations {
 
 % When a NUM D depends on a word G in a NUMMOD relation and when D precedes G, D is a determiner of G.
 % Ex :  fr-ud-train_05544 -  Paris génère chaque jour, par temps sec, entre 800.000 et 900.000 m3 d'eaux usées.
-  rule num_det{
+  rule nummod_det{
     pattern{e:H -[nummod]-> D; D << H}
     without{H -[det]-> *}
     commands{ del_edge e; add_edge H -[det]-> D}
@@ -38,38 +16,39 @@ package FR_relations {
 
 % The subject SUBJ1 of a verb is repeated in the form of a personal pronoun SUBJ2.
 % Ex: Jean vient-il ?
-% Ex : Jean est-il payé ?
+% Ex : Jean a-t-il été payé ?
   rule repeat_subj{
     pattern{
      V -[1=csubj|nsubj]->  SUBJ1;
      e:V -[expl:subj]-> SUBJ2; SUBJ2[upos=PRON, lemma=il];
      SUBJ1 << V; SUBJ1 << SUBJ2}
-    without{SUBJ1[PronType=Int|Rel,lemma=que]}
+    without{SUBJ1[PronType=Int|Rel,lemma=que]} % Ex: Qu'arrive-t-il ? - la mésaventure qu'il m'est arrivée
     commands{del_edge e; add_edge V -[subj@expl]-> SUBJ2;}
   }
 
+% Pronouns "dont and "en" dependent on nominals are processes as all noun complements.
   rule udep_dont-en{
     pattern{ e:H -[nmod]-> D; D[upos=PRON, lemma=dont|en]}
     commands{del_edge e; add_edge H -[udep]-> D}
   }
 
-% Adverbs with a direct object.By default, the relation between an adverb and one of its arguments is COMP:OBL
-  rule adv_obj(lex from "lexicons/adv_obj.lp") {
-    pattern{
-      ADV[upos=ADV,lemma=lex.adv];
-      e:ADV -[ccomp]-> ARG}
-    commands{ del_edge e; add_edge ADV -[comp:obj]-> ARG}
-  }
+% % Adverbs with a direct object.By default, the relation between an adverb and one of its arguments is COMP:OBL
+%   rule adv_obj(lex from "lexicons/adv_obj.lp") {
+%     pattern{
+%       ADV[upos=ADV,lemma=lex.adv];
+%       e:ADV -[ccomp]-> ARG}
+%     commands{ del_edge e; add_edge ADV -[comp:obj]-> ARG}
+%   }
   
-% Adverbial locutions with a direct object.By default, the relation between an adverbial locution and one of its arguments is COMP:OBL
-  rule adv-loc_obj(lex from "lexicons/adv-mwe_obj.lp") {
-    pattern{
-      LOC[upos=ADV];
-      LOC -[HEAD]-> H; H[lemma=lex.head];
-      LOC -[MWE|fixed]-> D; D[lemma=lex.dep];
-      e:LOC -[ccomp]-> ARG}
-    commands{ del_edge e; add_edge LOC -[comp:obj]-> ARG}
-  }
+% % Adverbial locutions with a direct object.By default, the relation between an adverbial locution and one of its arguments is COMP:OBL
+%   rule adv-loc_obj(lex from "lexicons/adv-mwe_obj.lp") {
+%     pattern{
+%       LOC[upos=ADV];
+%       LOC -[HEAD]-> H; H[lemma=lex.head];
+%       LOC -[MWE|fixed]-> D; D[lemma=lex.dep];
+%       e:LOC -[ccomp]-> ARG}
+%     commands{ del_edge e; add_edge LOC -[comp:obj]-> ARG}
+%   }
   
   
 }
@@ -77,28 +56,34 @@ package FR_relations {
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % The source of some relations must rise from the old head D to the new head H in cases specific to French.
 package FR_shift_out_edges{
-   
+
+% Judgment adverbs rise from verbs to their auxiliaries.
+% Ex: Il a certes beaucoup travaillé. - il est certes un bon travailleur.
   rule adv-judgment_aux(lex from "lexicons/adv_judgment.lp") {
     pattern{
       H[upos=AUX];H -[1=comp,2=aux|pred]-> D;
       e:D -[mod]-> ADV;
       ADV[upos=ADV,lemma=lex.adv];
       H << D; D << ADV}
-    without{D -> D1; D1 >> ADV}
+    without{D -> D1; D1 >> ADV} % Rising cannot generate non projectivity
     commands{add_edge H -[mod]-> ADV; del_edge e}
   }
   
+% Judgment adverbs rise from the adposition objects to their adposition.
+% Ex: il est en vacances heureusement.
   rule adv-judgment_case(lex from "lexicons/adv_judgment.lp") {
     pattern{
       H[upos=ADP];H -[1=comp,2=obj]-> D; D[upos <> AUX|VERB];
       e:D -[mod]-> ADV;
       ADV[upos=ADV,lemma=lex.adv];
       H << D; D << ADV}
-    without{D -> D1; D1 >> ADV}
+    without{D -> D1; D1 >> ADV}  % Rising cannot generate non projectivity
     commands{add_edge H -[mod]-> ADV; del_edge e}
   }
   
-  rule adv-mwe-judgment(lex from "lexicons/adv-mwe_judgment.lp") {
+% Judgment adverbial locutions rise from verbs to their auxiliaries.
+% Ex : Il a été mon directeur par ailleurs.
+  rule adv-loc-judgment_aux(lex from "lexicons/advloc_judgment.lp") {
     pattern{
       H[upos=AUX];H -[1=comp,2=aux|pred]-> D;
       e:D -[mod]-> ADV;
@@ -107,11 +92,13 @@ package FR_shift_out_edges{
       ADV -[IDIOM]-> D1;
       D1[lemma=lex.dep];
       H << D; D << ADV}
-    without{D -> D2; D2 >> ADV}
+    without{D -> D2; D2 >> ADV}  % Rising cannot generate non projectivity
     commands{add_edge H -[mod]-> ADV; del_edge e}
   }
 
-  rule adv-mwe-judgment_case(lex from "lexicons/adv-mwe_judgment.lp") {
+% Judgment adverbial locutions rise from the adposition objects to their adposition.
+% Ex: Il a été en congé par ailleurs.
+  rule adv-loc-judgment_case(lex from "lexicons/advloc_judgment.lp") {
     pattern{
       H[upos=ADP];H -[1=comp,2=obj]-> D; D[upos <> AUX|VERB];
       e:D -[mod]-> ADV;
@@ -120,28 +107,32 @@ package FR_shift_out_edges{
       ADV -[IDIOM]-> D1;
       D1[lemma=lex.dep];
       H << D; D << ADV}
-    without{D -> D2; D2 >> ADV}
+    without{D -> D2; D2 >> ADV}  % Rising cannot generate non projectivity
     commands{add_edge H -[mod]-> ADV; del_edge e}
   }
 
 
+% Tense adverbs rise from verbs to their auxiliaries.
+% Il a été malade hier.
   rule aux_adv-tense(lex from "lexicons/adv_tense.lp") {
     pattern{
       H[upos=AUX];H -[1=comp,2=aux|pred]-> D;
       e:D -[mod]-> ADV;
       ADV[upos=ADV,lemma=lex.adv];
       H << D; D << ADV}
-    without{D -> D1; D1 >> ADV}
+    without{D -> D1; D1 >> ADV}  % Rising cannot generate non projectivity
     commands{add_edge H -[mod]-> ADV; del_edge e}
   }
 
+% Tense adverbs rise from the adposition objects to their adposition.
+% Il a été en congé hier.
   rule case_adv-tense(lex from "lexicons/adv_tense.lp") {
     pattern{
       H[upos=ADP];H -[comp:obj]-> D;  D[upos <> AUX|VERB];
       e:D -[mod]-> ADV;
       ADV[upos=ADV,lemma=lex.adv];
       H << D; D << ADV}
-    without{D -> D1; D1 >> ADV}
+    without{D -> D1; D1 >> ADV}  % Rising cannot generate non projectivity
     commands{add_edge H -[mod]-> ADV; del_edge e}
   }
 }
@@ -150,29 +141,33 @@ package FR_shift_out_edges{
 % Some relations have moved up from the old head D to the new head H incorrectly in specific cases in French. The move must be cancelled.
 package FR_shift_out_back_edges{
 
-  rule aux_dont_en{
+% UDEP relations targeting the pronouns "dont" and "en" must move from the auxiliaries to their argument.
+  rule dont-en_aux{
     pattern {
       H[upos=AUX];
       H -[1=comp,2=aux|pred]-> D;
       D1[upos=PRON,lemma=dont|en];
-      e: H -> D1;
+      e: H -[udep]-> D1;
       D1 << H}
     without{ H -[1=comp,2=pred]-> D; H[upos <> AUX]}
     without{H -[1=comp,2=pred]-> D; H -[mod]-> D1} %Ex: fr-ud-dev_01506 - ...la sortie de leur pays de la zone Euro en sera inéluctable
     commands{add_edge e: D -> D1;del_edge e}
   }
 
-  rule case_dont_en{
+% UDEP relations targeting the pronouns "dont" and "en" must move from the adpositions to their object.
+% Ex: fr-ud-train_00459 - Elle fait partie de le Freedom Group dont Cerberus Capital Management est un de les actionnaires depuis 2009.
+  rule dont_en_adp{
     pattern {
       H[upos=ADP];
       H -[comp:obj]-> D;
       D1[upos=PRON,lemma=dont|en];
-      e: H -> D1;
+      e: H -[udep]-> D1;
       D1 << H}
     commands{add_edge e: D -> D1;del_edge e}
   }
-  
-  rule aux_adv-quant_comp(lex from "lexicons/adv_quant.lp"){
+
+% Quantity adverbs that are modifiers must move from the auxiliaries to their argument.
+  rule adv-quant_aux(lex from "lexicons/adv_quant.lp"){
     pattern{
       H[upos=AUX]; H -[1=comp,2=aux|pred]-> D; 
       D1[upos=ADV,lemma=lex.adv];
@@ -182,7 +177,8 @@ package FR_shift_out_back_edges{
     commands{add_edge D -[mod]-> D1;del_edge e}
   }
 
-  rule aux_adv-mwe-quant_comp(lex from "lexicons/adv-mwe_quant.lp"){
+% Quantity adverbial locutions that are modifiers must move from the auxiliaries to their argument.
+  rule advloc-quant_aux(lex from "lexicons/advloc_quant.lp"){
     pattern{
       H[upos=AUX]; H -[1=comp,2=aux|pred]-> D;
       e: H -[mod]-> D1;
@@ -195,7 +191,8 @@ package FR_shift_out_back_edges{
     commands{add_edge D -[mod]-> D1;del_edge e}
   }
   
-  rule aux_adv-manner_comp(lex from "lexicons/adv_manner.lp"){
+% Manner adverbs that are modifiers must move from the auxiliaries to their argument.
+  rule adv-manner_aux(lex from "lexicons/adv_manner.lp"){
     pattern{
       H[upos=AUX];H -[1=comp,2=aux|pred]-> D;
       D1[upos=ADV,lemma=lex.adv];
@@ -204,6 +201,7 @@ package FR_shift_out_back_edges{
     commands{add_edge D -[mod]-> D1;del_edge e}
   }
 
+% Adverb "aussi used as a quantity adverb must move from the auxiliaries to their argument.
   rule aux_aussi_comp{
     pattern{
       H[upos=AUX];H -[1=comp,2=pred]-> D;  D[upos=ADJ|ADV];
@@ -214,16 +212,42 @@ package FR_shift_out_back_edges{
     commands{add_edge D -[mod]-> D1; del_edge e}
   }
 
-
-
 }
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% French pronominal verbs are considered as idioms. In the conversion to SUD, their idiomatic characteristic is added.
+package FR_pron_verb{
+% The pronominal verb has a unique clitic pronoun marking its pronominal feature.
+% Ex: les gens s'enfuient.
+  rule verb1{
+    pattern{
+      V[upos=VERB,!_MISC_ExtPos, !_MISC_PhraseType];
+      V -[comp]-> PRON; PRON [upos=PRON]}
+    without{V -[comp]-> PRON1; PRON1 [upos=PRON]}
+    commands{
+      V._MISC_ExtPos=VERB; V._MISC_PhraseType=Idiom;
+      PRON._MISC_InIdiom=Yes}
+  }
+
+% The pronominal verb has two clitic pronouns marking its pronominal feature.
+% Ex: ils s'en prennent aux plus faibles.
+  rule verb2{
+    pattern{
+      V[upos=VERB,!_MISC_ExtPos, !_MISC_PhraseType];
+      V -[comp]-> PRON1; PRON1 [upos=PRON];
+      V -[comp]-> PRON2; PRON2 [upos=PRON]; PRON1 << PRON2}
+    commands{
+      V._MISC_ExtPos=VERB; V._MISC_PhraseType=Idiom;
+      PRON1._MISC_InIdiom=Yes; PRON2._MISC_InIdiom=Yes}
+  }
+
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 strat FR_main {
   Seq(
-    Onf(pron_verb),
-    specific_expr_init, % Initialization of a specific treatment for MWE, titles and converted words.
+    specific_expr_init, 
     Onf (FR_relations),
     Onf (sub_relations),
     Onf (rel_extensions),
@@ -231,11 +255,11 @@ strat FR_main {
     reverse_relations.main,
     Onf(FR_shift_out_edges),
     Onf(FR_shift_out_back_edges),
-    Onf (minimize_conj_dep),% package MINIMIZE_CONJ_DEP must follow shift packages because a dependance can shift from a coordination to an ascendant. Ex: fr-ud-dev_00446 -entre 3 et 6 généralement
+    Onf (minimize_conj_dep),
     Onf (add_conj_emb),
     Onf (chained_relations),
-    specific_expr_close, % Closing a specific treatment for MWE, titles and translated words.
-    Onf(remove_useless_emb),
+    specific_expr_close,
+    Onf(FR_pron_verb),
   )
 }
 

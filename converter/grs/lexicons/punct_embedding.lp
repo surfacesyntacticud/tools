@@ -1,0 +1,8 @@
+% embedding punctuation
+opening	    closing
+(	)
+[	]
+{	}
+"	"
+,	,
+«	»

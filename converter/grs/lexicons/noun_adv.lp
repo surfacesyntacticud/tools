@@ -21,6 +21,7 @@ mardi
 mars
 mercredi
 mi-novembre
+mois
 niveau
 novembre
 octobre
@@ -29,6 +30,7 @@ plupart
 ps
 rue
 samedi
+semaine
 septembre
 soir
 temps

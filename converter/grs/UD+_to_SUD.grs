@@ -23,35 +23,35 @@ package eud_to_ud {
 package sub_relations {
 % comp
 %=========
-% Sub-relations DEP:COMP are renamed COMP in SUD.
+% Sub-relations DEP:COMP are renamed COMP in SUD if they do not start from nominals.
   rule comp_dep {
-    pattern { e:H -[dep:comp]-> D; }
+    pattern { H[upos <> NOUN|PRON]; e:H -[dep:comp]-> D; }
     commands {del_edge e; add_edge H -[comp]-> D}
   }
-  
-% All sub-relations of COMP, for which the extension does not change from UD to SUD.
-  rule comp {
-    pattern { e:H -[advcl:cleft|ccomp:obj|ccomp:obl]-> D; }
-    commands {e.1=comp}
-  }
 
-% UD XCOMP direct object or oblique argument.
+% Clitic pronouns expressing the mediopassive redistribution.
+% Ex: les maisons se vendent bien en ce moment.
+  rule expl-pass_comp-pass{
+    pattern{e: H -[expl:pass]-> D}
+    commands{del_edge e; add_edge H -[comp@pass]-> D}
+  }
+  
+% Clausal direct objects or oblique arguments with their subject controlled by their governor.
   rule comp-obj-obl_xcomp {
     pattern { e:H -[xcomp:obj|xcomp:obl]-> D; }
     commands {e.1=comp;e.deep=x}
   }
-  
 
-% Clausal argument.
-  rule comp-obj-obl-pred_ccomp {
-    pattern { e:H -[1=ccomp,2=obj|obl|pred]-> D; }
+% All sub-relations of COMP, for which the extension does not change from UD to SUD.
+  rule comp {
+    pattern { e:H -[advcl:cleft|ccomp:obj|ccomp:obl|ccomp:pred]-> D; }
     commands {e.1=comp}
   }
-  
+ 
 % In the impersonal diathesis, the deep subject, which is a NSUBJ or CSUBJ dependent in UD, becomes a direct object in SUD with the deep extension AGENT.
 % The impersonal diathesis is detected by means of the impersonal subject.
 % The UD relation that is renamed as a SUD relation is not a sub-relation but it must be processed before the general processing of relations.
-% Ex: Il arrive deux personnes.  - Il se dit que tu viendras. - Il m'arrive de faire des erreurs. - Il s'est vendu une grande maison aujourd'hui. - Il a pu se vendre une grande maison aujourd'hui. 
+% Ex: Il arrive deux personnes.  - Il m'arrive de faire des erreurs.
   rule comp-obj-agent_subj {
     pattern{e:H -[nsubj|csubj]-> D; H -[expl:subj]-> *}
     commands{del_edge e; add_edge H -[comp:obj@agent]-> D }
@@ -59,7 +59,7 @@ package sub_relations {
 
 % In the impersonal passive diathesis, the deep subject, which is a NSUBJ:PASS or CSUBJ:PASS dependent in UD, becomes an OBJ:PASS dependent in SUD.
 % The impersonal diathesis is detected by means of the impersonal subject,which may not be a direct dependent of the main verb, hence the need for several rules.
-% Il sera vendu une grande maison aujourd'hui - Il est prévu de continuer. - Il a été vendu une grande maison aujourd'hui. - Il a été prévu de continuer. - Il peut avoir été vendu une grande maison aujourd'hui.
+% Ex: Il sera vendu une grande maison aujourd'hui - Il est prévu de continuer. - Il a été vendu une grande maison aujourd'hui. - Il a été prévu de continuer. - Il peut avoir été vendu une grande maison aujourd'hui.- Il se dit que tu viendras.  Il s'est vendu une grande maison aujourd'hui. - Il a pu se vendre une grande maison aujourd'hui. 
   rule comp-obj-pass_subj {
     pattern{e:H -[1=csubj|nsubj, 2=pass]-> D; H -[expl:subj]-> *}
     commands{del_edge e; add_edge H -[comp:obj@pass]-> D; }
@@ -70,36 +70,49 @@ package sub_relations {
     pattern { e:H -[1=obl, 2=arg|comp]-> D; } % comp pour Spoken
     commands {e.1=comp; e.2=obl}
   }
-
-% Clitic pronouns expressing the mediopassive redistribution.
-  rule dep-comp_comp{
-    pattern{e: H -[dep:pass]-> D}
-    commands{del_edge e; add_edge H -[comp@pass]-> D}
+  
+% Agent complement.
+  rule comp_obl-agent {
+    pattern { e:H -[1=obl, 2=agent]-> D}
+    commands {del_edge e; add_edge H -[comp:obl@agent]-> D}
   }
   
+% Sub-relations DEP:COMP starting from nominals are renamed COMP:OBL in SUD. We make the hypothesis that all arguments of nominals are oblique arguments.
+  rule comp_dep_nom {
+    pattern { H[upos = NOUN|PRON]; e:H -[dep:comp]-> D; }
+    commands {del_edge e; add_edge H -[comp:obl]-> D}
+  }
+
 % Predicative non clausal argument.
   rule comp-pred_xcomp {
     pattern { e:H -[xcomp:pred]-> D}
     without{D[upos=AUX|VERB] }
+    without{D -[cop]-> *}
     commands {del_edge e; add_edge H -[comp:pred]-> D}
   }
 
-% Predicative clausal argument.
+% Predicative clausal argument without control of its subject.
   rule comp-pred_ccomp {
     pattern { e:H -[ccomp:pred]-> D; }
     commands {e.1=comp; e.2=pred}
   }
   
-% Predicative clausal argument.
-  rule comp-pred-x_xcomp1 {
+% Predicative clausal argument with control of the subject by the main verb.
+  rule comp-pred-x_xcomp {
     pattern { e:H -[xcomp:pred]-> D;D[upos=VERB] }
     commands {del_edge e; add_edge H -[comp:pred@x]-> D}
   }
-    
-  rule comp-pred-x_xcomp2 {
-    pattern { e:H -[xcomp:pred]-> D;D -[cop]-> D1; D1[upos=AUX] }
+
+% Predicative clausal argument with a copula; the copula subject is controlled by the main verb.
+  rule comp-pred-x_xcomp-cop {
+    pattern { e:H -[xcomp:pred]-> D;D -[cop]-> D1 }
     commands {del_edge e; add_edge H -[comp:pred@x]-> D}
   }
+
+
+% mod
+%=========
+
  % Oblique modifier.
   rule mod {
     pattern { e:H -[obl:mod]-> D; }
@@ -110,7 +123,10 @@ package sub_relations {
      pattern { e:H -[acl:relcl]-> D; }
      commands {del_edge e; add_edge H -[mod@relcl]-> D}
    }
-  
+
+
+% subj
+%=========
 % In an impersonal construction, the impersonal subject, which is an EXPL dependent in UD, becomes an  explicit subject in SUD with the deep extension expl.
 % Ex: Il arrive deux personnes. - Il faut un bilan. - Il s'agit d'une erreur. - Il a été vendu une grande maison. - il se dit que tu viendras.
   rule subj_expl {
@@ -119,6 +135,9 @@ package sub_relations {
     commands {e.1=subj;e.deep=expl; del_feat e.2}
   }
 
+
+% unk
+%=========
   rule other_expl {
     pattern { e:H -[1=expl, 2<>subj|comp|pass]-> D; }
     commands {del_edge e; add_edge H -[unk@expl]-> D}
@@ -148,103 +167,142 @@ package relations {
 
 %comp:obj
 %=========
-  rule comp_obj {
+  rule comp-obj_obj {
     pattern { e:H -[1=obj]-> D; }
     commands { e.1=comp;e.2=obj }
   }
 
-% We make the assumption that a clausal complement that is not introduced with an adposition is a direct object.
-  rule comp_obj_ccomp {
-    pattern {e:H -[1=ccomp]-> D; H[upos <> ADJ|ADV|NOUN];}
-    without{H -[obj|comp:obj]-> *}
-    without{H -[deep=agent]-> D}
-    without{ D -[mark]-> PREP; PREP[upos=ADP]}
-    without{H -[aux@pass|comp:aux@pass]-> *}
+% Direct clausal argument of a verb without control of its subject. We make the assumption that a clausal argument that is not introduced with an adposition is a direct object.
+  rule comp-obj_ccomp {
+    pattern {e:H -[1=ccomp]-> D; H[upos=VERB]}
+    without{D[VerbFom=Part]}% Participles are considered as predicative arguments
+    without{H -[obj|comp:obj]-> *}% There is no other direct object.
+    without{H -[deep=agent]-> D}% Ex: Il est gêné que tu viennes.
+    without{ D -[mark]-> ADP; ADP[upos=ADP]} % The complement is not marked with an adposition
+    without{H -[aux@pass|comp:aux@pass]-> *}% A passive verb has no direct object.
     commands{e.1=comp;e.2=obj}
   }
 
-  rule comp_obj_x {
-    pattern { e:H -[1=xcomp]-> D;D[upos=AUX|VERB,VerbForm=Inf] }
-    without{H -[comp:aux@pass|aux@pass]-> *}
+% Direct clausal argument of a verb with control of its subject. We make the assumption that a clausal argument that is not introduced with an adposition is a direct object.
+  rule comp-obj_xcomp {
+    pattern { e:H -[1=xcomp]-> D; H[upos=VERB]; D[upos=VERB]}
+    without{D -[cop]-> *}
+    without{D[VerbFom=Part]}% Participles are considered as predicative arguments
+    without{H -[obj|comp:obj]-> *}% There is no other direct object.
+    without{ D -[mark]-> ADP; ADP[upos=ADP]}
+    without{H -[comp:aux@pass|aux@pass]-> *}% A passive verb has no direct object.
     commands {e.1=comp;e.2=obj;e.deep=x}
   }
 
+% Direct clausal argument of a verb with a copula: the coupla subject is controlled by the main verb. We make the assumption that a clausal argument that is not introduced with an adposition is a direct object.
+% Ex: Il veut être soldat.
+  rule comp-obj_xcomp-cop {
+    pattern { e:H -[1=xcomp]-> D; H[upos=VERB];D -[cop]-> D1}
+    without{H -[obj|comp:obj]-> *}% There is no other direct object.
+    without{ D -[mark]-> ADP; ADP[upos=ADP]}
+    without{H -[comp:aux@pass|aux@pass]-> *}% A passive verb has no direct object.
+    commands {e.1=comp;e.2=obj;e.deep=x}
+  }
+
+
 % comp:obl
 %=========
-  rule comp_obl_ccomp {
-    pattern { e:H -[1=ccomp]-> D; D -[mark]-> PREP; PREP[upos=ADP]}
+% Oblique clausal argument of a verb without control of its subject.
+% Ex: C'est facile à faire.
+  rule comp-obl_ccomp {
+    pattern { e:H -[1=ccomp]-> D;  H[upos=VERB]; D -[mark]-> ADP; ADP[upos=ADP]}
+    without{D[VerbFom=Part]}% Participles are considered as predicative arguments
     commands {e.1=comp;e.2=obl}
   }
 
-  rule comp_obl_ccomp_non-verb {
-    pattern { e:H -[1=ccomp]-> D; H[upos = ADJ|ADV|NOUN]; }
+% Oblique clausal argument of a non verbal predicate without control of its subject. We make the assumption that all clausal arguments of non verbal predicates are oblique arguments.
+% Ex: Il est heureux que Jean soit venu.
+  rule comp-obl_ccomp-non-verb {
+    pattern { e:H -[1=ccomp]-> D; H[upos<>VERB]; }
+    without{D[VerbFom=Part]}% Participles are considered as predicative arguments
     commands {e.1=comp;e.2=obl}
   }
 
+% Clausal agent complements.
 %Ex: fr-ud-train_03013 -  La fédération italienne se dit choquée que le joueur français ait été choisi
-  rule comp_obl_ccomp_agent {
+  rule comp-obl_ccomp-agent {
     pattern {e:H -[1=ccomp,deep=agent]-> D}
     commands {e.1=comp;e.2=obl}
   }
-  
-  rule comp_obl_ccomp-dir {
+
+% Clausal arguments in the presence of a direct object are considered as oblique arguments.
+% Je convainc Marc qu'il doit venir.
+  rule comp-obl_ccomp-obj {
     pattern {
       e:H -[1=ccomp]-> D;
-      H -[1=comp,2=obj]-> D1
-    }
+      H -[obj|comp:obj]-> D1}
+    without{D[VerbFom=Part]}% Participles are considered as predicative arguments
     commands {e.1=comp;e.2=obl}
   }
 
-  rule comp_obl_ccomp_pass {
+% Clausal arguments of passive verbs are considered as oblique arguments.
+% Il est convaincu qu'il doit venir.
+  rule comp-obl_ccomp-pass {
     pattern {
       e:H -[1=ccomp]-> D; 
-      H1 -[comp:aux@pass]-> H
-    }
+      H1 -[aux@pass|comp:aux@pass]-> H}
+    without{D[VerbFom=Part]}% Participles are considered as predicative arguments
     commands {e.1=comp;e.2=obl}
   }
 
-  rule comp_obl {
+  rule comp-obl_iobj {
     pattern { e:H -[1=iobj]-> D; }
     commands {e.1=comp;e.2=obl}
   }
 
-  rule comp_obl_x {
-    pattern { e:H -[1=xcomp]-> D; D[upos=AUX|VERB]; D -[mark]-> *}
-    commands {e.1=comp;e.2=obl;e.deep=x}
-  }
-  
-  rule comp_obl-dir1_x {
-    pattern {
-      e:H -[1=xcomp]-> D;D[upos=AUX|VERB,VerbForm=Inf];
-       H -[1=comp,2=obj]-> D1}
-    without{D -[mark]-> *}
+% Clausal arguments with control of their subject and marked with an adposition.
+% Il songe à venir.
+  rule comp-obl_xcomp {
+    pattern { e:H -[1=xcomp]-> D; D[upos=VERB]; D -[mark]-> *}
+    without{D[VerbFom=Part]}% Participles are considered as predicative arguments
     commands {e.1=comp;e.2=obl;e.deep=x}
   }
 
-  rule comp_obl-dir2_x {
+% Clausal arguments with a copula and marked with an adposition; the copula subject is controlled   by the main verb.
+% Ex: Il songe à être soldat.
+  rule comp-obl_xcomp-cop {
+    pattern { e:H -[1=xcomp]-> D; D -[cop]-> D1; D1[upos=VERB]; D -[mark]-> *}
+    commands {e.1=comp;e.2=obl;e.deep=x}
+  }
+% Direct clausal arguments with control of their subject in presence of a direct object are considered as oblique arguments.
+  rule comp-obl_xcomp-obj {
+    pattern {
+      e:H -[1=xcomp]-> D;D[upos=VERB];
+       H -[obj|comp:obj]-> D1}
+    without{D -[mark]-> *}
+    without{D[VerbFom=Part]}% Participles are considered as predicative arguments
+    commands {e.1=comp;e.2=obl;e.deep=x}
+  }
+
+% Direct clausal arguments of passive verbs with control of their subject are considered as oblique arguments.
+  rule comp-obl_xcomp-pass {
     pattern {
       e:H -[1=xcomp]-> D;D[upos=AUX|VERB,VerbForm=Inf];
-       AUX -[comp:aux@pass]-> H}
+       AUX -[aux@pass|comp:aux@pass]-> H}
     without{D -[mark]-> *}   
     commands {e.1=comp;e.2=obl;e.deep=x}
   }
 
-  rule comp_obl_agent {
-    pattern { e:H -[1=obl,deep=agent]-> D }
-    commands {e.1=comp;e.2=obl;e.deep=agent}
-  }
-
 % comp:pred
 %==========
-% A direct argument with the control of its subject is considered  as a predicative complement in SUD.
-  rule comp_pred {
+% A direct argument, which is not a verb, is considered  as a predicative complement in SUD.
+% Ex: Il semble malade. - Je le considère comme un ami -
+  rule comp-pred_xcomp {
     pattern { e:H -[1=xcomp]-> D}
-    without{D[upos=AUX|VERB] }
+    without{D[upos=VERB] }
+    without{D -[cop]-> *}
     commands {e.1=comp;e.2=pred}
   }
-  
+
+% A participle argument with the control of its subject is considered as predicative argument.
+% Ex: Il paraît accablé par la mort de sa femme.
   rule comp_pred_part {
-    pattern { e:H -[1=xcomp]-> D; D[upos=AUX|VERB,VerbForm=Part]}
+    pattern { e:H -[1=xcomp]-> D; D[upos=VERB,VerbForm=Part]}
     commands {add_edge H -[comp:pred@x]-> D; del_edge e}
   }
 
@@ -254,15 +312,18 @@ package relations {
 % This rule is too strong for nummod, because in many languages, the relation is DET when D precedes H.
   rule mod {
     pattern { e:H -[1=advcl|advmod|amod|nummod]-> D; }
-    without{H[upos=NOUN|NUM|PRON|PROPN|X]; H -[advmod]-> D; D -[case]-> *}
     commands {e.1=mod}
   }
 
+% Modifiers of nominals that are not marked with a conjunction or an adposition are considered as MOD dependents in SUD.
+% Ex: un samedi soir - un homme accablé par le décès de sa femme
   rule mod_acl-nmod {
     pattern { e:H -[1=acl|nmod]-> D; }
     without{ D -[case|mark]-> *}
     commands {e.1=mod}
   }
+
+
 % subj
 %=====
   rule subj {
@@ -271,27 +332,26 @@ package relations {
     commands {e.1=subj}
   }
 
+
 % udep
 %=====
+% Modifiers of nominals that are marked with a conjunction or an adposition are considered as UDEP dependents in SUD.
   rule udep {
     pattern { e:H -[1=acl|nmod]-> D; D -[case|mark]-> *}
     commands {e.1=udep}
   }
 
-   rule udep_advmod {
+% Adverbs that are modifiers of determined words and marked with a conjunction or an adposition are considered as UDEP dependents in SUD.
+   rule udep_advmod-det {
      pattern { H -[det]-> *; e:H -[advmod]-> D; D -[case|mark]-> *}
      commands {del_edge e; add_edge H -[udep]-> D}
    }
    
+% Adverbs that are nominal modifiers and marked with a conjunction or an adposition are considered as UDEP dependents in SUD.
    rule udep_advmod-noun {
      pattern { H[upos=NOUN|NUM|PRON|PROPN|X]; e:H -[advmod]-> D; D -[case|mark]-> *}
      commands {del_edge e; add_edge H -[udep]-> D}
    }
-% % TODO: replace next to rules by "without { e.deep=agent }"
-%   rule udep_obl1 {
-%     pattern { e:H -[1=obl, !deep]-> D}
-%     commands {e.1=udep}
-%   }
   
    rule udep_obl {
      pattern { e:H -[1=obl]-> D}
@@ -309,10 +369,7 @@ package relations {
 
   rule unk_expl {
     pattern { e:H -[expl]-> D; }
-    commands {
-      del_edge e;
-      add_edge H -[unk@expl]-> D;
-    }
+    commands {del_edge e;add_edge H -[unk@expl]-> D;}
   }
 
 }
@@ -421,7 +478,6 @@ package reverse_relations{
 
     rule pass {
       pattern { e:H -[1=pass, !deep]-> AUX }
-     % without { H -[1=case|cop|caus, !deep]-> AUX1 }
       without { H -[1=pass, !deep]-> AUX1; AUX << AUX1 ; AUX1 << H } % rule (5) above
       without { H -[1=pass, !deep]-> AUX1; AUX >> AUX1 ; AUX1 >> H } % rule (5) above
       commands {
@@ -712,27 +768,19 @@ package chained_relations {
   }
 }
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-rule remove_useless_emb {
-  pattern { e: M -[conj:emb]-> N }
-  without { _ -[1=conj]-> M }
-  commands { del_feat e.2 }
-}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 strat main {
   Seq (
     Onf (eud_to_ud),
     specific_expr_init, % Initialization of a specific treatment for MWE, titles and translated words.
-    Onf (relations), % Package RELATIONS must precede relations reverse because the renaming of some relations depends on the presence of other relations (nsubj, csubj)
+    Onf (relations), % Package RELATIONS must precede REVERSE_RELATIONS.MAIN because the renaming of some relations depends on the cooccurrence with other relations (nsubj, csubjin the impersonal diathesis for instance)
     reverse_relations.main, % Reversing aux, case, cop and mark relations.
-    Onf (minimize_conj_dep), % Package MINIMIZE_CONJ_DEP must follow strategy REVERSE_RELATIONS.MAIN because the shared dependents can depend on relation inversions.
+    Onf (minimize_conj_dep), % Package MINIMIZE_CONJ_DEP must follow strategy REVERSE_RELATIONS.MAIN because the shared dependents can depend on relation inversions.Moreover, a dependance can shift from a coordination to an ascendant. Ex: fr-ud-dev_00446 -entre 3 et 6 généralement
     Onf (sub_relations), % Package SUB_RELATIONS must precede package REL_EXTENSIONS because this package swat extensions on level 2.
     Onf (rel_extensions),
     Onf (add_conj_emb), % Package ADD_CONJ_EMB must follow REVERSE_RELATIONS.MAIN because it depends on head changes ; Ex: UD_French-GSD fr-ud-dev_00751
     Onf (chained_relations),% Package CHAINED_RELATIONS must follow package SHIFT_RULES because it can entail a wrong coordination between two elements because of errors in head changes (UD_French-GS: fr-ud-dev_00131).
     specific_expr_close, % Closing a specific treatment for MWE, titles and translated words.
-    Onf(remove_useless_emb),
   )
 }
