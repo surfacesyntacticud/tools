@@ -1,0 +1,244 @@
+{
+  "title": "Détection des erreurs d'accord",
+  "items": [
+
+    {
+      "description": "Adjectifs ou participes passés épithètes d'un nom avec lequel ils s'accordent en nombre",
+      "pattern": [
+        "pattern {",
+        "  A -[mod]-> B;",
+        "  A[Number, !CorrectNumber];",
+        "  B[upos=ADJ|VERB, Number, !CorrectNumber];",
+        "  A.Number <> B.Number",
+        "}",
+        "without { B[VerbForm <> Part, Tense <> Past] }",
+        "without { B[VerbForm = Inf] }",
+        "without { B[ExtPos <> ADJ] }",
+        "without { B -[conj]-> * }",
+        "without { A -[conj]-> * }",
+        "without { * -[conj]-> A }"
+      ],
+      "level": "warning"
+    },
+
+    {
+      "description": "Adjectifs ou participes passés épithètes d'un nom avec lequel ils s'accordent en genre",
+      "pattern": [
+        "pattern {",
+        "  A -[mod]-> B;",
+        "  A[Gender,  !CorrectGender];",
+        "  B[upos=ADJ|VERB, Gender, !CorrectGender];",
+        "  A.Gender <> B.Gender",
+        "}",
+        "without { B[VerbForm <> Part, Tense <> Past] }",
+        "without { B[VerbForm = Inf] }",
+        "without { B[ExtPos <> ADJ] }",
+        "without { B -[conj]-> * }",
+        "without { A -[conj]-> * }",
+        "without { * -[conj]-> A}"
+      ],
+      "level": "warning"
+    },
+
+    {
+      "description": "Adjectifs ou participes passés attributs du sujet avec lequel ils s'accordent en nombre",
+      "pattern": [
+        "pattern {",
+        "  A -[comp:pred]-> B; ",
+        "  A -[1=subj]-> C;",
+        "  C[Number, !CorrectNumber];",
+        "  B[upos=ADJ|VERB, Number, !CorrectNumber];",
+        "  C.Number <> B.Number",
+        "}",
+        "without { B[VerbForm <> Part, Tense <> Past] }",
+        "without { B[VerbForm = Inf] }",
+        "without { A -[comp:obj]-> * }",
+        "without { B -[det]-> * }",
+        "without { C -[conj]-> * }"
+      ],
+      "level": "warning"
+    },
+
+    {
+      "description": "Adjectifs ou participes passés attributs du sujet avec lequel ils s'accordent en genre",
+      "pattern": [
+        "pattern {",
+        "  A -[comp:pred]-> B; ",
+        "  A -[1=subj]-> C;",
+        "  C[Gender, !CorrectGender];",
+        "  B[upos=ADJ|VERB, Gender, !CorrectGender];",
+        "  C.Gender <> B.Gender",
+        "}",
+        "without { B[VerbForm <> Part, Tense <> Past] }",
+        "without { B[VerbForm = Inf] }",
+        "without { A -[comp:obj]-> * }",
+        "without { B -[det]-> * }",
+        "without { C -[conj]-> * }"
+      ],
+      "level": "warning"
+    },
+
+    {
+      "description": "Adjectifs ou participes passés attributs de l'objet avec lequel ils s'accordent en nombre",
+      "pattern": [
+        "pattern {",
+        "  A -[comp:pred]-> B; ",
+        "  A -[comp:obj]-> C;",
+        "  C[Number, !CorrectNumber];",
+        "  B[upos=ADJ|VERB, Number, !CorrectNumber];",
+        "  C.Number <> B.Number",
+        "}",
+        "without { B[VerbForm <> Part, Tense <> Past] }",
+        "without { B[VerbForm = Inf] }",
+        "without { B -[det]-> * }",
+        "without { C -[conj]-> * }"
+      ],
+      "level": "warning"
+    },
+
+    {
+      "description": "Adjectifs et participes passés attributs de l'objet avec lequel ils s'accordent en genre",
+      "pattern": [
+        "pattern {",
+        "  A -[comp:pred]-> B; ",
+        "  A -[comp:obj]-> C;",
+        "  C[Gender, !CorrectGender];",
+        "  B[upos=ADJ|VERB, Gender, !CorrectGender];",
+        "  C.Gender <> B.Gender",
+        "}",
+        "without { B[VerbForm <> Part, Tense <> Past] }",
+        "without { B[VerbForm = Inf] }",
+        "without { B -[det]-> * }",
+        "without { C -[conj]-> * }"
+      ],
+      "level": "warning"
+    },
+
+    {
+      "description": "Déterminants qui s'accordent en nombre avec le mot déterminé",
+      "pattern": [
+        "pattern {",
+        "A[Number, !CorrectNumber];",
+        "B[Number, !CorrectNumber];",
+        "A -[det]-> B;",
+        "A.Number <> B.Number",
+        "}",
+        "without{ B -[conj]-> * }",
+        "without{ A -[conj]-> * }"
+      ],
+      "level": "warning"
+    },
+
+    {
+      "description": "Déterminants qui s'accordent en genre avec le mot déterminé",
+      "pattern": [
+        "pattern {",
+        "  A[Gender, !CorrectGender];",
+        "  B[Gender, !CorrectGender];",
+        "  A -[det]-> B;",
+        "  A.Gender <> B.Gender",
+        "}",
+        "without{ B -[conj]-> * }",
+        "without{ A -[conj]-> * }"
+      ],
+      "level": "warning"
+    },
+
+    {
+      "description": "Accord sujet - verbe en nombre",
+      "pattern": [
+        "pattern {",
+        "  A[upos=AUX|VERB, Number, !CorrectNumber];",
+        "  B[Number, !CorrectNumber];",
+        "  A -[1=subj]-> B;",
+        "  A.Number <> B.Number",
+        "}",
+        "without { B -[conj]-> * }",
+        "without { B[PhraseType=Title] }"
+      ],
+      "level": "warning"
+    },
+
+    {
+      "description": "Accord sujet - verbe en personne",
+      "pattern": [
+        "pattern {",
+        "  A[upos=AUX|VERB, Person, !CorrectPerson];",
+        "  B[Person, !CorrectPerson];",
+        "  A -[1=subj]-> B;",
+        "  A.Person <> B.Person",
+        "}",
+        "without { B -[conj]-> * }",
+        "without { B[PhraseType=Title] }"
+      ],
+      "level": "warning"
+    },
+
+    {
+      "description": "Accord en nombre sujet – participe passé avec l'auxiliaire « être » (les verbes pronominaux ne sont pas pris en compte)",
+      "pattern": [
+        "pattern {",
+        "  A[upos=AUX, lemma =\"être\"];",
+        "  B[Number, !CorrectNumber];",
+        "  A -[1=subj]-> B;",
+        "  A -[1=comp,2=aux]-> C;",
+        "  C[upos=VERB, VerbForm=Part, Tense=Past, Number, !CorrectNumber];",
+        "  C.Number <> B.Number",
+        "}",
+        "without { B -[conj]-> * }",
+        "without { B[PhraseType=Title] }"
+      ],
+      "level": "warning"
+    },
+
+    {
+      "description": "Accord en genre sujet – participe passé avec l'auxiliaire « être » (les verbes pronominaux ne sont pas pris en compte)",
+      "pattern": [
+        "pattern {",
+        "  A[upos=AUX, lemma = \"être\"];",
+        "  B[Gender, !CorrectGender];",
+        "  A -[1=subj]-> B;",
+        "  A -[1=comp,2=aux]-> C;",
+        "  C[upos=VERB, VerbForm=Part, Tense=Past, Gender, !CorrectGender];",
+        "  C.Gender <> B.Gender",
+        "}",
+        "without { B -[conj]-> * }",
+        "without { B[PhraseType=Title] }"
+      ],
+      "level": "warning"
+    },
+
+    {
+      "description": "Accord en nombre du participe passé avec l'objet direct placé avant",
+      "pattern": [
+        "pattern {",
+        "  A[upos=VERB, VerbForm=Part, Tense=Past, Number, !CorrectNumber];",
+        "  B[Number, !CorrectNumber];",
+        "  A -[1=comp,2=obj]-> B;",
+        "  B << A;",
+        "  A.Number <> B.Number",
+        "}",
+        "without { B -[conj]-> * }",
+        "without { B[PhraseType=Title] }"
+      ],
+      "level": "warning"
+    },
+
+    {
+      "description": "Accord en genre du participe passé avec l'objet direct placé avant",
+      "pattern": [
+        "pattern {",
+        "  A[upos=VERB, VerbForm=Part, Tense=Past, Gender, !CorrectGender];",
+        "  B[Gender, !CorrectGender];",
+        "  A -[1=comp,2=obj]-> B;",
+        "  B << A;",
+        "  A.Gender <> B.Gender",
+        "}",
+        "without { B -[conj]-> * }",
+        "without { B[PhraseType=Title] }"
+      ],
+      "level": "warning"
+    }
+
+  ]
+}
