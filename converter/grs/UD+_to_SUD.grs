@@ -374,6 +374,7 @@ package relations {
 
 }
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % All aux, case, cop and mark relations are reversed.
 % The reverse procedure consists of 4 step
@@ -770,17 +771,27 @@ package chained_relations {
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% All remaining UD relations are renamed UNK in SUD
+rule unk_rel{
+  pattern{e:H -[1<>appos|cc|clf|comp|compound|conj|det|discourse|dislocated|flat|goeswith|list|mod|orphan|parataxis|punct|reparandum|root|subj|udep|unk|vocative]-> D}
+  commands{del_edge e; add_edge H -[unk]-> D}
+}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 strat main {
   Seq (
     Onf (eud_to_ud),
     specific_expr_init, % Initialization of a specific treatment for MWE, titles and translated words.
+    Onf (sub_relations), % Package SUB_RELATIONS must precede package REL_EXTENSIONS because this package swat extensions on level 2.
+    Onf (rel_extensions),
     Onf (relations), % Package RELATIONS must precede REVERSE_RELATIONS.MAIN because the renaming of some relations depends on the cooccurrence with other relations (nsubj, csubjin the impersonal diathesis for instance)
     reverse_relations.main, % Reversing aux, case, cop and mark relations.
     Onf (minimize_conj_dep), % Package MINIMIZE_CONJ_DEP must follow strategy REVERSE_RELATIONS.MAIN because the shared dependents can depend on relation inversions.Moreover, a dependance can shift from a coordination to an ascendant. Ex: fr-ud-dev_00446 -entre 3 et 6 généralement
-    Onf (sub_relations), % Package SUB_RELATIONS must precede package REL_EXTENSIONS because this package swat extensions on level 2.
-    Onf (rel_extensions),
     Onf (add_conj_emb), % Package ADD_CONJ_EMB must follow REVERSE_RELATIONS.MAIN because it depends on head changes ; Ex: UD_French-GSD fr-ud-dev_00751
     Onf (chained_relations),% Package CHAINED_RELATIONS must follow package SHIFT_RULES because it can entail a wrong coordination between two elements because of errors in head changes (UD_French-GS: fr-ud-dev_00131).
+    Onf (unk_rel),
     specific_expr_close, % Closing a specific treatment for MWE, titles and translated words.
   )
 }
