@@ -24,9 +24,12 @@
       "level": "warning"
     },
     {
-      "pattern": "pattern { N -[comp:obj]-> N1; N -[comp:obj]-> N2; N1 << N2; }",
-      "description": "Two `comp:obj` relations with the same governor",
-      "level": "warning"
+	"pattern": [
+	    "pattern { N -[comp:obj]-> N1; N -[comp:obj]-> N2; N1 << N2; }",
+            "without { N[PhraseType=Idiom]}"
+	],
+        "description": "Two `comp:obj` relations with the same governor",
+        "level": "warning"
     },
     {
       "pattern": "pattern { N -[1=flat]-> N1; N -[1=flat]-> N2; N1 << N2; }",
