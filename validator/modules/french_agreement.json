@@ -6,9 +6,10 @@
       "description": "Adjectifs ou participes passés épithètes d'un nom avec lequel ils s'accordent en nombre",
       "pattern": [
         "pattern {",
-        "  A -[mod]-> B;",
-        "  B[upos=ADJ|VERB];",
-        "  A.Number <> B.Number",
+          "  A -[mod]-> B;",
+	  "  A[upos=NOUN|PRON|PROPN];",
+          "  B[upos=ADJ|VERB];",
+          "  A.Number <> B.Number",
         "}",
         "without { A.Number = B.CorrectNumber }",
         "without { A.CorrectNumber = B.Number }",
