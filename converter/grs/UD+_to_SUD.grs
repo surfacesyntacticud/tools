@@ -11,9 +11,10 @@ package eud_to_ud {
   }
 
   rule empty { % remove empty nodes
-    pattern { N [_UD_empty=Yes] }
+    pattern { N [wordform=__EMPTY__, textform=_] }
     commands { del_node N }
   }
+
 }
 
 
