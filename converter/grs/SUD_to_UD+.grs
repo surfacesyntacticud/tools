@@ -12,7 +12,10 @@ package shared {
       N1 -[1=conj]-> N2;
       e: N2 -> D; D[Shared=Yes]}
   %  without{ N2 -[orphan]-> D; H -[^ conj]-> N1} %Ex : SUD_FRENCH-GSD fr-ud-train_13715
-    commands {add_edge e: N1 -> D; del_edge e}
+    commands {
+      add_edge f: N1 -> D; f.label = e.label;
+      del_edge e
+    }
   }
 
 % The shared dependent is attached at the head of the last conjunct via a COMP:OBJ relation.
@@ -24,30 +27,39 @@ package shared {
       N2 -[1=comp,2=obj]-> D2; N2 << D2;
       N1.upos=N2.upos;
       e: D2 -[1=comp|mod|udep]-> D; D[Shared=Yes]}
-    without{D2 -[1=comp]-> D; D1 -[1=comp]-> D3} %Ex: fr-ud-test_00145 - quand on en détruit et qu' on en créé 20.000 
-    commands {add_edge e: D1 -> D;del_edge e;}
+    without{D2 -[1=comp]-> D; D1 -[1=comp]-> D3} %Ex: fr-ud-test_00145 - quand on en détruit et qu' on en créé 20.000
+    commands {
+      add_edge f: D1 -> D; f.label = e.label;
+      del_edge e;
+    }
   }
 
 % The shared dependent is attached at the head of the last conjunct via a MOD relation on the right of its governor.
-% Ex: fr-ud-train_12393 - le 6 mai et le 15 juin 1825 
+% Ex: fr-ud-train_12393 - le 6 mai et le 15 juin 1825
   rule move_mod-right_distant-relation {
     pattern {
       N1 -[1=conj]-> N2;
       N1 -[mod]-> D1; N1 << D1;
       N2 -[mod]-> D2; N2 << D2;
       e: D2  -[1=comp|mod]-> D; D[Shared=Yes]; D2 << D}
-    commands {add_edge e: D1 -> D;del_edge e;}
+    commands {
+      add_edge f: D1 -> D; f.label = e.label;
+      del_edge e;
+    }
   }
 
 % The shared dependent is attached at the head of the last conjunct via a MOD relation on the left of its governor.
-% Ex: fr-ud-train_10344 - plus économiquement ou plus adéquatement que les produits 
+% Ex: fr-ud-train_10344 - plus économiquement ou plus adéquatement que les produits
   rule move_mod-left_distant-relation {
     pattern {
       N1 -[1=conj]-> N2;
       N1 -[mod]-> D1; N1 >> D1;
       N2 -[mod]-> D2; N2 >> D2;
       e: D2  -[1=comp|mod]-> D; D[Shared=Yes]}
-    commands {add_edge e: D1 -> D;del_edge e;}
+    commands {
+      add_edge f: D1 -> D; f.label = e.label;
+      del_edge e;
+    }
   }
 }
 
@@ -147,7 +159,7 @@ package reverse_case_mark {
     without{D[upos= ADP|CCONJ|PART|SCONJ]; D -[1=comp,2=obj]-> D1}
     commands {
       e.rev=y;
-      add_edge e:D -> H;
+      add_edge f:D -> H; f.label = e.label;
       del_edge e;
       shift_in H =[^IDIOM|TITLE|CONV]=> D;
       shift_out H =[1=case|mark]=> D;
@@ -183,16 +195,22 @@ package shift_out_edges{
     without{
       D -[punct]-> D2; D -[punct]-> D1; D1.lemma = "]"; D2.lemma = "[";
       D1 << D; D << D2}
-    commands{add_edge e: H -> D1; del_edge e}
+    commands{
+      add_edge f: H -> D1; f.label = e.label;
+      del_edge e
+    }
   }
 
   rule prep_dep{
     pattern{
       D[upos=ADP]; H -[1=comp,2=obj,rev=y]-> D;
       e:D -[^ conj|CONV|HEAD|IDIOM|TITLE]-> D1}
-    commands{add_edge e:H -> D1; del_edge e}
+    commands {
+      add_edge f:H -> D1; f.label = e.label;
+      del_edge e
+    }
   }
-  
+
   rule embedding_punct{
     pattern{
       H -[rev=y]-> D;
@@ -214,7 +232,10 @@ package shift_out_edges{
     without{D1 << H} %Ex : UD_French-GSD  fr-ud-train_14326
     without{D[upos=AUX]; D1[upos=VERB]; H >> D1}%Ex: UD_French-GSD fr-ud-train_06092
     without{D[upos=AUX]; D1[upos=VERB]; H1 -> D; H1 >> D1} %Ex: UD_French-GSD fr-ud-train_09763
-    commands{add_edge e: H -> D1; del_edge e}
+    commands{
+      add_edge f: H -> D1; f.label = e.label;
+      del_edge e
+    }
   }
 }
 
@@ -222,7 +243,7 @@ package shift_out_edges{
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SUD relations with adpositions or conjonctions of subordination are renamed as case or mark UD relations.
 package case_mark_relations {
-% Adpositions introducing nominals are case dependent. 
+% Adpositions introducing nominals are case dependent.
 % Ex: à Paris - comme à Paris - il ira plutôt à Lyon qu'à Paris.
   rule case_nom_adp{
     pattern{ e:H -[1=comp,2=obj,rev=y]-> D; H[nom=y];D[upos=ADP|PART] }
@@ -274,7 +295,7 @@ package case_mark_relations {
   }
 
 % Adpositions introducing a clause marked with conjunction between the clause head and the adposition are mark dependent.
-% Ex: 
+% Ex:
   rule mark_pred_adp-right{
     pattern{
       e:H -[1=comp,2=obj,rev=y]-> D; D[upos=ADP|PART];
@@ -361,7 +382,7 @@ package sub_relations {
   }
 
 % In the impersonal diathesis, the deep clausal subject, which is a COMP:OBJ dependent in SUD, becomes a CSUBJ dependent in UD.
-% Ex: il m'arrive de faire des erreurs. 
+% Ex: il m'arrive de faire des erreurs.
   rule csubj_comp-obj {
     pattern {e:H -[comp:obj@agent]-> D; D[upos=AUX|VERB]}
     commands {del_edge e; add_edge H -[csubj]-> D }
@@ -374,7 +395,7 @@ package sub_relations {
     pattern {e:H -[comp:obj@pass]-> D; D[upos=AUX|VERB]}
     commands {del_edge e; add_edge H -[csubj:pass]-> D }
   }
-  
+
 % Clitic pronoun expressing the mediopassive redistribution.
 % Ex: Les voitures se sont bien vendues.
   rule expl-pass_comp{
@@ -390,7 +411,7 @@ package sub_relations {
     commands {e.1=expl;e.2=subj; del_feat e.deep}
   }
 
-% iobj is used for any argument of a non-nominal governor, which is an adverb or a pronoun not introduced by a preposition 
+% iobj is used for any argument of a non-nominal governor, which is an adverb or a pronoun not introduced by a preposition
   rule iobj {
     pattern {H[!nom]; e:H -[1=comp,2=obl]-> D; D[upos=ADV|PRON]}
     without{D -[case]-> *}
@@ -539,7 +560,7 @@ package relations {
     without{D[upos=ADJ|AUX|VERB]}
     commands {e.1=advcl}
   }
-  
+
   rule advmod {
     pattern { e:H -[1=mod|udep]-> D; D[upos=ADV|CCONJ|INTJ|PART|SYM, !nom] }
     without{D -[1=mark]-> *}
@@ -572,11 +593,11 @@ package relations {
     pattern{ e: H -[unk]-> D}
     commands{e.1=dep}
   }
-  
+
   rule dep-comp{
     pattern{ e: H -[1=comp]-> D}
     commands{del_edge e; add_edge H -[dep:comp]-> D}
-  }  
+  }
 
   rule nmod {
     pattern {e:H -[1=mod|udep]-> D; H[nom=y]; D[nom=y]}
@@ -606,7 +627,7 @@ package relations {
     without{ D -[case|mark]-> *}
     commands {e.1=nummod}
   }
-  
+
 % A DET relation, when the modifier is a numeral, is converted into a NUMMOD relation.
   rule nummod_det{
     pattern { e: H -[1=det]-> D; D[upos=NUM] }
@@ -649,7 +670,7 @@ package reverse_aux {
     without{D[upos= AUX]; D -[1=aux|cop,!rev]-> D1}
     commands {
       e.rev=y;
-      add_edge e:D -> H;
+      add_edge f:D -> H; f.label = e.label;
       del_edge e;
       shift_in H =[^IDIOM|TITLE]=> D;
     }

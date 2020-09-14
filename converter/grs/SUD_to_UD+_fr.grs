@@ -8,24 +8,24 @@ package FR_pron_verb{
 % Ex: les gens s'enfuient.
   rule verb1{
     pattern{
-      V[upos=VERB,_MISC_ExtPos=VERB, _MISC_PhraseType=Idiom];
-      V -[comp]-> PRON; PRON [upos=PRON,_MISC_InIdiom=Yes]}
-    without{V -[comp]-> PRON1; PRON1 [upos=PRON,_MISC_InIdiom=Yes]}
+      V[upos=VERB,ExtPos=VERB, PhraseType=Idiom];
+      V -[comp]-> PRON; PRON [upos=PRON,InIdiom=Yes]}
+    without{V -[comp]-> PRON1; PRON1 [upos=PRON,InIdiom=Yes]}
     commands{
-      del_feat V._MISC_ExtPos; del_feat  V._MISC_PhraseType;
-      del_feat PRON._MISC_InIdiom}
+      del_feat V.ExtPos; del_feat  V.PhraseType;
+      del_feat PRON.InIdiom}
   }
 
 % The pronominal verb has two clitic pronouns marking its pronominal feature.
 % Ex: ils s'en prennent aux plus faibles.
   rule verb2{
     pattern{
-      V[upos=VERB,_MISC_ExtPos=VERB, _MISC_PhraseType=Idiom];
-      V -[comp]-> PRON1; PRON1 [upos=PRON,_MISC_InIdiom=Yes];
-      V -[comp]-> PRON2; PRON2 [upos=PRON,_MISC_InIdiom=Yes]; PRON1 << PRON2}
+      V[upos=VERB,ExtPos=VERB, PhraseType=Idiom];
+      V -[comp]-> PRON1; PRON1 [upos=PRON,InIdiom=Yes];
+      V -[comp]-> PRON2; PRON2 [upos=PRON,InIdiom=Yes]; PRON1 << PRON2}
     commands{
-      del_feat V._MISC_ExtPos; del_feat  V._MISC_PhraseType;
-      del_feat PRON1._MISC_InIdiom; del_feat PRON2._MISC_InIdiom;}
+      del_feat V.ExtPos; del_feat  V.PhraseType;
+      del_feat PRON1.InIdiom; del_feat PRON2.InIdiom;}
   }
 }
 
@@ -82,7 +82,7 @@ package FR_udep {
     pattern{
       H[upos=PRON]; D[lemma=chose]; H -[HEAD]-> D;
       A[upos=ADJ|DET,lemma=grand|quelque]; D -[det|mod]-> A;
-      D1[upos=ADJ];e: H -[mod]-> D1; 
+      D1[upos=ADJ];e: H -[mod]-> D1;
       D1 -[1=case]-> DE; DE[upos=ADP,lemma=de]
     }
     commands{ del_edge e; add_edge H -[amod]-> D1}
@@ -96,7 +96,7 @@ package FR_udep {
     }
     commands{ del_edge e; add_edge H -[amod]-> D}
   }
-  
+
 }
 
 
@@ -118,7 +118,7 @@ strat FR_main{
     Onf (shared),
     Onf(remove_shared),
     Onf(FR_pron_verb), % Specific treatment of pronominal verbs in French
-    specific_expr_init, 
+    specific_expr_init,
     Onf (nom_init),
     Onf (unchained_relations),
     Onf (reverse_case_mark),
@@ -136,7 +136,7 @@ strat FR_main{
     Onf(shift_out_edges),
     Onf( reverse_close),
     Onf (final),
-    specific_expr_close, 
+    specific_expr_close,
   )
 }
 

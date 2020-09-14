@@ -35,7 +35,7 @@ package sub_relations {
     pattern{e: H -[expl:pass]-> D}
     commands{del_edge e; add_edge H -[comp@pass]-> D}
   }
-  
+
 % Clausal direct objects or oblique arguments with their subject controlled by their governor.
   rule comp-obj-obl_xcomp {
     pattern { e:H -[xcomp:obj|xcomp:obl]-> D; }
@@ -47,7 +47,7 @@ package sub_relations {
     pattern { e:H -[advcl:cleft|ccomp:obj|ccomp:obl|ccomp:pred]-> D; }
     commands {e.1=comp}
   }
- 
+
 % In the impersonal diathesis, the deep subject, which is a NSUBJ or CSUBJ dependent in UD, becomes a direct object in SUD with the deep extension AGENT.
 % The impersonal diathesis is detected by means of the impersonal subject.
 % The UD relation that is renamed as a SUD relation is not a sub-relation but it must be processed before the general processing of relations.
@@ -59,24 +59,24 @@ package sub_relations {
 
 % In the impersonal passive diathesis, the deep subject, which is a NSUBJ:PASS or CSUBJ:PASS dependent in UD, becomes an OBJ:PASS dependent in SUD.
 % The impersonal diathesis is detected by means of the impersonal subject,which may not be a direct dependent of the main verb, hence the need for several rules.
-% Ex: Il sera vendu une grande maison aujourd'hui - Il est prévu de continuer. - Il a été vendu une grande maison aujourd'hui. - Il a été prévu de continuer. - Il peut avoir été vendu une grande maison aujourd'hui.- Il se dit que tu viendras.  Il s'est vendu une grande maison aujourd'hui. - Il a pu se vendre une grande maison aujourd'hui. 
+% Ex: Il sera vendu une grande maison aujourd'hui - Il est prévu de continuer. - Il a été vendu une grande maison aujourd'hui. - Il a été prévu de continuer. - Il peut avoir été vendu une grande maison aujourd'hui.- Il se dit que tu viendras.  Il s'est vendu une grande maison aujourd'hui. - Il a pu se vendre une grande maison aujourd'hui.
   rule comp-obj-pass_subj {
     pattern{e:H -[1=csubj|nsubj, 2=pass]-> D; H -[expl:subj]-> *}
     commands{del_edge e; add_edge H -[comp:obj@pass]-> D; }
   }
-  
+
 % Oblique argument.
   rule comp_obl {
     pattern { e:H -[1=obl, 2=arg|comp]-> D; } % comp pour Spoken
     commands {e.1=comp; e.2=obl}
   }
-  
+
 % Agent complement.
   rule comp_obl-agent {
     pattern { e:H -[1=obl, 2=agent]-> D}
     commands {del_edge e; add_edge H -[comp:obl@agent]-> D}
   }
-  
+
 % Sub-relations DEP:COMP starting from nominals are renamed COMP:OBL in SUD. We make the hypothesis that all arguments of nominals are oblique arguments.
   rule comp_dep_nom {
     pattern { H[upos = NOUN|PRON]; e:H -[dep:comp]-> D; }
@@ -96,7 +96,7 @@ package sub_relations {
     pattern { e:H -[ccomp:pred]-> D; }
     commands {e.1=comp; e.2=pred}
   }
-  
+
 % Predicative clausal argument with control of the subject by the main verb.
   rule comp-pred-x_xcomp {
     pattern { e:H -[xcomp:pred]-> D;D[upos=VERB] }
@@ -244,7 +244,7 @@ package relations {
 % Il est convaincu qu'il doit venir.
   rule comp-obl_ccomp-pass {
     pattern {
-      e:H -[1=ccomp]-> D; 
+      e:H -[1=ccomp]-> D;
       H1 -[aux@pass|comp:aux@pass]-> H}
     without{D[VerbFom=Part]}% Participles are considered as predicative arguments
     commands {e.1=comp;e.2=obl}
@@ -284,7 +284,7 @@ package relations {
     pattern {
       e:H -[1=xcomp]-> D;D[upos=AUX|VERB,VerbForm=Inf];
        AUX -[aux@pass|comp:aux@pass]-> H}
-    without{D -[mark]-> *}   
+    without{D -[mark]-> *}
     commands {e.1=comp;e.2=obl;e.deep=x}
   }
 
@@ -346,19 +346,19 @@ package relations {
      pattern { H -[det]-> *; e:H -[advmod]-> D; D -[case|mark]-> *}
      commands {del_edge e; add_edge H -[udep]-> D}
    }
-   
+
 % Adverbs that are nominal modifiers and marked with a conjunction or an adposition are considered as UDEP dependents in SUD.
    rule udep_advmod-noun {
      pattern { H[upos=NOUN|NUM|PRON|PROPN|X]; e:H -[advmod]-> D; D -[case|mark]-> *}
      commands {del_edge e; add_edge H -[udep]-> D}
    }
-  
+
    rule udep_obl {
      pattern { e:H -[1=obl]-> D}
      without{H -[deep=agent]-> D}
      commands {e.1=udep}
    }
-    
+
 
 % unk
 %=====
@@ -522,7 +522,7 @@ package shift_out_edges{
       e: D -[1=subj]-> D1}
     commands{add_edge e: H -> D1;del_edge e}
   }
-  
+
 % Relations with their source D after the head of a subordinated clause and their dependent D1 before.
   rule all_mark_outside_left{
     pattern {
@@ -550,12 +550,12 @@ package shift_out_edges{
     without{H -[1=case]-> D;D -[1=mod]-> D1; D1[upos <> ADP|SCONJ]}
     without{H -[1=mark]-> D;D -[1=mod]-> D1}
     without{H -[1=cop]-> D; D -[mod]-> D1; D1[upos<>ADP|ADV|SCONJ]}
-    without{D -> D2; D1 << D2} 
+    without{D -> D2; D1 << D2}
     without{D -[punct]-> D2; D2 << D; D -[punct]-> D1; D1.lemma = D2.lemma}
     without{D -[punct]-> D2; D2 << D; D -[punct]-> D1; D1.lemma = ")"; D2.lemma = "("}
     without{D -[punct]-> D2; D2 << D; D -[punct]-> D1; D1.lemma = "»"; D2.lemma = "«"}
     without{D -[punct]-> D2; D2 << D; D -[punct]-> D1; D1.lemma = "]"; D2.lemma = "["}
-    without{D1[_MISC_InTitle=Yes]; H[!_MISC_InTitle]}% A vérifier
+    without{D1[InTitle=Yes]; H[!InTitle]}% A vérifier
     without{H -[1=case|mark]-> D; H1 -[IDIOM]-> D1; H1 -[HEAD]-> H}
     commands{add_edge e: H -> D1; del_edge e}
   }
@@ -661,7 +661,7 @@ package shift_out_edges{
       pattern { e:M -[pass]-> N }
       commands { del_edge e; add_edge M -[comp:aux@pass]-> N }
     }
-    
+
     rule other1 {
       pattern { e:M -[aux]-> N }
       commands { add_edge M -[comp:aux]-> N; del_edge e }
@@ -695,7 +695,7 @@ package minimize_conj_dep {
     without { C1 -[1=conj]-> C; C2 << C ; C << D} % Ex :fr-ud-train_03266, fr-ud-train_02016
     commands { add_edge e:C2 -> D; del_edge e; D.Shared=Yes }
   }
-  
+
 
 % The shared element depends on the head of the first conjunct via a MOD dependency.
   rule minimize_indirect_mod {
@@ -707,7 +707,7 @@ package minimize_conj_dep {
     without { C1 -[1=conj]-> C; C2 << C ; C << D} % Ex :fr-ud-train_03266, fr-ud-train_02016
     commands { add_edge e:D2 -> D; del_edge e; D.Shared=Yes }
   }
-  
+
 % The shared element depends on the head of the first conjunct via a COMP:OBJ dependency.
   rule minimize_indirect_conj-obj {
     pattern {
@@ -718,7 +718,7 @@ package minimize_conj_dep {
     without { C1 -[1=conj]-> C; C2 << C ; C << D} % Ex :fr-ud-train_03266, fr-ud-train_02016
     commands { add_edge e:D2 -> D; del_edge e; D.Shared=Yes }
   }
-  
+
 
 }
 

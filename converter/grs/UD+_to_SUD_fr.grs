@@ -39,7 +39,7 @@ package FR_relations {
 %       e:ADV -[ccomp]-> ARG}
 %     commands{ del_edge e; add_edge ADV -[comp:obj]-> ARG}
 %   }
-  
+
 % % Adverbial locutions with a direct object.By default, the relation between an adverbial locution and one of its arguments is COMP:OBL
 %   rule adv-loc_obj(lex from "lexicons/adv-mwe_obj.lp") {
 %     pattern{
@@ -49,8 +49,8 @@ package FR_relations {
 %       e:LOC -[ccomp]-> ARG}
 %     commands{ del_edge e; add_edge LOC -[comp:obj]-> ARG}
 %   }
-  
-  
+
+
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -68,7 +68,7 @@ package FR_shift_out_edges{
     without{D -> D1; D1 >> ADV} % Rising cannot generate non projectivity
     commands{add_edge H -[mod]-> ADV; del_edge e}
   }
-  
+
 % Judgment adverbs rise from the adposition objects to their adposition.
 % Ex: il est en vacances heureusement.
   rule adv-judgment_case(lex from "lexicons/adv_judgment.lp") {
@@ -80,7 +80,7 @@ package FR_shift_out_edges{
     without{D -> D1; D1 >> ADV}  % Rising cannot generate non projectivity
     commands{add_edge H -[mod]-> ADV; del_edge e}
   }
-  
+
 % Judgment adverbial locutions rise from verbs to their auxiliaries.
 % Ex : Il a été mon directeur par ailleurs.
   rule adv-loc-judgment_aux(lex from "lexicons/advloc_judgment.lp") {
@@ -169,7 +169,7 @@ package FR_shift_out_back_edges{
 % Quantity adverbs that are modifiers must move from the auxiliaries to their argument.
   rule adv-quant_aux(lex from "lexicons/adv_quant.lp"){
     pattern{
-      H[upos=AUX]; H -[1=comp,2=aux|pred]-> D; 
+      H[upos=AUX]; H -[1=comp,2=aux|pred]-> D;
       D1[upos=ADV,lemma=lex.adv];
       e: H -[mod]-> D1;
       H << D1}
@@ -190,7 +190,7 @@ package FR_shift_out_back_edges{
       H << D1}
     commands{add_edge D -[mod]-> D1;del_edge e}
   }
-  
+
 % Manner adverbs that are modifiers must move from the auxiliaries to their argument.
   rule adv-manner_aux(lex from "lexicons/adv_manner.lp"){
     pattern{
@@ -222,24 +222,24 @@ package FR_pron_verb{
 % Ex: les gens s'enfuient.
   rule verb1{
     pattern{
-      V[upos=VERB,!_MISC_ExtPos, !_MISC_PhraseType];
+      V[upos=VERB,!ExtPos, !PhraseType];
       V -[comp]-> PRON; PRON [upos=PRON]}
     without{V -[comp]-> PRON1; PRON1 [upos=PRON]}
     commands{
-      V._MISC_ExtPos=VERB; V._MISC_PhraseType=Idiom;
-      PRON._MISC_InIdiom=Yes}
+      V.ExtPos=VERB; V.PhraseType=Idiom;
+      PRON.InIdiom=Yes}
   }
 
 % The pronominal verb has two clitic pronouns marking its pronominal feature.
 % Ex: ils s'en prennent aux plus faibles.
   rule verb2{
     pattern{
-      V[upos=VERB,!_MISC_ExtPos, !_MISC_PhraseType];
+      V[upos=VERB,!ExtPos, !PhraseType];
       V -[comp]-> PRON1; PRON1 [upos=PRON];
       V -[comp]-> PRON2; PRON2 [upos=PRON]; PRON1 << PRON2}
     commands{
-      V._MISC_ExtPos=VERB; V._MISC_PhraseType=Idiom;
-      PRON1._MISC_InIdiom=Yes; PRON2._MISC_InIdiom=Yes}
+      V.ExtPos=VERB; V.PhraseType=Idiom;
+      PRON1.InIdiom=Yes; PRON2.InIdiom=Yes}
   }
 
 }
@@ -247,7 +247,7 @@ package FR_pron_verb{
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 strat FR_main {
   Seq(
-    specific_expr_init, 
+    specific_expr_init,
     Onf (FR_relations),
     Onf (sub_relations),
     Onf (rel_extensions),

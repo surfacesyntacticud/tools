@@ -4,23 +4,23 @@
 % The package [add_edges] turns all features InIdiom (resp. InTitle) into a edge IDIOM (resp. TITLE) from the head to internal nodes of irregular expressions.
 package add_edges {
   rule init_idiom {
-    pattern { H [_MISC_PhraseType=Idiom]; H-> N; N[_MISC_InIdiom=Yes] }
-    commands { del_feat N._MISC_InIdiom; add_edge H -[IDIOM]-> N }
+    pattern { H [PhraseType=Idiom]; H-> N; N[InIdiom=Yes] }
+    commands { del_feat N.InIdiom; add_edge H -[IDIOM]-> N }
   }
 
   rule iter_idiom {
-    pattern { H -[IDIOM]-> M; M -> N; N[_MISC_InIdiom=Yes] }
-    commands { del_feat N._MISC_InIdiom; add_edge H -[IDIOM]-> N }
+    pattern { H -[IDIOM]-> M; M -> N; N[InIdiom=Yes] }
+    commands { del_feat N.InIdiom; add_edge H -[IDIOM]-> N }
   }
 
   rule init_title {
-    pattern { H [_MISC_PhraseType=Title]; H-> N; N[_MISC_InTitle=Yes] }
-    commands { del_feat N._MISC_InTitle; add_edge H -[TITLE]-> N }
+    pattern { H [PhraseType=Title]; H-> N; N[InTitle=Yes] }
+    commands { del_feat N.InTitle; add_edge H -[TITLE]-> N }
   }
 
   rule iter_title {
-    pattern { H -[TITLE]-> M; M -> N; N[_MISC_InTitle=Yes] }
-    commands { del_feat N._MISC_InTitle; add_edge H -[TITLE]-> N }
+    pattern { H -[TITLE]-> M; M -> N; N[InTitle=Yes] }
+    commands { del_feat N.InTitle; add_edge H -[TITLE]-> N }
   }
 }
 
@@ -29,35 +29,35 @@ package add_edges {
 % The new node is linked to the head with the HEAD relation and to other elements by a IDIOM/TITLE relation.
 package add_nodes {
   rule idiom {
-    pattern{ H [_MISC_ExtPos,_MISC_PhraseType=Idiom] }
-    without{H[upos=AUX|VERB, VerbForm, _MISC_ExtPos=VERB]}
-    without{H[_MISC_ExtPos=VERB]; H -[IDIOM]-> AUX; AUX[upos=AUX,VerbForm]}
+    pattern{ H [ExtPos,PhraseType=Idiom] }
+    without{H[upos=AUX|VERB, VerbForm, ExtPos=VERB]}
+    without{H[ExtPos=VERB]; H -[IDIOM]-> AUX; AUX[upos=AUX,VerbForm]}
     commands{
       add_node I :< H;
       add_edge I -[IDIOM]-> H; add_edge I -[HEAD]-> H;
       shift_in H =[^IDIOM|TITLE]=> I;
       shift_out H =[IDIOM]=> I;
-      I.upos = H._MISC_ExtPos; del_feat H._MISC_ExtPos;
-      I.Type = H._MISC_PhraseType; del_feat H._MISC_PhraseType;
+      I.upos = H.ExtPos; del_feat H.ExtPos;
+      I.Type = H.PhraseType; del_feat H.PhraseType;
     }
   }
 
   rule idiom_verb {
-    pattern{ H [upos=AUX|VERB, VerbForm,_MISC_ExtPos=VERB,_MISC_PhraseType=Idiom] }
+    pattern{ H [upos=AUX|VERB, VerbForm,ExtPos=VERB,PhraseType=Idiom] }
     commands{
       add_node I :< H;
       add_edge I -[IDIOM]-> H; add_edge I -[HEAD]-> H;
       shift_in H =[^IDIOM|TITLE]=> I;
       shift_out H =[IDIOM]=> I;
-      I.upos = H._MISC_ExtPos; del_feat H._MISC_ExtPos;
-      I.Type = H._MISC_PhraseType; del_feat H._MISC_PhraseType;
+      I.upos = H.ExtPos; del_feat H.ExtPos;
+      I.Type = H.PhraseType; del_feat H.PhraseType;
       I.VerbForm = H.VerbForm
     }
   }
-  
+
   rule idiom_cop {
     pattern{
-      H [_MISC_ExtPos=VERB,_MISC_PhraseType=Idiom];
+      H [ExtPos=VERB,PhraseType=Idiom];
       e:H -[IDIOM]-> AUX; AUX[upos=AUX,VerbForm]}
     commands{
       add_node I :< H;
@@ -65,31 +65,31 @@ package add_nodes {
       shift_in H =[^IDIOM|TITLE]=> I;
       shift_out H =[IDIOM]=> I;
       del_edge e; add_edge I -[IDIOM]-> AUX;
-      I.upos = H._MISC_ExtPos; del_feat H._MISC_ExtPos;
-      I.Type = H._MISC_PhraseType; del_feat H._MISC_PhraseType;
+      I.upos = H.ExtPos; del_feat H.ExtPos;
+      I.Type = H.PhraseType; del_feat H.PhraseType;
       I.VerbForm = AUX.VerbForm
     }
   }
-  
+
   rule title {
-    pattern{ H [_MISC_ExtPos,_MISC_PhraseType=Title] }
+    pattern{ H [ExtPos,PhraseType=Title] }
     without{ * -[expr]-> H }
     commands{
       add_node T :< H; add_edge T -[TITLE]-> H; add_edge T -[HEAD]-> H;
       shift_in H =[^IDIOM|TITLE]=> T;
       shift_out H =[TITLE]=> T;
-      T.upos = H._MISC_ExtPos; del_feat H._MISC_ExtPos;
-      T.Type = H._MISC_PhraseType; del_feat H._MISC_PhraseType;
+      T.upos = H.ExtPos; del_feat H.ExtPos;
+      T.Type = H.PhraseType; del_feat H.PhraseType;
     }
   }
 
   rule conv {
-    pattern{ H [_MISC_ExtPos,!_MISC_PhraseType] }
+    pattern{ H [ExtPos,!PhraseType] }
     without{ * -[HEAD]-> H }
     commands{
       add_node C :< H; add_edge C -[CONV]-> H; add_edge C -[HEAD]-> H;
       shift H =[^IDIOM|TITLE]=> C;
-      C.upos = H._MISC_ExtPos; del_feat H._MISC_ExtPos;
+      C.upos = H.ExtPos; del_feat H.ExtPos;
       C.lemma = H.lemma
     }
   }
@@ -109,14 +109,20 @@ package ext_dep {
     pattern { H -[IDIOM]-> N; e: N -> M}
     without { H -[IDIOM]-> M; }
     without{ * -[IDIOM]-> M}
-    commands { add_edge e:H->M; del_edge e;}
+    commands {
+      add_edge f:H->M; f.label = e.label;
+      del_edge e;
+    }
   }
 
   rule title {
     pattern { H -[TITLE]-> N; e: N -> M;}
     without { H -[TITLE]-> M; }
      without{ * -[TITLE]-> M}
-   commands { add_edge e:H->M; del_edge e;}
+   commands {
+     add_edge f:H->M; f.label = e.label;
+     del_edge e;
+   }
   }
 
 }
@@ -139,8 +145,8 @@ package del_edges {
     pattern { I[Type]; I -[HEAD]-> H; e:I -[IDIOM]-> H; }
     commands {
       del_edge e;
-      H._MISC_ExtPos = I.upos;
-      H._MISC_PhraseType = I.Type;
+      H.ExtPos = I.upos;
+      H.PhraseType = I.Type;
     }
   }
 
@@ -149,7 +155,7 @@ package del_edges {
     without { I -[HEAD]-> H }
     commands {
       del_edge e;
-      H._MISC_InIdiom = Yes;
+      H.InIdiom = Yes;
     }
   }
 
@@ -157,8 +163,8 @@ package del_edges {
     pattern { T -[HEAD]-> H; e:T -[TITLE]-> H }
     commands {
       del_edge e;
-      H._MISC_ExtPos = T.upos;
-      H._MISC_PhraseType = T.Type;
+      H.ExtPos = T.upos;
+      H.PhraseType = T.Type;
     }
   }
 
@@ -168,7 +174,7 @@ package del_edges {
     without{T -[HEAD]-> H1; H1 -[HEAD]-> H; H1[Type=Idiom]}
     commands {
       del_edge e;
-      H._MISC_InTitle = Yes;
+      H.InTitle = Yes;
     }
   }
 
@@ -184,7 +190,7 @@ package del_edges {
     pattern { C -[HEAD]-> H; e:C -[CONV]-> H }
     commands {
       del_edge e;
-      H._MISC_ExtPos = C.upos;
+      H.ExtPos = C.upos;
     }
   }
 }
@@ -196,7 +202,7 @@ package del_nodes {
     pattern{ N[!Shared];e: N -[HEAD]-> H }
     commands{del_edge e; shift N ==> H;del_node N}
   }
-  
+
   rule del_shared_specif_expr_{
     pattern{ N[Shared=Yes]; e: N -[HEAD]-> H }
     commands{del_edge e; shift N ==> H;del_node N; H.Shared=Yes}
