@@ -124,8 +124,16 @@ package ext_dep {
      del_edge e;
    }
   }
-
 }
+
+rule fixed {
+  pattern { H -[IDIOM]-> N; e: H -[fixed]-> M;}
+  commands {
+    add_edge H -[IDIOM]-> M;
+    add_edge H -[unk]-> M;
+    del_edge e;
+  }
+  }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % sequentialize the 3 previous packages into one strategy.
@@ -134,6 +142,7 @@ strat specific_expr_init {
     Onf(add_edges),
     Onf(add_nodes),
     Onf(ext_dep),
+    Onf (fixed)
   )
 }
 

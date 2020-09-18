@@ -1,5 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-include "SUD_to_UD+.grs"
+include "SUD_to_UD.grs"
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % French pronominal verbs are considered as idioms. In the conversion to UD, their idiomatic characteristic is removed.
@@ -137,6 +137,7 @@ strat FR_main{
     Onf( reverse_close),
     Onf (final),
     specific_expr_close,
+    synt_to_fixed,
   )
 }
 

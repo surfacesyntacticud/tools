@@ -416,7 +416,7 @@ package reverse_relations{
       without { H -[1=aux, !deep]-> AUX1; AUX >> AUX1 ; AUX1 >> H } % rule (5) above
       commands {
         e.deep=REV;
-        add_edge e: AUX -> H;
+        add_edge f: AUX -> H; f.label = e.label;
         del_edge e;
         shift_in H =[^TITLE|IDIOM]=> AUX;
         shift_out H =[1=aux|mark,!deep]=> AUX;
@@ -429,7 +429,7 @@ package reverse_relations{
       without { H -[1=case, !deep]-> AUX1; AUX >> AUX1 ; AUX1 >> H } % rule (5) above
       commands {
         e.deep=REV;
-        add_edge e: AUX -> H;
+        add_edge f: AUX -> H; f.label = e.label;
         del_edge e;
         shift_in H =[^TITLE|IDIOM]=> AUX;
         shift_out H =[1=aux|case|caus|cop|mark|pass,!deep]=> AUX;
@@ -443,7 +443,7 @@ package reverse_relations{
       without { H -[1=caus, !deep]-> AUX1; AUX >> AUX1 ; AUX1 >> H } % rule (5) above
       commands {
         e.deep=REV;
-        add_edge e: AUX -> H;
+        add_edge f: AUX -> H; f.label = e.label;
         del_edge e;
         shift_in H =[^TITLE|IDIOM]=> AUX;
         shift_out H =[1=aux|caus|mark|pass,!deep]=> AUX;
@@ -457,7 +457,7 @@ package reverse_relations{
       without { H -[1=cop, !deep]-> AUX1; AUX >> AUX1 ; AUX1 >> H } % rule (5) above
       commands {
         e.deep=REV;
-        add_edge e: AUX -> H;
+        add_edge f: AUX -> H; f.label = e.label;
         del_edge e;
         shift_in H =[^TITLE|IDIOM]=> AUX;
         shift_out H =[1=aux|caus|cop|mark|pass,!deep]=> AUX;
@@ -471,7 +471,7 @@ package reverse_relations{
       without { H -[1=mark, !deep]-> AUX1; AUX >> AUX1 ; AUX1 >> H } % rule (5) above
       commands {
         e.deep=REV;
-        add_edge e: AUX -> H;
+        add_edge f: AUX -> H; f.label = e.label;
         del_edge e;
         shift_in H =[^TITLE|IDIOM]=> AUX;
         shift_out H =[1=mark,!deep]=> AUX;
@@ -484,7 +484,7 @@ package reverse_relations{
       without { H -[1=pass, !deep]-> AUX1; AUX >> AUX1 ; AUX1 >> H } % rule (5) above
       commands {
         e.deep=REV;
-        add_edge e: AUX -> H;
+        add_edge f: AUX -> H; f.label = e.label;
         del_edge e;
         shift_in H =[^TITLE|IDIOM]=> AUX;
         shift_out H =[1=aux|caus|case|cop|mark|pass,!deep]=> AUX;
@@ -499,12 +499,19 @@ package shift_out_edges{
   rule all{
     pattern {H -[deep=REV]-> D;e: D -[cc|discourse|vocative]-> D1}
     without{ D -[cc]-> D1; H << D1} %Ex:  fr-ud-train_12306 - ... sont soit des fanatiques, soit des hypocrites,
-    commands{add_edge e: H -> D1;del_edge e}}
+    commands{
+      add_edge f: H -> D1; f.label = e.label;
+      del_edge e;
+    }
+  }
 
 % Agent relations in causative and impersonal constructions.
   rule agent {
     pattern{H -[1=caus,deep=REV]-> D; e: D -[deep=agent]-> D1}
-    commands{add_edge e: H -> D1;del_edge e}
+    commands{
+      add_edge f: H -> D1; f.label = e.label;
+      del_edge e;
+    }
   }
 
 % All relations that rise inside a clause.
@@ -514,14 +521,20 @@ package shift_out_edges{
       e: D -[comp:cleft|dislocated|parataxis|vocative]-> D1;}
     without{H1 -[1 <> cop]-> H; H -[1=case]-> D; D -[parataxis]-> D1}
     %without{H -[1=aux|caus|pass|cop]->D; D -[csubj:impers|nsubj:impers|expl:comp]-> D1}
-    commands{add_edge e: H -> D1;del_edge e}
+    commands{
+      add_edge f: H -> D1; f.label = e.label;
+      del_edge e;
+    }
   }
 
   rule subj_mark_embedded{
     pattern {
       H -[1<>mark,deep=REV]-> D;
       e: D -[1=subj]-> D1}
-    commands{add_edge e: H -> D1;del_edge e}
+    commands{
+      add_edge f: H -> D1; f.label = e.label;
+      del_edge e;
+    }
   }
 
 % Relations with their source D after the head of a subordinated clause and their dependent D1 before.
@@ -530,7 +543,10 @@ package shift_out_edges{
       H -[1=mark,deep=REV]-> D;
       e: D -[1=dislocated|subj|vocative]-> D1;
       D1 << H; H << D}
-    commands{add_edge e: H -> D1;del_edge e}
+    commands{
+      add_edge f: H -> D1; f.label = e.label;
+      del_edge e;
+    }
   }
 
 % Relations with their source D before the head of a subordinated clause and their dependent D1 afterwards.
@@ -539,7 +555,10 @@ package shift_out_edges{
       H -[1=mark,deep=REV]-> D;
       e: D -[1=dislocated|subj]-> D1;
       D1 >> H; H >> D}
-    commands{add_edge e: H -> D1;del_edge e}
+    commands{
+      add_edge f: H -> D1; f.label = e.label;
+      del_edge e
+    }
   }
 
 % Relations that rise when their source D is on the right of H and when their dependent D1 is on the right of D.
@@ -558,7 +577,10 @@ package shift_out_edges{
     without{D -[punct]-> D2; D2 << D; D -[punct]-> D1; D1.lemma = "]"; D2.lemma = "["}
     without{D1[InTitle=Yes]; H[!InTitle]}% A vérifier
     without{H -[1=case|mark]-> D; H1 -[IDIOM]-> D1; H1 -[HEAD]-> H}
-    commands{add_edge e: H -> D1; del_edge e}
+    commands{
+      add_edge f: H -> D1; f.label = e.label;
+      del_edge e
+    }
   }
 
 % Relations that rise when their source D is on the right of H and when their dependent D1 is between D and H.
@@ -569,20 +591,29 @@ package shift_out_edges{
       H << D1; D1 << D}
     without{H -[1=cop]-> D; D -[mod]-> D1; D1[upos=ADJ]; D[upos=NOUN]}
     without{ D -> D2; H << D2; D2 << D1}
-    commands{add_edge e: H -> D1; del_edge e}
+    commands{
+      add_edge f: H -> D1; f.label = e.label;
+      del_edge e
+    }
   }
 
 % Relations that rise when their source D is on the left of H and when their dependent D1 is on the right of H.
   rule D_H_D1{
     pattern{H -[deep=REV]-> D;  H >> D; e: D -[1=mod|punct]-> D1; D1 >> H}
     without{D -[comp:obl]-> D1}
-    commands{add_edge e: H -> D1; del_edge e}
+    commands{
+      add_edge f: H -> D1; f.label = e.label;
+      del_edge e
+    }
   }
 
 % Relations that rise when their source D is on the left of D1 and when their dependent D1 is also on the left of H.
   rule D_D1_D{
     pattern{H -[1=cop,deep=REV]-> D; D << D1; e: D -[1=mod]-> D1; D1 << H}
-    commands{add_edge e: H -> D1; del_edge e}
+    commands{
+      add_edge f: H -> D1; f.label = e.label;
+      del_edge e
+    }
   }
 
 % Relations that rise when their source D is on the right of H and when their dependent D1 is on the left of H.
@@ -590,7 +621,10 @@ package shift_out_edges{
     pattern{
       H -[deep=REV]-> D;  H << D;
       e: D -[1=mod|orphan|punct|reparandum|udep]-> D1; D1 << H}
-    commands{add_edge e: H -> D1; del_edge e}
+    commands{
+      add_edge f: H -> D1; f.label = e.label;
+      del_edge e
+    }
   }
 
 % Relations that rise when their source D is on the left of H and when their dependent D1 is on the left of D.
@@ -599,7 +633,10 @@ package shift_out_edges{
       H -[deep=REV]-> D;  H >> D;
       e: D -[1=mod|punct]-> D1; D >> D1
     }
-    commands{add_edge e: H -> D1; del_edge e}
+    commands{
+      add_edge f: H -> D1; f.label = e.label;
+      del_edge e
+    }
   }
 
 % Conj relations in the general case.
@@ -614,7 +651,10 @@ package shift_out_edges{
     without{D1[upos=ADJ]; D[upos=VERB,VerbForm=Part]}
     without{D[upos=ADP|ADV]; D1[upos=ADP|ADV]}
     without{D[upos=AUX|VERB]; D1[upos=AUX|VERB]; D1.VerbForm=D.VerbForm}
-    commands{add_edge e: H -> D1; del_edge e}
+    commands{
+      add_edge f: H -> D1; f.label = e.label;
+      del_edge e
+    }
   }
 
 % Conj relations when the conjunct heads are verbs.
@@ -625,7 +665,10 @@ package shift_out_edges{
       D[upos=AUX|VERB,VerbForm]; D1[upos=AUX|VERB, VerbForm];
        D.VerbForm <> D1.VerbForm
     }
-    commands{add_edge e: H -> D1; del_edge e}
+    commands{
+      add_edge f: H -> D1; f.label = e.label;
+      del_edge e
+    }
   }
 
   rule shared{
@@ -694,7 +737,11 @@ package minimize_conj_dep {
       C1 -[1=conj]-> C2;
       e:C1 -[^conj|conj:emb|discourse|parataxis|punct]-> D; C2 << D}
     without { C1 -[1=conj]-> C; C2 << C ; C << D} % Ex :fr-ud-train_03266, fr-ud-train_02016
-    commands { add_edge e:C2 -> D; del_edge e; D.Shared=Yes }
+    commands {
+      add_edge f:C2 -> D; f.label = e.label;
+      del_edge e;
+      D.Shared=Yes
+    }
   }
 
 
@@ -706,7 +753,11 @@ package minimize_conj_dep {
       C2 -[mod]-> D2; D2 << C2; %Ex:fr-ud-dev_01562 - ... plus savoureuse (73%) et plus sucrée (68%) que les autres fraises
       e:D1 -[^conj|conj:emb|discourse|parataxis|punct]-> D; C2 << D}
     without { C1 -[1=conj]-> C; C2 << C ; C << D} % Ex :fr-ud-train_03266, fr-ud-train_02016
-    commands { add_edge e:D2 -> D; del_edge e; D.Shared=Yes }
+    commands {
+      add_edge f:D2 -> D; f.label = e.label;
+      del_edge e;
+      D.Shared=Yes
+    }
   }
 
 % The shared element depends on the head of the first conjunct via a COMP:OBJ dependency.
@@ -717,7 +768,11 @@ package minimize_conj_dep {
       C2 -[1=comp,2=obj]-> D2;
       e:D1 -[^conj|conj:emb|discourse|parataxis|punct]-> D; C2 << D}
     without { C1 -[1=conj]-> C; C2 << C ; C << D} % Ex :fr-ud-train_03266, fr-ud-train_02016
-    commands { add_edge e:D2 -> D; del_edge e; D.Shared=Yes }
+    commands {
+      add_edge f:D2 -> D; f.label = e.label;
+      del_edge e;
+      D.Shared=Yes
+    }
   }
 
 
@@ -743,7 +798,10 @@ package chained_relations {
     pattern {H -[1=conj]-> D1;e: H -[1=conj]-> D2;D1 << D2}
     without {H -[1=conj]-> D;D1 << D; D << D2}
     without {H -[1=conj]-> D;D2 << D}
-    commands {add_edge e:D1 -> D2;del_edge e;}
+    commands {
+      add_edge f:D1 -> D2; f.label = e.label;
+      del_edge e;
+    }
   }
 
   rule fixed {
@@ -792,7 +850,14 @@ strat main {
     Onf (minimize_conj_dep), % Package MINIMIZE_CONJ_DEP must follow strategy REVERSE_RELATIONS.MAIN because the shared dependents can depend on relation inversions.Moreover, a dependance can shift from a coordination to an ascendant. Ex: fr-ud-dev_00446 -entre 3 et 6 généralement
     Onf (add_conj_emb), % Package ADD_CONJ_EMB must follow REVERSE_RELATIONS.MAIN because it depends on head changes ; Ex: UD_French-GSD fr-ud-dev_00751
     Onf (chained_relations),% Package CHAINED_RELATIONS must follow package SHIFT_RULES because it can entail a wrong coordination between two elements because of errors in head changes (UD_French-GS: fr-ud-dev_00131).
-    Onf (unk_rel),
     specific_expr_close, % Closing a specific treatment for MWE, titles and translated words.
+    Onf (unk_rel),
+  )
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+strat main0 {
+  Seq (
+    Onf (eud_to_ud),
+    specific_expr_init, % Initialization of a specific treatment for MWE, titles and translated words.
   )
 }

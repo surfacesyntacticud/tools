@@ -2,6 +2,7 @@
 % The "irregular_expr.grs" file includes packages applying a specific treatment to idioms, titles and converted words. What they have in common is the fact that their syntactic behaviour towards the outside world is not regular.
 include "irregular_expr.grs"
 
+include "synt_to_fixed.grs"
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Dependencies of coordinations to their right  are marked in SUD with feature Shared=Yes and they are attached at the rightmost conjunct. In UD, they are attached at the head of the coordination and feature  Shared=Yes is useless.
@@ -712,5 +713,6 @@ strat main {
     Onf( reverse_close),
     Onf (final),
     specific_expr_close, % Closing a specific treatment for idioms, titles and translated words.
+    synt_to_fixed,
   )
 }
