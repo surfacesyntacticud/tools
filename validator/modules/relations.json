@@ -24,12 +24,12 @@
       "level": "warning"
     },
     {
-	"pattern": [
-	    "pattern { N -[comp:obj]-> N1; N -[comp:obj]-> N2; N1 << N2; }",
-            "without { N[PhraseType=Idiom]}"
-	],
-        "description": "Two `comp:obj` relations with the same governor",
-        "level": "warning"
+      "pattern": [
+        "pattern { N -[comp:obj]-> N1; N -[comp:obj]-> N2; N1 << N2; }",
+        "without { N[PhraseType=Idiom]}"
+      ],
+      "description": "Two `comp:obj` relations with the same governor",
+      "level": "warning"
     },
     {
       "pattern": "pattern { N -[1=flat]-> N1; N -[1=flat]-> N2; N1 << N2; }",
@@ -50,11 +50,19 @@
       "pattern": "pattern { GOV -[punct]-> DEP; DEP [upos <> PUNCT] }",
       "description": "`punct` relation without `PUNCT` upos",
       "level": "error"
+    },
+    {
+      "pattern": "pattern { GOV -[1=comp,2=aux]-> DEP; GOV [upos <> AUX] }",
+      "description": "`comp:aux` relation without `AUX` upos on the governor",
+      "level": "error"
+    },
+    {
+      "pattern": [
+        "pattern { GOV -[1=det]-> DEP; DEP [upos <> DET|NUM] }",
+        "without { DEP [ExtPos=DET|NUM] }"
+      ],
+      "description": "`det` relation without `DET` upos on the dependent",
+      "level": "error"
     }
-
-
-
-
-
   ]
 }
