@@ -28,17 +28,6 @@ package Naija_pre_SUD_to_UD {
     commands  { X.upos=AUX }
   }
 
-  rule rootisroot {
-    pattern { ROOT[!upos] ; e: ROOT -[root@scrap]-> X }
-    commands { del_edge e ; add_edge ROOT -[root]-> X }
-  }
-
-  % supprimer les liens @xxx qui sont dans la colonne 9
-  rule deep { % remove enhanced relations
-    pattern { e:N -[re"E:.*"]-> M }
-    commands { del_edge e}
-  }
-
   rule scrap {
     pattern { e: N -[deep=scrap]-> M; }
     commands { del_feat e.deep }
