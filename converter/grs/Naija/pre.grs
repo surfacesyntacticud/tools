@@ -1,5 +1,15 @@
 package Naija_pre_SUD_to_UD {
 
+  rule punct_pos {
+    pattern { N [upos=PUNCT] }
+    commands { N.upos=X }
+  }
+
+  rule punct_rel {
+    pattern { e: N -[punct]-> M; }
+    commands { e.1 = udep }
+  }
+
   rule comp_pred_agent {
     pattern { N -[comp:pred]-> N1; e: N -[comp:pred@agent]-> N2; }
     commands { del_edge e;  add_edge N -[comp:obl@agent]-> N2; }
