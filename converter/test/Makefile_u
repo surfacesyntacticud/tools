@@ -9,20 +9,21 @@ doc:
 	@echo "----------------------------------------------------------------"
 
 draw:
-	${GREW} transform -grs ../../grs/SUD_to_UD+.grs -i sud.conll -o _ud.conll
-	${GREW} transform -grs ../../grs/UD+_to_SUD.grs -i ud.conll -o _sud.conll
+	${GREW} transform -config sud -grs ../../grs/SUD_to_UD.grs -i sud.conll -o _ud.conll
+	${GREW} transform -config sud -grs ../../grs/UD_to_SUD.grs -i ud.conll -o _sud.conll
 	splitter -f sud.conll _sud_gold
 	splitter -f ud.conll _ud_gold
 	splitter -f _sud.conll _sud_auto
 	splitter -f _ud.conll _ud_auto
 	dep_diff -d1 _sud_gold -d2 _sud_auto -svg _sud_diff
 	dep_diff -d1 _ud_gold -d2 _ud_auto -svg _ud_diff
+	pandoc --metadata title="Test for UD / SUD conversion" -s diff.md -o _diff.html
 
 ud:
-	${GREW} gui -grs ../../grs/SUD_to_UD+.grs -i sud.conll
+	${GREW} gui -grs ../../grs/SUD_to_UD.grs -i sud.conll
 
 sud:
-	${GREW} gui -grs ../../grs/UD+_to_SUD.grs -i ud.conll
+	${GREW} gui -grs ../../grs/UD_to_SUD.grs -i ud.conll
 
 clean:
 	rm -rf _*
