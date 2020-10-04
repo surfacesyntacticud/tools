@@ -17,7 +17,7 @@ draw:
 	splitter -f _ud.conll _ud_auto
 	dep_diff -d1 _sud_gold -d2 _sud_auto -svg _sud_diff
 	dep_diff -d1 _ud_gold -d2 _ud_auto -svg _ud_diff
-	pandoc --metadata title="Test for UD / SUD conversion" -s diff.md -o _diff.html
+	pandoc --metadata title="Conversion with SUD_to_UD_fr.grs and UD_to_SUD_fr.grs" -s diff.md -o _diff.html
 
 ud:
 	${GREW} gui -grs ../../grs/SUD_to_UD_fr.grs -strat FR_main -i sud.conll
