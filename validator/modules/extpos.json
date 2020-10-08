@@ -1,27 +1,27 @@
 {
-  "title": "Check consistency of EXTPOS feature",
+  "title": "ExtPos",
   "items": [{
       "pattern": [
-        "pattern { N [EXTPOS] }",
-        "without { N -[deep=fixed]-> M }",
-        "without { N -[goeswith]-> M }",
-        "without { N [upos=SYM] }",
-        "without { N [Type=Title] }"
+        "pattern { N [EXTPOS] }"
       ],
-      "description": "The `EXTPOS` feature in an unexpected context",
-      "level": "warning"
+      "description": "The `EXTPOS` is obsolete, it should be replaced by `ExtPos`",
+      "level": "error"
     },
     {
       "pattern": [
-        "pattern { HEAD [!EXTPOS]; HEAD -[deep=fixed]-> N;  }",
-        "without { * -[deep=fixed]-> HEAD  }"
+        "pattern { N -[deep=fixed]-> M }"
       ],
-      "description": "The head of a MWE does not have an `EXTPOS`",
+      "description": "The `@fixed` is obsolete, it should be replaced by feature `InIdiom=Yes` on the dependent",
+      "level": "error"
+    },
+    {
+      "pattern": [
+        "pattern { M -> N; N[InIdiom=Yes];  }",
+        "without { M[InIdiom=Yes]; }",
+        "without { M[ExtPos]; }"
+      ],
+      "description": "The gov of `InIdiom` is not in a MWE",
       "level": "warning"
     }
-
-
-
-
   ]
 }
