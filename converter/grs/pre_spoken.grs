@@ -1,0 +1,20 @@
+% Some specificities used in Spoken annotation (Naija et French Spoken)
+package spoken {
+% Remove `scrap` deep extension
+  rule scrap {
+    pattern { e: N -[deep=scrap]-> M; }
+    commands { del_feat e.deep }
+  }
+
+  rule conjcoord {
+    pattern { e: N -[conj:coord]-> M; }
+    commands { del_edge e; add_edge N -[conj]-> M; }
+  }
+
+  rule conjappos {
+    pattern { e: N -[conj:appos]-> M; }
+    commands { del_edge e; add_edge N -[appos]-> M; }
+  }
+}
+
+strat main { Onf (spoken) }
