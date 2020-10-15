@@ -1,6 +1,29 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 include "SUD_to_UD.grs"
 
+package FR_init {
+  rule face {
+    pattern {
+      N1 [lemma=lex.noun, upos=NOUN, ExtPos=ADV];
+      N2 [lemma=lex.prep];
+      N1 -[comp:obl]-> N2;
+    }
+    commands {
+      N1.ExtPos = ADP;
+      N1.PhraseType = Idiom;
+      N2.InIdiom = Yes;
+    }
+  }
+#BEGIN lex
+noun	prep
+%-------------
+face	à
+grâce	à
+suite	à
+histoire	de
+#END
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % French pronominal verbs are considered as idioms. In the conversion to UD, their idiomatic characteristic is removed.
 package FR_pron_verb{
@@ -109,12 +132,21 @@ package FR_subj {
     without {* -[1=aux]-> V}
     commands { del_edge e; add_edge V -[nsubj:pass]-> S }
   }
+}
 
+package FR_final {
+  % 'case' not expected to have children
+  % in 2.7: 3 cases
+  rule children_case {
+    pattern { e:GOV -[case]-> DEP; DEP -[^fixed|conj]-> X;  }
+    commands { del_edge e; add_edge GOV -[dep]-> DEP }
+  }
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 strat FR_main{
   Seq(
+    Onf (FR_init),
     Onf (shared),
     Onf(remove_shared),
     Onf(FR_pron_verb), % Specific treatment of pronominal verbs in French
@@ -138,6 +170,7 @@ strat FR_main{
     Onf (final),
     specific_expr_close,
     synt_to_fixed,
+    Onf (FR_final), % adapt to UD validator constraints
   )
 }
 
