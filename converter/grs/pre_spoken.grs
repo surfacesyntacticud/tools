@@ -15,6 +15,11 @@ package spoken {
     pattern { e: N -[conj:appos]-> M; }
     commands { del_edge e; add_edge N -[appos]-> M; }
   }
+
+  rule conjdicto {
+    pattern { e: N -[conj:dicto]-> M; }
+    commands { del_edge e; add_edge N -[reparandum]-> M; }
+  }
 }
 
 strat main { Onf (spoken) }

@@ -1,0 +1,12 @@
+rule cc_with_children {
+  pattern { N1 -[cc]-> N2; e: N2 -[^fixed]-> N3; }
+  commands {
+    add_edge f: N1 -> N3;
+    f.label = e.label;
+    del_edge e
+  }
+}
+
+strat main {
+  Onf (cc_with_children)
+}
