@@ -39,10 +39,20 @@ rule init_fixed {
   commands { add_edge F -[fixed]-> N }
 }
 
-rule propagate_fixed {
-  pattern { F[fix=First]; F -[fixed]-> L; N [fix]; L < N }
-  without { * -> N }
-  commands { add_edge F -[fixed]-> N;  }
+package propagate_fixed {
+  rule continuous {
+    pattern { F[fix=First]; F -[fixed]-> L; N [fix]; L < N }
+    without { * -> N }
+    commands { add_edge F -[fixed]-> N;  }
+  }
+
+  % rule added to deal with discontinuous fixed in Naija "in fact # sey"
+  rule discontinuous {
+    pattern { F[fix=First]; F -[fixed]-> L; N [fix]; L << N }
+    without { L < N }
+    without { * -> N }
+    commands { add_edge F -[dep:fixed]-> N;  }
+  }
 }
 
 rule clean {
