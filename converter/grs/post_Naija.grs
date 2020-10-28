@@ -21,9 +21,31 @@ package post {
     pattern { e:N1 -[1=compound]-> N2; N2 [upos=AUX] }
     commands { del_edge e; add_edge N1 -[dep]-> N2 }
   }
+}
 
+package last_errors {
+  rule ENU_37_Dmoris-Restaurant_MG__21 {
+    pattern {
+      N1 [form="as"]; N2 [form="if"];  N3 [form="}"]; N4 [form="sey"]; N1 < N2; N2 < N3; N3 < N4;
+      e: N1 -[dep:fixed]-> N4;
+      f: N0 -> N3;
+    }
+    commands {
+      del_edge e; add_edge N1 -[fixed]-> N4;
+      del_edge f; add_edge N1 -[fixed]-> N3;
+    }
+  }
+
+  rule WAZL_15_MC-Abi_MG__93 {
+    pattern { e:GOV -[orphan]-> DEP; DEP [upos=DET] }
+    commands { del_edge e; add_edge GOV -[det]-> DEP }
+
+  }
 }
 
 strat main {
-  Onf (post)
+    Seq (
+      Onf (post),
+      Onf (last_errors)
+      )
 }
