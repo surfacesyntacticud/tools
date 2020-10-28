@@ -20,6 +20,12 @@ package spoken {
     pattern { e: N -[conj:dicto]-> M; }
     commands { del_edge e; add_edge N -[reparandum]-> M; }
   }
+
+  % No UD counterpart for mod@x
+  rule nmodx {
+    pattern { e: N -[mod@x]-> M; }
+    commands { del_edge e; add_edge N -[mod]-> M; }
+  }
 }
 
 strat main { Onf (spoken) }
