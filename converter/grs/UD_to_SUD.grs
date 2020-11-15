@@ -6,7 +6,7 @@ include "irregular_expr.grs"
 % Remove all information specific to Enhanced UD.
 package eud_to_ud {
   rule deep { % remove add enhanced relations
-    pattern { e:N -[re"E:.*"]-> M }
+    pattern { e:N -[enhanced=yes]-> M }
     commands { del_edge e}
   }
 
