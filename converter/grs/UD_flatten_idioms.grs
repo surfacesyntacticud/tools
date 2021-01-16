@@ -1,3 +1,6 @@
+% GRS for flattening all continuous idioms in UD or SUD. The head of each continuous idiom becomes its left-most element. All the elements are linked in a left-right chain with UNK relations.
+% The condition for using this GRS is that all idioms must be continuous.
+
 % Choose one MWE in the sentence
 rule choose_mwepos {
   pattern { N[ExtPos,PhraseType=Idiom] }
@@ -20,7 +23,7 @@ package first {
     commands { N.fix=First }
   }
 
-%The leftmost component is not the head of the MWE.
+% The leftmost component is not the head of the MWE.
   rule head_not_first {
     pattern { N[fix=Part]; H[fix=Head, PhraseType]; }
     without { H < N }
@@ -33,22 +36,24 @@ package first {
   }
 }
 
+% The first fixed relation is initiated from the leftmost component of the idiom.
 rule init_fixed {
   pattern { F[fix=First]; N [fix]; F < N }
   without { * -> N}
-  commands { add_edge F -[fixed]-> N }
+  commands { add_edge F -[fixed]-> N; N.InIdiom=Yes }
 }
 
+%TODO: revoir ce package pour sortir ce qui est spécifique au Naija
 package propagate_fixed {
   rule continuous {
-    pattern { F[fix=First]; F -[fixed]-> L; N [fix]; L < N }
+    pattern { F[fix=First]; F -[fixed]-> L; L[InIdiom=Yes]; N [fix]; L < N }
     without { * -> N }
-    commands { add_edge F -[fixed]-> N;  }
+    commands { add_edge F -[fixed]-> N; N.InIdiom=Yes }
   }
 
   % rule added to deal with discontinuous fixed in Naija "in fact # sey"
   rule discontinuous {
-    pattern { F[fix=First]; F -[fixed]-> L; N [fix]; P[!fix]; P < N }
+    pattern { F[fix=First]; F -[unk]-> L; L[InIdiom=Yes]; N [fix]; P[!fix]; P < N }
     without { * -> N }
     commands { add_edge F -[dep:fixed]-> N;  }
   }
@@ -70,4 +75,4 @@ strat one {
 	)
 }
 
-strat synt_to_fixed { Iter (one) }
+strat flatten_idioms { Iter (one) }

@@ -1,6 +1,225 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % The "irregular_expr.grs" file includes packages applying a specific treatment to idioms, titles and translated. What they have in common is the fact that their syntactic behaviour towards the outside world is not regular.
-include "irregular_expr.grs"
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% The package [add_edges] turns all features InIdiom (resp. InTitle) into a edge IDIOM (resp. TITLE) from the head to internal nodes of irregular expressions.
+package add_edges {
+  rule init_idiom {
+    pattern { H [PhraseType=Idiom]; H-> N; N[InIdiom=Yes] }
+    commands { del_feat N.InIdiom; add_edge H -[IDIOM]-> N }
+  }
+
+  rule iter_idiom {
+    pattern { H -[IDIOM]-> M; M -> N; N[InIdiom=Yes] }
+    commands { del_feat N.InIdiom; add_edge H -[IDIOM]-> N }
+  }
+
+  rule init_title {
+    pattern { H [PhraseType=Title]; H-> N; N[InTitle=Yes] }
+    commands { del_feat N.InTitle; add_edge H -[TITLE]-> N }
+  }
+
+  rule iter_title {
+    pattern { H -[TITLE]-> M; M -> N; N[InTitle=Yes] }
+    commands { del_feat N.InTitle; add_edge H -[TITLE]-> N }
+  }
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% The package [add_nodes] insert a new node for each Idiom/Title/Conv expression.
+% The new node is linked to the head with the HEAD relation and to other elements by a IDIOM/TITLE relation.
+package add_nodes {
+  rule idiom {
+    pattern{ H [ExtPos,PhraseType=Idiom] }
+    without{H[upos=AUX|VERB, VerbForm, ExtPos=VERB]}
+    without{H[ExtPos=VERB]; H -[IDIOM]-> AUX; AUX[upos=AUX,VerbForm]}
+    commands{
+      add_node I :< H;
+      add_edge I -[IDIOM]-> H; add_edge I -[HEAD]-> H;
+      shift_in H =[^IDIOM|TITLE]=> I;
+      shift_out H =[IDIOM]=> I;
+      I.upos = H.ExtPos; del_feat H.ExtPos;
+      I.Type = H.PhraseType; del_feat H.PhraseType;
+    }
+  }
+
+  rule idiom_verb {
+    pattern{ H [upos=AUX|VERB, VerbForm,ExtPos=VERB,PhraseType=Idiom] }
+    without{H -[IDIOM]-> AUX; AUX[upos=AUX,VerbForm]}
+    commands{
+      add_node I :< H;
+      add_edge I -[IDIOM]-> H; add_edge I -[HEAD]-> H;
+      shift_in H =[^IDIOM|TITLE]=> I;
+      shift_out H =[IDIOM]=> I;
+      I.upos = H.ExtPos; del_feat H.ExtPos;
+      I.Type = H.PhraseType; del_feat H.PhraseType;
+      I.VerbForm = H.VerbForm
+    }
+  }
+
+  rule idiom_cop {
+    pattern{
+      H [ExtPos=VERB,PhraseType=Idiom];
+      e:H -[IDIOM]-> AUX; AUX[upos=AUX,VerbForm]}
+    commands{
+      add_node I :< H;
+      add_edge I -[IDIOM]-> H; add_edge I -[HEAD]-> H;
+      shift_in H =[^IDIOM|TITLE]=> I;
+      shift_out H =[IDIOM]=> I;
+      del_edge e; add_edge I -[IDIOM]-> AUX;
+      I.upos = H.ExtPos; del_feat H.ExtPos;
+      I.Type = H.PhraseType; del_feat H.PhraseType;
+      I.VerbForm = AUX.VerbForm
+    }
+  }
+
+  rule title {
+    pattern{ H [ExtPos,PhraseType=Title] }
+    without{ * -[expr]-> H }
+    commands{
+      add_node T :< H; add_edge T -[TITLE]-> H; add_edge T -[HEAD]-> H;
+      shift_in H =[^IDIOM|TITLE]=> T;
+      shift_out H =[TITLE]=> T;
+      T.upos = H.ExtPos; del_feat H.ExtPos;
+      T.Type = H.PhraseType; del_feat H.PhraseType;
+    }
+  }
+
+  rule conv {
+    pattern{ H [ExtPos,!PhraseType] }
+    without{ * -[HEAD]-> H }
+    commands{
+      add_node C :< H; add_edge C -[CONV]-> H; add_edge C -[HEAD]-> H;
+      shift H =[^IDIOM|TITLE]=> C;
+      C.upos = H.ExtPos; del_feat H.ExtPos;
+      C.lemma = H.lemma
+    }
+  }
+
+  % When an idiom is included in a title, the new node must receive a TITLE relation
+  rule mwe_in_title {
+    pattern { E -[HEAD]-> N; T -[TITLE]-> N; }
+    without { T -[TITLE]-> E; }
+    commands { add_edge T -[TITLE]-> E; }
+  }
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% The package [ext_dep] move dependencies external to the idiom, title, conv expresion, on the new node.
+package ext_dep {
+  rule idiom {
+    pattern { H -[IDIOM]-> N; e: N -> M}
+    without { H -[IDIOM]-> M; }
+    without{ * -[IDIOM]-> M}
+    commands {
+      add_edge f:H->M; f.label = e.label;
+      del_edge e;
+    }
+  }
+
+  rule title {
+    pattern { H -[TITLE]-> N; e: N -> M;}
+    without { H -[TITLE]-> M; }
+     without{ * -[TITLE]-> M}
+   commands {
+     add_edge f:H->M; f.label = e.label;
+     del_edge e;
+   }
+  }
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% sequentialize the 3 previous packages into one strategy.
+strat specific_expr_init {
+  Seq (
+    Onf(add_edges),
+    Onf(add_nodes),
+    Onf(ext_dep),
+  )
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% replace edges IDIOM, TITLE by features
+package del_edges {
+  rule idiom_head {
+    pattern { I[Type]; I -[HEAD]-> H; e:I -[IDIOM]-> H; }
+    commands {
+      del_edge e;
+      H.ExtPos = I.upos;
+      H.PhraseType = I.Type;
+    }
+  }
+
+  rule idiom {
+    pattern { e:I -[IDIOM]-> H }
+    without { I -[HEAD]-> H }
+    commands {
+      del_edge e;
+      H.InIdiom = Yes;
+    }
+  }
+
+  rule title_head {
+    pattern { T -[HEAD]-> H; e:T -[TITLE]-> H }
+    commands {
+      del_edge e;
+      H.ExtPos = T.upos;
+      H.PhraseType = T.Type;
+    }
+  }
+
+  rule title {
+    pattern { e:T -[TITLE]-> H }
+    without { T -[HEAD]-> H }
+    without{T -[HEAD]-> H1; H1 -[HEAD]-> H; H1[Type=Idiom]}
+    commands {
+      del_edge e;
+      H.InTitle = Yes;
+    }
+  }
+
+%The title head is also an idiom head
+  rule title_idiom {
+    pattern { e:T -[TITLE]-> H;T -[HEAD]-> H1; H1 -[HEAD]-> H; H[Type=Idiom]  }
+    without { T -[HEAD]-> H }
+    commands {
+      del_edge e;
+    }
+  }
+  rule conv_head {
+    pattern { C -[HEAD]-> H; e:C -[CONV]-> H }
+    commands {
+      del_edge e;
+      H.ExtPos = C.upos;
+    }
+  }
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% remove nodes
+package del_nodes {
+  rule del_specif_expr{
+    pattern{ N[!Shared];e: N -[HEAD]-> H }
+    commands{del_edge e; shift N ==> H;del_node N}
+  }
+
+  rule del_shared_specif_expr_{
+    pattern{ N[Shared=Yes]; e: N -[HEAD]-> H }
+    commands{del_edge e; shift N ==> H;del_node N; H.Shared=Yes}
+  }
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% sequentialize the 3 previous packages into one strategy.
+strat specific_expr_close {
+  Seq (
+    Onf(del_edges),
+    Onf(del_nodes),
+  )
+}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Remove all information specific to Enhanced UD.
@@ -872,3 +1091,760 @@ strat main0 {
     specific_expr_init, % Initialization of a specific treatment for MWE, titles and translated words.
   )
 }
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Relations in SUD that are determined from UD relations with rules specific to French.
+package FR_relations {
+
+% When a NUM D depends on a word G in a NUMMOD relation and when D precedes G, D is a determiner of G.
+% Ex :  fr-ud-train_05544 -  Paris génère chaque jour, par temps sec, entre 800.000 et 900.000 m3 d'eaux usées.
+  rule nummod_det{
+    pattern{e:H -[nummod]-> D; D << H}
+    without{H -[det]-> *}
+    commands{ del_edge e; add_edge H -[det]-> D}
+  }
+
+% The subject SUBJ1 of a verb is repeated in the form of a personal pronoun SUBJ2.
+% Ex: Jean vient-il ?
+% Ex : Jean a-t-il été payé ?
+  rule repeat_subj{
+    pattern{
+     V -[1=csubj|nsubj]->  SUBJ1;
+     e:V -[expl:subj]-> SUBJ2; SUBJ2[upos=PRON, lemma=il];
+     SUBJ1 << V; SUBJ1 << SUBJ2}
+    without{SUBJ1[PronType=Int|Rel,lemma=que]} % Ex: Qu'arrive-t-il ? - la mésaventure qu'il m'est arrivée
+    commands{del_edge e; add_edge V -[subj@expl]-> SUBJ2;}
+  }
+
+% Pronouns "dont and "en" dependent on nominals are processes as all noun complements.
+  rule udep_dont-en{
+    pattern{ e:H -[nmod]-> D; D[upos=PRON, lemma=dont|en]}
+    commands{del_edge e; add_edge H -[udep]-> D}
+  }
+
+
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% The source of some relations must rise from the old head D to the new head H in cases specific to French.
+package FR_shift_out_edges{
+
+% Judgment adverbs rise from verbs to their auxiliaries.
+% Ex: Il a certes beaucoup travaillé. - il est certes un bon travailleur.
+  rule adv-judgment_aux{
+    pattern{
+      H[upos=AUX];H -[1=comp,2=aux|pred]-> D;
+      e:D -[mod]-> ADV;
+      ADV[upos=ADV,lemma=lex.adv];
+      H << D; D << ADV}
+    without{D -> D1; D1 >> ADV} % Rising cannot generate non projectivity
+    commands{add_edge H -[mod]-> ADV; del_edge e}
+  }
+#BEGIN lex
+adv
+afin
+ainsi
+alors
+apparemment
+assurément
+aussi
+bien
+cependant
+certainement
+certes
+donc
+encore
+ensuite
+essentiellement
+exactement
+également
+évidemment
+faute
+forcément
+généralement
+grâce
+heureusement
+indépendamment
+jamais
+justement
+logiquement
+malheureusement
+même
+néanmoins
+nécessairement
+notamment
+paradoxalement
+partiellement
+pas
+peut-être
+plutôt
+pourtant
+précisément
+principalement
+probablement
+publiquement
+seulement
+simplement
+surtout
+symboliquement
+théoriquement
+toutefois
+traditionnellement
+uniquement
+véritablement
+visiblement
+volontiers
+vraiment
+vraisemblablement
+#END
+
+% Judgment adverbs rise from the adposition objects to their adposition.
+% Ex: il est en vacances heureusement.
+  rule adv-judgment_prep{
+    pattern{
+      H[upos=ADP];H -[1=comp,2=obj]-> D; D[upos <> AUX|VERB];
+      e:D -[mod]-> ADV;
+      ADV[upos=ADV,lemma=lex.adv];
+      H << D; D << ADV}
+    without{D -> D1; D1 >> ADV}  % Rising cannot generate non projectivity
+    commands{add_edge H -[mod]-> ADV; del_edge e}
+  }
+#BEGIN lex
+adv
+afin
+ainsi
+alors
+apparemment
+assurément
+aussi
+bien
+cependant
+certainement
+certes
+donc
+encore
+ensuite
+essentiellement
+exactement
+également
+évidemment
+faute
+forcément
+généralement
+grâce
+heureusement
+indépendamment
+jamais
+justement
+logiquement
+malheureusement
+même
+néanmoins
+nécessairement
+notamment
+paradoxalement
+partiellement
+pas
+peut-être
+plutôt
+pourtant
+précisément
+principalement
+probablement
+publiquement
+seulement
+simplement
+surtout
+symboliquement
+théoriquement
+toutefois
+traditionnellement
+uniquement
+véritablement
+visiblement
+volontiers
+vraiment
+vraisemblablement
+#END
+
+% Judgment adverbial locutions rise from verbs to their auxiliaries.
+% Ex : Il a été mon directeur par ailleurs.
+  rule adv-loc-judgment_aux{
+    pattern{
+      H[upos=AUX];H -[1=comp,2=aux|pred]-> D;
+      e:D -[mod]-> ADV;
+      ADV -[HEAD]-> H1;
+      H1[lemma=lex.head];
+      ADV -[IDIOM]-> D1;
+      D1[lemma=lex.dep];
+      H << D; D << ADV}
+    without{D -> D2; D2 >> ADV}  % Rising cannot generate non projectivity
+    commands{add_edge H -[mod]-> ADV; del_edge e}
+  }
+#BEGIN lex
+head	dep
+de	abord
+de	ailleurs
+en	fait
+en	général
+en	outre
+en	particulier
+en	plus
+entendre	bien
+par	ailleurs
+par	exemple
+sûr	bien
+#END
+
+% Judgment adverbial locutions rise from the adposition objects to their adposition.
+% Ex: Il a été en congé par ailleurs.
+  rule adv-loc-judgment_prep{
+    pattern{
+      H[upos=ADP];H -[1=comp,2=obj]-> D; D[upos <> AUX|VERB];
+      e:D -[mod]-> ADV;
+      ADV -[HEAD]-> H1;
+      H1[lemma=lex.head];
+      ADV -[IDIOM]-> D1;
+      D1[lemma=lex.dep];
+      H << D; D << ADV}
+    without{D -> D2; D2 >> ADV}  % Rising cannot generate non projectivity
+    commands{add_edge H -[mod]-> ADV; del_edge e}
+  }
+#BEGIN lex
+head	dep
+de	abord
+de	ailleurs
+en	fait
+en	général
+en	outre
+en	particulier
+en	plus
+entendre	bien
+par	ailleurs
+par	exemple
+sûr	bien
+#END
+
+
+% Tense adverbs rise from verbs to their auxiliaries.
+% Il a été malade hier.
+  rule adv-tense_aux {
+    pattern{
+      H[upos=AUX];H -[1=comp,2=aux|pred]-> D;
+      e:D -[mod]-> ADV;
+      ADV[upos=ADV,lemma=lex.adv];
+      H << D; D << ADV}
+    without{D -> D1; D1 >> ADV}  % Rising cannot generate non projectivity
+    commands{add_edge H -[mod]-> ADV; del_edge e}
+  }
+#BEGIN lex
+adv
+actuellement
+alors
+après
+après-demain
+aujourd'hui
+auparavant
+aussitôt
+autrefois
+avant-hier
+bientôt
+cependant
+constamment
+d'abord
+déjà
+demain
+depuis
+derechef
+dernièrement
+désormais
+dorénavant
+encore
+enfin
+ensuite
+entre-temps
+entretemps
+éventuellement
+finalement
+fréquemment
+habituellement
+hier
+illico
+immédiatement
+initialement
+jadis
+lors
+maintenant
+naguère
+occasionnellement
+parfois
+périodiquement
+plus
+premièrement
+précédemment
+présentement
+quelquefois
+quotidiennement
+récemment
+régulièrement
+simultanément
+sitôt
+soudain
+souvent
+subito
+successivement
+suite
+tantôt
+tard
+tardivement
+temporairement
+tôt
+toujours
+ultérieurement
+#END
+
+
+% Tense adverbs rise from the adposition objects to their adposition.
+% Il a été en congé hier.
+  rule adv-tense_prep{
+    pattern{
+      H[upos=ADP];H -[comp:obj]-> D;  D[upos <> AUX|VERB];
+      e:D -[mod]-> ADV;
+      ADV[upos=ADV,lemma=lex.adv];
+      H << D; D << ADV}
+    without{D -> D1; D1 >> ADV}  % Rising cannot generate non projectivity
+    commands{add_edge H -[mod]-> ADV; del_edge e}
+  }
+#BEGIN lex
+adv
+actuellement
+alors
+après
+après-demain
+aujourd'hui
+auparavant
+aussitôt
+autrefois
+avant-hier
+bientôt
+cependant
+constamment
+d'abord
+déjà
+demain
+depuis
+derechef
+dernièrement
+désormais
+dorénavant
+encore
+enfin
+ensuite
+entre-temps
+entretemps
+éventuellement
+finalement
+fréquemment
+habituellement
+hier
+illico
+immédiatement
+initialement
+jadis
+lors
+maintenant
+naguère
+occasionnellement
+parfois
+périodiquement
+plus
+premièrement
+précédemment
+présentement
+quelquefois
+quotidiennement
+récemment
+régulièrement
+simultanément
+sitôt
+soudain
+souvent
+subito
+successivement
+suite
+tantôt
+tard
+tardivement
+temporairement
+tôt
+toujours
+ultérieurement
+#END
+
+% Conj relations when the conjunct heads are adjectives.
+% Ex: French-GSD fr-ud-test_00091 - Le ras-le-bol fut général, la mobilisation inédite.
+  rule conj_adj{
+    pattern{
+      H -[comp:pred]-> D;  H << D;
+      e: D -[1=conj]-> D1;
+      D[upos=ADJ]; D1[upos=ADJ];
+      D1 -[1=subj]-> *
+    }
+    commands{
+      add_edge f: H -> D1; f.label = e.label;
+      del_edge e
+    }
+  }
+
+% constructions with a predicative complement PRED of a copula COP and a clause, which is the direct object of PRED introduced with a complementizer CPL. The direct object climbs to the copula.
+%Ex: French-GSD fr-ud-test_00110 - il est temps de nous rendre nos bienfaits
+%Ex: French-GSD fr-ud-train_00105 - Il n'est pas sûr que cela permettra de changer la réalité
+%Ex: French-GSD fr-ud-train_08302 - C'est fantastique à quel point vous devez faire attention aux détails.
+  rule cop_pred_cpl_verb{
+    pattern{
+      COP[upos=AUX,lemma="être"]; COP -[comp:pred]-> PRED;
+      e:PRED -[comp:obj@agent]-> COMP}
+    commands{del_edge e; add_edge COP -[comp:obj@agent]-> COMP}
+  }
+
+% constructions with a predicative complement PRED of an elided copula and a clause, which is the subject of PRED introduced with a complementizer CPL. The subject is converted into a direct object.
+%Ex: French-GSD fr-ud-train-10087 - Difficile d'imaginer pire !
+  rule pred_cpl_verb{
+    pattern{
+      e:PRED -[subj]-> CPL; CPL[upos=ADP|SCONJ,lemma="à"|de|que];
+      CPL -[comp:obj]-> V; V[upos=AUX|VERB,VerbForm=Inf|Fin]}
+    without{V0 -[comp:pred]-> PRED; V0 -[subj@expl]-> *}
+    commands{del_edge e; add_edge PRED -[comp:obj@agent]-> CPL}
+  }
+
+% constructions with a predicative complement PRED of an elided copula and a clause without compementizer, which is the subject of PRED. The subject is converted into a direct object.
+%Ex: French-GSD fr-ud-train-08722 - Maintenant, reste à voir comment Orange réagira.
+  rule pred_verb{
+    pattern{
+      e:PRED -[subj]-> V;  PRED << V; V[upos=AUX|VERB,VerbForm=Fin]}
+    without{V0 -[comp:pred]-> PRED; V0 -[subj@expl]-> *}
+    commands{del_edge e; add_edge PRED -[comp:obj@agent]-> V}
+  }
+
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Some relations have moved up from the old head D to the new head H incorrectly in specific cases in French. The move must be cancelled.
+package FR_shift_out_back_edges{
+
+% UDEP relations targeting the pronouns "dont" and "en" must move from the auxiliaries to their argument.
+  rule dont-en_aux{
+    pattern {
+      H[upos=AUX];
+      H -[1=comp,2=aux|pred]-> D;
+      D1[upos=PRON,lemma=dont|en];
+      e: H -[udep]-> D1;
+      D1 << H}
+    without{ H -[1=comp,2=pred]-> D; H[upos <> AUX]}
+    without{H -[1=comp,2=pred]-> D; H -[mod]-> D1} %Ex: fr-ud-dev_01506 - ...la sortie de leur pays de la zone Euro en sera inéluctable
+    commands{add_edge f: D -> D1; f.label=e.label; del_edge e}
+  }
+
+% UDEP relations targeting the pronouns "dont" and "en" must move from the adpositions to their object.
+% Ex: fr-ud-train_00459 - Elle fait partie de le Freedom Group dont Cerberus Capital Management est un de les actionnaires depuis 2009.
+  rule dont_en_adp{
+    pattern {
+      H[upos=ADP];
+      H -[comp:obj]-> D;
+      D1[upos=PRON,lemma=dont|en];
+      e: H -[udep]-> D1;
+      D1 << H}
+    commands{add_edge f: D -> D1;f.label=e.label; del_edge e}
+  }
+
+% Quantity adverbs that are modifiers must move from the auxiliaries to their argument.
+  rule adv-quant_aux{
+    pattern{
+      H[upos=AUX]; H -[1=comp,2=aux|pred]-> D;
+      D1[upos=ADV,lemma=lex.adv];
+      e: H -[mod]-> D1;
+      H << D1}
+    without{D1[Polarity=Neg]}
+    commands{add_edge D -[mod]-> D1;del_edge e}
+  }
+#BEGIN lex
+adv
+absolument
+assez
+autant
+autrement
+approximativement
+beaucoup
+carrément
+combien
+complètement
+davantage
+diablement
+divinement
+drôlement
+entièrement
+environ
+extrêmement
+fort
+fortement
+grandement
+guère
+infiniment
+insuffisamment
+joliment
+juste
+majoritairement
+mieux
+moins
+passablement
+peu
+plus
+plutôt
+presque
+prou
+quasi
+quasiment
+que
+quelque
+relativement
+si
+suffisamment
+super
+tant
+tellement
+terriblement
+totalement
+tout
+très
+trop
+ultra
+#END
+
+% Quantity adverbial locutions that are modifiers must move from the auxiliaries to their argument.
+  rule advloc-quant_aux{
+    pattern{
+      H[upos=AUX]; H -[1=comp,2=aux|pred]-> D;
+      e: H -[mod]-> D1;
+      D1[upos=ADV];
+      D1 -[HEAD]-> H1;
+      H1[lemma=lex.head];
+      D1 -[IDIOM]-> D2;
+      D2[lemma=lex.dep];
+      H << D1}
+    commands{add_edge D -[mod]-> D1;del_edge e}
+  }
+#BEGIN lex
+head	dep
+peu	peu
+peu	un
+#END
+
+
+% Manner adverbs that are modifiers must move from the auxiliaries to their argument.
+  rule adv-manner_aux{
+    pattern{
+      H[upos=AUX];H -[1=comp,2=aux|pred]-> D;
+      D1[upos=ADV,lemma=lex.adv];
+      e: H -[mod]-> D1;
+      H << D1}
+    commands{add_edge D -[mod]-> D1;del_edge e}
+  }
+#BEGIN lex
+adv
+abondamment
+activement
+admirablement
+affectueusement
+affreusement
+agréablement
+aléatoirement
+anormalement
+architecturalement
+automatiquement
+âprement
+bien
+biologiquement
+brutalement
+catégoriquement
+clairement
+cliniquement
+communément
+considérablement
+continuellement
+convenablement
+correctement
+couramment
+debout
+définitivement
+délibérément
+délicieusement
+démocratiquement
+diamétralement
+différemment
+directement
+doucement
+dur
+durablement
+effectivement
+ensemble
+entièrement
+exactement
+exclusivement
+expérimentalement
+explicitement
+exprès
+économiquement
+électroniquement
+énergiquement
+énormément
+étroitement
+facilement
+faiblement
+fermement
+fidèlement
+formellement
+franco
+génétiquement
+globalement
+gratis
+gratuitement
+gravement
+grièvement
+horriblement
+idéalement
+illégalement
+implicitement
+impromptu
+incognito
+inconsciemment
+indissociablement
+industriellement
+injustement
+intégralement
+intérieurement
+intimement
+intrinsèquement
+juridiquement
+largement
+lentement
+légèrement
+localement
+longtemps
+longuement
+mal
+massivement
+minutieusement
+mystérieusement
+naturellement
+nettement
+non
+normalement
+officiellement
+ouvertement
+paisiblement
+parfaitement
+particulièrement
+partiellement
+passagèrement
+perpétuellement
+pis
+pleinement
+politiquement
+populairement
+pratiquement
+presque
+préalablement
+principalement
+profondément
+progressivement
+proportionnellement
+proprement
+rapidement
+rarement
+recta
+respectivement
+réellement
+rudement
+sauvagement
+scientifiquement
+sérieusement
+sévèrement
+soigneusement
+solidement
+spécialement
+spontanément
+systématiquement
+totalement
+unilatéralement
+violemment
+visuellement
+vite
+vivement
+volontairement
+#END
+
+% Adverb "aussi used as a quantity adverb must move from the auxiliaries to their argument.
+  rule aux_aussi_comp{
+    pattern{
+      H[upos=AUX];H -[1=comp,2=pred]-> D;  D[upos=ADJ|ADV];
+      e:H -[mod]-> D1;
+      D1[upos=ADV,lemma=aussi];
+      H << D1; D1 << D;
+      CONJ[upos=SCONJ,lemma=que]; D1 -[comp:obj]-> CONJ}
+    commands{add_edge D -[mod]-> D1; del_edge e}
+  }
+
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% French pronominal verbs are considered as idioms. In the conversion to SUD, their idiomatic characteristic is added.
+package FR_pron_verb{
+% The pronominal verb has a unique clitic pronoun marking its pronominal feature.
+% Ex: les gens s'enfuient.
+  rule verb1{
+    pattern{
+      V[upos=VERB,!ExtPos, !PhraseType];
+      V -[comp]-> PRON; PRON [upos=PRON]}
+    without{V -[comp]-> PRON1; PRON1 [upos=PRON]}
+    commands{
+      V.ExtPos=VERB; V.PhraseType=Idiom;
+      PRON.InIdiom=Yes}
+  }
+
+% The pronominal verb has two clitic pronouns marking its pronominal feature.
+% Ex: ils s'en prennent aux plus faibles.
+  rule verb2{
+    pattern{
+      V[upos=VERB,!ExtPos, !PhraseType];
+      V -[comp]-> PRON1; PRON1 [upos=PRON];
+      V -[comp]-> PRON2; PRON2 [upos=PRON]; PRON1 << PRON2}
+    commands{
+      V.ExtPos=VERB; V.PhraseType=Idiom;
+      PRON1.InIdiom=Yes; PRON2.InIdiom=Yes}
+  }
+
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+strat FR_main {
+  Seq(
+    Onf(idioms),
+    specific_expr_init,
+    Onf (FR_relations),
+    Onf (sub_relations),
+    Onf (rel_extensions),
+    Onf (relations),
+    reverse_relations.main,
+    Onf(FR_shift_out_edges),
+    Onf(FR_shift_out_back_edges),
+    Onf (minimize_conj_dep),
+    Onf (add_conj_emb),
+    Onf (chained_relations),
+    Onf (unk_rel),
+    specific_expr_close,
+    Onf(FR_pron_verb),
+  )
+}
+

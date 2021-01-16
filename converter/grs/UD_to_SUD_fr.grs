@@ -32,24 +32,6 @@ package FR_relations {
     commands{del_edge e; add_edge H -[udep]-> D}
   }
 
-% % Adverbs with a direct object.By default, the relation between an adverb and one of its arguments is COMP:OBL
-%   rule adv_obj(lex from "lexicons/adv_obj.lp") {
-%     pattern{
-%       ADV[upos=ADV,lemma=lex.adv];
-%       e:ADV -[ccomp]-> ARG}
-%     commands{ del_edge e; add_edge ADV -[comp:obj]-> ARG}
-%   }
-
-% % Adverbial locutions with a direct object.By default, the relation between an adverbial locution and one of its arguments is COMP:OBL
-%   rule adv-loc_obj(lex from "lexicons/adv-mwe_obj.lp") {
-%     pattern{
-%       LOC[upos=ADV];
-%       LOC -[HEAD]-> H; H[lemma=lex.head];
-%       LOC -[MWE|fixed]-> D; D[lemma=lex.dep];
-%       e:LOC -[ccomp]-> ARG}
-%     commands{ del_edge e; add_edge LOC -[comp:obj]-> ARG}
-%   }
-
 
 }
 
@@ -71,7 +53,7 @@ package FR_shift_out_edges{
 
 % Judgment adverbs rise from the adposition objects to their adposition.
 % Ex: il est en vacances heureusement.
-  rule adv-judgment_case(lex from "lexicons/adv_judgment.lp") {
+  rule adv-judgment_prep(lex from "lexicons/adv_judgment.lp") {
     pattern{
       H[upos=ADP];H -[1=comp,2=obj]-> D; D[upos <> AUX|VERB];
       e:D -[mod]-> ADV;
@@ -98,7 +80,7 @@ package FR_shift_out_edges{
 
 % Judgment adverbial locutions rise from the adposition objects to their adposition.
 % Ex: Il a été en congé par ailleurs.
-  rule adv-loc-judgment_case(lex from "lexicons/advloc_judgment.lp") {
+  rule adv-loc-judgment_prep(lex from "lexicons/advloc_judgment.lp") {
     pattern{
       H[upos=ADP];H -[1=comp,2=obj]-> D; D[upos <> AUX|VERB];
       e:D -[mod]-> ADV;
@@ -111,10 +93,9 @@ package FR_shift_out_edges{
     commands{add_edge H -[mod]-> ADV; del_edge e}
   }
 
-
 % Tense adverbs rise from verbs to their auxiliaries.
 % Il a été malade hier.
-  rule aux_adv-tense(lex from "lexicons/adv_tense.lp") {
+  rule adv-tense_aux(lex from "lexicons/adv_tense.lp") {
     pattern{
       H[upos=AUX];H -[1=comp,2=aux|pred]-> D;
       e:D -[mod]-> ADV;
@@ -126,7 +107,7 @@ package FR_shift_out_edges{
 
 % Tense adverbs rise from the adposition objects to their adposition.
 % Il a été en congé hier.
-  rule case_adv-tense(lex from "lexicons/adv_tense.lp") {
+  rule adv-tense_prep(lex from "lexicons/adv_tense.lp") {
     pattern{
       H[upos=ADP];H -[comp:obj]-> D;  D[upos <> AUX|VERB];
       e:D -[mod]-> ADV;
@@ -134,6 +115,51 @@ package FR_shift_out_edges{
       H << D; D << ADV}
     without{D -> D1; D1 >> ADV}  % Rising cannot generate non projectivity
     commands{add_edge H -[mod]-> ADV; del_edge e}
+  }
+
+% Conj relations when the conjunct heads are adjectives.
+% Ex: French-GSD fr-ud-test_00091 - Le ras-le-bol fut général, la mobilisation inédite.
+  rule conj_adj{
+    pattern{
+      H -[comp:pred]-> D;  H << D;
+      e: D -[1=conj]-> D1;
+      D[upos=ADJ]; D1[upos=ADJ];
+      D1 -[1=subj]-> *
+    }
+    commands{
+      add_edge f: H -> D1; f.label = e.label;
+      del_edge e
+    }
+  }
+
+% constructions with a predicative complement PRED of a copula COP and a direct object of PRED, which is also its agent. The direct object climbs to the copula.
+%Ex: French-GSD fr-ud-test_00110 - il est temps de nous rendre nos bienfaits
+%Ex: French-GSD fr-ud-train_00105 - Il n'est pas sûr que cela permettra de changer la réalité
+%Ex: French-GSD fr-ud-train_08302 - C'est fantastique à quel point vous devez faire attention aux détails.
+  rule cop_pred_cpl_verb{
+    pattern{
+      COP[upos=AUX,lemma="être"]; COP -[comp:pred]-> PRED;
+      e:PRED -[comp:obj@agent]-> COMP}
+    commands{del_edge e; add_edge COP -[comp:obj@agent]-> COMP}
+  }
+
+% constructions with a predicative complement PRED of an elided copula and a clause, which is the subject of PRED introduced with a complementizer CPL. The subject is converted into a direct object.
+%Ex: French-GSD fr-ud-train-10087 - Difficile d'imaginer pire !
+  rule pred_cpl_verb{
+    pattern{
+      e:PRED -[subj]-> CPL; CPL[upos=ADP|SCONJ,lemma="à"|de|que];
+      CPL -[comp:obj]-> V; V[upos=AUX|VERB,VerbForm=Inf|Fin]}
+    without{V0 -[comp:pred]-> PRED; V0 -[subj@expl]-> *}
+    commands{del_edge e; add_edge PRED -[comp:obj@agent]-> CPL}
+  }
+
+% constructions with a predicative complement PRED of an elided copula and a clause without compementizer, which is the subject of PRED. The subject is converted into a direct object.
+%Ex: French-GSD fr-ud-train-08722 - Maintenant, reste à voir comment Orange réagira.
+  rule pred_verb{
+    pattern{
+      e:PRED -[subj]-> V; PRED << V; V[upos=AUX|VERB,VerbForm=Fin]}
+    without{V0 -[comp:pred]-> PRED; V0 -[subj@expl]-> *}
+    commands{del_edge e; add_edge PRED -[comp:obj@agent]-> V}
   }
 }
 
@@ -151,7 +177,7 @@ package FR_shift_out_back_edges{
       D1 << H}
     without{ H -[1=comp,2=pred]-> D; H[upos <> AUX]}
     without{H -[1=comp,2=pred]-> D; H -[mod]-> D1} %Ex: fr-ud-dev_01506 - ...la sortie de leur pays de la zone Euro en sera inéluctable
-    commands{add_edge e: D -> D1;del_edge e}
+    commands{add_edge f: D -> D1; f.label=e.label; del_edge e}
   }
 
 % UDEP relations targeting the pronouns "dont" and "en" must move from the adpositions to their object.
@@ -163,7 +189,7 @@ package FR_shift_out_back_edges{
       D1[upos=PRON,lemma=dont|en];
       e: H -[udep]-> D1;
       D1 << H}
-    commands{add_edge e: D -> D1;del_edge e}
+    commands{add_edge f: D -> D1;f.label=e.label; del_edge e}
   }
 
 % Quantity adverbs that are modifiers must move from the auxiliaries to their argument.
@@ -247,6 +273,7 @@ package FR_pron_verb{
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 strat FR_main {
   Seq(
+    Onf(idioms),
     specific_expr_init,
     Onf (FR_relations),
     Onf (sub_relations),

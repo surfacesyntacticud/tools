@@ -44,6 +44,7 @@ package add_nodes {
 
   rule idiom_verb {
     pattern{ H [upos=AUX|VERB, VerbForm,ExtPos=VERB,PhraseType=Idiom] }
+    without{H -[IDIOM]-> AUX; AUX[upos=AUX,VerbForm]}
     commands{
       add_node I :< H;
       add_edge I -[IDIOM]-> H; add_edge I -[HEAD]-> H;
@@ -126,14 +127,6 @@ package ext_dep {
   }
 }
 
-rule fixed {
-  pattern { H -[IDIOM]-> N; e: H -[fixed]-> M;}
-  commands {
-    add_edge H -[IDIOM]-> M;
-    add_edge H -[unk]-> M;
-    del_edge e;
-  }
-  }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % sequentialize the 3 previous packages into one strategy.
@@ -142,7 +135,6 @@ strat specific_expr_init {
     Onf(add_edges),
     Onf(add_nodes),
     Onf(ext_dep),
-    Onf (fixed)
   )
 }
 

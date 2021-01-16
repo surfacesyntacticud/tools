@@ -1,4 +1,4 @@
 % judgement adverbial expressions
 head	dep
 peu	peu
-un	peu
+peu	un

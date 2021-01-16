@@ -2,7 +2,9 @@
 % The "irregular_expr.grs" file includes packages applying a specific treatment to idioms, titles and converted words. What they have in common is the fact that their syntactic behaviour towards the outside world is not regular.
 include "irregular_expr.grs"
 
-include "synt_to_fixed.grs"
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% The "UD_flatten_idioms.grs" file contains a GRS for flattening all continuous idioms in UD. The head of each continuous idiom becomes its left-most element. All the elements are linked in a left-right chain with UNK relations.
+include "UD_flatten_idioms.grs"
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Dependencies of coordinations to their right  are marked in SUD with feature Shared=Yes and they are attached at the rightmost conjunct. In UD, they are attached at the head of the coordination and feature  Shared=Yes is useless.
@@ -117,7 +119,7 @@ package nom_init {
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Dependencies of type FLAT_NAME, FIXED or CONJ that are chained are reorganized into bouquets.
+% Dependencies of type FLAT, FIXED or CONJ that are chained are reorganized into bouquets.
 package unchained_relations {
   rule flat_name {
     pattern { H -[flat:name]-> D1; e: D1 -[flat:name]-> D2; }
@@ -356,6 +358,11 @@ package sub_relations {
     commands {e.1=advcl; e.2=cleft}
   }
 
+  rule advcl_x {
+    pattern { e:H -[mod@x]-> D }
+    commands {del_edge e; add_edge H -[advcl:x]-> D}
+  }
+  
   rule aux{
     pattern{ e:H -[1=comp,2=aux]-> D }
     commands {e.1=aux}
@@ -592,6 +599,7 @@ package relations {
 
   rule dep{
     pattern{ e: H -[unk]-> D}
+    without{* -[IDIOM]-> H; * -[IDIOM]-> D}
     commands{e.1=dep}
   }
 
@@ -600,6 +608,11 @@ package relations {
     commands{del_edge e; add_edge H -[dep:comp]-> D}
   }
 
+  rule fixed{
+    pattern{ e: H -[unk]-> D;* -[IDIOM]-> H; * -[IDIOM]-> D}
+    commands{del_edge e; add_edge H -[fixed]-> D}
+  }
+  
   rule nmod {
     pattern {e:H -[1=mod|udep]-> D; H[nom=y]; D[nom=y]}
     without{D -[1=mark]-> X}
@@ -693,7 +706,10 @@ package final {
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-strat main {
+% Main strategy for converting any SUD annotation into a UDplus annotation.
+%The UDplus schema is in accordance the UD schema with additional information. It distinguishes between two types of idioms: idioms without syntactic structure are annotated with fixed relations according to the UD guidelines; idioms with a syntactic structure are annotated like any ordinary expression but their head is marked  with the feature PhraseType=Idiom; it also contains a feature ExtPos, which denotes the element’s function within the wider sentence; the other components of the idiom contain the feature InIdiom=Yes.
+% For the sake of uniformity, the use of features PhraseType, ExtPos an InIdiom is extended to idioms without syntactic structure.
+strat main_UDplus {
   Seq (
     Onf(shared), % Package SHARED must precede SPECIFIC_EXPR_INIT so that feature Shared=Yes is not embedded in Idiom.
     Onf(remove_shared),
@@ -712,7 +728,10 @@ strat main {
     Onf(shift_out_edges),
     Onf( reverse_close),
     Onf (final),
-    specific_expr_close, % Closing a specific treatment for idioms, titles and translated words.
-    synt_to_fixed,
+    specific_expr_close, % Closing a specific treatment for idioms, titles and converted words.
   )
 }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Main strategy for converting any SUD annotation into a UD annotation.
+strat main{Seq (main_UDplus,flatten_idioms)}

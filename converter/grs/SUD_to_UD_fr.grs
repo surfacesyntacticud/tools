@@ -134,6 +134,32 @@ package FR_subj {
   }
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+rule clitic_pron{
+  pattern{
+    V[upos=VERB, ExtPos=VERB, PhraseType=Idiom];
+    V -[comp]-> P1; P1[upos=PRON, InIdiom=Yes];
+    V -[comp]-> P2; P2[upos=PRON, InIdiom=Yes]}
+  commands{del_feat P1.InIdiom}
+}
+
+rule pronominal_verb{
+  pattern{ V[upos=VERB, ExtPos=VERB, PhraseType=Idiom]; V -[comp]-> P; P[upos=PRON, InIdiom=Yes]}
+  commands{ del_feat V.ExtPos; del_feat V.PhraseType; del_feat P.InIdiom}
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+strat FR_flatten_idioms{
+  Seq(
+    Iter(clitic_pron),
+    Iter(pronominal_verb),
+    Iter(one)
+  )
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 package FR_final {
   % 'case' not expected to have children
   % in 2.7: 3 cases
@@ -144,9 +170,12 @@ package FR_final {
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-strat FR_main{
+% Main strategy for converting any SUD French annotation into a UDplus annotation.
+%The UDplus schema is in accordance the UD schema with additional information. It distinguishes between two types of idioms: idioms without syntactic structure are annotated with fixed relations according to the UD guidelines; idioms with a syntactic structure are annotated like any ordinary expression but their head is marked  with the feature PhraseType=Idiom; it also contains a feature ExtPos, which denotes the element’s function within the wider sentence; the other components of the idiom contain the feature InIdiom=Yes.
+% For the sake of uniformity, the use of features PhraseType, ExtPos an InIdiom is extended to idioms without syntactic structure.
+strat FR_main_UDplus{
   Seq(
-    Onf (FR_init),
+    %Onf (FR_init),
     Onf (shared),
     Onf(remove_shared),
     Onf(FR_pron_verb), % Specific treatment of pronominal verbs in French
@@ -169,9 +198,11 @@ strat FR_main{
     Onf( reverse_close),
     Onf (final),
     specific_expr_close,
-    synt_to_fixed,
-    Onf (FR_final), % adapt to UD validator constraints
+    %Onf (FR_final), % adapt to UD validator constraints
   )
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Main strategy for converting any SUD French annotation into a UD annotation.
+strat FR_main{Seq (FR_main_UDplus,FR_flatten_idioms)}
 
