@@ -1,6 +1,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 include "SUD_to_UD.grs"
 
+% The conversion of "suite à", "face à" are invalid ('advmod' should be 'ADV' but it is 'NOUN')
+% To avoid this, we transform these phrase as idiom in order to make them fixed after conversion.
 package FR_init {
   rule face {
     pattern {
@@ -175,7 +177,7 @@ package FR_final {
 % For the sake of uniformity, the use of features PhraseType, ExtPos an InIdiom is extended to idioms without syntactic structure.
 strat FR_main_UDplus{
   Seq(
-    %Onf (FR_init),
+    Onf (FR_init), % Needed for UD validation
     Onf (shared),
     Onf(remove_shared),
     Onf(FR_pron_verb), % Specific treatment of pronominal verbs in French
