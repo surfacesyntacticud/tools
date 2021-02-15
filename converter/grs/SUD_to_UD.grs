@@ -362,7 +362,7 @@ package sub_relations {
     pattern { e:H -[mod@x]-> D }
     commands {del_edge e; add_edge H -[advcl:x]-> D}
   }
-  
+
   rule aux{
     pattern{ e:H -[1=comp,2=aux]-> D }
     commands {e.1=aux}
@@ -612,7 +612,7 @@ package relations {
     pattern{ e: H -[unk]-> D;* -[IDIOM]-> H; * -[IDIOM]-> D}
     commands{del_edge e; add_edge H -[fixed]-> D}
   }
-  
+
   rule nmod {
     pattern {e:H -[1=mod|udep]-> D; H[nom=y]; D[nom=y]}
     without{D -[1=mark]-> X}
@@ -732,6 +732,17 @@ strat main_UDplus {
   )
 }
 
+rule remove_UDplus_subtypes {
+  pattern { e: M -[ccomp:agent|ccomp:obj|ccomp:obl|ccomp:pred|xcomp:obj|xcomp:obl|xcomp:pred|advcl:x]-> N }
+  commands { del_feat e.2 }
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Main strategy for converting any SUD annotation into a UD annotation.
-strat main{Seq (main_UDplus,flatten_idioms)}
+strat main{
+  Seq (
+    main_UDplus,
+    flatten_idioms,
+    Onf(remove_UDplus_subtypes)
+  )
+}

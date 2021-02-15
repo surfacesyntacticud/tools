@@ -204,7 +204,29 @@ strat FR_main_UDplus{
   )
 }
 
+% In GSD, there are 3 discontinuous MWEs (in parenthesis, the insered span):
+% * [fr-ud-train_07306] …et face (à la fois) aux Alliés…
+% * [fr-ud-train_11812] …grâce (aussi) à leur accueil…
+% * [fr-ud-train_14502] …suite (notamment) à ses nombreuses visites…
+% In order to have a valid UD annotation, a post-treatment is needed, hence the next rule
+rule discontinuous_MWE {
+  pattern {
+    H -[case]-> N1; N1 [lemma="suite"|"face"|"grâce"]; e: N1 -[dep:comp]-> N2
+  }
+  commands {
+    del_edge e;
+    add_edge H -[case]-> N2;
+  }
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Main strategy for converting any SUD French annotation into a UD annotation.
-strat FR_main{Seq (FR_main_UDplus,FR_flatten_idioms)}
+strat FR_main{
+  Seq (
+    FR_main_UDplus,
+    FR_flatten_idioms,
+    Onf(remove_UDplus_subtypes),
+    Onf(discontinuous_MWE),
+  )
+}
 
