@@ -3,12 +3,14 @@ GREW=grew_dev
 doc:
 	@echo "----------------------------------------------------------------"
 	@echo "draw:  run both conversions & build figures"
-	@echo ""
-	@echo "ud:    run GUI on SUD_to_UD conversion"
-	@echo "sud:   run GUI on UD_to_SUD conversion"
 	@echo "----------------------------------------------------------------"
 
 draw:
+	cp head.md _diff.md
+	echo "" >> _diff.md
+	echo "| id | SUD | UD |" >> _diff.md
+	echo "|:---:|:---:|:---:|" >> _diff.md
+	grep "# sent_id" ud.conll | cut -f 4 -d ' ' | sed 's#^\(.*\)$$#| `\1` | ![](_sud_diff/\1.svg) | ![](_ud_diff/\1.svg) |#' >> _diff.md
 	${GREW} transform -config sud -grs ../../grs/SUD_to_UD_fr.grs -strat FR_main -i sud.conll -o _ud.conll
 	${GREW} transform -config sud  -grs ../../grs/UD_to_SUD_fr.grs -strat FR_main -i ud.conll -o _sud.conll
 	splitter -f sud.conll _sud_gold
@@ -17,13 +19,7 @@ draw:
 	splitter -f _ud.conll _ud_auto
 	dep_diff -d1 _sud_gold -d2 _sud_auto -svg _sud_diff
 	dep_diff -d1 _ud_gold -d2 _ud_auto -svg _ud_diff
-	pandoc --metadata title="Conversion with SUD_to_UD_fr.grs and UD_to_SUD_fr.grs" -s diff.md -o _diff.html
-
-ud:
-	${GREW} gui -grs ../../grs/SUD_to_UD_fr.grs -strat FR_main -i sud.conll
-
-sud:
-	${GREW} gui -grs ../../grs/UD_to_SUD_fr.grs -strat FR_main -i ud.conll
+	pandoc --metadata title="Conversion with SUD_to_UD_fr.grs and UD_to_SUD_fr.grs" -s _diff.md -o _diff.html
 
 clean:
 	rm -rf _*

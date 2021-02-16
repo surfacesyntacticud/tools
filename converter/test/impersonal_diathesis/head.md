@@ -1,0 +1,1 @@
+## Examples on impersonal diathesis
