@@ -419,10 +419,10 @@ package sub_relations {
     commands {e.1=expl;e.2=subj; del_feat e.deep}
   }
 
-% iobj is used for any argument of a non-nominal governor, which is an adverb or a pronoun not introduced by a preposition
+% IOBJ is used for any indirect object of a non-nominal word, which is  not introduced by a preposition or a subordination conjunction. 
   rule iobj {
-    pattern {H[!nom]; e:H -[1=comp,2=obl]-> D; D[upos=ADV|PRON]}
-    without{D -[case]-> *}
+    pattern {H[!nom]; e:H -[1=comp,2=obl]-> D}
+    without{D -[case|mark]-> *}
     commands {e.1=iobj}
   }
 
@@ -488,18 +488,10 @@ package sub_relations {
     commands {del_edge e; add_edge H -[obl:agent]-> D }
   }
 
-  rule obl_arg_nom {
-    pattern {
-      H[upos=ADJ|ADV|INTJ|VERB];
-      e:H -[1=comp,2=obl]-> D; D[upos <> ADV|PRON,nom=y] }
-    without{ D -[1=mark]-> *}
-    commands {e.1=obl; e.2=arg}
-  }
-
   rule obl_arg {
     pattern {
-      H[upos=ADJ|ADV|INTJ|VERB];
-      e:H -[1=comp,2=obl]-> D; D[upos=ADJ|ADV|PRON] }
+      H[!nom];
+      e:H -[1=comp,2=obl]-> D; D -[1=case]-> * }
     without{ D -[1=mark]-> *}
     commands {e.1=obl; e.2=arg}
   }
