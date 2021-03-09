@@ -8,8 +8,7 @@ from BaseHTTPServer import BaseHTTPRequestHandler
 grew = "/home/guillaum/.opam/last/bin/grew"
 
 dir = "/home/guillaum/webservice/"
-grs1 = dir + "converter/grs/SUD_to_UD+.grs"
-grs2 = dir + "converter/grs/UD+_to_UD.grs"
+grs = dir + "converter/grs/SUD_to_UD.grs"
 
 def uniqid():
     from time import time
@@ -22,14 +21,12 @@ class MyHandler(BaseHTTPRequestHandler):
 
         id=uniqid()
         sud_file = dir+id+".sud.conll"
-        tmp_file = dir+id+".tmp.conll"
         ud_file = dir+id+".ud.conll"
         with open(sud_file, 'w') as f:
             f.write(post_body)
 
         try:
-            subprocess.call([grew, "transform", "-grs", grs1, "-i", sud_file, "-o", tmp_file])
-            subprocess.call([grew, "transform", "-grs", grs2, "-i", tmp_file, "-o", ud_file])
+            subprocess.call([grew, "transform", "-grs", grs, "-i", sud_file, "-o", ud_file])
         except:
             self.send_response(402)
             return
