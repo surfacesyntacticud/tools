@@ -521,9 +521,9 @@ package shift_out_edges{
     }
   }
 
-% Agent relations in causative and impersonal constructions.
+% Agent relations in causative and impersonal constructions with copula.
   rule agent {
-    pattern{H -[1=caus,deep=REV]-> D; e: D -[deep=agent]-> D1}
+    pattern{H -[1=caus|cop,deep=REV]-> D; e: D -[deep=agent]-> D1}
     commands{
       add_edge f: H -> D1; f.label = e.label;
       del_edge e;
