@@ -4,31 +4,41 @@ include "UD_to_SUD.grs"
 % The conversion of "suite à", "face à" are invalid ('advmod' should be 'ADV' but it is 'NOUN')
 % To avoid this, we transform these phrase as idiom in order to make them fixed after conversion.
 package FR_init {
-  rule prep_loc {
+  rule prep_loc (lex from "lexicons/noun_adv_prep.lp"){
     pattern {
       e1: H -[obl:mod]-> N;
       e2: N -[case]-> N1;
       N1 [upos=NOUN, lemma=lex.noun, ExtPos=ADP, PhraseType=Idiom];
       N2 [upos=ADP, lemma=lex.prep, InIdiom=Yes];
-      e3:N1 -[dep:comp]-> N2;
-    }
+      e3:N1 -[dep:comp]-> N2}
+    without{N -[punct]-> P; P[lemma=","]; P << N}
     commands {
       N1.ExtPos = ADV; del_feat N1.PhraseType;
       del_feat N2.InIdiom;
       del_edge e1; add_edge H -[advmod]-> N1;
       add_edge N1 -[obl:arg]-> N;
       del_edge e2; add_edge N -[case]-> N2;
-      del_edge e3
-    }
+      del_edge e3}
   }
-#BEGIN lex
-noun	prep
-%-------------
-face	à
-grâce	à
-suite	à
-histoire	de
-#END
+  
+  rule prep_loc_comma (lex from "lexicons/noun_adv_prep.lp"){
+    pattern {
+      e1: H -[obl:mod]-> N;
+      e2: N -[case]-> N1;
+      N1 [upos=NOUN, lemma=lex.noun, ExtPos=ADP, PhraseType=Idiom];
+      N2 [upos=ADP, lemma=lex.prep, InIdiom=Yes];
+      e3:N1 -[dep:comp]-> N2;
+      e4:N -[punct]-> P; P[lemma=","]; P << N}
+    commands {
+      N1.ExtPos = ADV; del_feat N1.PhraseType;
+      del_feat N2.InIdiom;
+      del_edge e1; add_edge H -[advmod]-> N1;
+      add_edge N1 -[obl:arg]-> N;
+      del_edge e2; add_edge N -[case]-> N2;
+      del_edge e3;
+      del_edge e4; add_edge N1 -[punct]-> P}
+  }
+
 }
 
 
