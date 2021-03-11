@@ -10,14 +10,15 @@ package FR_init {
       e2: N -[case]-> N1;
       N1 [upos=NOUN, lemma=lex.noun, ExtPos=ADP, PhraseType=Idiom];
       N2 [upos=ADP, lemma=lex.prep, InIdiom=Yes];
-      N1 -[dep:comp]-> N2;
+      e3:N1 -[dep:comp]-> N2;
     }
     commands {
       N1.ExtPos = ADV; del_feat N1.PhraseType;
       del_feat N2.InIdiom;
       del_edge e1; add_edge H -[advmod]-> N1;
       add_edge N1 -[obl:arg]-> N;
-      del_edge e2; add_edge N -[case]-> N2
+      del_edge e2; add_edge N -[case]-> N2;
+      del_edge e3
     }
   }
 #BEGIN lex
