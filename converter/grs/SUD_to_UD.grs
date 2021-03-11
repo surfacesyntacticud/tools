@@ -80,7 +80,7 @@ package nom_init {
 % All adverbs, numbers and symbols that are direct objects are considered nominal.
   rule nom_comp {
     pattern {A[upos=ADJ|ADV|SYM|NUM,!nom]; H -[1=comp, 2=obj]-> A}
-    without{ H[upos=SCONJ]; A[upos=ADJ|ADV]}
+    without{ H[upos=ADP|SCONJ]; A[upos=ADJ|ADV]}
     without{A[upos=ADV]; * -[IDIOM]-> A}
     commands {A.nom=y}
   }
