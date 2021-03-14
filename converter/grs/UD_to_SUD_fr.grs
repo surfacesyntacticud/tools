@@ -1,47 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 include "UD_to_SUD.grs"
 
-% The conversion of "suite à", "face à" are invalid ('advmod' should be 'ADV' but it is 'NOUN')
-% To avoid this, we transform these phrase as idiom in order to make them fixed after conversion.
-package FR_init {
-  rule prep_loc (lex from "lexicons/noun_adv_prep.lp"){
-    pattern {
-      e1: H -[obl:mod]-> N;
-      e2: N -[case]-> N1;
-      N1 [upos=NOUN, lemma=lex.noun, ExtPos=ADP, PhraseType=Idiom];
-      N2 [upos=ADP, lemma=lex.prep, InIdiom=Yes];
-      e3:N1 -[dep:comp]-> N2}
-    without{N -[punct]-> P; P[lemma=","]; P << N}
-    commands {
-      N1.ExtPos = ADV; del_feat N1.PhraseType;
-      del_feat N2.InIdiom;
-      del_edge e1; add_edge H -[advmod]-> N1;
-      add_edge N1 -[obl:arg]-> N;
-      del_edge e2; add_edge N -[case]-> N2;
-      del_edge e3}
-  }
-  
-  rule prep_loc_comma (lex from "lexicons/noun_adv_prep.lp"){
-    pattern {
-      e1: H -[obl:mod]-> N;
-      e2: N -[case]-> N1;
-      N1 [upos=NOUN, lemma=lex.noun, ExtPos=ADP, PhraseType=Idiom];
-      N2 [upos=ADP, lemma=lex.prep, InIdiom=Yes];
-      e3:N1 -[dep:comp]-> N2;
-      e4:N -[punct]-> P; P[lemma=","]; P << N}
-    commands {
-      N1.ExtPos = ADV; del_feat N1.PhraseType;
-      del_feat N2.InIdiom;
-      del_edge e1; add_edge H -[advmod]-> N1;
-      add_edge N1 -[obl:arg]-> N;
-      del_edge e2; add_edge N -[case]-> N2;
-      del_edge e3;
-      del_edge e4; add_edge N1 -[punct]-> P}
-  }
-
-}
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Relations in SUD that are determined from UD relations with rules specific to French.
 package FR_relations {
@@ -311,9 +270,33 @@ package FR_pron_verb{
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% The conversion of "suite à", "face à" are invalid ('advmod' should be 'ADV' but it is 'NOUN')
+% To avoid this, we transform these phrase as idiom in order to make them fixed after conversion
+package FR_noun_adv{
+  rule adp_to_adv (lex from "lexicons/noun_adv_prep.lp"){
+    pattern{
+      N[upos=NOUN, lemma=lex.noun, ExtPos=ADP, PhraseType=Idiom];
+      P[upos=ADP, lemma=lex.prep, InIdiom=Yes];
+      N -[comp:obl]-> P;
+      e: N -[comp:obj]-> N1}
+    commands{
+      N.ExtPos = ADV; del_feat N.PhraseType;
+      del_feat P.InIdiom;
+      del_edge e; add_edge P -[comp:obj]-> N1}  
+  }
+
+  rule udep_to_mod (lex from "lexicons/noun_adv_prep.lp"){
+    pattern{
+      N[upos=NOUN, lemma=lex.noun, ExtPos=ADV];
+      e: H -[udep]-> N}
+    commands{del_edge e; add_edge H -[mod]-> N}  
+  }
+
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 strat FR_main {
   Seq(
-    Onf(FR_init),
     Onf(idioms),
     specific_expr_init,
     Onf (FR_relations),
@@ -329,6 +312,7 @@ strat FR_main {
     Onf (unk_rel),
     specific_expr_close,
     Onf(FR_pron_verb),
+    Onf(FR_noun_adv),
   )
 }
 
