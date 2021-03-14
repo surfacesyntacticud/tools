@@ -482,17 +482,15 @@ package sub_relations {
   }
 
   rule obl_agent {
-    pattern {
-      H[upos=ADJ|ADV|AUX|VERB];
-      e:H -[comp:obl@agent]-> D; D -[1=case]-> * }
+    pattern {e:H -[comp:obl@agent]-> D; D -[1=case]-> * }
     commands {del_edge e; add_edge H -[obl:agent]-> D }
   }
 
+% We make the hypothesis that all noun complements depend on their gouvernor with a UDEP remation.
   rule obl_arg {
-    pattern {
-      H[!nom];
-      e:H -[1=comp,2=obl]-> D; D -[1=case]-> * }
+    pattern { e:H -[1=comp,2=obl]-> D; D -[1=case]-> * }
     without{ D -[1=mark]-> *}
+    without{e.deep=agent}
     commands {e.1=obl; e.2=arg}
   }
 
@@ -607,6 +605,12 @@ package relations {
 
   rule nmod {
     pattern {e:H -[1=mod|udep]-> D; H[nom=y]; D[nom=y]}
+    without{D -[1=mark]-> X}
+    commands {e.1=nmod}
+  }
+
+  rule nmod_adj {
+    pattern {e:H -[1=mod|udep]-> D; H[nom=y]; D[upos=ADJ]; D -[case]-> *}
     without{D -[1=mark]-> X}
     commands {e.1=nmod}
   }
