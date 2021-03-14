@@ -522,8 +522,9 @@ package shift_out_edges{
   }
 
 % Agent relations in causative and impersonal constructions with copula.
+% Ex: French-GSD fr-ud-train_02980 -  ... c'est au tour des hommes d'Edmund Duke de le faire, ...
   rule agent {
-    pattern{H -[1=caus|cop,deep=REV]-> D; e: D -[deep=agent]-> D1}
+    pattern{H -[1=case|caus|cop,deep=REV]-> D; e: D -[deep=agent]-> D1}
     commands{
       add_edge f: H -> D1; f.label = e.label;
       del_edge e;
@@ -663,8 +664,8 @@ package shift_out_edges{
       D.upos <> D1.upos;
     }
     without{D[upos=NOUN|PRON|PROPN|NUM|X]; D1[upos=NOUN|PRON|PROPN|NUM|X]}
-    without{D[upos=ADJ]; D1[upos=VERB,VerbForm=Part]}
-    without{D1[upos=ADJ]; D[upos=VERB,VerbForm=Part]}
+    without{D[upos=ADJ|ADP]; D1[upos=VERB,VerbForm=Part]}
+    without{D1[upos=ADJ|ADP]; D[upos=VERB,VerbForm=Part]}
     without{D[upos=ADP|ADV]; D1[upos=ADP|ADV]}
     without{D[upos=AUX|VERB]; D1[upos=AUX|VERB]; D1.VerbForm=D.VerbForm}
     commands{
