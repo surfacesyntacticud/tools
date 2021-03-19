@@ -513,7 +513,7 @@ package reverse_relations{
 package shift_out_edges{
 % All relations that rise without any restriction.
   rule all{
-    pattern {H -[deep=REV]-> D;e: D -[cc|discourse|vocative]-> D1}
+    pattern {H -[deep=REV]-> D;e: D -[cc|discourse|orphan]-> D1}
     without{ D -[cc]-> D1; H << D1} %Ex:  fr-ud-train_12306 - ... sont soit des fanatiques, soit des hypocrites,
     commands{
       add_edge f: H -> D1; f.label = e.label;
@@ -522,9 +522,12 @@ package shift_out_edges{
   }
 
 % Agent relations in causative and impersonal constructions with copula.
-% Ex: French-GSD fr-ud-train_02980 -  ... c'est au tour des hommes d'Edmund Duke de le faire, ...
+% Ex: French-GSD fr-ud-train_02980 - ... c'est au tour des hommes d'Edmund Duke de le faire, ...
+%Ex: French-GSD fr-ud-test_00110 - il est temps de nous rendre nos bienfaits
+%Ex: French-GSD fr-ud-train_00105 - Il n'est pas sûr que cela permettra de changer la réalité
+%Ex: French-GSD fr-ud-train_08302 - C'est fantastique à quel point vous devez faire attention au
   rule agent {
-    pattern{H -[1=case|caus|cop,deep=REV]-> D; e: D -[deep=agent]-> D1}
+    pattern{H -[1=caus|cop,deep=REV]-> D; e: D -[deep=agent]-> D1}
     commands{
       add_edge f: H -> D1; f.label = e.label;
       del_edge e;
@@ -535,24 +538,18 @@ package shift_out_edges{
   rule all_mark_embedded{
     pattern {
       H -[1<>mark,deep=REV]-> D;
-      e: D -[comp:cleft|dislocated|parataxis|vocative]-> D1;}
+      e: D -[1= comp|dislocated|parataxis|subj|vocative]-> D1;}
+    without{e.1=comp; e.2 <> cleft}
+    without{D -[comp]-> D1}
+    without{D -[1=comp,deep=*]-> D1}
     without{H1 -[1 <> cop]-> H; H -[1=case]-> D; D -[parataxis]-> D1}
-    %without{H -[1=aux|caus|pass|cop]->D; D -[csubj:impers|nsubj:impers|expl:comp]-> D1}
+    without{D1[InTitle=Yes]} % French-GSD fr-ud-train_13022 - ...très connu dans les rôles de Bo Duke de Shérif, fais-moi peur !
     commands{
       add_edge f: H -> D1; f.label = e.label;
       del_edge e;
     }
   }
 
-  rule subj_mark_embedded{
-    pattern {
-      H -[1<>mark,deep=REV]-> D;
-      e: D -[1=subj]-> D1}
-    commands{
-      add_edge f: H -> D1; f.label = e.label;
-      del_edge e;
-    }
-  }
 
 % Relations with their source D after the head of a subordinated clause and their dependent D1 before.
   rule all_mark_outside_left{
@@ -583,11 +580,11 @@ package shift_out_edges{
     pattern{
       H -[deep=REV]-> D;  H << D;
       e: D -[1=mod|punct]-> D1; D << D1}
+    without{D -> D2; D1 << D2} % rising must not entail non projectivity
     without{D -[mod@relcl]-> D1}
-    without{H -[1=case]-> D;D -[1=mod]-> D1; D1[upos <> ADP|SCONJ]}
-    without{H -[1=mark]-> D;D -[1=mod]-> D1}
+    without{H -[1=case]-> D;D -[1=mod]-> D1; D1[upos<>ADP|SCONJ]}
+    without{H -[1=mark]-> D; D -[1=mod]-> D1}
     without{H -[1=cop]-> D; D -[mod]-> D1; D1[upos<>ADP|ADV|SCONJ]}
-    without{D -> D2; D1 << D2}
     without{D -[punct]-> D2; D2 << D; D -[punct]-> D1; D1.lemma = D2.lemma}
     without{D -[punct]-> D2; D2 << D; D -[punct]-> D1; D1.lemma = ")"; D2.lemma = "("}
     without{D -[punct]-> D2; D2 << D; D -[punct]-> D1; D1.lemma = "»"; D2.lemma = "«"}
