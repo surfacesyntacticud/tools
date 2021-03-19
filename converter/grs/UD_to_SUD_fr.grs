@@ -131,16 +131,17 @@ package FR_shift_out_edges{
     }
   }
 
-% constructions with a predicative complement PRED of a copula COP and a direct object of PRED, which is also its agent. The direct object climbs to the copula.
-%Ex: French-GSD fr-ud-test_00110 - il est temps de nous rendre nos bienfaits
-%Ex: French-GSD fr-ud-train_00105 - Il n'est pas sûr que cela permettra de changer la réalité
-%Ex: French-GSD fr-ud-train_08302 - C'est fantastique à quel point vous devez faire attention aux détails.
-  rule cop_pred_cpl_verb{
+% constructions in the form SUBJ + de  + INF.
+%Ex: French-GSD fr-ud-train_11118 - » et Secombe de répondre : « De quelle couleur ?
+  rule subj_de_inf{
     pattern{
-      COP[upos=AUX,lemma="être"]; COP -[comp:pred]-> PRED;
-      e:PRED -[comp:obj@agent]-> COMP}
-    commands{del_edge e; add_edge COP -[comp:obj@agent]-> COMP}
+      INF[upos=AUX|VERB];
+      DE[upos=ADP, lemma =de];
+      DE -[comp:obj]-> INF;
+      e:INF -[1=subj]-> SUBJ}
+    commands{add_edge f:DE -> SUBJ; f.label=e.label; del_edge e}
   }
+
 
 % constructions with a predicative complement PRED of an elided copula and a clause, which is the subject of PRED introduced with a complementizer CPL. The subject is converted into a direct object.
 %Ex: French-GSD fr-ud-train-10087 - Difficile d'imaginer pire !
