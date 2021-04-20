@@ -1,0 +1,31 @@
+% Rules applied tu SUD_Beja before conversion to UD
+
+% Change relation "aff:xxx" into "xxx:aff"
+rule aff {
+  pattern { e:M -[1=aff,2=*]-> N }
+  commands { e.1 = e.2; e.2=aff }
+}
+
+% Remove whitespaces in XPOS values
+rule xpos {
+  pattern { N[xpos=lex.in] }
+  commands { N.xpos=lex.out }
+}
+#BEGIN lex
+in	out
+%----------
+V1, IRG	V1,IRG
+V2, IRG	V2,IRG
+TAM, PNG	TAM,PNG
+AUX, EMPH	AUX,EMPH
+V1, IRG, NEG	V1,IRG,NEG
+N, COP	N,COP
+PTCL, NEG	PTCL,NEG
+#END
+
+strat main {
+  Seq (
+    Onf (aff),
+    Onf (xpos)
+  )
+}
