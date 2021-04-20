@@ -23,6 +23,18 @@ package post {
   }
 }
 
+package remove_ext {
+  rule nummod {
+    pattern { e:N1 -[1=nummod, 2=*]-> N2; }
+    commands { del_feat e.2 }
+  }
+
+  rule periph_emph {
+    pattern { e:N1 -[2=periph|emph]-> N2; }
+    commands { del_feat e.2 }
+  }
+}
+
 package last_errors {
   rule ENU_37_Dmoris-Restaurant_MG__21 {
     pattern {
@@ -44,8 +56,9 @@ package last_errors {
 }
 
 strat main {
-    Seq (
-      Onf (post),
-      Onf (last_errors)
-      )
+  Seq (
+    Onf (post),
+    Onf (remove_ext),
+    Onf (last_errors),
+  )
 }

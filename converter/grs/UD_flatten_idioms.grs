@@ -53,7 +53,7 @@ package propagate_fixed {
 
   % rule added to deal with discontinuous fixed in Naija "in fact # sey"
   rule discontinuous {
-    pattern { F[fix=First]; F -[unk]-> L; L[InIdiom=Yes]; N [fix]; P[!fix]; P < N }
+    pattern { F[fix=First]; N [fix]; P[!fix]; P < N }
     without { * -> N }
     commands { add_edge F -[dep:fixed]-> N;  }
   }
