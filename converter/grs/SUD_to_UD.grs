@@ -179,6 +179,7 @@ package shift_out_edges{
       H -[rev=y]-> D;
       e: D -> D1}
     without{ D -[1=comp|conj|expr|flat|goeswith|reparandum|HEAD|IDIOM|TITLE|CONV]-> D1}
+    without{ D -[1=appos]-> D1; D1 << H; }
     without{D -[punct]-> D2; D -[punct]-> D1; D1.lemma = D2.lemma; D >> D1; D << D2}
     without{
       D -[punct]-> D2; D -[punct]-> D1; D1.lemma = ")"; D2.lemma = "(";
@@ -419,7 +420,7 @@ package sub_relations {
     commands {e.1=expl;e.2=subj; del_feat e.deep}
   }
 
-% IOBJ is used for any indirect object of a non-nominal word, which is  not introduced by a preposition or a subordination conjunction. 
+% IOBJ is used for any indirect object of a non-nominal word, which is  not introduced by a preposition or a subordination conjunction.
   rule iobj {
     pattern {H[!nom]; e:H -[1=comp,2=obl]-> D}
     without{D -[1=case|mark]-> *}
