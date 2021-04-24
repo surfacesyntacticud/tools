@@ -277,7 +277,7 @@ package case_mark_relations {
   rule mark_verb_adp-conj{
     pattern{
       e:H -[1=comp,2=obj,rev=y]-> D;
-      H[upos=AUX|VERB,!nom];
+      H[upos=AUX|VERB|PART,!nom];
       D[upos=ADP|CCONJ|PART|SCONJ] }
     commands {e.1=mark}
   }
