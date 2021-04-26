@@ -61,10 +61,16 @@ package remove_ext {
   }
 }
 
+rule scrap {
+  pattern { N [ScrapPos] }
+  commands { N.upos=N.ScrapPos; del_feat N.ScrapPos }
+}
+
 strat main {
   Seq (
     Onf (post),
     Onf (last_errors),
     Onf (remove_ext),
+    Onf (scrap),
   )
 }

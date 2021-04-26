@@ -1,3 +1,27 @@
+% Some specificities used in Spoken annotation (Naija et French Spoken)
+package scrap_spec {
+% Remove `scrap` deep extension
+
+  rule scrap_det {
+    pattern { e: N -[1<>root, deep=scrap]-> M; M [upos=DET] }
+    commands {
+      del_feat e.deep;
+      M.ScrapPos = M.upos;
+      M.upos=PRON;
+    }
+  }
+
+  rule scrap_sconj {
+    pattern { e: N -[1<>root, deep=scrap]-> M; M [upos=SCONJ] }
+    commands {
+      del_feat e.deep;
+      M.ScrapPos = M.upos;
+      M.upos=VERB;
+    }
+  }
+}
+
+
 % Macrosyntax is annotated with PUNCT in SUD but it gives invalid UD structures (non projectivity).
 % Change Macrosyntax annotation with upos `X` and relation `unk`
 package PUNCT_to_X {
@@ -68,6 +92,7 @@ package Naija_MISC {
 
 strat main {
   Seq (
+    Onf (scrap_spec),
     Onf (PUNCT_to_X),
     Onf (change_POS),
     Onf (spoken),
