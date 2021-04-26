@@ -59,6 +59,11 @@ package remove_ext {
     pattern { e:N1 -[dep:fixed]-> N2; }
     commands { del_feat e.2 }
   }
+
+  rule cop_agent {
+    pattern { e:N1 -[cop:agent]-> N2; }
+    commands { del_feat e.2 }
+  }
 }
 
 rule scrap {
