@@ -49,7 +49,7 @@ package change_POS {
   }
 
   rule be {
-    pattern { X[lemma=be, upos = VERB] ; X -[comp:pred]-> Y }
+    pattern { X[lemma=be, upos = VERB] ; X -[1=comp,2=pred]-> Y }
     commands  { X.upos=AUX }
   }
 }
