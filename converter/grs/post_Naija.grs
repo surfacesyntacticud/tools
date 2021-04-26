@@ -66,9 +66,19 @@ package remove_ext {
   }
 }
 
+rule remove_feat {
+  pattern { N[Lang=yo, PartType] }
+  commands { del_feat N.PartType }
+}
+
 rule scrap {
   pattern { N [ScrapPos] }
   commands { N.upos=N.ScrapPos; del_feat N.ScrapPos }
+}
+
+rule lang_not_ud {
+  pattern { N[Lang=hau|ig] }
+  commands { del_feat N.Lang }
 }
 
 strat main {
@@ -76,6 +86,8 @@ strat main {
     Onf (post),
     Onf (last_errors),
     Onf (remove_ext),
+    Onf (remove_feat),
     Onf (scrap),
+    Onf (lang_not_ud),
   )
 }
