@@ -81,6 +81,29 @@ rule lang_not_ud {
   commands { del_feat N.Lang }
 }
 
+package dep_comp {
+  rule det {
+    pattern { e:N -[dep:comp]-> M; N[upos=VERB]; M[upos=DET|PRON] }
+    commands { del_edge e; add_edge N -[obj]-> M; }
+  }
+
+  rule adp {
+    pattern { e:N -[dep:comp]-> M; N[upos=VERB]; M[upos=ADP] }
+    commands { del_edge e; add_edge N -[obl:arg]-> M; }
+  }
+
+  rule adp_case {
+    pattern { e:N -[dep:comp]-> M; N[upos<>VERB]; M[upos=ADP] }
+    commands { del_edge e; add_edge N -[case]-> M; }
+  }
+
+  rule ccomp {
+    pattern { e:N -[dep:comp]-> M; N[]; M[upos=SCONJ] }
+    commands { del_edge e; add_edge N -[ccomp]-> M; }
+  }
+
+}
+
 strat main {
   Seq (
     Onf (post),
@@ -89,5 +112,6 @@ strat main {
     Onf (remove_feat),
     Onf (scrap),
     Onf (lang_not_ud),
+    Onf (dep_comp),
   )
 }
