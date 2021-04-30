@@ -10,8 +10,39 @@ package conj {
   }
 }
 
+
+package last_errors {
+  rule BEJ_MV_NARR_03_camel_080-085 {
+    pattern {
+      e: N -[det]-> X; f: X -[reparandum]-> D; X [upos=X]
+    }
+    commands {
+      del_edge e; del_edge f;
+      add_edge N -[det]-> D; add_edge D -[reparandum]-> X;
+    }
+  }
+
+  rule WAZL_15_MC-Abi_MG__93 {
+    pattern {
+      G -[nsubj:aff]-> O_1;
+      e: G -[nsubj:aff]-> O_2;
+      G -[nsubj]-> S;
+      O_1 << O_2
+    }
+    commands { del_edge e; add_edge G -[dep]-> O_2; }
+  }
+}
+
+
+
+
+
+
+
+
 strat main {
   Seq (
     Onf (conj),
+    Onf (last_errors),
   )
 }

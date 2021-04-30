@@ -241,6 +241,22 @@ package shift_out_edges{
       del_edge e
     }
   }
+
+  rule conj_right_headed{ %% Added for Beja !
+    pattern{H -[rev=y]-> D; e:D -[1=conj]-> D1; D.upos <> D1.upos ;
+      D1 << D; % conj is right-headed
+    }
+    without{D1 >> H}
+    without{D[upos=AUX]; D1[upos=VERB]; H << D1}
+    without{D[upos=AUX]; D1[upos=VERB]; H1 -> D; H1 << D1}
+    commands{
+      add_edge f: H -> D1; f.label = e.label;
+      del_edge e
+    }
+  }
+
+
+
 }
 
 
