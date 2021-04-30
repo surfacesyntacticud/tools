@@ -35,7 +35,7 @@ package spoken {
 }
 
 rule no_dep_on_cc {
-  pattern { H -[cc]-> C; e:  C -> N }
+  pattern { H -[cc]-> C; e:  C -[^reparandum]-> N }
   commands {
     add_edge f: H -> N; f.label = e.label;
     del_edge e
