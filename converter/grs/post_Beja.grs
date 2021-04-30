@@ -1,0 +1,17 @@
+package conj {
+  rule conj {
+    pattern { e:N -[conj]-> M; }
+    commands { del_edge e; add_edge N -[dep:conj]-> M; }
+  }
+
+  rule redup {
+    pattern { e:N -[conj:redup]-> M; }
+    commands { del_edge e; add_edge N -[dep:redup]-> M; }
+  }
+}
+
+strat main {
+  Seq (
+    Onf (conj),
+  )
+}
