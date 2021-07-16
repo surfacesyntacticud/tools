@@ -433,9 +433,17 @@ package reverse_relations {
   package reverse_edges {
     rule r {
       pattern { e:H -[level=*, !deep]-> AUX }
-      without { f:H -[level=*, !deep]-> AUX1; f.level < e.level; }
+      
+      % there is no relation to be reversed with a smaller level
+      without { f:H -[level=*, !deep]-> AUX1; f.level < e.level; } 
+      
+      % there is no relation to be reversed at the same level but closer to H
       without { f:H -[level=*, !deep]-> AUX1; e.level = f.level; AUX << AUX1 ; AUX1 << H }
       without { f:H -[level=*, !deep]-> AUX1; e.level = f.level; AUX >> AUX1 ; AUX1 >> H }
+      
+      % if there are two relations on the same level, one before, one after the head, the one before is reversed first 
+      without { H << AUX; f:H -[level=*, !deep]-> AUX1; e.level = f.level; AUX1 << H }
+
       commands {
         e.deep=REV;
         add_edge f: AUX -> H; f.label = e.label;
@@ -812,12 +820,5 @@ strat main {
     Onf (chained_relations),% Package CHAINED_RELATIONS must follow package SHIFT_RULES because it can entail a wrong coordination between two elements because of errors in head changes (UD_French-GS: fr-ud-dev_00131).
     specific_expr_close, % Closing a specific treatment for MWE, titles and translated words.
     Onf (unk_rel),
-  )
-}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-strat main0 {
-  Seq (
-    Onf (eud_to_ud),
-    specific_expr_init, % Initialization of a specific treatment for MWE, titles and translated words.
   )
 }
