@@ -1,0 +1,24 @@
+include "UD_to_SUD.grs"
+
+package wo_levels {
+  rule na {
+    pattern { e: V -[aux]-> A; A[lemma="na"] }
+    commands { e.level = 100 }
+  }
+}
+
+strat wo_main {
+  Seq (
+    Onf (sub_relations),
+    Onf (rel_extensions),
+    Onf (relations),
+
+    Onf (wo_levels),
+
+    reverse_relations.main,
+    Onf (minimize_conj_dep),
+    Onf (add_conj_emb),
+    Onf (chained_relations),
+    Onf (unk_rel),
+  )
+}
