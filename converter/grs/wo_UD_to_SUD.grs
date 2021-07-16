@@ -1,14 +1,11 @@
 include "UD_to_SUD.grs"
 
-package wo_levels {
-  rule na {
-    pattern { e: V -[aux]-> A; A[lemma="na"] }
-    commands { e.level = 100 }
-  }
-}
-
+% Defined a strategy specific to Wolof: the universal strategy with one specific package wo_levels, called before reverse_relations.main.
 strat wo_main {
   Seq (
+    Onf (eud_to_ud),
+    Onf (idioms),
+    specific_expr_init,
     Onf (sub_relations),
     Onf (rel_extensions),
     Onf (relations),
@@ -19,6 +16,15 @@ strat wo_main {
     Onf (minimize_conj_dep),
     Onf (add_conj_emb),
     Onf (chained_relations),
+    specific_expr_close,
     Onf (unk_rel),
   )
 }
+
+package wo_levels {
+  rule na {
+    pattern { e: V -[aux]-> A; A[lemma="na"] }
+    commands { e.level = 100 }
+  }
+}
+
