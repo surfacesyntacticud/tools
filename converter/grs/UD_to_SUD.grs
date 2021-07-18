@@ -448,7 +448,7 @@ package reverse_relations {
         e.deep=REV;
         add_edge f: AUX -> H; f.label = e.label;
         del_edge e;
-        shift_in H =[^TITLE|MWE]=> AUX;
+        shift_in H =[^IDIOM|TITLE|MWE]=> AUX;
         shift_out H =[1=aux|case|cop|mark,!deep]=> AUX;
       }
     }
