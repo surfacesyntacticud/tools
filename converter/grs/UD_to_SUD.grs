@@ -39,7 +39,7 @@ package idioms{
 % The rules are arranged in the alphabetic order of the SUD resulting relations or sub-relations.
 package sub_relations {
 % comp
-%=========
+%=====
 % Sub-relations DEP:COMP are renamed COMP in SUD if they do not start from nominals.
   rule comp_dep {
     pattern { H[upos <> NOUN|PRON]; e:H -[dep:comp]-> D; }
@@ -419,7 +419,7 @@ package reverse_relations {
   % The default order between relation is case < cop < (aux:caus // aux:pass) < aux < mark
   % when there are twice the same relation, the order is determined by the order of proximity with respect the head
 
-  % ----------------------------------------------------------------------------------------------------
+  % ---------------------------------------------------------------------------------------------
   package set_level {
     rule case { pattern { e:H -[1=case, !level]-> D } commands { e.level=10 } }
     rule cop  { pattern { e:H -[1=cop, !level]-> D }  commands { e.level=20 } }
@@ -429,32 +429,32 @@ package reverse_relations {
     rule mark { pattern { e:H -[1=mark, !level]-> D } commands { e.level=50 } }
   }
 
-  % ----------------------------------------------------------------------------------------------------
+  % ---------------------------------------------------------------------------------------------
   package reverse_edges {
     rule r {
-      pattern { e:H -[level=*, !deep]-> AUX }
+      pattern { e:H -[level=*, !deep]-> FUNCT }
       
       % there is no relation to be reversed with a smaller level
-      without { f:H -[level=*, !deep]-> AUX1; f.level < e.level; } 
+      without { f:H -[level=*, !deep]-> FUNCT1; f.level < e.level; } 
       
       % there is no relation to be reversed at the same level but closer to H
-      without { f:H -[level=*, !deep]-> AUX1; e.level = f.level; AUX << AUX1 ; AUX1 << H }
-      without { f:H -[level=*, !deep]-> AUX1; e.level = f.level; AUX >> AUX1 ; AUX1 >> H }
+      without { f:H -[level=*, !deep]-> FUNCT1; e.level = f.level; FUNCT << FUNCT1 ; FUNCT1 << H }
+      without { f:H -[level=*, !deep]-> FUNCT1; e.level = f.level; FUNCT >> FUNCT1 ; FUNCT1 >> H }
       
       % if there are two relations on the same level, one before, one after the head, the one before is reversed first 
-      without { H << AUX; f:H -[level=*, !deep]-> AUX1; e.level = f.level; AUX1 << H }
+      without { H << FUNCT; f:H -[level=*, !deep]-> FUNCT1; e.level = f.level; FUNCT1 << H }
 
       commands {
         e.deep=REV;
-        add_edge f: AUX -> H; f.label = e.label;
+        add_edge f: FUNCT -> H; f.label = e.label;
         del_edge e;
-        shift_in H =[^IDIOM|TITLE|MWE]=> AUX;
-        shift_out H =[1=aux|case|cop|mark,!deep]=> AUX;
+        shift_in H =[^IDIOM|TITLE|MWE]=> FUNCT;
+        shift_out H =[1=aux|case|cop|mark,!deep]=> FUNCT;
       }
     }
   }
 
-  % ----------------------------------------------------------------------------------------------------
+  % ---------------------------------------------------------------------------------------------
   % The source of some relations must rise from the old head D to the new head H.
   package shift_out_edges{
 
@@ -655,7 +655,7 @@ package reverse_relations {
     }
   }
 
-  % ----------------------------------------------------------------------------------------------------
+  % ---------------------------------------------------------------------------------------------
   package cleaning {
     % Removing the mark REV for reversed relations.
     rule remove_rev {
@@ -670,7 +670,7 @@ package reverse_relations {
     }
   }
 
-  % ----------------------------------------------------------------------------------------------------
+  % ---------------------------------------------------------------------------------------------
   % Renaming the reversed relations
   package rename_rel {
     rule case-mark {
