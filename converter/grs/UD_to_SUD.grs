@@ -639,9 +639,11 @@ package reverse_relations {
         H -[deep=REV]-> D;
         e: D -[1=conj]-> N;
         H << D;
-        D[upos=AUX|VERB, VerbForm]; N[upos=AUX|VERB, VerbForm];
-        D.VerbForm <> N.VerbForm
+        D[upos=AUX|VERB, VerbForm];
+	%N[upos=AUX|VERB, VerbForm];
+        %D.VerbForm <> N.VerbForm
       }
+      without{N[upos=AUX|VERB, VerbForm];  D.VerbForm = N.VerbForm}
       commands { add_edge f: H -> N; f.label = e.label; del_edge e }
     }
 
