@@ -544,7 +544,9 @@ package reverse_relations {
       without { D -[mod@relcl]-> N }
       without { D -> X; N << X } % rising must not entail non projectivity
       without { H -[1=case]-> D; N[upos<>ADP|SCONJ] }
-      without { H -[1=cop]-> D; N[upos<>ADP|ADV|SCONJ] }
+      without { H -[1=cop]-> D; N[upos<>ADP|ADV|AUX|SCONJ|VERB] }
+      without { H -[1=cop]-> D; N[upos=AUX|VERB]; D -[!deep]-> N} % the only dependencies that can rise with verbs are MOD@X
+      without { H -[1=cop]-> D; N[upos=AUX|VERB]; D -[deep <> x]-> N}% the only dependencies that can rise with verbs are MOD@X
       without { N[InTitle=Yes]; H[!InTitle] } % A vérifier
       without {H -[1=case|mark]-> D; H1 -[IDIOM]-> N; H1 -[HEAD]-> H }
       commands { add_edge f: H -> N; f.label = e.label; del_edge e }
