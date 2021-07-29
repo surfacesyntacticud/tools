@@ -39,7 +39,6 @@ strat main_pcm {
 
 package pre_pcm {
 
-% Some specificities used in Spoken annotation (Naija et French Spoken)
 package scrap_spec {
 % Remove `scrap` deep extension
 
@@ -95,26 +94,6 @@ package change_POS {
   }
 }
 
-% Some specificities used in Spoken annotation (Naija et French Spoken)
-package spoken {
-% Remove `scrap` deep extension
-  rule scrap {
-    pattern { e: N -[deep=scrap]-> M; }
-    commands { del_feat e.deep }
-  }
-
-  rule conjcoord {
-    pattern { e: N -[conj:coord]-> M; }
-    commands { del_edge e; add_edge N -[conj]-> M; }
-  }
-
-  rule conjappos {
-    pattern { e: N -[conj:appos]-> M; }
-    commands { del_edge e; add_edge N -[appos]-> M; }
-  }
-}
-
-
 package Naija_MISC {
   rule comp_pred_agent {
     pattern { N -[comp:pred]-> N1; e: N -[comp:pred@agent]-> N2; }
@@ -136,7 +115,6 @@ strat main {
     Onf (scrap_spec),
     Onf (PUNCT_to_X),
     Onf (change_POS),
-    Onf (spoken),
     Onf (Naija_MISC),
   )
 }
