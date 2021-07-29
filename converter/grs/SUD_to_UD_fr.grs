@@ -176,16 +176,17 @@ package FR_final {
 strat FR_main_UDplus{
   Seq(
     Onf (FR_init), % Needed for UD validation
+    Onf (spoken),
     Onf (shared),
-    Onf(remove_shared),
-    Onf(FR_pron_verb), % Specific treatment of pronominal verbs in French
+    Onf (remove_shared),
+    Onf (FR_pron_verb), % Specific treatment of pronominal verbs in French
     specific_expr_init,
     Onf (nom_init),
     Onf (unchained_relations),
     Onf (reverse_case_mark),
-    Onf(shift_out_edges),
-    Onf(case_mark_relations),
-    Onf( reverse_close),
+    Onf (shift_out_edges),
+    Onf (case_mark_relations),
+    Onf (reverse_close),
     Onf (sub_relations),
     Onf (FR_mod),
     Onf (FR_udep),
@@ -193,9 +194,9 @@ strat FR_main_UDplus{
     Onf (relations),
     Onf (relations_backoff),
     Onf (FR_subj),
-    Onf(reverse_aux),
-    Onf(shift_out_edges),
-    Onf( reverse_close),
+    Onf (reverse_aux),
+    Onf (shift_out_edges),
+    Onf (reverse_close),
     Onf (final),
     specific_expr_close,
     %Onf (FR_final), % adapt to UD validator constraints
