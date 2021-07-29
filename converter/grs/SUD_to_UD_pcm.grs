@@ -1,0 +1,268 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+include "SUD_to_UD.grs"
+
+% universal conversion
+strat main_u {
+  Seq (
+    Onf (spoken),
+    Onf (shared), % Package SHARED must precede SPECIFIC_EXPR_INIT so that feature Shared=Yes is not embedded in Idiom.
+    Onf (remove_shared),
+    specific_expr_init, % Initialization of a specific treatment for idioms, titles and translated words.
+    Onf (nom_init),
+    Onf (unchained_relations), % For CONJ relations, chains must be transformed into bouquets before head changes because of conditions on the presence of prepositions, conjunctions and auxiliaries. It is easier to take these conditions into account before head changes (UD_French-GSD : fr-ud-dev_00751)
+    Onf (reverse_case_mark),  % Package REVERSE_CASE_MARK precedes packages SUB_RELATIONS and RELATIONS because UD labels of complement relations depend on the category of the complements introduced with a preposition or a conjunction
+    Onf (shift_out_edges),
+    Onf (case_mark_relations), %Package CASE_MARK_RELATIONS must precede package SUB_RELATIONS because renaming of some SUD relations requires the distinction between case and mark relations. The package must also precede package REVERSE_CLOSE because changes concern only reversed relations (Counter-example : SUD_French-GSD fr-ud-train_03238)
+    Onf (reverse_close),
+    Onf (sub_relations), % Package SUB_RELATIONS must precede package REL_EXTENSIONS because this package swat extensions on level 2.
+    Onf (rel_extensions),
+    Onf (relations),
+    Onf (relations_backoff),
+    Onf (reverse_aux),    % Package REVERSE_AUX follows packages SUB_RELATIONS and RELATIONS because of the dependencies H -> AUX in UD: if H is the target of a dependency, the label of the dependency may depend on the mood of AUX.
+    Onf (shift_out_edges),
+    Onf (reverse_close),
+    Onf (final),
+    specific_expr_close, % Closing a specific treatment for idioms, titles and converted words.
+    flatten_idioms,
+    Onf(remove_UDplus_subtypes)
+  )
+}
+
+strat main_pcm {
+  Seq (
+    pre_pcm.main,
+    main_u,
+    post_pcm.main,
+  )
+}
+
+
+package pre_pcm {
+
+% Some specificities used in Spoken annotation (Naija et French Spoken)
+package scrap_spec {
+% Remove `scrap` deep extension
+
+  rule scrap_det {
+    pattern { e: N -[1<>root, deep=scrap]-> M; M [upos=DET] }
+    commands {
+      del_feat e.deep;
+      M.ScrapPos = M.upos;
+      M.upos=PRON;
+    }
+  }
+
+  rule scrap_sconj {
+    pattern { e: N -[1<>root, deep=scrap]-> M; M [upos=SCONJ] }
+    commands {
+      del_feat e.deep;
+      M.ScrapPos = M.upos;
+      M.upos=VERB;
+    }
+  }
+}
+
+
+% Macrosyntax is annotated with PUNCT in SUD but it gives invalid UD structures (non projectivity).
+% Change Macrosyntax annotation with upos `X` and relation `unk`
+package PUNCT_to_X {
+  rule punct_pos {
+    pattern { N [upos=PUNCT] }
+    commands { N.upos=X }
+  }
+
+  rule punct_rel {
+    pattern { e: N -[punct]-> M; }
+    commands { e.1 = unk }
+  }
+}
+
+% A few token have POS in SUD whiwh are not compatible with validation constraints.
+package change_POS {
+  rule na {
+    pattern { X[lemma=na, upos = PART] }
+    commands  { X.upos=AUX }
+  }
+
+  rule its {
+    pattern { X[lemma="it's"|"dat's", upos = PART] }
+    commands  { X.upos=VERB }
+  }
+
+  rule be {
+    pattern { X[lemma=be, upos = VERB] ; X -[1=comp,2=pred]-> Y }
+    commands  { X.upos=AUX }
+  }
+}
+
+% Some specificities used in Spoken annotation (Naija et French Spoken)
+package spoken {
+% Remove `scrap` deep extension
+  rule scrap {
+    pattern { e: N -[deep=scrap]-> M; }
+    commands { del_feat e.deep }
+  }
+
+  rule conjcoord {
+    pattern { e: N -[conj:coord]-> M; }
+    commands { del_edge e; add_edge N -[conj]-> M; }
+  }
+
+  rule conjappos {
+    pattern { e: N -[conj:appos]-> M; }
+    commands { del_edge e; add_edge N -[appos]-> M; }
+  }
+}
+
+
+package Naija_MISC {
+  rule comp_pred_agent {
+    pattern { N -[comp:pred]-> N1; e: N -[comp:pred@agent]-> N2; }
+    commands { del_edge e;  add_edge N -[comp:obl@agent]-> N2; }
+  }
+
+  rule cc {
+    pattern { X -[cc]-> Y ; e : Y -[punct|discourse|parataxis:parenth]-> Z }
+    commands {
+      add_edge f : X -> Z; f.label = e.label;
+      del_edge  e;
+    }
+  }
+}
+
+
+strat main {
+  Seq (
+    Onf (scrap_spec),
+    Onf (PUNCT_to_X),
+    Onf (change_POS),
+    Onf (spoken),
+    Onf (Naija_MISC),
+  )
+}
+
+}
+
+package post_pcm {
+  
+  package post {
+    rule cc_with_children {
+      pattern { N1 -[cc]-> N2; e: N2 -[^fixed]-> N3; }
+      commands {
+        add_edge f: N1 -> N3;
+        f.label = e.label;
+        del_edge e
+      }
+    }
+
+    rule case_with_children {
+      pattern { N1 -[case]-> N2; e: N2 -[^fixed|reparandum|conj]-> N3; }
+      commands {
+        add_edge f: N1 -> N3;
+        f.label = e.label;
+        del_edge e
+      }
+    }
+
+    rule compound_aux {
+      pattern { e:N1 -[1=compound]-> N2; N2 [upos=AUX] }
+      commands { del_edge e; add_edge N1 -[dep]-> N2 }
+    }
+  }
+
+
+  package last_errors {
+    rule ENU_37_Dmoris-Restaurant_MG__21 {
+      pattern {
+        N1 [form="as"]; N2 [form="if"];  N3 [form="}"]; N4 [form="sey"]; N1 < N2; N2 < N3; N3 < N4;
+        e: N1 -[dep:fixed]-> N4;
+        f: N0 -> N3;
+      }
+      commands {
+        del_edge e; add_edge N1 -[fixed]-> N4;
+        del_edge f; add_edge N1 -[fixed]-> N3;
+      }
+    }
+
+    rule WAZL_15_MC-Abi_MG__93 {
+      pattern { e:GOV -[orphan]-> DEP; DEP [upos=DET] }
+      commands { del_edge e; add_edge GOV -[det]-> DEP }
+
+    }
+  }
+
+  package remove_ext {
+    rule nummod {
+      pattern { e:N1 -[1=nummod, 2=*]-> N2; }
+      commands { del_feat e.2 }
+    }
+
+    rule periph_emph {
+      pattern { e:N1 -[2=periph|emph]-> N2; }
+      commands { del_feat e.2 }
+    }
+
+    rule dep_fixed {
+      pattern { e:N1 -[dep:fixed]-> N2; }
+      commands { del_feat e.2 }
+    }
+
+    rule cop_agent {
+      pattern { e:N1 -[cop:agent]-> N2; }
+      commands { del_feat e.2 }
+    }
+  }
+
+  rule remove_feat {
+    pattern { N[Lang=yo, PartType] }
+    commands { del_feat N.PartType }
+  }
+
+  rule scrap {
+    pattern { N [ScrapPos] }
+    commands { N.upos=N.ScrapPos; del_feat N.ScrapPos }
+  }
+
+  rule lang_not_ud {
+    pattern { N[Lang=hau|ig] }
+    commands { del_feat N.Lang }
+  }
+
+  package dep_comp {
+    rule det {
+      pattern { e:N -[dep:comp]-> M; N[upos=VERB]; M[upos=DET|PRON] }
+      commands { del_edge e; add_edge N -[obj]-> M; }
+    }
+
+    rule adp {
+      pattern { e:N -[dep:comp]-> M; N[upos=VERB]; M[upos=ADP] }
+      commands { del_edge e; add_edge N -[obl:arg]-> M; }
+    }
+
+    rule adp_case {
+      pattern { e:N -[dep:comp]-> M; N[upos<>VERB]; M[upos=ADP] }
+      commands { del_edge e; add_edge N -[case]-> M; }
+    }
+
+    rule ccomp {
+      pattern { e:N -[dep:comp]-> M; N[]; M[upos=SCONJ] }
+      commands { del_edge e; add_edge N -[ccomp]-> M; }
+    }
+
+  }
+
+  strat main {
+    Seq (
+      Onf (post),
+      Onf (last_errors),
+      Onf (remove_ext),
+      Onf (remove_feat),
+      Onf (scrap),
+      Onf (lang_not_ud),
+      Onf (dep_comp),
+    )
+  }
+
+  
+  
+}
