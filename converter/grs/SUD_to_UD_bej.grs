@@ -32,8 +32,7 @@ strat main_bej {
   Seq (
     Onf (pre_bej),
     main_u,
-    Onf(conj_post_bej),
-    Onf(last_errors_post_bej),
+    Onf(post_bej),
   )
 }
 
@@ -63,7 +62,7 @@ PTCL, NEG	PTCL,NEG
 #END
 }
 
-package conj_post_bej {
+package post_bej {
   rule conj {
     pattern { e:N -[conj]-> M; }
     commands { del_edge e; add_edge N -[dep:conj]-> M; }
@@ -73,21 +72,10 @@ package conj_post_bej {
     pattern { e:N -[conj:redup]-> M; }
     commands { del_edge e; add_edge N -[dep:redup]-> M; }
   }
-}
 
-
-package last_errors_post_bej {
-  rule BEJ_MV_NARR_03_camel_080-085 {
-    pattern {
-      e: N -[det]-> X; f: X -[reparandum]-> D; X [upos=X]
-    }
-    commands {
-      del_edge e; del_edge f;
-      add_edge N -[det]-> D; add_edge D -[reparandum]-> X;
-    }
-  }
-
-  rule WAZL_15_MC-Abi_MG__93 {
+% The UD validator does not accect 3 relations nusbj on the same head
+% In sentence [BEJ_MV_NARR_03_camel_068-071], one of the [nsubj:aff] is replaced by [dep]
+  rule three_subj {
     pattern {
       G -[nsubj:aff]-> O_1;
       e: G -[nsubj:aff]-> O_2;
