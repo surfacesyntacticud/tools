@@ -30,7 +30,7 @@ strat main_u {
 
 strat main_pcm {
   Seq (
-    pre_pcm.main,
+    Onf(pre_pcm),
     main_u,
     post_pcm.main,
   )
@@ -39,45 +39,7 @@ strat main_pcm {
 
 package pre_pcm {
 
-package scrap_spec {
-% Remove `scrap` deep extension
-
-  rule scrap_det {
-    pattern { e: N -[1<>root, deep=scrap]-> M; M [upos=DET] }
-    commands {
-      del_feat e.deep;
-      M.ScrapPos = M.upos;
-      M.upos=PRON;
-    }
-  }
-
-  rule scrap_sconj {
-    pattern { e: N -[1<>root, deep=scrap]-> M; M [upos=SCONJ] }
-    commands {
-      del_feat e.deep;
-      M.ScrapPos = M.upos;
-      M.upos=VERB;
-    }
-  }
-}
-
-
-% Macrosyntax is annotated with PUNCT in SUD but it gives invalid UD structures (non projectivity).
-% Change Macrosyntax annotation with upos `X` and relation `unk`
-package PUNCT_to_X {
-  rule punct_pos {
-    pattern { N [upos=PUNCT] }
-    commands { N.upos=X }
-  }
-
-  rule punct_rel {
-    pattern { e: N -[punct]-> M; }
-    commands { e.1 = unk }
-  }
-}
-
-% A few token have POS in SUD whiwh are not compatible with validation constraints.
-package change_POS {
+  % A few token have POS in SUD whiwh are not compatible with validation constraints.
   rule na {
     pattern { X[lemma=na, upos = PART] }
     commands  { X.upos=AUX }
@@ -92,33 +54,42 @@ package change_POS {
     pattern { X[lemma=be, upos = VERB] ; X -[1=comp,2=pred]-> Y }
     commands  { X.upos=AUX }
   }
-}
 
-package Naija_MISC {
   rule comp_pred_agent {
     pattern { N -[comp:pred]-> N1; e: N -[comp:pred@agent]-> N2; }
     commands { del_edge e;  add_edge N -[comp:obl@agent]-> N2; }
   }
 
-  rule cc {
-    pattern { X -[cc]-> Y ; e : Y -[punct|discourse|parataxis:parenth]-> Z }
+  % change a scraped "DET" into "PRON"
+  rule scrap_det {
+    pattern { e: N -[1<>root, deep=scrap]-> M; M [upos=DET] }
     commands {
-      add_edge f : X -> Z; f.label = e.label;
-      del_edge  e;
+      del_feat e.deep;
+      M.ScrapPos = M.upos;
+      M.upos=PRON;
     }
   }
-}
 
+  % change a scraped "SCONJ" into "VERB"
+  rule scrap_sconj {
+    pattern { e: N -[1<>root, deep=scrap]-> M; M [upos=SCONJ] }
+    commands {
+      del_feat e.deep;
+      M.ScrapPos = M.upos;
+      M.upos=VERB;
+    }
+  }
 
-strat main {
-  Seq (
-    Onf (scrap_spec),
-    Onf (PUNCT_to_X),
-    Onf (change_POS),
-    Onf (Naija_MISC),
-  )
-}
-
+  % Macrosyntax tokens are annotated with `upos=PUNCT` and with relation `punct` in SUD.
+  % The conversion to UD builds invalid UD structures (non projectivity).
+  % We change macrosyntax annotations with `upos=X` and relation `unk`
+  rule PUNCT_to_X {
+    pattern { e: N -[punct]-> P; P [upos=PUNCT]  }
+    commands { 
+      e.1 = unk;
+      P.upos=X;
+    }
+  }
 }
 
 package post_pcm {
