@@ -44,7 +44,7 @@ package spoken {
   }
   
   rule no_dep_on_cc {
-    pattern { H -[cc]-> C; e:  C -[^reparandum|conj:dicto]-> N }
+    pattern { H -[cc]-> C; e:  C -[^reparandum|conj:dicto|punct|conj]-> N }
     without { e.label = unk; N.InIdiom=Yes } % Except UD "fixed"
     commands {
       add_edge f: H -> N; f.label = e.label;
