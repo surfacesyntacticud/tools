@@ -158,17 +158,6 @@ strat FR_flatten_idioms{
   )
 }
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-package FR_final {
-  % 'case' not expected to have children
-  % in 2.7: 3 cases
-  rule children_case {
-    pattern { e:GOV -[case]-> DEP; DEP -[^fixed|conj]-> X;  }
-    commands { del_edge e; add_edge GOV -[dep]-> DEP }
-  }
-}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Main strategy for converting any SUD French annotation into a UDplus annotation.
 %The UDplus schema is in accordance the UD schema with additional information. It distinguishes between two types of idioms: idioms without syntactic structure are annotated with fixed relations according to the UD guidelines; idioms with a syntactic structure are annotated like any ordinary expression but their head is marked  with the feature PhraseType=Idiom; it also contains a feature ExtPos, which denotes the element’s function within the wider sentence; the other components of the idiom contain the feature InIdiom=Yes.
@@ -199,7 +188,6 @@ strat FR_main_UDplus{
     Onf (reverse_close),
     Onf (final),
     specific_expr_close,
-    %Onf (FR_final), % adapt to UD validator constraints
   )
 }
 
@@ -208,7 +196,7 @@ strat FR_main_UDplus{
 % * [fr-ud-train_11812] …grâce (aussi) à leur accueil…
 % * [fr-ud-train_14502] …suite (notamment) à ses nombreuses visites…
 % In order to have a valid UD annotation, a post-treatment is needed, hence the next rule
-rule discontinuous_MWE {
+rule FR_discontinuous_MWE {
   pattern {
     H -[case]-> N1; N1 [lemma="suite"|"face"|"grâce"]; e: N1 -[dep:comp]-> N2
   }
@@ -225,7 +213,7 @@ strat FR_main{
     FR_main_UDplus,
     FR_flatten_idioms,
     Onf(remove_UDplus_subtypes),
-    Onf(discontinuous_MWE),
+    Onf(FR_discontinuous_MWE),
   )
 }
 
