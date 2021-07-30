@@ -39,7 +39,12 @@ strat main_pcm {
 
 package pre_pcm {
 
-  % A few token have POS in SUD whiwh are not compatible with validation constraints.
+  rule subsem {
+    pattern { e:M -[subsem=*]-> N }
+    commands { del_feat e.subsem }
+  }
+
+  % A few token have POS in SUD which are not compatible with validation constraints.
   rule na {
     pattern { X[lemma=na, upos = PART] }
     commands  { X.upos=AUX }
@@ -55,10 +60,12 @@ package pre_pcm {
     commands  { X.upos=AUX }
   }
 
+
   rule comp_pred_agent {
     pattern { N -[comp:pred]-> N1; e: N -[comp:pred@agent]-> N2; }
     commands { del_edge e;  add_edge N -[comp:obl@agent]-> N2; }
   }
+
 
   % change a scraped "DET" into "PRON"
   rule scrap_det {
