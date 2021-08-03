@@ -30,8 +30,22 @@ package FR_relations {
     pattern{ e:H -[nmod]-> D; D[upos=PRON, lemma=dont|en]}
     commands{del_edge e; add_edge H -[udep]-> D}
   }
+}
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% When several dependents compete for replacing the same head,
+% the rule of starting with the closest dependent does not work in the cases of extraposition of the predicate.
+% Ex: fr-ud-test_00067-  ... ce que nous avons été ...
+% Ex: fr-ud-train_00086- ... quelle que soit la nature de ses pratiques, ...
+% The default order between relation is case < cop < (aux:caus // aux:pass) < aux < mark
+% ---------------------------------------------------------------------------------------------
+package FR_set_level {
+  rule case { pattern { e:H -[1=case, !level]-> D } commands { e.level=10 } }
+  rule cop  { pattern { e:H -[1=cop, !level]-> D }  commands { e.level=20 } }
+  rule aux_caus { pattern { e:H -[1=aux, 2=caus, !level]-> D } commands { e.level=30 } }
+  rule aux_pass { pattern { e:H -[1=aux, 2=pass, !level]-> D } commands { e.level=30 } }
+  rule aux  { pattern { e:H -[1=aux, !level]-> D }  commands { e.level=40 } }
+  rule mark { pattern { e:H -[1=mark, !level]-> D } commands { e.level=50 } }
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -292,11 +306,10 @@ package FR_noun_adv{
       e: H -[udep]-> N}
     commands{del_edge e; add_edge H -[mod]-> N}  
   }
-
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-strat FR_main {
+strat fr_main {
   Seq(
     Onf(idioms),
     specific_expr_init,
@@ -304,6 +317,7 @@ strat FR_main {
     Onf (sub_relations),
     Onf (rel_extensions),
     Onf (relations),
+    Onf (FR_set_level),
     reverse_relations.main,
     Onf(FR_shift_out_edges),
     Onf(FR_shift_out_back_edges),
@@ -316,4 +330,3 @@ strat FR_main {
     Onf(FR_noun_adv),
   )
 }
-

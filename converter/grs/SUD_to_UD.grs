@@ -799,11 +799,14 @@ rule remove_UDplus_subtypes {
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Main strategy for converting any SUD annotation into a UD annotation.
-strat main{
+% Universal main strategy for converting any SUD annotation into a UD annotation.
+strat u_main{
   Seq (
     main_UDplus,
     flatten_idioms,
     Onf(remove_UDplus_subtypes)
   )
 }
+
+% [u_main] is chosen by default
+strat main { u_main }

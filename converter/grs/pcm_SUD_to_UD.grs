@@ -1,43 +1,16 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 include "SUD_to_UD.grs"
 
-% universal conversion
-strat main_u {
+strat pcm_main {
   Seq (
-    Onf (spoken),
-    Onf (shared), % Package SHARED must precede SPECIFIC_EXPR_INIT so that feature Shared=Yes is not embedded in Idiom.
-    Onf (remove_shared),
-    specific_expr_init, % Initialization of a specific treatment for idioms, titles and translated words.
-    Onf (nom_init),
-    Onf (unchained_relations), % For CONJ relations, chains must be transformed into bouquets before head changes because of conditions on the presence of prepositions, conjunctions and auxiliaries. It is easier to take these conditions into account before head changes (UD_French-GSD : fr-ud-dev_00751)
-    Onf (reverse_case_mark),  % Package REVERSE_CASE_MARK precedes packages SUB_RELATIONS and RELATIONS because UD labels of complement relations depend on the category of the complements introduced with a preposition or a conjunction
-    Onf (shift_out_edges),
-    Onf (case_mark_relations), %Package CASE_MARK_RELATIONS must precede package SUB_RELATIONS because renaming of some SUD relations requires the distinction between case and mark relations. The package must also precede package REVERSE_CLOSE because changes concern only reversed relations (Counter-example : SUD_French-GSD fr-ud-train_03238)
-    Onf (reverse_close),
-    Onf (sub_relations), % Package SUB_RELATIONS must precede package REL_EXTENSIONS because this package swat extensions on level 2.
-    Onf (rel_extensions),
-    Onf (relations),
-    Onf (relations_backoff),
-    Onf (reverse_aux),    % Package REVERSE_AUX follows packages SUB_RELATIONS and RELATIONS because of the dependencies H -> AUX in UD: if H is the target of a dependency, the label of the dependency may depend on the mood of AUX.
-    Onf (shift_out_edges),
-    Onf (reverse_close),
-    Onf (final),
-    specific_expr_close, % Closing a specific treatment for idioms, titles and converted words.
-    flatten_idioms,
-    Onf(remove_UDplus_subtypes)
-  )
-}
-
-strat main_pcm {
-  Seq (
-    Onf(pre_pcm),
-    main_u,
-    post_pcm.main,
+    Onf(pcm_pre),
+    u_main,
+    pcm_post.main,
   )
 }
 
 
-package pre_pcm {
+package pcm_pre {
 
   rule subsem {
     pattern { e:M -[subsem=*]-> N }
@@ -99,7 +72,7 @@ package pre_pcm {
   }
 }
 
-package post_pcm {
+package pcm_post {
   
   package post {
     rule cc_with_children {

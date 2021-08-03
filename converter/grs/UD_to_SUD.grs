@@ -412,23 +412,10 @@ package reverse_relations {
     )
   }
 
-  % When several dependents compete for replacing the same head,
-  % the rule of starting with the closest dependent does not work in the cases of extraposition of the predicate.
-  % Ex: fr-ud-test_00067-  ... ce que nous avons été ...
-  % Ex: fr-ud-train_00086- ... quelle que soit la nature de ses pratiques, ...
-  % The default order between relation is case < cop < (aux:caus // aux:pass) < aux < mark
-  % when there are twice the same relation, the order is determined by the order of proximity with respect the head
-
   % ---------------------------------------------------------------------------------------------
   package set_level {
-    rule case { pattern { e:H -[1=case, !level]-> D } commands { e.level=10 } }
-    rule cop  { pattern { e:H -[1=cop, !level]-> D }  commands { e.level=20 } }
-    rule aux_caus { pattern { e:H -[1=aux, 2=caus, !level]-> D } commands { e.level=30 } }
-    rule aux_pass { pattern { e:H -[1=aux, 2=pass, !level]-> D } commands { e.level=30 } }
-    rule aux  { pattern { e:H -[1=aux, !level]-> D }  commands { e.level=40 } }
-    rule mark { pattern { e:H -[1=mark, !level]-> D } commands { e.level=50 } }
+    rule r { pattern { e:H -[1=case|aux|mark|cop, !level]-> D } commands { e.level=10 } }
   }
-
   % ---------------------------------------------------------------------------------------------
   package reverse_edges {
     rule r {
@@ -441,8 +428,8 @@ package reverse_relations {
       without { f:H -[level=*, !deep]-> FUNCT1; e.level = f.level; FUNCT << FUNCT1 ; FUNCT1 << H }
       without { f:H -[level=*, !deep]-> FUNCT1; e.level = f.level; FUNCT >> FUNCT1 ; FUNCT1 >> H }
       
-      % if there are two relations on the same level, one before, one after the head, the one before is reversed first 
-      without { H << FUNCT; f:H -[level=*, !deep]-> FUNCT1; e.level = f.level; FUNCT1 << H }
+      % if there are two relations on the same level, one before, one after the head, the one after is reversed first 
+      without { FUNCT << H; f:H -[level=*, !deep]-> FUNCT1; e.level = f.level; H << FUNCT1 }
 
       commands {
         e.deep=REV;

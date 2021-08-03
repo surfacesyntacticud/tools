@@ -1,0 +1,60 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+include "SUD_to_UD.grs"
+
+strat bej_main {
+  Seq (
+    Onf (bej_pre),
+    u_main,
+    Onf(bej_post),
+  )
+}
+
+
+package bej_pre {
+  % Change relation "aff:xxx" into "xxx:aff"
+  rule aff {
+    pattern { e:M -[1=aff,2=*]-> N }
+    commands { e.1 = e.2; e.2=aff }
+  }
+
+  % Remove whitespaces in XPOS values
+  rule xpos {
+    pattern { N[xpos=lex.in] }
+    commands { N.xpos=lex.out }
+  }
+#BEGIN lex
+in	out
+%----------
+V1, IRG	V1,IRG
+V2, IRG	V2,IRG
+TAM, PNG	TAM,PNG
+AUX, EMPH	AUX,EMPH
+V1, IRG, NEG	V1,IRG,NEG
+N, COP	N,COP
+PTCL, NEG	PTCL,NEG
+#END
+}
+
+package bej_post {
+  rule conj {
+    pattern { e:N -[conj]-> M; }
+    commands { del_edge e; add_edge N -[dep:conj]-> M; }
+  }
+
+  rule redup {
+    pattern { e:N -[conj:redup]-> M; }
+    commands { del_edge e; add_edge N -[dep:redup]-> M; }
+  }
+
+% The UD validator does not accect 3 relations nusbj on the same head
+% In sentence [BEJ_MV_NARR_03_camel_068-071], one of the [nsubj:aff] is replaced by [dep]
+  rule three_subj {
+    pattern {
+      G -[nsubj:aff]-> O_1;
+      e: G -[nsubj:aff]-> O_2;
+      G -[nsubj]-> S;
+      O_1 << O_2
+    }
+    commands { del_edge e; add_edge G -[dep]-> O_2; }
+  }
+}
