@@ -262,11 +262,11 @@ package FR_pron_verb{
 % Ex: les gens s'enfuient.
   rule verb1{
     pattern{
-      V[upos=VERB,!ExtPos, !PhraseType];
+      V[upos=VERB,!ExtPos, !Idiom];
       V -[comp]-> PRON; PRON [upos=PRON]}
     without{V -[comp]-> PRON1; PRON1 [upos=PRON]}
     commands{
-      V.ExtPos=VERB; V.PhraseType=Idiom;
+      V.ExtPos=VERB; V.Idiom=Yes;
       PRON.InIdiom=Yes}
   }
 
@@ -274,11 +274,11 @@ package FR_pron_verb{
 % Ex: ils s'en prennent aux plus faibles.
   rule verb2{
     pattern{
-      V[upos=VERB,!ExtPos, !PhraseType];
+      V[upos=VERB,!ExtPos, !Idiom];
       V -[comp]-> PRON1; PRON1 [upos=PRON];
       V -[comp]-> PRON2; PRON2 [upos=PRON]; PRON1 << PRON2}
     commands{
-      V.ExtPos=VERB; V.PhraseType=Idiom;
+      V.ExtPos=VERB; V.Idiom=Yes;
       PRON1.InIdiom=Yes; PRON2.InIdiom=Yes}
   }
 
@@ -290,12 +290,12 @@ package FR_pron_verb{
 package FR_noun_adv{
   rule adp_to_adv (lex from "lexicons/noun_adv_prep.lp"){
     pattern{
-      N[upos=NOUN, lemma=lex.noun, ExtPos=ADP, PhraseType=Idiom];
+      N[upos=NOUN, lemma=lex.noun, ExtPos=ADP, Idiom=Yes];
       P[upos=ADP, lemma=lex.prep, InIdiom=Yes];
       N -[comp:obl]-> P;
       e: N -[comp:obj]-> N1}
     commands{
-      N.ExtPos = ADV; del_feat N.PhraseType;
+      N.ExtPos = ADV; del_feat N.Idiom;
       del_feat P.InIdiom;
       del_edge e; add_edge P -[comp:obj]-> N1}  
   }

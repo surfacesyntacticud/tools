@@ -10,7 +10,7 @@ package FR_init {
       N2 [lemma=lex.prep];
       e:N1 -[comp:obl]-> N2}
     commands {
-      N1.ExtPos = ADP; N1.PhraseType = Idiom;
+      N1.ExtPos = ADP; N1.Idiom = Yes;
       N2.InIdiom = Yes;
       del_edge e; add_edge N1 -[comp:obj]-> N2}
   }
@@ -31,11 +31,11 @@ package FR_pron_verb{
 % Ex: les gens s'enfuient.
   rule verb1{
     pattern{
-      V[upos=VERB,ExtPos=VERB, PhraseType=Idiom];
+      V[upos=VERB,ExtPos=VERB, Idiom=Yes];
       V -[comp]-> PRON; PRON [upos=PRON,InIdiom=Yes]}
     without{V -[comp]-> PRON1; PRON1 [upos=PRON,InIdiom=Yes]}
     commands{
-      del_feat V.ExtPos; del_feat  V.PhraseType;
+      del_feat V.ExtPos; del_feat  V.Idiom;
       del_feat PRON.InIdiom}
   }
 
@@ -43,11 +43,11 @@ package FR_pron_verb{
 % Ex: ils s'en prennent aux plus faibles.
   rule verb2{
     pattern{
-      V[upos=VERB,ExtPos=VERB, PhraseType=Idiom];
+      V[upos=VERB,ExtPos=VERB, Idiom=Yes];
       V -[comp]-> PRON1; PRON1 [upos=PRON,InIdiom=Yes];
       V -[comp]-> PRON2; PRON2 [upos=PRON,InIdiom=Yes]; PRON1 << PRON2}
     commands{
-      del_feat V.ExtPos; del_feat  V.PhraseType;
+      del_feat V.ExtPos; del_feat  V.Idiom;
       del_feat PRON1.InIdiom; del_feat PRON2.InIdiom;}
   }
 }
@@ -137,15 +137,15 @@ package FR_subj {
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 rule clitic_pron{
   pattern{
-    V[upos=VERB, ExtPos=VERB, PhraseType=Idiom];
+    V[upos=VERB, ExtPos=VERB, Idiom=Yes];
     V -[comp]-> P1; P1[upos=PRON, InIdiom=Yes];
     V -[comp]-> P2; P2[upos=PRON, InIdiom=Yes]}
   commands{del_feat P1.InIdiom}
 }
 
 rule pronominal_verb{
-  pattern{ V[upos=VERB, ExtPos=VERB, PhraseType=Idiom]; V -[comp]-> P; P[upos=PRON, InIdiom=Yes]}
-  commands{ del_feat V.ExtPos; del_feat V.PhraseType; del_feat P.InIdiom}
+  pattern{ V[upos=VERB, ExtPos=VERB, Idiom=Yes]; V -[comp]-> P; P[upos=PRON, InIdiom=Yes]}
+  commands{ del_feat V.ExtPos; del_feat V.Idiom; del_feat P.InIdiom}
 }
 
 
@@ -160,8 +160,8 @@ strat FR_flatten_idioms{
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Main strategy for converting any SUD French annotation into a UDplus annotation.
-%The UDplus schema is in accordance the UD schema with additional information. It distinguishes between two types of idioms: idioms without syntactic structure are annotated with fixed relations according to the UD guidelines; idioms with a syntactic structure are annotated like any ordinary expression but their head is marked  with the feature PhraseType=Idiom; it also contains a feature ExtPos, which denotes the element’s function within the wider sentence; the other components of the idiom contain the feature InIdiom=Yes.
-% For the sake of uniformity, the use of features PhraseType, ExtPos an InIdiom is extended to idioms without syntactic structure.
+%The UDplus schema is in accordance the UD schema with additional information. It distinguishes between two types of idioms: idioms without syntactic structure are annotated with fixed relations according to the UD guidelines; idioms with a syntactic structure are annotated like any ordinary expression but their head is marked  with the feature Idiom=Yes; it also contains a feature ExtPos, which denotes the element’s function within the wider sentence; the other components of the idiom contain the feature InIdiom=Yes.
+% For the sake of uniformity, the use of features Idiom, ExtPos an InIdiom is extended to idioms without syntactic structure.
 strat FR_main_UDplus{
   Seq(
     Onf (FR_init), % Needed for UD validation

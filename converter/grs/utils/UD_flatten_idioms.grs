@@ -3,7 +3,7 @@
 
 % Choose one MWE in the sentence
 rule choose_mwepos {
-  pattern { N[ExtPos,PhraseType=Idiom] }
+  pattern { N[ExtPos,Idiom=Yes] }
   without { N -[fixed]-> * }
   commands { N.fix=Head}
 }
@@ -25,13 +25,13 @@ package first {
 
 % The leftmost component is not the head of the MWE.
   rule head_not_first {
-    pattern { N[fix=Part]; H[fix=Head, PhraseType]; }
+    pattern { N[fix=Part]; H[fix=Head, Idiom=Yes]; }
     without { H < N }
     without { M[fix]; M < N }
     commands {
       N.fix=First;
       N.ExtPos = H.ExtPos; del_feat H.ExtPos;
-      N.PhraseType = H.PhraseType; del_feat H.PhraseType;
+      N.Idiom = Yes; del_feat H.Idiom;
       shift H ==> N}
   }
 }

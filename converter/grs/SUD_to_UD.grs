@@ -767,8 +767,8 @@ package final {
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Main strategy for converting any SUD annotation into a UDplus annotation.
-%The UDplus schema is in accordance the UD schema with additional information. It distinguishes between two types of idioms: idioms without syntactic structure are annotated with fixed relations according to the UD guidelines; idioms with a syntactic structure are annotated like any ordinary expression but their head is marked  with the feature PhraseType=Idiom; it also contains a feature ExtPos, which denotes the element’s function within the wider sentence; the other components of the idiom contain the feature InIdiom=Yes.
-% For the sake of uniformity, the use of features PhraseType, ExtPos an InIdiom is extended to idioms without syntactic structure.
+%The UDplus schema is in accordance the UD schema with additional information. It distinguishes between two types of idioms: idioms without syntactic structure are annotated with fixed relations according to the UD guidelines; idioms with a syntactic structure are annotated like any ordinary expression but their head is marked  with the feature Idiom=Yes; it also contains a feature ExtPos, which denotes the element’s function within the wider sentence; the other components of the idiom contain the feature InIdiom=Yes.
+% For the sake of uniformity, the use of features Idiom, ExtPos an InIdiom is extended to idioms without syntactic structure.
 strat main_UDplus {
   Seq (
     Onf (spoken),

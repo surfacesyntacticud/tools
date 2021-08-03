@@ -22,8 +22,8 @@ package eud_to_ud {
 package idioms{
 % Marking the heads. We make the hypothesis that the idiom has the same POS as its head.
   rule idiom_head{
-    pattern{H -[fixed]-> *; H[!ExtPos,!PhraseType]}
-    commands{H.ExtPos=H.upos; H.PhraseType=Idiom}
+    pattern{H -[fixed]-> *; H[!ExtPos,!Idiom]}
+    commands{H.ExtPos=H.upos; H.Idiom=Yes}
   }
 
 % Marking the dependents.
