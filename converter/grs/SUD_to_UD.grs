@@ -168,10 +168,10 @@ package nom_init {
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Dependencies of type FLAT, FIXED or CONJ that are chained are reorganized into bouquets.
 package unchained_relations {
-  rule flat_name {
-    pattern { H -[flat:name]-> D1; e: D1 -[flat:name]-> D2; }
-    without { * -[flat:name]-> H; }
-    commands { del_edge e; add_edge H -[flat:name]-> D2; }
+  rule flat {
+    pattern { H -[1=flat]-> D1;e: D1 -[1=flat]-> D2 }
+    without { * -[1=flat]-> H; }
+    commands { add_edge f: H -> D2; f.label=e.label; del_edge e; }
   }
 
   rule fixed {
@@ -180,11 +180,6 @@ package unchained_relations {
       e: D1 -[unk]-> D2; * -[IDIOM]-> D2}
     without { * -[unk]-> H;  * -[IDIOM]-> H}
     commands { del_edge e; add_edge H -[unk]-> D2; }
-  }
-
-  rule flat {
-    pattern { H -[flat]-> D1;e: D1 -[flat]-> D2 }
-    commands { del_edge e; add_edge H -[flat]-> D2 }
   }
 
   rule conj {
@@ -197,7 +192,6 @@ package unchained_relations {
     pattern { H -[conj:emb]-> D1;e: D1 -[conj:emb]-> D2 }
     commands { del_edge e; add_edge H -[conj:emb]-> D2 }
   }
-
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
