@@ -396,9 +396,9 @@ package relations {
 % All aux, case, cop and mark relations are reversed.
 % The reverse procedure consists of 5 steps
 % 1) package [set_level]: assign a numerical level to each relation which should be reversed
-% 2) package [reverse_edges]: reverse edges, add the edge feature deep=REV. shift_in are done and shift_out is done only on the subsets of reversable relations (case, cop, aux, mark); other shift_out operations are postponed to the next package;
+% 2) package [reverse_edges]: reverse edges, add the edge feature REV=Yes. shift_in are done and shift_out is done only on the subsets of reversable relations (case, cop, aux, mark); other shift_out operations are postponed to the next package;
 % 3) package [shift_out_edges]: generic rules for selection of relations that should move from the old head onto the new head;
-% 4) rule [cleaning]: remove the deep=REV and the level=* features on edges;
+% 4) rule [cleaning]: remove the REV=Yes and the level=* features on edges;
 % 5) package [rename_rel]: assign the final SUD labels to reversed edges
 package reverse_relations {
 
@@ -419,20 +419,20 @@ package reverse_relations {
   % ---------------------------------------------------------------------------------------------
   package reverse_edges {
     rule r {
-      pattern { e:H -[level=*, !deep]-> FUNCT }
+      pattern { e:H -[level=*, !REV]-> FUNCT }
       
       % there is no relation to be reversed with a smaller level
-      without { f:H -[level=*, !deep]-> FUNCT1; f.level < e.level; } 
+      without { f:H -[level=*, !REV]-> FUNCT1; f.level < e.level; } 
       
       % there is no relation to be reversed at the same level but closer to H
-      without { f:H -[level=*, !deep]-> FUNCT1; e.level = f.level; FUNCT << FUNCT1 ; FUNCT1 << H }
-      without { f:H -[level=*, !deep]-> FUNCT1; e.level = f.level; FUNCT >> FUNCT1 ; FUNCT1 >> H }
+      without { f:H -[level=*, !REV]-> FUNCT1; e.level = f.level; FUNCT << FUNCT1 ; FUNCT1 << H }
+      without { f:H -[level=*, !REV]-> FUNCT1; e.level = f.level; FUNCT >> FUNCT1 ; FUNCT1 >> H }
       
       % if there are two relations on the same level, one before, one after the head, the one after is reversed first 
-      without { FUNCT << H; f:H -[level=*, !deep]-> FUNCT1; e.level = f.level; H << FUNCT1 }
+      without { FUNCT << H; f:H -[level=*, !REV]-> FUNCT1; e.level = f.level; H << FUNCT1 }
 
       commands {
-        e.deep=REV;
+        e.REV=Yes;
         add_edge f: FUNCT -> H; f.label = e.label;
         del_edge e;
         shift_in H =[^IDIOM|TITLE|MWE]=> FUNCT;
@@ -448,7 +448,7 @@ package reverse_relations {
     % discourse and orphan are always rised
     rule discourse_orphan {
       pattern {
-        H -[deep=REV]-> D;
+        H -[REV=Yes]-> D;
         e: D -[discourse|orphan]-> N
       }
       commands { add_edge f: H -> N; f.label = e.label; del_edge e }
@@ -457,7 +457,7 @@ package reverse_relations {
     % cc are rised
     rule cc {
       pattern {
-        H -[deep=REV]-> D;
+        H -[REV=Yes]-> D;
         e: D -[cc]-> N;
         N << H; %Ex:  fr-ud-train_12306 - ... sont soit des fanatiques, soit des hypocrites,
       }
@@ -471,14 +471,14 @@ package reverse_relations {
     % Ex: French-GSD fr-ud-train_08302 - C'est fantastique à quel point vous devez faire attention au
     rule agent_aux_caus {
       pattern{
-        H -[1=aux, 2=caus, deep=REV]-> D;
+        H -[1=aux, 2=caus, REV=Yes]-> D;
         e: D -[deep=agent]-> N
       }
       commands { add_edge f: H -> N; f.label = e.label; del_edge e }
     }
     rule agent_cop {
       pattern{
-        H -[1=cop, deep=REV]-> D;
+        H -[1=cop, REV=Yes]-> D;
         e: D -[deep=agent]-> N
       }
       commands { add_edge f: H -> N; f.label = e.label; del_edge e }
@@ -486,7 +486,7 @@ package reverse_relations {
 
     rule all_mark_embedded{
       pattern {
-        H -[1=cop|aux|case,deep=REV]-> D;
+        H -[1=cop|aux|case,REV=Yes]-> D;
         e: D -[1=dislocated|parataxis|subj|vocative]-> N;}
       without { D -[parataxis]-> N; H1 -[1 <> cop]-> H; H -[1=case]-> D }
       without { N[InTitle=Yes] } % French-GSD fr-ud-train_13022 - ...très connu dans les rôles de Bo Duke de Shérif, fais-moi peur !
@@ -495,7 +495,7 @@ package reverse_relations {
 
     rule comp_cleft{
       pattern {
-        H -[1=cop|aux|case,deep=REV]-> D;
+        H -[1=cop|aux|case,REV=Yes]-> D;
         e: D -[comp:cleft]-> N;}
       without { N[InTitle=Yes] } % French-GSD fr-ud-train_13022 - ...très connu dans les rôles de Bo Duke de Shérif, fais-moi peur !
       commands { add_edge f: H -> N; f.label = e.label; del_edge e }
@@ -504,7 +504,7 @@ package reverse_relations {
     % Relations with their source D after the head of a subordinated clause and their dependent N before.
     rule all_mark_outside_left{
       pattern {
-        H -[1=mark,deep=REV]-> D;
+        H -[1=mark,REV=Yes]-> D;
         e: D -[1=dislocated|subj|vocative]-> N;
         N << H; H << D
       }
@@ -514,7 +514,7 @@ package reverse_relations {
     % Relations with their source D before the head of a subordinated clause and their dependent N afterwards.
     rule all_mark_outside_right{
       pattern {
-        H -[1=mark,deep=REV]-> D;
+        H -[1=mark,REV=Yes]-> D;
         e: D -[1=dislocated|subj]-> N;
         D << H; H << N
       }
@@ -524,7 +524,7 @@ package reverse_relations {
     % Relations that rise when their source D is on the right of H and when their dependent N is on the right of D.
     rule H_D_N_mod {
       pattern {
-        H -[1<>mark, deep=REV]-> D;  
+        H -[1<>mark, REV=Yes]-> D;  
         e: D -[1=mod]-> N; 
         H << D; D << N
       }
@@ -542,7 +542,7 @@ package reverse_relations {
     % Relations that rise when their source D is on the right of H and when their dependent N is on the right of D.
     rule H_D_N_punct {
       pattern {
-        H -[deep=REV]-> D;  
+        H -[REV=Yes]-> D;  
         e: D -[1=punct]-> N; 
         H << D; D << N
       }
@@ -559,7 +559,7 @@ package reverse_relations {
     % Relations that rise when their source D is on the right of H and when their dependent N is between D and H.
     rule H_N_D { 
       pattern{
-        H -[1=aux|cop,deep=REV]-> D;
+        H -[1=aux|cop,REV=Yes]-> D;
         e: D -[mod]-> N;
         H << N; N << D}
       without{ H -[1=cop]-> D; N[upos=ADJ]; D[upos=NOUN] }
@@ -570,7 +570,7 @@ package reverse_relations {
     % Relations that rise when their source D is on the left of H and when their dependent N is on the right of H.
     rule D_H_N{
       pattern {
-        H -[deep=REV]-> D;
+        H -[REV=Yes]-> D;
         e: D -[1=mod|punct]-> N;
         D << H; H << N
       }
@@ -580,7 +580,7 @@ package reverse_relations {
     % Relations that rise when their source D is on the left of N and when their dependent N is also on the left of H.
     rule D_N_H {
       pattern {
-          H -[1=cop,deep=REV]-> D;
+          H -[1=cop,REV=Yes]-> D;
           e: D -[1=mod]-> N;
           D << N; N << H
         }
@@ -590,7 +590,7 @@ package reverse_relations {
     % Relations that rise when their source D is on the right of H and when their dependent N is on the left of H.
     rule N_H_D {
       pattern {
-        H -[deep=REV]-> D;  
+        H -[REV=Yes]-> D;  
         e: D -[1=mod|orphan|punct|reparandum|udep]-> N; 
         N << H; H << D
       }
@@ -600,7 +600,7 @@ package reverse_relations {
     % Relations that rise when their source D is on the left of H and when their dependent N is on the left of D.
     rule N_D_H {
       pattern{
-        H -[deep=REV]-> D;
+        H -[REV=Yes]-> D;
         e: D -[1=mod|punct]-> N;
         N << D; D << H
       }
@@ -610,7 +610,7 @@ package reverse_relations {
     % Conj relations in the general case.
     rule conj{
       pattern{
-        H -[deep=REV]-> D;
+        H -[REV=Yes]-> D;
         e: D -[1=conj]-> N;
         D.upos <> N.upos;
       }
@@ -625,7 +625,7 @@ package reverse_relations {
     % Conj relations when the conjunct heads are verbs.
     rule conj_verb {
       pattern {
-        H -[deep=REV]-> D;
+        H -[REV=Yes]-> D;
         e: D -[1=conj]-> N;
         H << D;
         D[upos=AUX|VERB, VerbForm];
@@ -637,7 +637,7 @@ package reverse_relations {
     }
 
     rule shared{
-      pattern{H -[deep=REV]-> D; D[Shared=Yes]}
+      pattern{H -[REV=Yes]-> D; D[Shared=Yes]}
       commands{H.Shared=Yes; del_feat D.Shared}
     }
   }
@@ -646,8 +646,8 @@ package reverse_relations {
   package cleaning {
     % Removing the mark REV for reversed relations.
     rule remove_rev {
-      pattern { e: M -[deep=REV]-> N }
-      commands{del_feat e.deep}
+      pattern { e: M -[REV=Yes]-> N }
+      commands{del_feat e.REV}
     }
   
     % Removing the level feature
@@ -660,35 +660,33 @@ package reverse_relations {
   % ---------------------------------------------------------------------------------------------
   % Renaming the reversed relations
   package rename_rel {
+    % Next two rules: potential subrel for mark/case/cop are already in the "deep" feature
     rule case-mark {
-      pattern { e:M -[case|mark]-> N }
-      commands { add_edge M -[comp:obj]-> N; del_edge e }
+      pattern { e:M -[1=case|mark]-> N }
+      commands { 
+        e.1 = comp;
+        e.2 = obj;
+      }
     }
-    
+
     rule cop {
-      pattern { e:M -[cop]-> N }
-      commands { add_edge M -[comp:pred]-> N; del_edge e }
+      pattern { e:M -[1=cop]-> N }
+      commands { 
+        e.1 = comp;
+        e.2 = pred;
+      }
     }
 
-    rule aux {
-      pattern { e:M -[aux]-> N }
-      commands { add_edge M -[comp:aux]-> N; del_edge e }
-    }
-
-    rule aux_pass {
-      pattern { e:M -[aux:pass]-> N }
-      commands { add_edge M -[comp:aux@pass]-> N; del_edge e }
-    }
-
-    rule aux_caus {
-      pattern { e:M -[aux:caus]-> N }
-      commands { add_edge M -[comp:aux@caus]-> N; del_edge e }
-    }
-
-    rule other_aux {
-      pattern { e:M -[1=aux,2<>caus|pass]-> N }
-      commands { add_edge M -[1=comp,2=aux,deep=e.2]-> N; del_edge e }
-    }
+    % Next two rules: potential subrel for aux are moved now in the "deep" feature
+     rule aux {
+       pattern { e:M -[aux]-> N }
+       commands { add_edge M -[comp:aux]-> N; del_edge e }
+     }
+ 
+     rule aux_with_subrel {
+       pattern { e:M -[1=aux,2=*]-> N }
+       commands { add_edge M -[1=comp,2=aux,deep=e.2]-> N; del_edge e }
+     }
   }
 }
 
