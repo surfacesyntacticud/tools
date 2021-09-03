@@ -11,7 +11,7 @@
         "  B[upos=ADJ|VERB];",
         "  A.Number <> B.Number",
         "}",
-        "without {B[PhraseType=Idiom]}",
+        "without {B[Idiom=Yes]}",
         "without { A.Number = B.CorrectNumber }",
         "without { A.CorrectNumber = B.Number }",
         "without { B[VerbForm <> Part, Tense <> Past] }",
@@ -32,7 +32,7 @@
         "  B[upos=ADJ|VERB];",
         "  A.Gender <> B.Gender",
         "}",
-        "without {B[PhraseType=Idiom]}",
+        "without {B[Idiom=Yes]}",
         "without { A.Gender = B.CorrectGender }",
         "without { A.CorrectGender = B.Gender }",
         "without { B[VerbForm <> Part, Tense <> Past] }",
@@ -130,7 +130,7 @@
         "  A -[det]-> B;",
         "  A.Number <> B.Number",
         "}",
-        "without{A[PhraseType=Title]}",
+        "without{A[Title=Yes]}",
         "without { A.Number = B.CorrectNumber }",
         "without { A.CorrectNumber = B.Number }",
         "without { B -[conj]-> * }",
@@ -146,7 +146,7 @@
         "  A -[det]-> B;",
         "  A.Gender <> B.Gender",
         "}",
-        "without{A[PhraseType=Title]}",
+        "without{A[Title=Yes]}",
         "without { A.Gender = B.CorrectGender }",
         "without { A.CorrectGender = B.Gender }",
         "without { B -[conj]-> * }",
@@ -166,7 +166,7 @@
         "without { A.Number = B.CorrectNumber }",
         "without { A.CorrectNumber = B.Number }",
         "without { B -[conj]-> * }",
-        "without { B[PhraseType=Title] }"
+        "without { B[Title=Yes] }"
       ],
       "level": "warning"
     },
@@ -182,7 +182,7 @@
         "without { A.Person = B.CorrectPerson }",
         "without { A.CorrectPerson = B.Person }",
         "without { B -[conj]-> * }",
-        "without { B[PhraseType=Title] }"
+        "without { B[Title=Yes] }"
       ],
       "level": "warning"
     },
@@ -200,7 +200,7 @@
         "without { B.Number = C.CorrectNumber }",
         "without { B.CorrectNumber = C.Number }",
         "without { B -[conj]-> * }",
-        "without { B[PhraseType=Title] }"
+        "without { B[Title=Yes] }"
       ],
       "level": "warning"
     },
@@ -218,7 +218,7 @@
         "without { B.Gender = C.CorrectGender }",
         "without { B.CorrectGender = C.Gender }",
         "without { B -[conj]-> * }",
-        "without { B[PhraseType=Title] }"
+        "without { B[Title=Yes] }"
       ],
       "level": "warning"
     },
@@ -235,7 +235,7 @@
         "without { A.Number = B.CorrectNumber }",
         "without { A.CorrectNumber = B.Number }",
         "without { B -[conj]-> * }",
-        "without { B[PhraseType=Title] }"
+        "without { B[Title=Yes] }"
       ],
       "level": "warning"
     },
@@ -252,7 +252,7 @@
         "without { A.Gender = B.CorrectGender }",
         "without { A.CorrectGender = B.Gender }",
         "without { B -[conj]-> * }",
-        "without { B[PhraseType=Title] }"
+        "without { B[Title=Yes] }"
       ],
       "level": "warning"
     }

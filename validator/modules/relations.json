@@ -26,7 +26,7 @@
     {
       "pattern": [
         "pattern { N -[comp:obj]-> N1; N -[comp:obj]-> N2; N1 << N2; }",
-        "without { N[PhraseType=Idiom]}"
+        "without { N[Idiom=Yes]}"
       ],
       "description": "Two `comp:obj` relations with the same governor",
       "level": "warning"
@@ -39,11 +39,6 @@
     {
       "pattern": "pattern { GOV -[1=flat|conj]-> DEP; DEP << GOV }",
       "description": "No backward `flat` or `conj` relation",
-      "level": "error"
-    },
-    {
-      "pattern": "pattern { N1 -[unk@fixed]-> N2; N2 -[^unk@fixed]-> N3 }",
-      "description": "Non `fixed` relation inside a `fixed` construction",
       "level": "error"
     },
     {
