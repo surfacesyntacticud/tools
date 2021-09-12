@@ -60,7 +60,7 @@ package shared {
   rule move_relation {
     pattern {
       N1 -[1=conj]-> N2;
-      e: N2 -> D; D[Shared=Yes]}
+      e: N2 -> D; D[Shared=Yes]; N2 << D }
   %  without{ N2 -[orphan]-> D; H -[^ conj]-> N1} %Ex : SUD_FRENCH-GSD fr-ud-train_13715
     commands {
       add_edge f: N1 -> D; f.label = e.label;
@@ -76,7 +76,7 @@ package shared {
       N1 -[1=comp,2=obj]-> D1; N1 << D1;
       N2 -[1=comp,2=obj]-> D2; N2 << D2;
       N1.upos=N2.upos;
-      e: D2 -[1=comp|mod|udep]-> D; D[Shared=Yes]}
+      e: D2 -[1=comp|mod|udep]-> D; D[Shared=Yes]; D2 << D; }
     without{D2 -[1=comp]-> D; D1 -[1=comp]-> D3} %Ex: fr-ud-test_00145 - quand on en détruit et qu' on en créé 20.000
     commands {
       add_edge f: D1 -> D; f.label = e.label;
@@ -618,7 +618,7 @@ package relations {
   }
 
   rule advmod {
-    pattern { e:H -[1=mod|udep]-> D; D[upos=ADV|CCONJ|INTJ|PART|SYM, !nom] }
+    pattern { e:H -[1=mod|udep]-> D; D[upos=ADV|CCONJ|PART|SYM, !nom] }
     without{D -[1=mark]-> *}
     commands {e.1=advmod}
   }
@@ -654,6 +654,12 @@ package relations {
   rule dep-comp{
     pattern{ e: H -[1=comp]-> D}
     commands{del_edge e; add_edge H -[dep:comp]-> D}
+  }
+
+  rule discourse {
+    pattern { e:H -[1=mod|udep]-> D; D[upos=INTJ, !nom] }
+    without{D -[1=mark]-> *}
+    commands {e.1=discourse}
   }
 
   rule fixed{
