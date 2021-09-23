@@ -13,7 +13,7 @@ package spoken {
   % Remove `scrap` deep extension
   rule scrap {
     pattern { e: N -[deep=scrap]-> M; }
-    commands { del_feat e.deep }
+    commands { del_feat e.deep; M.Scrap=Yes }
   }
 
   rule conjcoord {
@@ -162,6 +162,12 @@ package nom_init {
     commands {A.nom=y}
   }
 
+% A scrapped determiner is considered nominal
+  rule scrap {
+    pattern {A[upos=DET,Scrap=Yes,!nom]; }
+    commands {A.nom=y}
+  }
+
 }
 
 
@@ -307,7 +313,7 @@ package case_mark_relations {
 % Adpositions introducing nominals are case dependent.
 % Ex: à Paris - comme à Paris - il ira plutôt à Lyon qu'à Paris.
   rule case_nom_adp{
-    pattern{ e:H -[1=comp,2=obj,rev=y]-> D; H[nom=y];D[upos=ADP|PART] }
+    pattern{ e:H -[1=comp,2=obj,rev=y]-> D; H[nom=y]; D[upos=ADP|PART] }
     commands {e.1=case}
   }
 
@@ -434,11 +440,18 @@ package sub_relations {
     commands {e.1=ccomp}
   }
 
-% Clausal argument with a non-verbal head.
+  % Clausal argument with a non-verbal head.
   rule ccomp_non-verb {
     pattern {
       e:H -[1=comp, 2=obj|obl]-> D; D[upos<> AUX|VERB];
       D -[1=mark]-> CONJ}
+    commands {e.1=ccomp}
+  }
+
+  % a Scrapped SCONJ is considered as verbal 
+  % Ex: "et il se dit que…" [Rhap_M0023-19]
+  rule ccomp_scrap{
+    pattern { e:H -[1=comp, 2=obj]-> D; D[upos=SCONJ,Scrap=Yes]}
     commands {e.1=ccomp}
   }
 
