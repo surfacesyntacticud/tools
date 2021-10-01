@@ -436,7 +436,7 @@ package reverse_relations {
         add_edge f: FUNCT -> H; f.label = e.label;
         del_edge e;
         shift_in H =[^IDIOM|TITLE|MWE]=> FUNCT;
-        shift_out H =[1=aux|case|cop|mark,!deep]=> FUNCT;
+        shift_out H =[1=aux|case|cop|mark,!deep,!REV]=> FUNCT;
       }
     }
   }
