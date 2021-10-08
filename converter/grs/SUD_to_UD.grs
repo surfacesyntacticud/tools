@@ -37,11 +37,11 @@ package spoken {
     commands { del_edge e; add_edge N -[reparandum]-> M; }
   }
 
-  % No UD counterpart for mod@x
-  rule nmodx {
-    pattern { e: N -[mod@x]-> M; }
-    commands { del_edge e; add_edge N -[mod]-> M; }
-  }
+  % % No UD counterpart for mod@x
+  % rule nmodx {
+  %   pattern { e: N -[mod@x]-> M; }
+  %   commands { del_edge e; add_edge N -[mod]-> M; }
+  % }
   
   rule no_dep_on_cc {
     pattern { H -[cc]-> C; e:  C -[^reparandum|conj:dicto|conj]-> N }
