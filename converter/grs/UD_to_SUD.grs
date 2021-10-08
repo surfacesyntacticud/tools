@@ -46,9 +46,16 @@ package sub_relations {
     commands {del_edge e; add_edge H -[comp]-> D}
   }
 
+% Clitic pronouns linked to pronominal verbs.
+% Ex: les enfants s'enfuient.
+  rule comp-expl_expl-pv{
+    pattern{e: H -[expl:pv]-> D}
+    commands{del_edge e; add_edge H -[comp@expl]-> D}
+  }
+
 % Clitic pronouns expressing the mediopassive redistribution.
 % Ex: les maisons se vendent bien en ce moment.
-  rule expl-pass_comp-pass{
+  rule comp-pass_expl-pass{
     pattern{e: H -[expl:pass]-> D}
     commands{del_edge e; add_edge H -[comp@pass]-> D}
   }
@@ -156,7 +163,7 @@ package sub_relations {
 % unk
 %=========
   rule other_expl {
-    pattern { e:H -[1=expl, 2<>subj|comp|pass]-> D; }
+    pattern { e:H -[1=expl, 2<>subj|comp|pass|pv]-> D; }
     commands {del_edge e; add_edge H -[unk@expl]-> D}
   }
 
@@ -180,6 +187,16 @@ package rel_extensions {
 % UD relations are renamed as SUD relations or sub-relations.
 % Rem: the order of the rules follows the alphabetic order of the names of the resulting relations.
 package relations {
+
+
+%comp:expl
+%=========
+% Clitic pronoun linked with verbs to form fixed expressions.
+% Ex: IL en veut à sa fille.
+  rule comp-expl{
+    pattern{e: H -[expl]-> D; H[upos=VERB]; D[upos=PRON]}
+    commands{del_edge e; add_edge H -[comp@expl]-> D}
+  }
 
 
 %comp:obj
@@ -385,8 +402,9 @@ package relations {
   }
 
   rule unk_expl {
-    pattern { e:H -[expl]-> D; }
-    commands {del_edge e;add_edge H -[unk@expl]-> D;}
+    pattern{e:H -[expl]-> D}
+    without{H[upos=VERB]; D[upos=PRON]}
+    commands{del_edge e;add_edge H -[unk@expl]-> D;}
   }
 
 }

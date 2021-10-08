@@ -126,7 +126,7 @@ rule remove_shared {
 package nom_init {
 % All adverbs, numbers and symbols that are direct objects are considered nominal.
   rule nom_comp {
-    pattern {A[upos=ADJ|ADV|SYM|NUM,!nom]; H -[1=comp, 2=obj]-> A}
+    pattern {A[upos=ADJ|ADV|INTJ|NUM|SYM,!nom]; H -[1=comp, 2=obj]-> A}
     without{ H[upos=ADP|SCONJ]; A[upos=ADJ|ADV]}
     without{A[upos=ADV]; * -[IDIOM]-> A}
     commands {A.nom=y}
@@ -203,7 +203,7 @@ package unchained_relations {
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % The relations with prepositions and conjunction of subordination as their heads are reversed.
 package reverse_case_mark {
-% The heads are reversed from the most internal to the most external. The source and the target of the reversed relation are marked "reversed = y" so that loops are not possible.
+% The heads are reversed from the most internal to the most external. The source and the target of the reversed relation are marked "rev = y" so that loops are not possible.
   rule rev_head {
     pattern {e:H -[comp:obj]-> D; H[upos= ADP|CCONJ|PART|SCONJ]}
     without{D[upos= ADP|CCONJ|PART|SCONJ]; D -[1=comp,2=obj]-> D1}
@@ -475,11 +475,26 @@ package sub_relations {
     commands {del_edge e; add_edge H -[csubj:pass]-> D }
   }
 
-% Clitic pronoun expressing the mediopassive redistribution.
+% Clitic pronouns expressing the mediopassive redistribution.
 % Ex: Les voitures se sont bien vendues.
   rule expl-pass_comp{
     pattern{e: H -[comp@pass]-> D}
     commands{del_edge e; add_edge H -[expl:pass]-> D}
+  }
+
+% Reflexive clitic pronouns linked to pronominal verbs.
+% Ex: Les enfants s'enfuient.
+  rule expl-pv_comp{
+    pattern{e: H -[comp@expl]-> D; D[Reflex=Yes]}
+    commands{del_edge e; add_edge H -[expl:pv]-> D}
+  }
+
+% Clitic pronoun linked with verbs to form fixed expressions.
+% Ex: IL en veut à sa fille.
+  rule expl_comp{
+    pattern{e: H -[comp@expl]-> D;}
+    without{ D[Reflex=Yes]}
+    commands{del_edge e; add_edge H -[expl]-> D}
   }
 
 
