@@ -256,30 +256,67 @@ package FR_shift_out_back_edges{
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% French pronominal verbs are considered as idioms. In the conversion to SUD, their idiomatic characteristic is added.
-package FR_pron_verb{
-% The pronominal verb has a unique clitic pronoun marking its pronominal feature.
-% Ex: les gens s'enfuient.
-  rule verb1{
+% Some left dependents of th first conjunct of a coordination are marked as shared by error and the mark must be removed.
+package FR_unmark_left_conj-dep{
+% Modifiers that are marked shared by error.
+  rule unmark_mod {
+    pattern {
+      C1 -[1=conj]-> C2;
+      e:C1 -[mod]-> D; D << C1;
+      D[upos=lex.pos, lemma=lex.adv,Shared=Yes]}
+    commands{del_feat D.Shared}
+  }
+#BEGIN	lex
+adv	pos
+%-----
+assez	ADV
+bien	ADV
+fort	ADV
+mal	ADV
+moins	ADV
+ne	ADV
+non	ADV
+pas	ADV
+peu	ADV
+plus	ADV
+quasi	ADV
+si	ADV
+super	ADV
+tout	ADV
+très	ADV
+trop	ADV
+ultra	ADV
+#END
+
+% The second conjunct is introduced by the conjunction "car".
+  rule car{
     pattern{
-      V[upos=VERB,!ExtPos, !Idiom];
-      V -[comp]-> PRON; PRON [upos=PRON]}
-    without{V -[comp]-> PRON1; PRON1 [upos=PRON]}
-    commands{
-      V.ExtPos=VERB; V.Idiom=Yes;
-      PRON.InIdiom=Yes}
+      C1 -[1=conj]-> C2;
+      e:C1 -> D; D << C1;
+      D[Shared=Yes];
+      C2 -[cc]-> CONJ; CONJ[upos=CCONJ,lemma=car]}
+    commands{ del_feat D.Shared}
   }
 
-% The pronominal verb has two clitic pronouns marking its pronominal feature.
-% Ex: ils s'en prennent aux plus faibles.
-  rule verb2{
+% The left dependent that is marked by error is modifier extraposed at the beginning of a clause.
+% Ex: French-GSD fr-ud-train_01726 - Élève[D] depuis deux ans, je suis[C1] très satisfait de mon professeur de batterie, et je recommande[C2] cette école !
+  rule left_extraposition(lex from "lexicons/noun_adv.lp") {
     pattern{
-      V[upos=VERB,!ExtPos, !Idiom];
-      V -[comp]-> PRON1; PRON1 [upos=PRON];
-      V -[comp]-> PRON2; PRON2 [upos=PRON]; PRON1 << PRON2}
-    commands{
-      V.ExtPos=VERB; V.Idiom=Yes;
-      PRON1.InIdiom=Yes; PRON2.InIdiom=Yes}
+      C1 -[1=conj]-> C2;
+      e:C1 -[1=mod]-> D; D[Shared=Yes];
+      D[upos=ADJ|NOUN|PRON|PROPN|VERB];
+      C1 -[1=subj]-> SUBJ; D << SUBJ; SUBJ << C1}
+    without{D -[1=case]-> *}
+    without{D[upos=NOUN,lemma= lex.noun]}
+    without{% Modifiers in the form NOUN + PREP + NOUN.
+            % Ex: fr-ud-dev_00322 - Couche par couche, Morin arrange ...
+      C[upos=NOUN];
+      P[upos=ADP,lemma="après"|par|sur];
+      N[upos=NOUN];
+      N -[1=case]-> P;
+      C -[1=udep]-> N;
+      N.lemma=D.lemma}
+    commands{del_feat D.Shared}
   }
 
 }
@@ -321,12 +358,13 @@ strat fr_main {
     reverse_relations.main,
     Onf(FR_shift_out_edges),
     Onf(FR_shift_out_back_edges),
-    Onf (minimize_conj_dep),
+    Onf(mark_left_conj-dep),
+    Onf(FR_unmark_left_conj-dep),
+    Onf (minimize_right_conj-dep),
     Onf (add_conj_emb),
     Onf (chained_relations),
     Onf (unk_rel),
     specific_expr_close,
-    Onf(FR_pron_verb),
     Onf(FR_noun_adv),
   )
 }

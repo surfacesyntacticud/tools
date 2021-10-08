@@ -709,9 +709,50 @@ package reverse_relations {
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Move the dependents of a conjunction from the left conjunct to the right conjunct. Dependencies CONJ, DISCOURSE, PARATAXIS and PUNCT are not moved.
-package minimize_conj_dep {
-% The shared element directly depends on the head of the first conjunct.
+% Mark the left dependents of a coordination with the feature Shared=Yes.
+package mark_left_conj-dep {
+% The general case
+  rule mark_dep {
+    pattern {
+      C1 -[1=conj]-> C2;
+      e:C1 -[^comp@expl|comp@pass|punct]-> D; D << C1}
+    without{ C1 -[1 <> comp|subj]-> D; f: C2 -> D2; f.1 =e.1; D2 << C2}
+    without{ C1 -[1 =comp|subj]-> D; f: C2 -> D2; f.1 =e.1}
+    without{D[Shared=Yes]}
+    without{e.1=mod; D[upos=ADJ]; C2 -[1=det]-> D2; D2 << C2}
+    without{C1-[1=det]-> D; C2[upos<> NOUN]}% French-GSD fr-ud-test_00032 : faisait vivre toute cette région et bien au-delà
+    commands{D.Shared=Yes}
+  }
+
+% The left dependent is a punctuation sign, which is not embedding.
+  rule mark_dep_punct {
+    pattern {
+      C1 -[1=conj]-> C2;
+      C1 -[punct]-> P1; P1 << C1;
+      P1[lemma<>"\""|"("|"«"]}
+    without{P1[Shared=Yes]}
+    commands{P1.Shared=Yes}
+  }
+
+% The left dependent is an embedding punctuation sign.
+  rule mark_dep_punct-emb {
+    pattern {
+      C1 -[1=conj]-> C2;
+      C1 -[punct]-> P1; P1 << C1;
+      P1[lemma="\""|"("|"«"];
+      C1 -[punct]-> P2; P2 >> C2;}
+    without{P1[Shared=Yes]}
+    commands{P1.Shared=Yes}
+  }
+
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Move the right dependents of a conjunction from the left conjunct to the right conjunct. Dependencies CONJ, DISCOURSE, PARATAXIS and PUNCT are not moved.
+package minimize_right_conj-dep {
+
+% The right shared element directly depends on the head of the first conjunct.
   rule minimize_direct {
     pattern {
       C1 -[1=conj]-> C2;
@@ -822,7 +863,8 @@ strat main {
     Onf (rel_extensions),
     Onf (relations), % Package RELATIONS must precede REVERSE_RELATIONS.MAIN because the renaming of some relations depends on the cooccurrence with other relations (nsubj, csubj in the impersonal diathesis for instance)
     reverse_relations.main, % Reversing aux, case, cop and mark relations.
-    Onf (minimize_conj_dep), % Package MINIMIZE_CONJ_DEP must follow strategy REVERSE_RELATIONS.MAIN because the shared dependents can depend on relation inversions.Moreover, a dependance can shift from a coordination to an ascendant. Ex: fr-ud-dev_00446 -entre 3 et 6 généralement
+    Onf(mark_left_conj-dep),
+    Onf (minimize_right_conj-dep), % Package MINIMIZE_CONJ_DEP must follow strategy REVERSE_RELATIONS.MAIN because the shared dependents can depend on relation inversions.Moreover, a dependance can shift from a coordination to an ascendant. Ex: fr-ud-dev_00446 -entre 3 et 6 généralement
     Onf (add_conj_emb), % Package ADD_CONJ_EMB must follow REVERSE_RELATIONS.MAIN because it depends on head changes ; Ex: UD_French-GSD fr-ud-dev_00751
     Onf (chained_relations),% Package CHAINED_RELATIONS must follow package SHIFT_RULES because it can entail a wrong coordination between two elements because of errors in head changes (UD_French-GS: fr-ud-dev_00131).
     specific_expr_close, % Closing a specific treatment for MWE, titles and translated words.
