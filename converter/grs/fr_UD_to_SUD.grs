@@ -256,15 +256,15 @@ package FR_shift_out_back_edges{
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Some left dependents of th first conjunct of a coordination are marked as shared by error and the mark must be removed.
-package FR_unmark_left_conj-dep{
-% Modifiers that are marked shared by error.
-  rule unmark_mod {
+% Some left dependents of the first conjunct of a coordination are not shared by all conjuncts.
+package FR_unshared_left_conj-dep{
+% Unshared modifiers.
+  rule unshared_mod {
     pattern {
       C1 -[1=conj]-> C2;
       e:C1 -[mod]-> D; D << C1;
-      D[upos=lex.pos, lemma=lex.adv,Shared=Yes]}
-    commands{del_feat D.Shared}
+      D[upos=lex.pos, lemma=lex.adv,!Shared]}
+    commands{D.Shared=No}
   }
 #BEGIN	lex
 adv	pos
@@ -272,6 +272,7 @@ adv	pos
 assez	ADV
 bien	ADV
 fort	ADV
+hyper	ADV
 mal	ADV
 moins	ADV
 ne	ADV
@@ -292,18 +293,27 @@ ultra	ADV
   rule car{
     pattern{
       C1 -[1=conj]-> C2;
-      e:C1 -> D; D << C1;
-      D[Shared=Yes];
+      e:C1 -[1 <> subj]-> D; D << C1;
+      D[!Shared];
       C2 -[cc]-> CONJ; CONJ[upos=CCONJ,lemma=car]}
-    commands{ del_feat D.Shared}
+    commands{D.Shared=No}
   }
 
-% The left dependent that is marked by error is modifier extraposed at the beginning of a clause.
+% The left dependent of the first conjunct is a clitic pronoun "en" or "y".
+  rule en{
+    pattern{
+      C1 -[1=conj]-> C2;
+      e:C1 -> D; D << C1;
+      D[upos=PRON, lemma=en, !Shared]}
+    commands{D.Shared=No}
+  }
+
+% The left dependent, which is not shared by all conjuncts, is a modifier extraposed at the beginning of a clause.
 % Ex: French-GSD fr-ud-train_01726 - Élève[D] depuis deux ans, je suis[C1] très satisfait de mon professeur de batterie, et je recommande[C2] cette école !
   rule left_extraposition(lex from "lexicons/noun_adv.lp") {
     pattern{
       C1 -[1=conj]-> C2;
-      e:C1 -[1=mod]-> D; D[Shared=Yes];
+      e:C1 -[1=mod]-> D; D[!Shared];
       D[upos=ADJ|NOUN|PRON|PROPN|VERB];
       C1 -[1=subj]-> SUBJ; D << SUBJ; SUBJ << C1}
     without{D -[1=case]-> *}
@@ -316,7 +326,7 @@ ultra	ADV
       N -[1=case]-> P;
       C -[1=udep]-> N;
       N.lemma=D.lemma}
-    commands{del_feat D.Shared}
+    commands{D.Shared=No}
   }
 
 }
@@ -358,8 +368,9 @@ strat fr_main {
     reverse_relations.main,
     Onf(FR_shift_out_edges),
     Onf(FR_shift_out_back_edges),
-    Onf(mark_left_conj-dep),
-    Onf(FR_unmark_left_conj-dep),
+    Onf(FR_unshared_left_conj-dep),
+    Onf(shared_left_conj-dep),
+    Onf(unshared_left_conj-dep),
     Onf (minimize_right_conj-dep),
     Onf (add_conj_emb),
     Onf (chained_relations),

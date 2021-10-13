@@ -205,8 +205,8 @@ package del_nodes {
   }
 
   rule del_shared_specif_expr_{
-    pattern{ N[Shared=Yes]; e: N -[HEAD]-> H }
-    commands{del_edge e; shift N ==> H;del_node N; H.Shared=Yes}
+    pattern{ N[Shared]; e: N -[HEAD]-> H }
+    commands{del_edge e; shift N ==> H ; H.Shared=N.Shared;del_node N}
   }
 }
 

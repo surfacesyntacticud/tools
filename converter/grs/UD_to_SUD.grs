@@ -710,43 +710,144 @@ package reverse_relations {
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Mark the left dependents of a coordination with the feature Shared=Yes.
-package mark_left_conj-dep {
+package shared_left_conj-dep {
 % The general case
-  rule mark_dep {
+% Ex:  SUD_English-GUM GUM_voyage_chatham-12 - In[D] 1835 Maori settlers from the mainland arrived[C1], massacred[C2] and enslaved the Moriori.
+% Ex: SUD_English-GUM GUM_news_clock-10 - Police[D] arrested[C1] and questioned[C1] the student.
+% Ex: SUD_English-GUM GUM_bio_jespersen-12 - Academic[D] life[C1] and work[C2]
+  rule shared_dep {
     pattern {
       C1 -[1=conj]-> C2;
-      e:C1 -[^comp@expl|comp@pass|punct]-> D; D << C1}
-    without{ C1 -[1 <> comp|subj]-> D; f: C2 -> D2; f.1 =e.1; D2 << C2}
+      e:C1 -[^punct|HEAD|IDIOM]-> D; D[!InIdiom, !Shared]; D << C1}
+    without{C1 -[1=comp|mod]-> D; D[upos=PRON, PronType <> Int|Rel]}
+    without{ C1 -[1 <> comp|subj]-> D; f: C2 -> D2; D2[upos <> ADV]; f.1 =e.1; D2 << C2}
     without{ C1 -[1 =comp|subj]-> D; f: C2 -> D2; f.1 =e.1}
-    without{D[Shared=Yes]}
-    without{e.1=mod; D[upos=ADJ]; C2 -[1=det]-> D2; D2 << C2}
-    without{C1-[1=det]-> D; C2[upos<> NOUN]}% French-GSD fr-ud-test_00032 : faisait vivre toute cette région et bien au-delà
+   without{e.1=mod; D[upos=ADJ|NUM]; C2 -[1=det]-> D2; D2 << C2}
+    without{e.1=mod; D[upos=ADJ|NUM]; C2[upos<> NOUN|PROPN]}%  French-GSD fr-ud-dev_00994 : Bonne nourriture mais le temps d'attente entre les plats a été très long.
+    without{C1-[1=det]-> D; C2[upos<> NOUN|PROPN]}% French-GSD fr-ud-test_00032 : faisait vivre toute cette région et bien au-delà
     commands{D.Shared=Yes}
   }
 
 % The left dependent is a punctuation sign, which is not embedding.
-  rule mark_dep_punct {
+% Ex: SUD_English-GUM GUM_fiction_pag-88 - The rock dropped to the ground,[P1] blood-slick[C1] and glistening[C2].
+  rule shared_punct {
     pattern {
       C1 -[1=conj]-> C2;
-      C1 -[punct]-> P1; P1 << C1;
-      P1[lemma<>"\""|"("|"«"]}
-    without{P1[Shared=Yes]}
+      C1 -[punct]-> P1; P1 << C1}
+    without{ C1 -[punct]-> P2; P2 >> C1}
+    without{P1[Shared]}
     commands{P1.Shared=Yes}
   }
 
 % The left dependent is an embedding punctuation sign.
-  rule mark_dep_punct-emb {
+% Ex: SUD_English-GUM GUM_bio_byron-21 - he described the affair as "[P1]a violent, though pure love[C1] and passion[C2]"[P2]
+  rule shared_punct-emb {
     pattern {
       C1 -[1=conj]-> C2;
       C1 -[punct]-> P1; P1 << C1;
-      P1[lemma="\""|"("|"«"];
-      C1 -[punct]-> P2; P2 >> C2;}
-    without{P1[Shared=Yes]}
+      %P1[lemma="\""|"("|"«"];
+      C1 -[punct]-> P2; P2 >> C2}
+    without{P1[Shared]}
     commands{P1.Shared=Yes}
+  }
+
+% The left dependent precedes another left dependent, which is shared by the conjuncts.
+% Ex: SUD_English-GUM GUM_bio_gordon-28 - At[D2] the end of his life the Tsar[D1] ... was[C1] with him when he died, and with his own hands closed[C2] his eyes.
+  rule shared_shared {
+    pattern {
+      C1 -[1=conj]-> C2;
+      C1 -> D1; D1 << C1; D1[Shared=Yes];
+      C1 -> D2; D2 << D1; }
+    without{D2[Shared]}
+    commands{D2.Shared=Yes}
   }
 
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Mark the left dependents of the head conjunct of a coordination, which are not dependents of the coordination, with the feature Shared=No.
+package unshared_left_conj-dep {
+% Pronouns that are left modifiers or complements of the head of the first conjunct are not dependents of the coordination.
+% Ex: SUD_French-GSD fr-ud-train_02634 - L'accueil y[D] est[C1] chaleureux et les prix défient[C2] toute concurrence !
+  rule unshared_comp-mod-pron{
+    pattern {
+      C1 -[1=conj]-> C2;
+      e:C1 -[1=comp|mod]-> D; D[upos=PRON, PronType <> Int|Rel, !Shared]; D << C1}
+    commands{D.Shared=No}
+  }
+
+% Left arguments of the first conjunct are not dependents of the coordination, if there is a similar dependent of the second conjunct.
+% Ex: SUD_English-GUM GUM_fiction_honour-42 - Feet[D] moved[C1] and Chalmers[D2] felt[C2] his stomach lurch.
+  rule unshared_comp-subj{
+    pattern {
+      C1 -[1=conj]-> C2;
+      e:C1 -[1=comp|subj]-> D; D[!Shared]; D << C1; f:C2->D2; f.1=e.1}
+    commands{D.Shared=No}
+  }
+
+% Dependents of the first conjunct are not dependents of the coordination,if there is a similar left dependent of the second conjunct.
+% Ex: SUD_English-GUM GUM_whow_quidditch-57 - Find a[D] quarter[C1] or another[D2] small coin[C2].
+  rule unshared_dep{
+    pattern {
+      C1 -[1=conj]-> C2;
+      e:C1 -[1<>comp|punct|subj|IDIOM|HEAD]-> D; D[!Shared]; D << C1;
+      f:C2->D2; D2[upos <> ADV]; f.1=e.1; D2 << C2}
+    commands{D.Shared=No}
+  }
+  
+% Adjectives that are left modifiers of the head of the first conjunct are not dependents of the coordination, if there is a determiner of the head of the second conjunct at its left.
+% Ex: SUD_English-GUM GUM_interview_shalev-46 - You also wrote two collections of short[D] stories[C1] and a[D2] novel[C2].
+  rule unshared_dep-adj1{
+    pattern {
+      C1 -[1=conj]-> C2;
+      C1 -[1=mod]-> D; D[upos=ADJ|NUM, !Shared]; D << C1;
+      C2[upos= NOUN|PROPN];
+      C2 -[1=det]-> D2; D2 << C2}
+    commands{D.Shared=No}
+  }
+
+% Adjectives that are left modifiers of the head of the first conjunct are not dependents of the coordination,if the head of the second conjunct is not a noun.
+% Ex: SUD_English-GUM GUM_voyage_thailand-31 - your dress should ... cover your entire[D] torso[C1] and most[C2] of your limbs.
+  rule unshared_dep-adj2{
+    pattern {
+      C1 -[1=conj]-> C2;
+      C1 -[1=mod]-> D; D[upos=ADJ|NUM, !Shared]; D << C1}
+    without{C2[upos= NOUN|PROPN]}
+    commands{D.Shared=No}
+  }
+
+% Determiners of the head of the first conjunct are not dependents of the coordination, if the head of the second conjunct is not a noun.
+% Ex: SUD_English-GUM GUM_whow_ballet-6 - ... the[D] basic positions[C1], and some[C2] of the first techniques you're likely to encounter in ballet
+  rule unshared_det{
+    pattern {
+      C1 -[1=conj]-> C2;
+      C1 -[1=det]-> D; D[!Shared]; D << C1}
+    without{C2[upos= NOUN|PROPN]}
+    commands{D.Shared=No}
+  }
+
+% Punctuation signs that dependent of the first conjunct are not dependents of the coordination,if the head of this conjunct has another dependent, which is punctuation sign before the second conjunct.
+% Ex: SUD_English-GUM GUM_interview_dungeon-19 - Yeah, "[P1]think[C1] again"[P2] or something[C2] like that.
+  rule unshared_punct{
+    pattern {
+      C1 -[1=conj]-> C2;
+      C1 -[1=punct]-> P1; P1[!Shared]; P1 << C1;
+       C1 -[1=punct]-> P2; C1 << P2; P2 << C2}
+    commands{P1.Shared=No}
+  }
+
+% The left dependent follows another left dependent, which is not shared by the conjuncts.
+% Ex: SUD_English-GUM GUM_whow_overalls-25 - The bib has a[D2] wallet[D1] pocket[C1] and a watch pocket[C2].
+  rule unshared_unshared {
+    pattern {
+      C1 -[1=conj]-> C2;
+      C1 -> D1; D1 << C1; D1[!Shared];
+      C1 -> D2; D2 << D1; D2[Shared=No]}
+    commands{D1.Shared=No}
+  }
+
+}
+  
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Move the right dependents of a conjunction from the left conjunct to the right conjunct. Dependencies CONJ, DISCOURSE, PARATAXIS and PUNCT are not moved.
@@ -863,7 +964,8 @@ strat main {
     Onf (rel_extensions),
     Onf (relations), % Package RELATIONS must precede REVERSE_RELATIONS.MAIN because the renaming of some relations depends on the cooccurrence with other relations (nsubj, csubj in the impersonal diathesis for instance)
     reverse_relations.main, % Reversing aux, case, cop and mark relations.
-    Onf(mark_left_conj-dep),
+    Onf(shared_left_conj-dep),
+    Onf(unshared_left_conj-dep),
     Onf (minimize_right_conj-dep), % Package MINIMIZE_CONJ_DEP must follow strategy REVERSE_RELATIONS.MAIN because the shared dependents can depend on relation inversions.Moreover, a dependance can shift from a coordination to an ascendant. Ex: fr-ud-dev_00446 -entre 3 et 6 généralement
     Onf (add_conj_emb), % Package ADD_CONJ_EMB must follow REVERSE_RELATIONS.MAIN because it depends on head changes ; Ex: UD_French-GSD fr-ud-dev_00751
     Onf (chained_relations),% Package CHAINED_RELATIONS must follow package SHIFT_RULES because it can entail a wrong coordination between two elements because of errors in head changes (UD_French-GS: fr-ud-dev_00131).

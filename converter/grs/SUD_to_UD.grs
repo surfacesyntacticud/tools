@@ -116,7 +116,7 @@ package shared {
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %After the shared dependent has moved to the first conjunct, all features "Shared" are removed.
 rule remove_shared {
-  pattern {D[Shared=Yes]}
+  pattern {D[Shared]}
   commands {del_feat D.Shared}
 }
 
