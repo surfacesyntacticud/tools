@@ -259,6 +259,8 @@ package FR_shift_out_back_edges{
 % Some left dependents of the first conjunct of a coordination are not shared by all conjuncts.
 package FR_unshared_left_conj-dep{
 % Unshared modifiers.
+% Ex: SUD_French-GSD fr-ud-train_08681 - Son cabinet est très[D] agréable[C1] et chaleureux[C2].
+
   rule unshared_mod {
     pattern {
       C1 -[1=conj]-> C2;
@@ -290,6 +292,7 @@ ultra	ADV
 #END
 
 % The second conjunct is introduced by the conjunction "car".
+% Ex: SUD_French-GSD fr-ud-train_05527 - En[D] plus il m'a[C1] expliqué les résultats, car je n'y connais[C2] rien en électricité.
   rule car{
     pattern{
       C1 -[1=conj]-> C2;
@@ -300,6 +303,7 @@ ultra	ADV
   }
 
 % The left dependent of the first conjunct is a clitic pronoun "en" or "y".
+% Ex: SUD_French-GSD fr-ud-train_09075 - L'UNFP en[D] sera durablement affaiblie[C1] et son dirigeant assassiné[C2] à Paris, ...
   rule en{
     pattern{
       C1 -[1=conj]-> C2;
