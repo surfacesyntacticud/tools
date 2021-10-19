@@ -4,8 +4,8 @@ doc:
 	@echo " * compile"
 
 valid:
-	grew_dev valid -pattern "modules/global.json modules/relations.json modules/extpos.json modules/french_agreement.json" -i sud_fr.json -o ~/.local/www/grew/valid
-	grew_dev valid -pattern "modules/global.json modules/relations.json modules/extpos.json" -i sud_pcm.json -o ~/.local/www/grew/valid
+	grew_dev valid -pattern "modules/global.json modules/relations.json modules/obsolete.json modules/idioms.json modules/french_agreement.json" -i sud_fr.json -o ~/.local/www/grew/valid
+	grew_dev valid -pattern "modules/global.json modules/relations.json modules/obsolete.json modules/idioms.json" -i sud_pcm.json -o ~/.local/www/grew/valid
 	cp html/index.html ~/.local/www/grew/valid
 
 clean:

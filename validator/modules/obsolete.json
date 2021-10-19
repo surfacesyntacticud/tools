@@ -1,5 +1,5 @@
 {
-  "title": "ExtPos",
+  "title": "Obsolete annotations",
   "items": [{
       "pattern": [
         "pattern { N [EXTPOS] }"
@@ -20,15 +20,6 @@
       ],
       "description": "The feature `PhraseType` is obsolete. `PhraseType=Idiom` should be replaced by `Idiom=Yes` and `PhraseType=Title` should be replaced by `Title=Yes`",
       "level": "error"
-    },
-    {
-      "pattern": [
-        "pattern { M -> N; N[InIdiom=Yes]; }",
-        "without { M[InIdiom=Yes]; }",
-        "without { M[ExtPos]; }"
-      ],
-      "description": "The gov of `InIdiom` is not in a MWE",
-      "level": "warning"
     }
   ]
 }

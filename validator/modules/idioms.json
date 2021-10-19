@@ -1,0 +1,21 @@
+{
+  "title": "Idioms",
+  "items": [{
+      "pattern": [
+        "pattern { N [Idiom=Yes] }",
+        "without { N -> M; M [InIdiom=Yes]}"
+      ],
+      "description": "`Idiom=Yes` and no dependent with `InIdiom=Yes`",
+      "level": "error"
+    },
+    {
+      "pattern": [
+        "pattern { M -> N; N[InIdiom=Yes]; }",
+        "without { M[InIdiom=Yes]; }",
+        "without { M[ExtPos]; }"
+      ],
+      "description": "The gov of `InIdiom` is not in a MWE",
+      "level": "warning"
+    }
+  ]
+}
