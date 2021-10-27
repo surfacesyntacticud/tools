@@ -42,7 +42,7 @@ package pcm_pre {
 
   % change a scraped "DET" into "PRON"
   rule scrap_det {
-    pattern { e: N -[1<>root, deep=scrap]-> M; M [upos=DET] }
+    pattern { e: N -[1<>root, deep=scrap]-> M; M [upos=DET|PART, lemma <> na] }
     commands {
       del_feat e.deep;
       M.ScrapPos = M.upos;
@@ -159,7 +159,7 @@ package pcm_post {
 
   package dep_comp {
     rule det {
-      pattern { e:N -[dep:comp]-> M; N[upos=VERB]; M[upos=DET|PRON] }
+      pattern { e:N -[dep:comp]-> M; N[ExtPos=VERB/upos=VERB]; M[upos=DET|PRON] }
       commands { del_edge e; add_edge N -[obj]-> M; }
     }
 
