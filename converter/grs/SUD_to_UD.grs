@@ -37,11 +37,15 @@ package spoken {
     commands { del_edge e; add_edge N -[reparandum]-> M; }
   }
 
-  % % No UD counterpart for mod@x
-  % rule nmodx {
-  %   pattern { e: N -[mod@x]-> M; }
-  %   commands { del_edge e; add_edge N -[mod]-> M; }
-  % }
+  % TODO: conj:dicto should be reverserd when change into reparandum: the rule below builds non projective punct, it should be refined!
+  %  rule conjdicto {
+  %    pattern { e: N -[conj:dicto]-> M; }
+  %    commands { 
+  %      del_edge e; 
+  %      shift_in N ==> M;   % reparandum should be reversed (see: https://surfacesyntacticud.github.io/guidelines/u/oral_language/conj_dicto/)
+  %      shift_out N =[punct]=> M;
+  %      add_edge M -[reparandum]-> N; }
+  %  }
   
   rule no_dep_on_cc {
     pattern { H -[cc]-> C; e:  C -[^reparandum|conj:dicto|conj]-> N }

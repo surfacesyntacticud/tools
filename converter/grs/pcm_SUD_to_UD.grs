@@ -118,7 +118,15 @@ package pcm_post {
     rule WAZL_15_MC-Abi_MG__93 {
       pattern { e:GOV -[orphan]-> DEP; DEP [upos=DET] }
       commands { del_edge e; add_edge GOV -[det]-> DEP }
-
+    }
+    
+    rule aclposs {
+      pattern { a: H -[acl:poss]-> M; r: M -[reparandum]-> N; }
+      commands { 
+        del_edge a; add_edge H -[nmod:poss]-> N; 
+        shift_out M =[dep]=> N;
+        del_edge r; add_edge N -[reparandum]-> M; 
+      }
     }
   }
 
