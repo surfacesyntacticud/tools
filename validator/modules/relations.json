@@ -58,6 +58,11 @@
       ],
       "description": "`det` relation without `DET` upos on the dependent",
       "level": "error"
+    },
+    {
+      "pattern": "pattern { M -[mod:relcl]-> N }",
+      "description": "In SUD, relcl is a deep edge feature, `mod@relcl` should be used instead of `mod:relcl`",
+      "level": "error"
     }
   ]
 }
