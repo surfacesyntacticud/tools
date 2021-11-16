@@ -1,0 +1,17 @@
+verb
+%-------
+chiedere
+consentire
+consigliare
+contestare
+impedire
+imporre
+indicare
+ordinare
+permettere
+proibire
+proporre
+raccomandare
+richiedere
+ripetere
+suggerire

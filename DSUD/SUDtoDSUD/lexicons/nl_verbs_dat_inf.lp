@@ -1,0 +1,13 @@
+verb
+%----
+aan_raden
+adviseren
+beletten
+geven
+smeken
+suggereren
+toe_staan
+toe_laten
+verbieden
+verzoeken
+vragen

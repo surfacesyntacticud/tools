@@ -1,0 +1,594 @@
+% Transformation of SUD annotation into DUD (Deep Universal Dependencies) annotations.
+
+% =============================================================================================
+% Addition of deep features.
+package add_features{
+  rule add_deep_lemma{
+    pattern{N[upos=ADP|SCONJ, lemma, !dlemma, !ExtPos, !Indiom]}
+    commands{N.dlemma=N.lemma}
+  }
+}
+
+% =============================================================================================
+% Transformation of idiomatic expressions into atoms.
+package idioms{
+
+% Initialize the deep lemma of idiom leaves.
+  rule initialize_dlemma{
+    pattern{N[lemma, !dlemma, InIdiom=Yes]}
+    commands{N.dlemma=N.wordform}
+  }
+  
+% Raise the deep lemma of an element to its governor, when it is at its left.
+  rule raise_left_dlemma{
+    pattern{D[InIdiom=Yes, dlemma];H[wordform]; e:H -> D; D << H}
+    commands{H.dlemma = D.dlemma + "_"+ H.wordform; del_edge e }
+  }
+
+% Raise the deep lemma of an element to its governor, when it is at its right.
+  rule raise_right_dlemma{
+    pattern{D[InIdiom=Yes, dlemma];H[wordform]; e:H -> D; D >> H}
+    commands{H.dlemma = H.wordform + "_"+ D.dlemma; del_edge e }
+  }
+
+% Transform the head of an idiomatic expression into an idiomatic atom.
+  rule atomize_idiom{
+    pattern{ H[ExtPos,Idiom=Yes]}
+    without{H ->D; D[InIdiom=Yes]}
+    commands{ H.upos=H.ExtPos; del_feat H.ExtPos}
+  }
+}
+
+% =============================================================================================
+% Treatment of the clitic pronouns that change the meaning of verbs.
+rule clit_verb{
+  pattern{
+    V[upos=VERB,lemma]; CL[upos=PRON];
+    d:V -[comp@expl]-> CL}
+  commands{V.dlemma= CL.form + "_" + V.lemma ; del_edge d}
+}
+
+% =============================================================================================
+% Distribution of the governor of a coordination to all conjuncts.
+package coord_gov{
+%The governor is an auxiliary
+  rule aux_gov{
+    pattern{
+      CONJ1 -[1=conj]-> CONJ2;
+      d1: H -[1=comp,2=aux]-> CONJ1}
+    without{H -[comp:aux@caus]-> CONJ1}
+    without{H -> CONJ2}
+    commands{add_edge d2:H -> CONJ2; d2.label = d1.label; d2.enhanced=yes}
+  }
+
+% The conjuncts of the coordination are prepositional phrases
+  rule prep_gov{
+    pattern{
+      CONJ1 -[1=conj]-> CONJ2; CONJ1[upos=ADP]; CONJ2[upos=ADP];
+      d1: H -[1 <> conj]-> CONJ1}
+    without{H -> CONJ2}
+    commands{add_edge d2:H -> CONJ2; d2.label = d1.label; d2.enhanced=yes}
+  }
+}
+
+% =============================================================================================
+% Distribution of shared dependencies of a coordination to all conjuncts.
+package coord_dep{
+% Left dependents
+rule left_dep{
+    pattern{
+      CONJ1 -[1=conj]-> CONJ2;
+      d1:CONJ1 -[^cc|punct]-> D; D[Shared=Yes]; D << CONJ1}
+    without{CONJ2 -> D}
+    commands{add_edge d2:CONJ2 -> D; d2.label = d1.label; d2.enhanced=yes}
+  }
+
+% Right dependents
+rule right_dep{
+    pattern{
+      CONJ1 -[1=conj]-> CONJ2;
+      d1:CONJ2 -[^punct]-> D; D[Shared=Yes]; D >> CONJ2}
+    without{CONJ1 -> D}
+    commands{add_edge d2:CONJ1 -> D; d2.label = d1.label; d2.enhanced=yes}
+  }
+  
+% Subjects of both conjuncts
+rule subj{
+    pattern{
+      CONJ1 -[1=conj]-> CONJ2;
+      d1:CONJ1 -[1=subj]-> SUBJ; SUBJ[!Shared]; SUBJ << CONJ1}
+    without{CONJ2 -[1=subj]-> *}
+    commands{add_edge d2:CONJ2 -> SUBJ; d2.label = d1.label; d2.enhanced=yes}
+  }
+
+}
+
+
+% =============================================================================================
+% Every dependency to a preposition is transformed into a dependency to the object of the preposition and the prepostion is added as a Prep feature to the dependency.
+% Ex: SUD_French-GSD fr-ud-train_08025 - de nombreux artistes, parmi[PREP] lesquels[OBJ] les Rolling Stones[H] ou Billy Bragg
+package del_prep{
+  rule shift_dep{
+    pattern{d1: H -[1 <> conj]-> PREP; PREP -[comp:obj]-> OBJ; PREP [upos=ADP, dlemma]}
+    commands{
+      add_edge d: H -> OBJ; d.label= d1.label; d.Prep= PREP.dlemma; d.enhanced=yes;
+      del_edge d1}
+  }
+
+  rule close_shift{
+    pattern{d:PREP -[comp:obj]-> OBJ; PREP [upos=ADP, dlemma]}
+    without{ * -[1 <> conj]-> PREP}
+    commands{ shift PREP ==> OBJ;del_edge d}
+  }
+}
+
+% =============================================================================================
+% Every dependency to a subordinating conjunction is transformed into a dependency to the object of the conjunction and the conjunction is added as a Conj feature to the dependency.
+package del_sub-conj{
+  rule shift_dep{
+    pattern{d1: H -[1 <> conj]-> CONJ; CONJ -[comp:obj]-> OBJ; CONJ[upos=SCONJ, dlemma]}
+    commands{
+      add_edge d: H -> OBJ; d.label= d1.label; d.Conj= CONJ.dlemma; d.enhanced=yes;
+      del_edge d1}
+  }
+      
+  rule close_shift{
+    pattern{d:CONJ -[comp:obj]-> OBJ; CONJ [upos=SCONJ, dlemma]}
+    without{ * -[1 <> conj]-> CONJ}
+    commands{ shift CONJ ==> OBJ;del_edge d}
+  }
+}
+
+% =============================================================================================
+% Every dependency to a coordination conjunction is deleted and the conjunction is added to the CONJ dependency to the governor.
+% Ex: SUD_French-GSD fr-ud-train_00125 - mais d'autre part en supprimant[CONJ1] tous les survivants témoins de l'affaire ou[C] en les capturant[CONJ2] pour interrogatoire
+rule del_coord-conj{
+  pattern{d1: CONJ1 -[1=conj]-> CONJ2; d2: CONJ2 -[1=cc]-> C; CONJ1 << C}
+  commands{d1.Conj = C.lemma; d1.enhanced=yes; del_edge d2}
+}
+
+% =============================================================================================
+% Active and passive voices
+package voice{
+% Active voice{
+  rule active{
+    pattern{V[upos=AUX|VERB,!Voice]}
+    without{V[VerbForm=Part,Tense=Past]}
+    commands{V.Voice=Act}
+  }
+
+% Passive voice{
+  rule passive{
+    pattern{V[upos=VERB, VerbForm=Part, Tense=Past, !Voice]}
+    without{* -[comp:aux@tense]-> V}
+    commands{V.Voice=Pass}
+  }
+
+}
+
+
+% =============================================================================================
+% Deep subjects are added.
+package deep_subj{
+% ===========================================
+% Deep subjects of predicates CPRED controlled by the predicates PRED that govern them. 
+package control_pred{
+% The subject of the controlled predicate CPRED is the subject of the control predicate PRED.
+%Ex: SUD_French-GSD fr-ud-train_05575 - On[SUBJ] aime[PRED] y flâner[CPRED].
+%Ex: SUD_French-GSD fr-ud-dev_01286 - La réponse[SUBJ] semble[PRED] être[CPRED] oui.
+%Ex: SUD_French-GSD fr-ud-train_02927 - À cause de cela, son avenir[SUBJ] semble[PRED] compromis[CPRED] à Bruxelles.
+%Ex: SUD_French-GSD fr-ud-train_00259 - le tireur doit prendre[PRENDRE] garde à ne pas toucher[CPRED] la veste
+  rule subj{
+    pattern{
+      PRED -[1=comp,deep=x]-> CPRED;
+      PRED -[1=subj]-> SUBJ}
+    without{CPRED -[1=subj]-> *}
+    without{PRED -[comp:obj]-> OBJ; OBJ[upos=NOUN|NUM|PRON|PROPN|X]}
+    commands{add_edge CPRED -[1=subj,enhanced=yes]-> SUBJ}
+  }
+
+% The subject of the controlled predicate is the direct object of the control predicate.
+%Ex: SUD_French-GSD fr-ud-train_12228 - Je trouve[PRED] cette attitude[OBJ] totalement inadmissible[CPRED] !
+%Ex: SUD_French-GSD fr-ud-train_00581 - Pour autant les différents partis composant la majorité de gauche voient[PRED] leur poids[OBJ] modifié[CPRED].
+  rule obj{
+    pattern{
+      PRED -[1=comp, deep=x]-> CPRED;
+      PRED -[comp:obj]-> OBJ; OBJ[upos=NOUN|NUM|PRON|PROPN|X]}
+    without{CPRED -[1=subj]-> *}
+    commands{add_edge CPRED -[1=subj,enhanced=yes]-> OBJ}
+  }
+
+}
+
+% ===========================================
+% Deep subjects of predicates that are modifiers of nominals or other predicates.
+package mod_pred{
+
+% If a present participle PART is a modifier of a nominal N, its deep subject is N.
+  rule mod_nom_part-pres{
+    pattern{
+      PART[VerbForm=Part, Tense=Pres];
+      N[upos=NOUN|NUM|PRON|PROPN|X];
+      N -[1=mod]-> PART}
+    without{ * -[1=conj]-> N}
+    without{PART -[1=subj]-> *}
+    commands{add_edge PART -[E:subj]-> N}
+  }
+
+% If a past participle PART is a modifier of a nominal N , its deep passive subject is N.
+  rule mod_nom_part-past{
+    pattern{
+      PART[upos=VERB,VerbForm=Part, Tense=Past];
+      N[upos=NOUN|NUM|PRON|PROPN|X];
+      N -[1=mod]-> PART}
+    without{ * -[1=conj]-> N}
+    without{PART -[1=subj]-> *}
+    commands{add_edge PART -[1=subj,deep=pass, enhanced=yes]-> N; PART.Voice=Pass}
+  }
+
+% If an adjective ADJ is attributive of a nominal N, its subject is N.
+  rule mod_nom_adj{
+    pattern{
+      ADJ[upos=ADJ];
+      N[upos=NOUN|NUM|PRON|PROPN|X];
+      N -[1=mod]-> ADJ}
+    without{ * -[1=conj]-> N}
+    without{ADJ -[1=subj]-> *}
+    commands{add_edge ADJ -[E:subj]-> N}
+  }
+
+% If a present participle PART is a modifier of a predicate PRED, its deep subject is the subject SUBJ of PRED.
+%Ex:  UD_French-GSD fr-ud-train_14101 - Elle[SUBJ se prononce[PRED] en quittant[DPRED] les toilettes.
+%Ex:  UD_French-GSD fr-ud-train_00042 - Étant atteint[DPRED] du syndrome de Marfan, il est très grand[PRED] et mince.
+  rule mod_pred_part-pres{
+    pattern{
+      PRED[upos=ADJ|ADV|AUX|VERB]; PART[VerbForm=Part,Tense=Pres];
+      PRED -[1=mod,deep=x]-> PART;
+      PRED -[1=subj]-> SUBJ}
+    without{PART -[1=subj]-> *}
+    commands{add_edge PART -[E:subj]-> SUBJ}
+  }
+
+% If a past participle PART is a modifier of a predicate PRED, its deep passive subject is the subject SUBJ of PRED.
+%Ex: SUD_French-GSD fr-ud-train_13855 - Créé[DPRED] en janvier 1932, il[SUBJ] fut dissous[PRED] en 1964.
+  rule mod_pred_part-pass{
+    pattern{
+      PRED[upos=ADJ|ADV|AUX|VERB]; PART[VerbForm=Part,Tense=Past];
+      PRED -[1=mod,deep=x]-> PART;
+      PRED -[1=subj]-> SUBJ}
+    without{PART -[1=subj]-> *}
+    commands{add_edge PART -[E:subj@pass]-> SUBJ}
+  }
+
+% If an adjective ADJ is a modifier of a predicate PRED, its deep subject is the subject SUBJ of PRED.
+%Ex: UD_French-GSD fr-ud-train_03936 - Très laide[DPRED], elle[SUBJ] provoquerait[PRED] l'effroi en la voyant.
+  rule mod_pred_adj{
+    pattern{
+      PRED[upos=ADJ|ADV|AUX|VERB]; ADJ[upos=ADJ];
+      PRED -[1=mod,deep=x]-> ADJ;
+      PRED -[1=subj]-> SUBJ}
+    without{ADJ -[1=subj]-> *}
+    commands{add_edge ADJ -[E:subj]-> SUBJ}
+  }
+
+
+% If an infinitive INF is a modifier of a predicate PRED, its deep subject is the subject SUBJ of PRED.
+% Ex : SUD_French-GSD fr-ud-train_02692 - Nous[SUBJ] avons retiré[PRED] l'application pour régler[INF] le problème.
+%Ex: SUD_French-GSD fr-ud-test_00121 - Charles[NSUBJ] Mwando Nsimba a sollicité[PRED] un délai supplémentaire avant[ADV] de répondre[INF] aux préoccupations soulevées
+  rule mod_pred_verb{
+    pattern{
+      PRED[upos=ADJ|ADV|AUX|VERB]; INF[VerbForm=Inf];
+      PRED -[1=mod,deep=x]-> INF;
+      PRED -[1=subj]-> SUBJ}
+    without{INF -[1=subj]-> *}
+    commands{add_edge INF -[E:subj]-> SUBJ}
+  }
+}
+% ===========================================
+% Subjects of verbs in the passive voice are passive subjects.
+rule pass_subj{
+  pattern{d:V -[1=subj,!deep]-> SUBJ; V [Voice=Pass]}
+  commands{d.deep=pass}
+}
+
+% ===========================================
+% Strategy for computing deep subjects of predicates.
+strat main{Seq(Onf(control_pred), Onf(mod_pred), Onf(pass_subj))}
+}
+
+% =============================================================================================
+% The dependencies to reflexive pronouns are shifted to the subject of the corresponding verb.
+rule refl_pron{
+  pattern{d1: V -> PRON; PRON[upos=PRON,Reflex=Yes]; V -[1=subj]-> SUBJ}
+  commands{
+    add_edge d2: V -> SUBJ; d2.label=d1.label; d2.enhanced=yes;
+    shift_in PRON ==> SUBJ; del_edge d1}
+}
+
+% =============================================================================================
+% Dependencies to relative pronouns are replaced by dependencies to their antecedents in relative clauses and by dependencies to the constituent in focus in cleft sentences.
+package rel-pron{
+% ===========================================
+% Shift of dependencies targeting relative pronouns to their antecedent for relative clauses. The shifting is performed step by step by going up the chain of dependencies from the relative pronoun to the antecedent or the focus (in the following, we will call them both the antecedent). At each step, a MARK dependency from a point in the chain to the relative pronoun marks where we are. As soon as the antecedent is reached, the MARK relation is transformed into an ANT relation. A feature Mark=Yes is used to mark the visited nodes, in order to avoid loops. 
+package mark_rel-pron-ant{
+
+% A MARK relation is initiated between the relative pronoun and its governor.
+  rule init_mark{
+    pattern{ H -> PRO; PRO [PronType=Rel, !InIdiom]}
+    without{* -[REF|MARK]-> PRO}
+    without{H -[mod@relcl|comp:cleft]-> PRO}
+    without{H -[1=conj]-> PRO}
+    commands{add_edge H -[MARK]->PRO; H.Marked=Yes}
+  }
+
+% The MARK relation is shifted from its source to the governor of this source.
+  rule shift_mark{
+    pattern{d: M -[MARK]-> PRO; H -> M; H[!Marked]}
+    without{H -[mod@relcl|comp:cleft]-> M}
+    without{H -[1=comp,2=pred]-> M; H -[comp:cleft]-> *}
+    without{M -[mod@relcl]-> *}
+    without{H -[1=conj]-> M ; H << PRO} 
+    commands{del_edge d; add_edge H -[MARK]-> PRO; H.Marked=Yes}
+  }
+
+% The MARK relation is shifted from its source M to its governor H in a chain of coordinated elements.
+% Ex: SUD_French-GSD fr-ud-train_08672 - c'est l'Évangile qui a fondé[H1] la liberté dans le monde, qui a déclaré[H] les hommes égaux devant Dieu, qui[PRO] a prêché[M] les idées et les œuvres de fraternité
+  rule shift_mark_conj{
+     pattern{
+       d: M -[MARK]-> PRO; H -[1=conj]-> M;  H << PRO;H[!Marked];
+       H1 -[1=conj]-> H}
+     commands{add_edge H -[MARK]-> PRO; del_edge d}
+   }
+   
+% The MARK relation has the head of a second conjunct in a coordination as its a target M and M precedes the relative pronoun PRO. If the first conjunct is a modifier of a nominal N, N is the antecedent of PRO in a relative clause.
+% Ex: SUD_French-GSD fr-ud-train_07501 -  Accor organisera une journée[ANT] investisseurs le 13 septembre consacrée[H] à sa stratégie et au cours de laquelle[PRO] seront communiquées[REFN] les perspectives pour l'ensemble de l'année.
+  rule shift_ref_relcl_coord{
+    pattern{
+      d:M -[MARK]-> PRO; H -[1=conj]-> M; H << PRO;
+      ANT -[1=mod]-> H; ANT[upos=NOUN|NUM|PRON|PROPN|X]}
+    commands{ add_edge ANT -[REF]-> PRO; del_edge d}
+  }
+
+% The MARK relation has the head of a second conjunct in a coordination as its a target M and M precedes the relative pronoun PRO. If the first conjunct is the head V of the dependent clause  in a cleft sentence, the head FOC of the focus is the antecedent of PRO.
+% Ex: SUD_French-GSD fr-ud-train_08672 - c'est[V] l'Évangile qui a fondé[H] la liberté dans le monde, qui[PRO] a déclaré[M] les hommes égaux devant Dieu, qui a prêché les idées et les œuvres de fraternité
+  rule shift_ref_cleft_coord{
+    pattern{
+      d:M -[MARK]-> PRO; H -[1=conj]-> M; H << PRO;
+      V -[1=comp, 2=cleft]-> H; V -[1=comp,2=pred]-> FOC}
+    commands{ add_edge FOC -[REF]-> PRO; del_edge d}
+  }
+    
+% The MARK relation in a cleft sentence has the head of the dependent clause as its governor. The governor is shifted to the head of the focus.
+  rule shift_ref_cleft{
+    pattern{
+      d:M -[MARK]-> PRO; H -[comp:cleft]-> M;
+      H -[1=comp,2=pred]-> FOC}
+    commands{ add_edge FOC -[REF]-> PRO; del_edge d}
+  }
+  
+% The MARK relation in a relative clause has the head of the clause as its governor. The governor is shifted to the antecedent.
+  rule shift_ref_relcl{
+    pattern{d:M -[MARK]-> PRO; ANT -[mod@relcl]-> M}
+    commands{ add_edge ANT -[REF]-> PRO; del_edge d}
+  }
+}
+
+% ===========================================
+% The antecedent ANT of the relative pronoun PRO is marked with the REF dependency and its governor in the relative clause becomes the governor of ANT.
+package shift_rel-pron_ant{
+
+% The gouvenor of the relative pronoun is not the head of the relative clause.
+  rule simple_shift{
+    pattern{ANT -[REF]-> PRO; d1: H -> PRO}
+    commands{
+      add_edge d2: H -> ANT; d2.label=d1.label; d2.enhanced=yes;
+      del_edge d1}
+  }
+
+% The governor H of the REF relation is the head of a second conjunct in a coordination, and the first conjunct is a modifier of a nominal, which is the antecedent of the explored relative clause.
+% Ex: SUD_French-GSD fr-ud-train_07501 - une journée[N] investisseurs le 13 septembre consacrée[H] à sa stratégie et au cours de laquelle[PRO] seront[REFN] communiquées les perspectives pour l'ensemble de l'année.
+  rule coord_shift1{
+    pattern{
+      e:REFN -[REF]-> PRO; H -[1=conj]-> REFN;
+      N -[1=mod|udep]-> H; N[upos=NOUN|NUM|PRON|PROPN|X];
+      d1: H1 -> PRO}
+    commands{
+      add_edge d2: H1 -> N; d2.label=d1.label; d2.enhanced=yes;
+      del_edge d1}
+  }
+
+% The governor H of the REF relation is the head of a second conjunct in a coordination, and the first conjunct is a modifier of a nominal, which is the antecedent of the explored relative clause.
+% Ex: SUD_French-GSD fr-ud-train_00531 - ... l'État[N] français qui apporte[H] son soutien au Maroc et qui continue[REFN] d'opposer son veto 
+  rule coord_shift2{
+    pattern{
+      e:REFN -[REF]-> PRO; H -[1=conj]-> REFN;
+      N -[1=mod|udep]-> H; N[upos=NOUN|NUM|PRON|PROPN|X];
+      d1: REFN -[^REF]-> PRO}
+    commands{
+      add_edge d2: REFN -> N; d2.label=d1.label; d2.enhanced=yes;
+      del_edge d1}
+  }
+
+% All dependencies to a relative pronouns have been shifted to its antecedent.
+  rule close_shift{
+    pattern{e:REFN -[REF]-> PRO}
+    without{* -[^ REF]-> PRO}
+    commands{del_edge e}
+  }
+
+% There is no antecedent of the relative pronoun.
+% Ex: SUD_French-GSD fr-ud-train_04478 - Son nom d'espèce, composé de daiyun et du suffixe latin, « qui[PRO] vit dans, qui habite »,lui a[REFN] été donné en référence au lieu de sa découverte.
+  rule fail_shift{
+    pattern{d:M -[MARK]-> PRO}
+    commands{del_edge d}
+  }
+
+  rule del_mark{
+    pattern{N[Marked=Yes]}
+    commands{del_feat N.Marked}
+  }
+}
+% ===========================================
+% Strategy of treatment of the relative pronouns.
+strat main{ Seq(Onf( mark_rel-pron-ant), Onf(shift_rel-pron_ant))}
+
+}
+
+% =============================================================================================
+% Reditribution of syntactic functions
+package redistrib_synt{
+% Passive subjects for the passive or middle voice.
+  rule pass_subj{
+    pattern{d1: V -[1=subj, deep=pass]-> SUBJ}
+    commands{add_edge d2: V -> SUBJ; d2.1=comp; d2.2=obj; d2.enhanced=yes; del_edge d1}
+  }
+
+% Passive objects in impersonal constructions.
+%Ex: SUD_French-GSD fr-ud-train_01519 - Il est interdit[V] d'écrire[OBJ] des commentaires contraires aux lois françaises.
+  rule pass_obj{
+    pattern{d: V -[1=comp, 2=obj, deep=pass]-> OBJ}
+    commands{add_edge V -[E:comp:obj]-> OBJ; del_edge d}
+  }
+
+% Agent complements of passive verbs.
+  rule agent_obl{
+    pattern{d: V -[1=comp, 2=obl, deep=agent]-> AGT; V[Voice=Pass]}
+    commands{add_edge V -[E:subj]-> AGT; del_edge d}
+  }
+
+% Objects of verbs in active impersonal constructions.
+  rule agent_obj{
+    pattern{ d: V -[1=comp, 2=obj, deep=agent]-> OBJ}
+    without{V -[1=comp, 2=aux, deep=caus]-> *}
+    commands{add_edge V -[E:subj]-> OBJ; del_edge d}
+  }
+
+% Objects of causative auxilairies.
+  rule agent_obj-caus{
+    pattern{ AUX -[1=comp, 2=aux, deep=caus]-> V; d: AUX -[1=comp, 2=obj, deep=agent]-> OBJ}
+    commands{ add_edge V -[E:subj]-> OBJ; del_edge d}
+  }
+
+% Expletive subjects are deleted
+  rule impers_subj{
+    pattern{d: V -[subj@expl]-> SUBJ}
+    commands{del_edge d}
+  }
+}
+
+
+% =============================================================================================
+% The redistribution of cleft sentences is questionable because the copula head of the main clause can be modified, in particular by a negation.
+% Ex: SUD_French-GSD fr-ud-train_13716 - Mais ce n'est pas la première fois qu'il y a une alerte à l'anthrax à Fribourg, selon lui.
+% The sentence is not equivalent to : Mais il n'y a pas la première fois une alerte à l'anthrax à Fribourg, selon lui.
+% We only propose to attach the constituent in focus to the verb of the dependent clause, which has this constituent as extracted complement.
+package cleft_sent{
+% ===========================================
+% The constituent in focus FOC is not represented in the dependent clause, which is introduced with a subordinating conjunction. It is a complement of a predicate PRED in the dependent clause that has been extracted, which will be marked with a ARG relation from PRED to FOC.
+package link_focus{
+
+%The ARG relation is initialized from the head of the dependent clause to FOC.
+  rule init_mark_arg{
+    pattern{
+      V[upos=AUX|VERB]; V -[1=comp,2=pred]-> FOC;
+      V -[1=comp, 2=cleft, Conj=*]-> VCOMP; VCOMP[upos=AUX|VERB]}
+    without{* -[ARG]-> FOC}
+    commands{ add_edge VCOMP -[ARG]-> FOC}
+  }
+
+% The ARG relation is shifted from a verb VCOMP to its direct object VCOMP1, which is also a verb.
+  rule shift_mark_arg{
+    pattern{ d:VCOMP -[ARG]-> FOC; VCOMP -[1=comp,2=obj]-> VCOMP1; VCOMP1[upos=AUX|VERB]}
+    without{VCOMP -[1=conj]-> VCOMP2}
+    commands{add_edge VCOMP1 -[ARG]-> FOC; del_edge d}
+  }
+
+% There is an ARG relation from a focus FOC to a verb VCOMP and VCOMP has a conjunct VCOMP1 in a coordination. An ARG relation is added from VCOMP1 to FOC.
+  rule shift_mark_arg_coord1{
+    pattern{ d:VCOMP -[ARG]-> FOC; VCOMP -[1=conj]-> VCOMP1; VCOMP1[upos=AUX|VERB]}
+    without{VCOMP1 -[ARG]-> FOC}
+    commands{add_edge VCOMP1 -[ARG]-> FOC; VCOMP1.Mark=Yes}
+  }
+  
+% There is an ARG relation from a focus FOC to a verb VCOMP and VCOMP has a conjunct VCOMP2 in a coordination. The ARG relation has been added from all conjuncts of VCOMP to FOC.The ARG relation is shifted from a verb VCOMP to its direct object VCOMP1, which is also a verb.
+  rule shift_mark_arg_coord2{
+    pattern{
+      d:VCOMP -[ARG]-> FOC; VCOMP -[1=comp,2=obj]-> VCOMP1; VCOMP1[upos=AUX|VERB];
+      VCOMP -[1=conj]-> VCOMP2; VCOMP2[Mark=Yes]}
+    without{VCOMP -[1=conj]-> VCOMP2; VCOMP2[!Mark]}
+    commands{add_edge VCOMP1 -[ARG]-> FOC; del_edge d}
+  }
+
+
+}
+% ===========================================
+% The ARG relation is replaced by a complement relation between the predicate governor of ARG and the head FOC of the focus dependent on ARG.
+package label_focus_dep{
+
+% The constituent in focus is a direct object of the verb that governs it in the REF dependency.
+  rule obj{
+    pattern{
+      d:VCOMP -[ARG]-> FOC; V -[1=comp, 2=pred, !Prep]-> FOC;
+      FOC[upos=NOUN|NUM|PRON|PROPN|X]}
+    without{VCOMP -[1=comp,2=obj]-> VCOMP1; VCOMP1[upos=VERB]}
+    commands{add_edge VCOMP-[E:comp:obj]-> FOC; del_edge d}
+   }
+
+% The constituent in focus is introduced by a preposition; therefore, it is an indirect complement of the verb that governs it in the REF dependency.
+  rule udep{
+    pattern{d1:VCOMP -[ARG]-> FOC; d2:V -[1=comp, 2=pred, Prep=*]-> FOC}
+    without{VCOMP -[1=comp,2=obj]-> VCOMP1; VCOMP1[upos=VERB]}
+    commands{add_edge d3: VCOMP-> FOC; d3.1=udep;d3.Prep=d2.Prep; d3.enhanced=yes; del_edge d1}
+   }
+ 
+% The constituent in focus is an adverb; therefore, it is an indirect complement of the verb that governs it in the REF dependency.
+  rule udep_adv{
+    pattern{d:VCOMP -[ARG]-> FOC;d1:V -[1=comp,2=pred, !Prep]-> FOC; FOC[upos= ADV]}
+    without{VCOMP -[1=comp,2=obj]-> VCOMP1; VCOMP1[upos=VERB]}
+    commands{add_edge VCOMP -[E:udep]-> FOC; del_edge d}
+  }
+}
+
+
+strat main{Seq(Iter(link_focus), Onf(label_focus_dep))}
+
+}
+
+% =============================================================================================
+% All isolated tokens are deleted. Wordform and textform features are deleted.
+package del_isolated_token{
+  rule del_tok{
+    pattern{N[upos]}
+    without{ * -> N}
+    commands{del_node N}
+  }
+
+  rule del_wordform{ pattern{N[wordform]} commands{del_feat N.wordform}}
+  
+  rule del_textform{ pattern{N[textform]} commands{del_feat N.textform}}
+}
+
+% =============================================================================================
+% Strategies
+% =============================================================================================
+% Strategy that converts a SUD annotation into an DUD annotation.
+strat main{
+  Seq(
+    Onf(add_features),
+    Onf(idioms),
+    Onf(clit_verb),
+    Onf(coord_gov),
+    Onf(coord_dep), % "coord_dep" must precede "del_prep" because prepositional phrases may depend on a coordination. Ex: SUD_French-GSD fr-ud-test_00001 -
+    Onf(voice),
+    Onf(del_prep),
+    Onf(del_sub-conj),
+    Onf(del_coord-conj),
+    deep_subj.main,
+    Onf(refl_pron),
+    rel-pron.main,
+    Onf(coord_dep), % Justification of this second application of the coord_dep package: ex SUD_Frecnh-GSD fr-ud-dev_01331 - ...de nombreux journaux libertaires et antimilitaristes, ...
+    Onf(redistrib_synt),
+    cleft_sent.main,
+    Onf(del_isolated_token)
+  )
+}

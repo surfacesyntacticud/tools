@@ -1,0 +1,10 @@
+adverb
+aussi
+bien
+moins
+ne
+non
+pas
+plus
+très
+trop
