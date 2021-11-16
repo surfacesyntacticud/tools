@@ -13,3 +13,6 @@ The folder **validator** contains some scripts used to produce validation pages 
  * [SUD_French-GSD](http://match.grew.fr/valid/?corpus=SUD_French-GSD@latest)
  * [SUD_French-Spoken](http://match.grew.fr/valid/?corpus=SUD_French-Spoken@latest)
  * [SUD_Naija-NSC](http://match.grew.fr/valid/?corpus=SUD_Naija-NSC@latest)
+
+## DSUD (Deep Syntactic Universal Dependencies)
+The folder [**SUDtoDSUD**](SUdtoDSUD) contains a set of Graph Rewriting System for conversion from SUD to DSUD, which is a deep syntax format derived from the SUD format.
