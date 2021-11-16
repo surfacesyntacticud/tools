@@ -85,7 +85,7 @@ package add_nodes {
   }
 
   rule conv {
-    pattern{ H [ExtPos,!Title,!Idiom] }
+    pattern{ H [lemma,ExtPos,!Title,!Idiom] }
     without{ * -[HEAD]-> H }
     commands{
       add_node C :< H; add_edge C -[CONV]-> H; add_edge C -[HEAD]-> H;

@@ -33,6 +33,18 @@ V1, IRG, NEG	V1,IRG,NEG
 N, COP	N,COP
 PTCL, NEG	PTCL,NEG
 #END
+
+  % Macrosyntax tokens are annotated with `upos=PUNCT` and with relation `punct` in SUD.
+  % In case of idioms, the conversion to UD builds invalid UD structures ('PUNCT' must be 'punct' but it is 'fixed').
+  % We change macrosyntax annotations with `upos=X` and relation `unk` if the token is in an Idiom
+  % Ex: "=jeːt / toː= na" (BEJ_MV_NARR_01_shelter_025-033) and "=eːt / toː= na" (BEJ_MV_NARR_01_shelter_132-138)
+  rule PUNCT_to_X {
+    pattern { e: N -[punct]-> P; P [upos=PUNCT,InIdiom=Yes]  }
+    commands { 
+      e.1 = unk;
+      P.upos=X;
+    }
+  }
 }
 
 package bej_post {
