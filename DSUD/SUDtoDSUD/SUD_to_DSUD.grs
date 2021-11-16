@@ -41,13 +41,26 @@ package idioms{
 
 % =============================================================================================
 % Treatment of the clitic pronouns that change the meaning of verbs.
-rule clit_verb{
-  pattern{
-    V[upos=VERB,lemma]; CL[upos=PRON];
-    d:V -[comp@expl]-> CL}
-  commands{V.dlemma= CL.form + "_" + V.lemma ; del_edge d}
-}
+package clit_verb{
+%There is only one clitic.
+  rule simple{
+    pattern{
+      V[upos=VERB,lemma,!dlemma]; CL[upos=PRON];
+      d:V -[comp@expl]-> CL}
+    without{V -[comp@expl]-> CL1; CL << CL1}
+    commands{V.dlemma= CL.form + "_" + V.lemma ; del_edge d}
+  }
 
+%There are several clitics.
+%Ex: s'en prendre à qqun.
+  rule complex{
+    pattern{
+      V[upos=VERB,dlemma]; CL[upos=PRON];
+      d:V -[comp@expl]-> CL}
+    without{V -[comp@expl]-> CL1; CL << CL1}
+    commands{V.dlemma= CL.form + "_" + V.dlemma ; del_edge d}
+  }
+}
 % =============================================================================================
 % Distribution of the governor of a coordination to all conjuncts.
 package coord_gov{
