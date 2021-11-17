@@ -106,10 +106,11 @@ rule right_dep{
   }
   
 % Subjects of both conjuncts
+% Ex: SUD_French-GSD fr-ud-test_00015 - Belle[CON1], grande[CONJ2], claire, séduisante à souhait, elle[SUBJ] est pourtant déjà à la retraite.
 rule subj{
     pattern{
       CONJ1 -[1=conj]-> CONJ2;
-      d1:CONJ1 -[1=subj]-> SUBJ; SUBJ[!Shared]; SUBJ << CONJ1}
+      d1:CONJ1 -[1=subj]-> SUBJ; SUBJ[!Shared]}
     without{CONJ2 -[1=subj]-> *}
     commands{add_edge d2:CONJ2 -> SUBJ; d2.label = d1.label; d2.enhanced=yes}
   }
