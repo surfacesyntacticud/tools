@@ -140,14 +140,14 @@ package del_prep{
 % Every dependency to a subordinating conjunction is transformed into a dependency to the object of the conjunction and the conjunction is added as a Conj feature to the dependency.
 package del_sub-conj{
   rule shift_dep{
-    pattern{d1: H -[1 <> conj]-> CONJ; CONJ -[comp:obj]-> OBJ; CONJ[upos=SCONJ, dlemma]}
+    pattern{d1: H -[1 <> conj]-> CONJ; CONJ -[1=comp, 2=obj]-> OBJ; CONJ[upos=SCONJ, dlemma]}
     commands{
       add_edge d: H -> OBJ; d.label= d1.label; d.Conj= CONJ.dlemma; d.enhanced=yes;
       del_edge d1}
   }
       
   rule close_shift{
-    pattern{d:CONJ -[comp:obj]-> OBJ; CONJ [upos=SCONJ, dlemma]}
+    pattern{d:CONJ -[1=comp, 2=obj]-> OBJ; CONJ [upos=SCONJ, dlemma]}
     without{ * -[1 <> conj]-> CONJ}
     commands{ shift CONJ ==> OBJ;del_edge d}
   }
