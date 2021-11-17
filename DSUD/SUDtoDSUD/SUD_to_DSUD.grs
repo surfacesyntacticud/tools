@@ -75,11 +75,11 @@ package coord_gov{
   }
 
 % The conjuncts of the coordination are prepositional phrases
+% Ex: SUD_French-GSD fr-ud-test_00024 - Ne pas rester[H] seul[CONJ1] ou en[CONJ2] couple dans une zone isolée.
   rule prep_gov{
-    pattern{
-      CONJ1 -[1=conj]-> CONJ2; CONJ1[upos=ADP]; CONJ2[upos=ADP];
-      d1: H -[1 <> conj]-> CONJ1}
+    pattern{CONJ1 -[1=conj]-> CONJ2; d1: H -[1 <> conj]-> CONJ1}
     without{H -> CONJ2}
+    without{CONJ1.upos <> ADP; CONJ2.upos <> ADP}
     commands{add_edge d2:H -> CONJ2; d2.label = d1.label; d2.enhanced=yes}
   }
 }
