@@ -177,7 +177,6 @@ package rel_extensions {
   rule change_ext{
     pattern{e: H -[1=*,2=*]-> D}
     without{ H -[1=aux|comp|subj]-> D}
-    without{ H -[conj:emb]-> D}
     commands{ add_edge H -[1=e.1,deep=e.2]-> D; del_edge e}
   }
 
@@ -857,7 +856,7 @@ package minimize_right_conj-dep {
   rule minimize_direct {
     pattern {
       C1 -[1=conj]-> C2;
-      e:C1 -[^conj|conj:emb|discourse|parataxis|punct]-> D; C2 << D}
+      e:C1 -[^conj|discourse|parataxis|punct]-> D; C2 << D}
     without { C1 -[1=conj]-> C; C2 << C ; C << D} % Ex :fr-ud-train_03266, fr-ud-train_02016
     commands {
       add_edge f:C2 -> D; f.label = e.label;
@@ -873,7 +872,7 @@ package minimize_right_conj-dep {
       C1 -[1=conj]-> C2;
       C1 -[mod]-> D1; D1 << C2;
       C2 -[mod]-> D2; D2 << C2; %Ex:fr-ud-dev_01562 - ... plus savoureuse (73%) et plus sucrée (68%) que les autres fraises
-      e:D1 -[^conj|conj:emb|discourse|parataxis|punct]-> D; C2 << D}
+      e:D1 -[^conj|discourse|parataxis|punct]-> D; C2 << D}
     without { C1 -[1=conj]-> C; C2 << C ; C << D} % Ex :fr-ud-train_03266, fr-ud-train_02016
     commands {
       add_edge f:D2 -> D; f.label = e.label;
@@ -888,7 +887,7 @@ package minimize_right_conj-dep {
       C1 -[1=conj]-> C2;
       C1 -[1=comp,2=obj]-> D1; D1 << C2;
       C2 -[1=comp,2=obj]-> D2;
-      e:D1 -[^conj|conj:emb|discourse|parataxis|punct]-> D; C2 << D}
+      e:D1 -[^conj|discourse|parataxis|punct]-> D; C2 << D}
     without { C1 -[1=conj]-> C; C2 << C ; C << D} % Ex :fr-ud-train_03266, fr-ud-train_02016
     commands {
       add_edge f:D2 -> D; f.label = e.label;
@@ -904,11 +903,11 @@ package minimize_right_conj-dep {
 % Mark embedded conj relations with the extension "emb".
 rule add_conj_emb{
   pattern {
-    N1 -[conj|conj:emb]-> N2;
+    N1 -[conj|conj@emb]-> N2;
     e: N2 -[conj]-> N3;
   }
   commands {
-    del_edge e; add_edge N2 -[conj:emb]-> N3;
+    del_edge e; add_edge N2 -[conj@emb]-> N3;
   }
 
 }
