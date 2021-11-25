@@ -234,12 +234,31 @@ package control_pred{
     commands{add_edge CPRED -[1=subj,enhanced=yes]-> SUBJ}
   }
 
+% The subject of the controlled predicate CPRED, which is an adjective, is the subject of the control predicate PRED.
+  rule subj_adj{
+    pattern{
+      PRED -[1=comp,2=pred]-> CPRED; CPRED[upos=ADJ];
+      PRED -[1=subj]-> SUBJ}
+    without{CPRED -[1=subj]-> *}
+    without{PRED -[comp:obj]-> OBJ; OBJ[upos=NOUN|NUM|PRON|PROPN|X]}
+    commands{add_edge CPRED -[1=subj,enhanced=yes]-> SUBJ}
+  }
+
 % The subject of the controlled predicate is the direct object of the control predicate.
 %Ex: SUD_French-GSD fr-ud-train_12228 - Je trouve[PRED] cette attitude[OBJ] totalement inadmissible[CPRED] !
 %Ex: SUD_French-GSD fr-ud-train_00581 - Pour autant les différents partis composant la majorité de gauche voient[PRED] leur poids[OBJ] modifié[CPRED].
   rule obj{
     pattern{
       PRED -[1=comp, deep=x]-> CPRED;
+      PRED -[comp:obj]-> OBJ; OBJ[upos=NOUN|NUM|PRON|PROPN|X]}
+    without{CPRED -[1=subj]-> *}
+    commands{add_edge CPRED -[1=subj,enhanced=yes]-> OBJ}
+  }
+
+% The subject of the controlled predicate, which is an adjective, is the direct object of the control predicate.
+  rule obj_adj{
+    pattern{
+      PRED -[1=comp, 2=pred]-> CPRED; CPRED[upos=ADJ];
       PRED -[comp:obj]-> OBJ; OBJ[upos=NOUN|NUM|PRON|PROPN|X]}
     without{CPRED -[1=subj]-> *}
     commands{add_edge CPRED -[1=subj,enhanced=yes]-> OBJ}
@@ -312,7 +331,7 @@ package mod_pred{
   rule mod_pred_adj{
     pattern{
       PRED[upos=ADJ|ADV|AUX|VERB]; ADJ[upos=ADJ];
-      PRED -[1=mod,deep=x]-> ADJ;
+      PRED -[1=mod]-> ADJ;
       PRED -[1=subj]-> SUBJ}
     without{ADJ -[1=subj]-> *}
     commands{add_edge ADJ -[E:subj]-> SUBJ}
