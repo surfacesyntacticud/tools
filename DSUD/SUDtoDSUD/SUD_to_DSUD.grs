@@ -78,10 +78,21 @@ package coord_gov{
 % The conjuncts of the coordination are prepositional phrases
 % Ex: SUD_French-GSD fr-ud-test_00024 - Ne pas rester[H] seul[CONJ1] ou en[CONJ2] couple dans une zone isolée.
   rule prep_gov{
-    pattern{CONJ1 -[1=conj]-> CONJ2; d1: H -[1 <> conj]-> CONJ1}
+    pattern{CONJ1 -[1=conj]-> CONJ2; d1: H -[1 <> conj]-> CONJ1; CONJ1[!Shared]}
     without{H -> CONJ2}
     without{CONJ1.upos <> ADP; CONJ2.upos <> ADP}
     commands{add_edge d2:H -> CONJ2; d2.label = d1.label; d2.enhanced=yes}
+  }
+
+% The conjuncts of the coordination are prepositional phrases. The governor H of the first conjunct CONJ1 is itself in a coordination and CONJ1 is a dependent of the whole coordination of which H is a conjunct.
+% Ex: SUD_French-GSD fr-ud-test_00021 - ... l'espoir et les rêves[H] d'[CONJ1]un peuple et de[CONJ2] ses enfants.
+  rule prep-shared_gov{
+    pattern{CONJ1 -[1=conj]-> CONJ2; d1: H -[1 <> conj]-> CONJ1; CONJ1[Shared]}
+    without{H -> CONJ2}
+    without{CONJ1.upos <> ADP; CONJ2.upos <> ADP}
+    commands{
+      add_edge d2:H -> CONJ2; CONJ2.Shared=Yes;
+      d2.label = d1.label; d2.enhanced=yes}
   }
 }
 
@@ -104,6 +115,17 @@ rule right_dep{
       d1:CONJ2 -[^punct]-> D; D[Shared=Yes]; D >> CONJ2}
     without{CONJ1 -> D}
     commands{add_edge d2:CONJ1 -> D; d2.label = d1.label; d2.enhanced=yes}
+  }
+  
+% Right indirect dependents
+% Ex: SUD_French-GSD fr-ud-test_00022 - ... une période d'[CONJ1] irakisation[D1] ou de[CONJ2] somalisation[D2] de[D] la Libye.
+rule right_ind-dep{
+    pattern{
+      CONJ1 -[1=conj]-> CONJ2;
+      d1:CONJ2 -[^punct]-> D2; d2:D2 -[^punct]-> D; D[Shared=Yes]; D2 >> CONJ2; D >> D2;
+      d3: CONJ1 -> D1; d3.1=d1.1; d3.2=d1.2}
+    without{D1 -> D}
+    commands{add_edge d4:D1 -> D; d4.label = d2.label; d4.enhanced=yes}
   }
   
 % Subjects of both conjuncts
