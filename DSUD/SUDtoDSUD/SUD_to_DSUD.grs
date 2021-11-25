@@ -142,37 +142,66 @@ rule subj{
 
 
 % =============================================================================================
-% Every dependency to a preposition is transformed into a dependency to the object of the preposition and the prepostion is added as a Prep feature to the dependency.
-% Ex: SUD_French-GSD fr-ud-train_08025 - de nombreux artistes, parmi[PREP] lesquels[OBJ] les Rolling Stones[H] ou Billy Bragg
-package del_prep{
-  rule shift_dep{
-    pattern{d1: H -[1 <> conj]-> PREP; PREP -[comp:obj]-> OBJ; PREP [upos=ADP, dlemma]}
+% Every dependency to a complementizer CPL (adposition or subordinating conjunction) is transformed into a dependency to the object of CPL and the deep lemma of CPL  is added as a Cpl feature to the dependency. This feature is a concatenation of the complementizers that form a chain.
+%Ex: SUD_French-GSD fr-ud-train_01392 - J'y retourne dès que je peux !
+% retourne -[Cpl=P-dès_C-que]-> peux
+package del_cpl{
+% CPL is an adposition without complementizer as a governor.
+% Ex: SUD_French-GSDfr-ud-train_13709 - Des marées sont présentes[H] jusqu'[CPL] à[OBJ] Chicoutimi.
+% Ex: SUD_French-GSD fr-ud-train_01392 - J'y retourne[H] dès[CPL] que[OBJ] je peux !
+  rule init_shift_adp{
+    pattern{
+      d1: H -[1 <> conj, !Cpl]-> CPL; CPL[upos=ADP,lemma]; H[upos <> ADP|SCONJ];
+      CPL -[1=comp,2=obj]-> OBJ}
     commands{
-      add_edge d: H -> OBJ; d.label= d1.label; d.Prep= PREP.dlemma; d.enhanced=yes;
+      add_edge d2: H -> OBJ; d2.label= d1.label;
+      d2.Cpl= "P-" + CPL.lemma; d2.enhanced=yes;
       del_edge d1}
   }
 
-  rule close_shift{
-    pattern{d:PREP -[comp:obj]-> OBJ; PREP [upos=ADP, dlemma]}
-    without{ * -[1 <> conj]-> PREP}
-    commands{ shift PREP ==> OBJ;del_edge d}
-  }
-}
-
-% =============================================================================================
-% Every dependency to a subordinating conjunction is transformed into a dependency to the object of the conjunction and the conjunction is added as a Conj feature to the dependency.
-package del_sub-conj{
-  rule shift_dep{
-    pattern{d1: H -[1 <> conj]-> CONJ; CONJ -[1=comp, 2=obj]-> OBJ; CONJ[upos=SCONJ, dlemma]}
+% CPL is a subordinating conjunction without complementizer as a governor.
+% Ex: SUD_French-GSD fr-ud-train_02392 - Mais, c'est[H] un peu comme[CPL] chez[OBJ] John Cale.
+% Ex: SUD_French-GSD fr-ud-dev_00534 - ce n'est[H] même pas comme[CPL] s'[OBJ]ils avaient utilisé beaucoup de matériel
+  rule init_shift_sconj{
+    pattern{
+      d1: H -[1 <> conj, !Cpl]-> CPL; CPL[upos=SCONJ,lemma]; H[upos <> ADP|SCONJ];
+      CPL -[1=comp,2=obj]-> OBJ}
     commands{
-      add_edge d: H -> OBJ; d.label= d1.label; d.Conj= CONJ.dlemma; d.enhanced=yes;
+      add_edge d2: H -> OBJ; d2.label= d1.label;
+      d2.Cpl= "C-" + CPL.lemma; d2.enhanced=yes;
       del_edge d1}
   }
-      
+
+% CPL is an adposition with a complementizer as its governor.
+% Ex: SUD_French-GSD fr-ud-train_13709 - Des marées sont présentes[H] jusqu' à[CPL] Chicoutimi[OBJ].
+% Ex: SUD_French-GSD fr-ud-train_02392 - Mais, c'est[H] un peu comme chez[CPL] John[OBJ] Cale.
+  rule iter_shift_adp{
+    pattern{
+      d1: H -[1 <> conj, Cpl=*]-> CPL; CPL[upos=ADP,lemma]; H[upos <> ADP|SCONJ];
+      CPL -[1=comp,2=obj]-> OBJ}
+    commands{
+      add_edge d2: H -> OBJ; d2.label= d1.label;
+      d2.Cpl= d1.Cpl + "_P-" + CPL.lemma; d2.enhanced=yes;
+      del_edge d1}
+  }
+
+% CPL is a subordinating conjunction with a complementizer as its governor.
+% Ex: SUD_French-GSD fr-ud-train_01392 - J'y retourne[H] dès que[CPL] je peux[OBJ] !
+% Ex: SUD_French-GSD fr-ud-dev_00534 - ce n'est[H] même pas comme s'[CPL]ils avaient[OBJ] utilisé beaucoup de matériel
+  rule iter_shift_sconj{
+    pattern{
+      d1: H -[1 <> conj, Cpl=*]-> CPL; CPL[upos=SCONJ,lemma]; H[upos <> ADP|SCONJ];
+      CPL -[1=comp,2=obj]-> OBJ}
+    commands{
+      add_edge d2: H -> OBJ; d2.label= d1.label;
+      d2.Cpl= d1.Cpl + "_C-" + CPL.lemma; d2.enhanced=yes;
+      del_edge d1}
+  }
+% All dependencies incoming CPL have been shifted.
   rule close_shift{
-    pattern{d:CONJ -[1=comp, 2=obj]-> OBJ; CONJ [upos=SCONJ, dlemma]}
-    without{ * -[1 <> conj]-> CONJ}
-    commands{ shift CONJ ==> OBJ;del_edge d}
+    pattern{d:CPL -[comp:obj]-> OBJ; CPL [upos=ADP|SCONJ]}
+    without{ * -[1 <> conj]-> CPL}
+    commands{ shift CPL ==> OBJ;del_edge d}
   }
 }
 
