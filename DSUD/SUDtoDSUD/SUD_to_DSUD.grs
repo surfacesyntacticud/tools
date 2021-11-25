@@ -1,66 +1,67 @@
-% Transformation of SUD annotation into DUD (Deep Universal Dependencies) annotations.
+% ===========================================
+% Transformation of SUD annotation into DSUD (Deep Syntax Universal Dependencies) annotations.
 
 % =============================================================================================
-% Addition of deep features.
-package add_features{
-  rule add_deep_lemma{
-    pattern{N[upos=ADP|SCONJ, lemma, !dlemma, !ExtPos, !Indiom]}
-    commands{N.dlemma=N.lemma}
-  }
+% Transformation of flat expressions into atoms.
+rule flat{
+  pattern{d:N1-[1=flat]-> N2}
+  without{N2 -[1=flat]-> *}
+  commands{
+    N1.form= N1.form + "_" + N2.form;
+    N1.lemma= N1.lemma + "_" + N2.lemma;
+    del_edge d}
 }
 
 % =============================================================================================
 % Transformation of idiomatic expressions into atoms.
 package idioms{
 
-% Initialize the deep lemma of idiom leaves.
-  rule initialize_dlemma{
-    pattern{N[lemma, !dlemma, InIdiom=Yes]}
-    commands{N.dlemma=N.wordform}
-  }
-  
-% Raise the deep lemma of an element to its governor, when it is at its left.
-  rule raise_left_dlemma{
-    pattern{D[InIdiom=Yes, dlemma];H[wordform]; e:H -> D; D << H}
-    commands{H.dlemma = D.dlemma + "_"+ H.wordform; del_edge e }
+% ===========================================
+% Contract the expressions into a singlr atom.
+package contract{
+% Initialize the deep form of idiom internal nodes.
+  rule initialize_dform_int{
+    pattern{N[wordform, !dform, InIdiom=Yes]}
+    commands{N.dform=N.wordform}
   }
 
-% Raise the deep lemma of an element to its governor, when it is at its right.
-  rule raise_right_dlemma{
-    pattern{D[InIdiom=Yes, dlemma];H[wordform]; e:H -> D; D >> H}
-    commands{H.dlemma = H.wordform + "_"+ D.dlemma; del_edge e }
+% Initialize the deep form of idiom heads.
+  rule initialize_dform_head{
+    pattern{N[wordform, !dform, Idiom=Yes]}
+    commands{N.dform=N.wordform}
   }
 
+% Raise the deep form of an element to its governor, when it is at its immediate left.
+  rule raise_left_dform{
+    pattern{D[InIdiom=Yes, dform];H[dform]; d:H -> D; D << H}
+    without{H -> D1; D1[InIdiom=Yes]; D << D1; D1 <<H}
+    commands{H.dform = D.dform + "_"+ H.dform; del_edge d }
+  }
+
+% Raise the deep form of an element to its governor, when it is at its immediate right.
+  rule raise_right_dform{
+    pattern{D[InIdiom=Yes, dform];H[dform]; d:H -> D; D >> H}
+    without{H -> D1; D1[InIdiom=Yes]; H << D1; D1 <<D}
+    commands{H.dform = H.dform + "_"+ D.dform; del_edge d }
+  }
+}
+
+% ===========================================
 % Transform the head of an idiomatic expression into an idiomatic atom.
-  rule atomize_idiom{
-    pattern{ H[ExtPos,Idiom=Yes]}
-    without{H ->D; D[InIdiom=Yes]}
-    commands{ H.upos=H.ExtPos; del_feat H.ExtPos}
-  }
+rule finalize{
+  pattern{ H[ExtPos,Idiom=Yes,dform]}
+  without{H ->D; D[InIdiom=Yes]}
+  commands{
+    H.upos=H.ExtPos; del_feat H.ExtPos;
+    H.lemma=H.dform; H.form= H.dform; del_feat H.dform}
 }
 
-% =============================================================================================
-% Treatment of the clitic pronouns that change the meaning of verbs.
-package clit_verb{
-%There is only one clitic.
-  rule simple{
-    pattern{
-      V[upos=VERB,lemma,!dlemma]; CL[upos=PRON];
-      d:V -[comp@expl]-> CL}
-    without{V -[comp@expl]-> CL1; CL << CL1}
-    commands{V.dlemma= CL.form + "_" + V.lemma ; del_edge d}
-  }
+% ===========================================
+% Strategy of idiom atomization.
+strat main{Seq(Onf(contract), Onf(finalize))}
 
-%There are several clitics.
-%Ex: s'en prendre à qqun.
-  rule complex{
-    pattern{
-      V[upos=VERB,dlemma]; CL[upos=PRON];
-      d:V -[comp@expl]-> CL}
-    without{V -[comp@expl]-> CL1; CL << CL1}
-    commands{V.dlemma= CL.form + "_" + V.dlemma ; del_edge d}
-  }
 }
+
 % =============================================================================================
 % Distribution of the governor of a coordination to all conjuncts.
 package coord_gov{
