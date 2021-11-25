@@ -384,7 +384,7 @@ package mark_rel-pron-ant{
   rule init_mark{
     pattern{ H -> PRO; PRO [PronType=Rel, !InIdiom]}
     without{* -[REF|MARK]-> PRO}
-    without{H -[mod@relcl|comp:cleft]-> PRO}
+    without{H -[mod@relcl|comp:cleft|E:mod@relcl|E:comp:cleft]-> PRO}
     without{H -[1=conj]-> PRO}
     commands{add_edge H -[MARK]->PRO; H.Marked=Yes}
   }
@@ -392,9 +392,9 @@ package mark_rel-pron-ant{
 % The MARK relation is shifted from its source to the governor of this source.
   rule shift_mark{
     pattern{d: M -[MARK]-> PRO; H -> M; H[!Marked]}
-    without{H -[mod@relcl|comp:cleft]-> M}
+    without{H -[mod@relcl|comp:cleft|E:mod@relcl|E:comp:cleft]-> M}
     without{H -[1=comp,2=pred]-> M; H -[comp:cleft]-> *}
-    without{M -[mod@relcl]-> *}
+    without{M -[mod@relcl|E:mod@relcl]-> *}
     without{H -[1=conj]-> M ; H << PRO} 
     commands{del_edge d; add_edge H -[MARK]-> PRO; H.Marked=Yes}
   }
@@ -436,7 +436,7 @@ package mark_rel-pron-ant{
   
 % The MARK relation in a relative clause has the head of the clause as its governor. The governor is shifted to the antecedent.
   rule shift_ref_relcl{
-    pattern{d:M -[MARK]-> PRO; ANT -[mod@relcl]-> M}
+    pattern{d:M -[MARK]-> PRO; ANT -[mod@relcl|E:mod@relcl]-> M}
     commands{ add_edge ANT -[REF]-> PRO; del_edge d}
   }
 }
