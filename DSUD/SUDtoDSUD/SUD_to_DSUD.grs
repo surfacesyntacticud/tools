@@ -654,14 +654,11 @@ package del_isolated_token{
 % Strategy that converts a SUD annotation into an DUD annotation.
 strat main{
   Seq(
-    Onf(add_features),
-    Onf(idioms),
-    Onf(clit_verb),
+    Onf(flat),
+    idioms.main,
     Onf(coord_gov),
     Onf(coord_dep), % "coord_dep" must precede "del_prep" because prepositional phrases may depend on a coordination. Ex: SUD_French-GSD fr-ud-test_00001 -
-    Onf(voice),
-    Onf(del_prep),
-    Onf(del_sub-conj),
+    Onf(del_cpl),
     Onf(del_coord-conj),
     deep_subj.main,
     Onf(refl_pron),
@@ -669,6 +666,7 @@ strat main{
     Onf(coord_dep), % Justification of this second application of the coord_dep package: ex SUD_Frecnh-GSD fr-ud-dev_01331 - ...de nombreux journaux libertaires et antimilitaristes, ...
     Onf(redistrib_synt),
     cleft_sent.main,
+    Onf(clit_verb), %This package follows the package related to the treatment of auxiliaries because of the final form of the verbs.
     Onf(del_isolated_token)
   )
 }
