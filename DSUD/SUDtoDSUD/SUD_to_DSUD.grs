@@ -365,7 +365,9 @@ strat main{Seq(Onf(control_pred), Onf(mod_pred), Onf(pass_subj))}
 % =============================================================================================
 % The dependencies to reflexive pronouns are shifted to the subject of the corresponding verb.
 rule refl_pron{
-  pattern{d1: V -> PRON; PRON[upos=PRON,Reflex=Yes]; V -[1=subj]-> SUBJ}
+  pattern{
+    d1: V -[^comp@expl|comp@pass]-> PRON;
+    PRON[upos=PRON,Reflex=Yes]; V -[1=subj]-> SUBJ}
   commands{
     add_edge d2: V -> SUBJ; d2.label=d1.label; d2.enhanced=yes;
     shift_in PRON ==> SUBJ; del_edge d1}
