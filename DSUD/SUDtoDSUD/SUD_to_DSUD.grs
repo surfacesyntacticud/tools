@@ -559,7 +559,7 @@ package link_focus{
   rule init_mark_arg{
     pattern{
       V[upos=AUX|VERB]; V -[1=comp,2=pred]-> FOC;
-      V -[1=comp, 2=cleft, Conj=*]-> VCOMP; VCOMP[upos=AUX|VERB]}
+      d:V -[1=comp, 2=cleft, Cpl=*]-> VCOMP; d.Cpl=re"C-.*"; VCOMP[upos=AUX|VERB]}
     without{* -[ARG]-> FOC}
     commands{ add_edge VCOMP -[ARG]-> FOC}
   }
@@ -596,7 +596,7 @@ package label_focus_dep{
 % The constituent in focus is a direct object of the verb that governs it in the REF dependency.
   rule obj{
     pattern{
-      d:VCOMP -[ARG]-> FOC; V -[1=comp, 2=pred, !Prep]-> FOC;
+      d:VCOMP -[ARG]-> FOC; V -[1=comp, 2=pred, !Cpl]-> FOC;
       FOC[upos=NOUN|NUM|PRON|PROPN|X]}
     without{VCOMP -[1=comp,2=obj]-> VCOMP1; VCOMP1[upos=VERB]}
     commands{add_edge VCOMP-[E:comp:obj]-> FOC; del_edge d}
@@ -604,14 +604,14 @@ package label_focus_dep{
 
 % The constituent in focus is introduced by a preposition; therefore, it is an indirect complement of the verb that governs it in the REF dependency.
   rule udep{
-    pattern{d1:VCOMP -[ARG]-> FOC; d2:V -[1=comp, 2=pred, Prep=*]-> FOC}
+    pattern{d1:VCOMP -[ARG]-> FOC; d2:V -[1=comp, 2=pred, Cpl=*]-> FOC}
     without{VCOMP -[1=comp,2=obj]-> VCOMP1; VCOMP1[upos=VERB]}
-    commands{add_edge d3: VCOMP-> FOC; d3.1=udep;d3.Prep=d2.Prep; d3.enhanced=yes; del_edge d1}
+    commands{add_edge d3: VCOMP-> FOC; d3.1=udep;d3.Cpl=d2.Cpl; d3.enhanced=yes; del_edge d1}
    }
  
 % The constituent in focus is an adverb; therefore, it is an indirect complement of the verb that governs it in the REF dependency.
   rule udep_adv{
-    pattern{d:VCOMP -[ARG]-> FOC;d1:V -[1=comp,2=pred, !Prep]-> FOC; FOC[upos= ADV]}
+    pattern{d:VCOMP -[ARG]-> FOC;d1:V -[1=comp,2=pred, !Cpl]-> FOC; FOC[upos= ADV]}
     without{VCOMP -[1=comp,2=obj]-> VCOMP1; VCOMP1[upos=VERB]}
     commands{add_edge VCOMP -[E:udep]-> FOC; del_edge d}
   }
