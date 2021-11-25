@@ -623,6 +623,18 @@ strat main{Seq(Iter(link_focus), Onf(label_focus_dep))}
 }
 
 % =============================================================================================
+% Treatment of the clitic pronouns that change the meaning of verbs.
+rule clit_verb{
+  pattern{
+    V[upos=VERB,lemma]; CL[upos=PRON];
+    d:V -[comp@expl]-> CL}
+  without{V -[comp@expl]-> CL1; CL << CL1}
+  commands{
+    V.lemma= CL.lemma + "_" + V.lemma ;
+    V.form=  CL.form + "_" + V.form ;del_edge d}
+}
+
+% =============================================================================================
 % All isolated tokens are deleted. Wordform and textform features are deleted.
 package del_isolated_token{
   rule del_tok{
