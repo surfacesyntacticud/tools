@@ -520,7 +520,7 @@ package redistrib_synt{
 
 % Agent complements of passive verbs.
   rule agent_obl{
-    pattern{d: V -[1=comp, 2=obl, deep=agent]-> AGT; V[Voice=Pass]}
+    pattern{V[upos=VERB]; d: V -[1=comp, 2=obl, deep=agent]-> AGT}
     commands{add_edge V -[E:subj]-> AGT; del_edge d}
   }
 
