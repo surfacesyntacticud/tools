@@ -47,13 +47,19 @@ package contract{
 }
 
 % ===========================================
-% Transform the head of an idiomatic expression into an idiomatic atom.
-rule finalize{
-  pattern{ H[ExtPos,Idiom=Yes,dform]}
-  without{H ->D; D[InIdiom=Yes]}
-  commands{
-    H.upos=H.ExtPos; del_feat H.ExtPos;
-    H.lemma=H.dform; H.form= H.dform; del_feat H.dform}
+% Transform the head of an idiomatic expression into an idiomatic atom and replace the upos feature with the ExtPos feature for all words where this feature is present.
+package finalize{
+% Idioms
+  rule idiom{
+    pattern{ H[Idiom=Yes,dform]}
+    commands{H.lemma=H.dform; H.form= H.dform; del_feat H.dform}
+  }
+
+% All expressions with an ExtPos feature
+  rule extpos{
+    pattern{ H[ExtPos]}
+    commands{H.upos=H.ExtPos; del_feat H.ExtPos}
+  }
 }
 
 % ===========================================
