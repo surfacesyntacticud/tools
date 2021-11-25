@@ -213,25 +213,6 @@ rule del_coord-conj{
   commands{d1.Conj = C.lemma; d1.enhanced=yes; del_edge d2}
 }
 
-% =============================================================================================
-% Active and passive voices
-package voice{
-% Active voice{
-  rule active{
-    pattern{V[upos=AUX|VERB,!Voice]}
-    without{V[VerbForm=Part,Tense=Past]}
-    commands{V.Voice=Act}
-  }
-
-% Passive voice{
-  rule passive{
-    pattern{V[upos=VERB, VerbForm=Part, Tense=Past, !Voice]}
-    without{* -[comp:aux@tense]-> V}
-    commands{V.Voice=Pass}
-  }
-
-}
-
 
 % =============================================================================================
 % Deep subjects are added.
