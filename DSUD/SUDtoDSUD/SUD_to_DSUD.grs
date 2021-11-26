@@ -585,7 +585,7 @@ package link_focus{
 
 % The ARG relation is shifted from a verb VCOMP to its direct object VCOMP1, which is also a verb.
   rule shift_mark_arg{
-    pattern{ d:VCOMP -[ARG]-> FOC; VCOMP -[1=comp,2=obj]-> VCOMP1; VCOMP1[upos=AUX|VERB]}
+    pattern{ d:VCOMP -[ARG]-> FOC; VCOMP -[1=comp,2=obj|pred]-> VCOMP1; VCOMP1[upos=AUX|VERB]}
     without{VCOMP -[1=conj]-> VCOMP2}
     commands{add_edge VCOMP1 -[ARG]-> FOC; del_edge d}
   }
@@ -600,7 +600,7 @@ package link_focus{
 % There is an ARG relation from a focus FOC to a verb VCOMP and VCOMP has a conjunct VCOMP2 in a coordination. The ARG relation has been added from all conjuncts of VCOMP to FOC.The ARG relation is shifted from a verb VCOMP to its direct object VCOMP1, which is also a verb.
   rule shift_mark_arg_coord2{
     pattern{
-      d:VCOMP -[ARG]-> FOC; VCOMP -[1=comp,2=obj]-> VCOMP1; VCOMP1[upos=AUX|VERB];
+      d:VCOMP -[ARG]-> FOC; VCOMP -[1=comp,2=obj|pred]-> VCOMP1; VCOMP1[upos=AUX|VERB];
       VCOMP -[1=conj]-> VCOMP2; VCOMP2[Mark=Yes]}
     without{VCOMP -[1=conj]-> VCOMP2; VCOMP2[!Mark]}
     commands{add_edge VCOMP1 -[ARG]-> FOC; del_edge d}
