@@ -347,7 +347,7 @@ package mod_pred{
 % If an infinitive INF is a modifier of a predicate PRED, its deep subject is the subject SUBJ of PRED.
 % Ex : SUD_French-GSD fr-ud-train_02692 - Nous[SUBJ] avons retiré[PRED] l'application pour régler[INF] le problème.
 %Ex: SUD_French-GSD fr-ud-test_00121 - Charles[NSUBJ] Mwando Nsimba a sollicité[PRED] un délai supplémentaire avant[ADV] de répondre[INF] aux préoccupations soulevées
-  rule mod_pred_verb{
+  rule mod_pred_inf{
     pattern{
       PRED[upos=ADJ|ADV|AUX|VERB]; INF[VerbForm=Inf];
       PRED -[1=mod,deep=x]-> INF;
@@ -355,6 +355,19 @@ package mod_pred{
     without{INF -[1=subj]-> *}
     commands{add_edge INF -[E:subj]-> SUBJ}
   }
+
+% If an infinitive INF is the complement of an adverb thar is a modifier of a predicate PRED, its deep subject is the subject SUBJ of PRED.
+% Ex : SUD_French-GSD fr-ud-dev_00674 - les cônes[SUBJ] sont tous orientés vers le tronc et peuvent rester 20 ans accrochées[PRED] au tronc avant[ADV] de tomber[INF].
+  rule mod_pred_adv_inf{
+    pattern{
+      PRED[upos=ADJ|ADV|AUX|VERB]; ADV[upos=ADV];
+      PRED -[1=mod,deep=x]-> ADV;
+      INF[VerbForm=Inf]; ADV -[1=comp]-> INF;
+      PRED -[1=subj]-> SUBJ}
+    without{INF -[1=subj]-> *}
+    commands{add_edge INF -[E:subj]-> SUBJ}
+  }
+
 }
 % ===========================================
 % Subjects of verbs in the passive voice are passive subjects.
