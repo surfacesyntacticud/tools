@@ -157,8 +157,9 @@ package del_cpl{
 % Ex: SUD_French-GSD fr-ud-train_01392 - J'y retourne[H] dès[CPL] que[OBJ] je peux !
   rule init_shift_adp{
     pattern{
-      d1: H -[1 <> conj, !Cpl]-> CPL; CPL[upos=ADP,lemma]; H[upos <> ADP|SCONJ];
+      d1: H -[1 <> conj, !Cpl]-> CPL; CPL[upos=ADP,lemma]; 
       CPL -[1=comp,2=obj]-> OBJ}
+    without{H[upos = ADP|SCONJ]}
     commands{
       add_edge d2: H -> OBJ; d2.label= d1.label;
       d2.Cpl= "P-" + CPL.lemma; d2.enhanced=yes;
@@ -170,8 +171,9 @@ package del_cpl{
 % Ex: SUD_French-GSD fr-ud-dev_00534 - ce n'est[H] même pas comme[CPL] s'[OBJ]ils avaient utilisé beaucoup de matériel
   rule init_shift_sconj{
     pattern{
-      d1: H -[1 <> conj, !Cpl]-> CPL; CPL[upos=SCONJ,lemma]; H[upos <> ADP|SCONJ];
+      d1: H -[1 <> conj, !Cpl]-> CPL; CPL[upos=SCONJ,lemma];
       CPL -[1=comp,2=obj]-> OBJ}
+    without{H[upos = ADP|SCONJ]}
     commands{
       add_edge d2: H -> OBJ; d2.label= d1.label;
       d2.Cpl= "C-" + CPL.lemma; d2.enhanced=yes;
@@ -183,8 +185,9 @@ package del_cpl{
 % Ex: SUD_French-GSD fr-ud-train_02392 - Mais, c'est[H] un peu comme chez[CPL] John[OBJ] Cale.
   rule iter_shift_adp{
     pattern{
-      d1: H -[1 <> conj, Cpl=*]-> CPL; CPL[upos=ADP,lemma]; H[upos <> ADP|SCONJ];
+      d1: H -[1 <> conj, Cpl=*]-> CPL; CPL[upos=ADP,lemma];
       CPL -[1=comp,2=obj]-> OBJ}
+    without{H[upos = ADP|SCONJ]}
     commands{
       add_edge d2: H -> OBJ; d2.label= d1.label;
       d2.Cpl= d1.Cpl + "_P-" + CPL.lemma; d2.enhanced=yes;
@@ -196,8 +199,9 @@ package del_cpl{
 % Ex: SUD_French-GSD fr-ud-dev_00534 - ce n'est[H] même pas comme s'[CPL]ils avaient[OBJ] utilisé beaucoup de matériel
   rule iter_shift_sconj{
     pattern{
-      d1: H -[1 <> conj, Cpl=*]-> CPL; CPL[upos=SCONJ,lemma]; H[upos <> ADP|SCONJ];
+      d1: H -[1 <> conj, Cpl=*]-> CPL; CPL[upos=SCONJ,lemma];
       CPL -[1=comp,2=obj]-> OBJ}
+    without{H[upos = ADP|SCONJ]}
     commands{
       add_edge d2: H -> OBJ; d2.label= d1.label;
       d2.Cpl= d1.Cpl + "_C-" + CPL.lemma; d2.enhanced=yes;
@@ -236,6 +240,7 @@ package control_pred{
       PRED -[1=comp,deep=x]-> CPRED;
       PRED -[1=subj]-> SUBJ}
     without{CPRED -[1=subj]-> *}
+    without{PRED -[1=subj,deep=expl]-> SUBJ}
     without{PRED -[comp:obj]-> OBJ; OBJ[upos=NOUN|NUM|PRON|PROPN|X]}
     commands{add_edge CPRED -[1=subj,enhanced=yes]-> SUBJ}
   }
@@ -246,6 +251,7 @@ package control_pred{
       PRED -[1=comp,2=pred]-> CPRED; CPRED[upos=ADJ];
       PRED -[1=subj]-> SUBJ}
     without{CPRED -[1=subj]-> *}
+    without{PRED -[1=subj,deep=expl]-> SUBJ}
     without{PRED -[comp:obj]-> OBJ; OBJ[upos=NOUN|NUM|PRON|PROPN|X]}
     commands{add_edge CPRED -[1=subj,enhanced=yes]-> SUBJ}
   }
