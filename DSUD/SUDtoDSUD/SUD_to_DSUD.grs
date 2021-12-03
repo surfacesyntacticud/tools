@@ -556,11 +556,12 @@ package redistrib_synt{
     commands{add_edge V -[E:subj]-> OBJ; del_edge d}
   }
 
-% Objects of causative auxilairies.
+% Agent complements of causative auxilairies.
   rule agent_obj-caus{
-    pattern{ AUX -[1=comp, 2=aux, deep=caus]-> V; d: AUX -[1=comp, 2=obj, deep=agent]-> OBJ}
+    pattern{ AUX -[1=comp, 2=aux, deep=caus]-> V; d: AUX -[1=comp, 2=obj|obl, deep=agent]-> OBJ}
     commands{ add_edge V -[E:subj]-> OBJ; del_edge d}
   }
+
 
 % Expletive subjects are deleted
   rule impers_subj{
