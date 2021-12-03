@@ -199,8 +199,8 @@ package unchained_relations {
 
 % Embedded coordinations.
   rule conj_emb {
-    pattern { H -[conj:emb]-> D1;e: D1 -[conj:emb]-> D2 }
-    commands { del_edge e; add_edge H -[conj:emb]-> D2 }
+    pattern { H -[conj@emb]-> D1;e: D1 -[conj@emb]-> D2 }
+    commands { del_edge e; add_edge H -[conj@emb]-> D2 }
   }
 }
 
@@ -401,7 +401,7 @@ package reverse_close {
   % if two conj are connected by a change of head, add the "emb" subtype
   rule connect_conj {
     pattern { H -[1=conj,rev=y]-> D; e:D -[conj]-> D1}
-    commands { e.2 = emb }
+    commands { e.deep = emb }
   }
 
   rule del_reversed{
@@ -796,10 +796,6 @@ package final {
     commands {del_feat W.nom}
   }
 
-  rule rm_emb {
-    pattern { e:M -[conj:emb]-> N }
-    commands { del_edge e; add_edge M -[conj]-> N }
-  }
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

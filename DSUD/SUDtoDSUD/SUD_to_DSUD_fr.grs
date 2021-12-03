@@ -2,73 +2,96 @@
 include "SUD_to_DSUD.grs"
 
 % =============================================================================================
-% Replacement of reflexive pronouns expressing the middle voice with a feature on the verb.
-rule FR_middle_voice{
+% Introduction of the Voice feature for French verbs.
+package FR_voice{
+
+% Active voice for verbs in simple tenses.
+  rule active_simple{
+    pattern{V[upos=VERB,!Voice]}
+    without{V[VerbForm=Part,Tense=Past]}
+    without{
+      AUX[upos=AUX, lemma=faire]; AUX -[comp:aux@pass]-> V;
+      V[VerbForm=Inf];
+      CL[upos=PRON,lemma=se]; d:AUX -[comp@pass]-> CL}
+    commands{V.Voice=Act}
+  }
+
+% Active voice for verbs in compound tenses.
+  rule active_compound{
+    pattern{V[upos=VERB,VerbForm=Part,Tense=Past,!Voice]; AUX -[comp:aux@tense]-> V}
+    commands{V.Voice=Act}
+  }
+
+% Active voice for past participles of non-passivable verbs.
+  rule active_part(lex from "lexicons/fr_passivable_verbs.lp"){
+    pattern{V[upos=VERB, VerbForm=Part, Tense=Past, !Voice]}
+    without{V[lemma=lex.verb]}
+    without{AUX -[1=comp,2=aux]-> V}
+    commands{V.Voice=Act}
+  }
+
+% Passive voice for verbs with a passive auxiliary.
+  rule passive_aux{
+    pattern{
+      V[upos=VERB, VerbForm=Part, Tense=Past, !Voice];
+      AUX -[comp:aux@pass]-> V}
+    commands{V.Voice=Pass}
+  }
+
+% Passive voice for past participles of passivable verbs.
+  rule passive_part(lex from "lexicons/fr_passivable_verbs.lp"){
+    pattern{V[upos=VERB, VerbForm=Part, Tense=Past, lemma=lex.verb, !Voice]}
+    without{AUX -[1=comp,2=aux]-> V}
+    commands{V.Voice=Pass}
+  }
+
+%Passive voice for infinitives used with "se faire".
+% Ex: SUD_French-GSD fr-ud-test_00058 - Sidi M'hamed Deddeche et Amgid Sidi Ahmed ... s'étaient-ils fait[AUX] arrêter[V] mercredi dernier ...
+rule passive_faire{
+  pattern{
+    AUX[upos=AUX, lemma=faire]; AUX -[comp:aux@pass]-> V; V[upos=VERB, VerbForm=Inf];
+    CL[upos=PRON,lemma=se]; d:AUX -[comp@pass]-> CL}
+  commands{V.Voice=Pass ; del_edge d}
+}
+
+% Middle voice for verbs with a reflexive pronoun expressing the middle voice.
+rule middle{
   pattern{
     V[upos=VERB]; CL[upos=PRON,lemma=se];
     d:V -[comp@pass]-> CL}
   commands{V.Voice=Mid ; del_edge d}
 }
 
+}
 % =============================================================================================
-% For relative pronouns representing indirect complements, corresponding prepositions are added to the dependencies targeting them.
-rule FR_rel-pron_prep{
+% For pronouns representing indirect complements, corresponding prepositions are added to the dependencies targeting them.
+rule FR_pron_prep{
   pattern{
-    PRO[upos=ADV|PRON,PronType=Rel,lemma=lex.pron];
-    d: H -[!Prep]-> PRO}
-  commands{d.Prep=lex.prep}
+    PRO[upos=ADV|PRON,lemma=lex.pron];
+    d: H -[comp:obl|E:comp:obl|mod|E:mod]-> PRO}
+  commands{d.Cpl= "P-"+lex.prep}
 }
 #BEGIN	lex
 pron	prep
 %-----------
 dont	de
+en	de
+lui	à
 où	loc
+se	à
+y	à
 #END
-  
-% =============================================================================================
-% Predicates that are complement of another verb and the subject of which is controlled by the main verb.
-package FR_deep_subj_controlled_pred{
 
-% An infinitive INF is a direct object of a verb V (introduced with the prepostion "de") and its deep subject is the oblique argument N of V introduced with the preposition "à".
-  rule obl_control-verb(lex from "lexicons/fr_verbs_a_noun_de_inf.lp"){
-    pattern{
-      V[upos=VERB,lemma=lex.verb]; INF[upos=VERB,VerbForm=Inf];
-      V -[1=comp,2=obj,Prep=de]-> INF;
-      V -[1=comp, 2=obl, Prep=*]-> N; N[upos=NOUN|NUM|PRON|PROPN|X]; V.Prep=re"à"}
-    without{ INF -[1=subj]-> *}
-    commands{add_edge INF -[E:subj]-> N}
-  }
-
-% An infinitive INF is a direct object of a verb V (introduced with the prepostion "de") and its deep subject is the oblique argument N of V, which is a clitic "lui" or "se".
-  rule obl_control-verb_clit(lex from "lexicons/fr_verbs_a_noun_de_inf.lp"){
-    pattern{
-      V[upos=VERB,lemma=lex.verb]; INF[upos=VERB,VerbForm=Inf];
-      V -[1=comp,2=obj,Prep=de]-> INF;
-      V -[1=comp, 2=obl]-> PRO; PRO[upos=PRON, lemma=lui|se]}
-    without{ INF -[1=subj]-> *}
-    commands{add_edge INF -[E:subj]-> PRO}
-  }
-
-}
-
-% =============================================================================================
-% Past participles of non-passivable verbs have an erroneous passive subject.
-rule FR_subj_past-part(lex from "lexicons/fr_passivable_verbs.lp"){
-  pattern{
-    PART[upos=VERB,VerbForm=Part,Tense=Past, Voice=Pass];
-    e:PART -[E:subj@pass]-> SUBJ}
-  without{PART[lemma=lex.verb]}
-  commands{del_edge e; add_edge PART -[E:subj]-> SUBJ; del_feat PART.Voice}
-}
 
 % =============================================================================================
 % Auxiliaries are replaced by features assigned to the main verbs and their outgoing dependencies are moved to the main verb.
 % Causative auxiliaries are excluded from the treatement applied to all auxiliaries because they behave like ordinary predicates. For example, we have to distinguish between " Il ne la fait pas abandonner" and "Il la fait ne pas abandonner".
 package FR_aux{
 % ===========================================
-% Modifiers of auxiliaries are shifted to the main verb and their dependency is marked MOD:CL to express that they are clause modifiers.
+% Modifiers of auxiliaries, except causative auxiliaries, are shifted to the main verb and their dependency is marked MOD:CL to express that they are clause modifiers.
 rule modif{
   pattern{AUX[upos=AUX]; d1: AUX -[1=mod,!2]-> MOD; AUX -[1=comp,2=aux]-> V}
+  without{AUX -[comp:aux@caus]-> V}
   commands{add_edge d2: V -> MOD; d2.label=d1.label; d2.2=cl; d2.enhanced= yes; del_edge d1}
 }
 
@@ -79,11 +102,11 @@ package shift_feat-dep{
   rule aux_tense-fin{
     pattern{
       AUX[upos=AUX, Mood=lex.mood, Tense=lex.auxt, VerbForm=Fin];
-      V[VerbForm=Part];
-      e:AUX -[comp:aux@tense]-> V}
+      AUX -[comp:aux@tense]-> V}
+    without{V[VerbForm=Fin]}
     commands{
       V.Mood=AUX.Mood; V.Tense=lex.verbt; V.VerbForm=Fin;
-      V.Voice=Active;shift_out AUX ==> V}
+      V.Voice=Active;V.form= AUX.form + "_" + V.form; shift_out AUX ==> V}
   }
 #BEGIN	lex
 mood	auxt	verbt
@@ -99,61 +122,76 @@ Imp	Pres	Past
 
 % The auxiliary is an infinitive.
   rule aux_inf{
-    pattern{
-      AUX[upos=AUX,VerbForm=Inf]; e:AUX -[comp:aux@tense]-> V;
-      V[VerbForm=Part]}
-    commands{V.VerbForm=Inf; V.Tense=Past; V.Voice=Active;shift_out AUX ==> V}
+    pattern{AUX[upos=AUX,VerbForm=Inf]; e:AUX -[comp:aux@tense]-> V}
+    without{V[VerbForm=Inf]}
+    commands{
+      V.VerbForm=Inf; V.Tense=Past;
+      V.form= AUX.form + "_" + V.form;shift_out AUX ==> V}
   }
 
 % The auxiliary is a present participle.
   rule aux_pres-part{
-    pattern{
-      AUX[upos=AUX,VerbForm=Part,Tense=Pres]; e:AUX -[comp:aux@tense]-> V;
-      V[Tense=Past,VerbForm=Part]}
-    commands{V.VerbForm=Part; V.Tense=Pres;  V.Voice=Active;shift_out AUX ==> V}
+    pattern{AUX[upos=AUX,VerbForm=Part,Tense=Pres]; e:AUX -[comp:aux@tense]-> V}
+    without{V[VerbForm=Part,Tense=Pres]}
+    commands{
+      V.VerbForm=Part; V.Tense=Pres;
+      V.form= AUX.form + "_" + V.form; shift_out AUX ==> V}
   }
 
 % The auxiliary is a passive auxiliary and a finite verb.
   rule aux_pass_fin{
-    pattern{
-      AUX[upos=AUX,Mood, Tense, VerbForm=Fin]; e:AUX -[comp:aux@pass]-> V;
-      V[Tense=Past,VerbForm=Part]}
+    pattern{AUX[upos=AUX,Mood, Tense, VerbForm=Fin]; e:AUX -[comp:aux@pass]-> V}
+    without{V[VerbForm=Fin]}
     commands{
-     V.Mood=AUX.Mood; V.Tense=AUX.Tense; V.VerbForm=Fin; V.Voice=Pass;
-     shift_out AUX ==> V}
+     V.Mood=AUX.Mood; V.Tense=AUX.Tense; V.VerbForm=Fin;
+     V.form= AUX.form + "_" + V.form;shift_out AUX ==> V}
   }
 
 % The auxiliary is a passive auxiliary and an infinitive simple verb.
   rule aux_pass_inf-simple{
     pattern{
       AUX[upos=AUX,VerbForm=Inf, !Tense];
-      e:AUX -[1=comp, 2=aux, deep=pass]-> V; V[VerbForm=Part,Tense=Past]}
+      AUX -[1=comp, 2=aux, deep=pass]-> V}
+    without{V[VerbForm=Inf]}
     commands{
-      V.VerbForm=Inf;  V.Voice=Pass; del_feat V.Tense;
-      shift_out AUX =[1 <>comp, 2 <> aux]=> V}
+      V.VerbForm=Inf; del_feat V.Tense;
+      V.form= AUX.form + "_" + V.form; shift_out AUX =[1 <>comp, 2 <> aux]=> V}
   }
   
 % The auxiliary is a passive auxiliary and an infinitive compound verb.
   rule aux_pass_inf-comp{
     pattern{
       AUX[upos=AUX,VerbForm=Inf,Tense=Past];
-      e:AUX -[1=comp, 2=aux, deep=pass]-> V; V[VerbForm=Part,Tense=Past]}
-    commands{V.VerbForm=Inf;  V.Voice=Pass; shift_out AUX ==> V}
+      e:AUX -[1=comp, 2=aux, deep=pass]-> V}
+    without{V[VerbForm=Inf]}
+    commands{
+      V.VerbForm=Inf;  V.Voice=Pass;
+      V.form= AUX.form + "_" + V.form; shift_out AUX ==> V}
   }
 
 % The auxiliary is a passive auxiliary and a present participle.
   rule aux_pass_pres-part{
-    pattern{
-      AUX[upos=AUX,VerbForm=Part,Tense=Pres]; e:AUX -[comp:aux@pass]-> V;
-      V[VerbForm=Part,Tense=Past]}
-    commands{V.VerbForm=Part; V.Tense=Pres;  V.Voice=Pass; shift_out AUX ==> V}
+    pattern{AUX[upos=AUX,VerbForm=Part,Tense=Pres]; e:AUX -[comp:aux@pass]-> V}
+    without{V[VerbForm=Part,Tense=Pres]}
+    commands{
+      V.VerbForm=Part; V.Tense=Pres;  V.Voice=Pass;
+      V.form= AUX.form + "_" + V.form;shift_out AUX ==> V}
   }
 
 % All subjects of passive verbs are marked as passive subjects.
   rule subj_pass{
-    pattern{V[upos=VERB, Voice=Pass]; e: V -[E:subj]-> SUBJ}
-    commands{e.deep=pass}
+    pattern{V[upos=VERB, Voice=Pass]; d: V -[E:subj]-> SUBJ}
+    commands{d.deep=pass}
   }
+
+% All subjects of active verbs are marked as active subjects, if they were marked as passive subjects by error before.
+% Ex: SUD_French-GSD fr-ud-test_00046 - En Arabie, on a l'impression que le fondamentalisme a toujours été là, qu'il[SUBJ] se maintient et n'aura[V] aucun mal à perdurer.
+  rule subj_act{
+    pattern{V[upos=VERB, Voice=Act]; d: V -[E:subj@pass]-> SUBJ}
+    commands{add_edge V -[E:subj]-> SUBJ; del_edge d}
+  }
+
+
 }
 
 % ===========================================
@@ -177,32 +215,76 @@ rule del_aux-dep{
 strat main{Seq(Onf(modif), Onf(shift_feat-dep), Onf(shift_gov), Onf(del_aux-dep))}
 }
 
+% =============================================================================================
+% Predicates that are complement of another verb and the subject of which is controlled by the main verb.
+package FR_deep_subj_controlled_pred{
+
+% An infinitive INF is a direct object of a verb V (introduced with the prepostion "de") and its deep subject is the oblique argument N of V introduced with the preposition "à".
+  rule obl(lex from "lexicons/fr_verbs_a_noun_de_inf.lp"){
+    pattern{
+      V[upos=VERB,lemma=lex.verb]; INF[upos=AUX|VERB,VerbForm=Inf];
+      d1:V -[1=comp,2=obj,Cpl=*]-> INF; d1.Cpl ="P-de";
+      d2:V -[1=comp, 2=obl, Cpl=*]-> N; d2.Cpl= "P-à";  N[upos=NOUN|NUM|PRON|PROPN|X]}
+    without{ INF -[1=subj]-> *}
+    commands{add_edge INF -[E:subj]-> N}
+  }
+
+% An infinitive INF is an indirect object of a verb V, which has also a direct object and the deep subject of INF is the subject of V.
+  rule subj(lex from "lexicons/fr_verbs_obj_prep_inf.lp"){
+    pattern{
+      V[upos=VERB,lemma=lex.verb];  INF[upos=AUX|VERB,VerbForm=Inf];
+      V -[1=comp,2=obl,Cpl=*]-> INF; V.Cpl = lex.prep;
+      V -[1=comp, 2=obj]-> *; V -[1=subj]-> SUBJ}
+    without{ INF -[1=subj]-> *}
+    commands{add_edge INF -[E:subj]-> SUBJ}
+  }
+
+% The direct object OBJ of a light verb V  has an indirect complement, which is an infinitive INF, and the deep subject of INF is the subject of V.
+% Ex: SUD_French-GSD fr-ud-train_08072 - J'[SUBJ] aurais[V] tendance[OBJ] à faire[INF] comme mon arrière-grand-père avec l'art
+  rule subj_light-verb{
+    pattern{
+     V -[1=comp,2=obj,deep=lvc]-> OBJ;
+     OBJ -[1=comp,2=obl,deep=x]-> INF;  INF[upos=AUX|VERB,VerbForm=Inf];
+     V -[1=subj]-> SUBJ}
+    without{ INF -[1=subj]-> *}
+    commands{add_edge INF -[E:subj]-> SUBJ}
+  }
+}
+
+% =============================================================================================
+% Past participles of non-passivable verbs have an erroneous passive subject.
+rule FR_subj_past-part(lex from "lexicons/fr_passivable_verbs.lp"){
+  pattern{
+    PART[upos=VERB,VerbForm=Part,Tense=Past, Voice=Pass];
+    e:PART -[E:subj@pass]-> SUBJ}
+  without{PART[lemma=lex.verb]}
+  commands{del_edge e; add_edge PART -[E:subj]-> SUBJ; del_feat PART.Voice}
+}
+
 
 % =============================================================================================
 % Strategies
 % =============================================================================================
 strat FR_main{
   Seq(
-    Onf(add_features),
-    Onf(idioms),
-    Onf(clit_verb),
+    Onf(flat),
+    idioms.main,
     Onf(coord_gov),
     Onf(coord_dep),
-    Onf(voice),
-    Onf(FR_middle_voice),
-    Onf(del_prep),
-    Onf(del_sub-conj),
+    Onf(FR_voice),
+    Onf(del_cpl),
     Onf(del_coord-conj),
-    Onf(FR_rel-pron_prep),
+    Onf(FR_pron_prep),
+    FR_aux.main, % This strategy must precede the package FR_deep_subj_controlled_pred because of compound verbs. Ex: SUD_French-GSD fr-ud-test_00042 - La justice française n'a fait qu'obéir et se déjuger.
     Onf(FR_deep_subj_controlled_pred),
     deep_subj.main,
     Onf(refl_pron),
     Onf(FR_subj_past-part),
     rel-pron.main,
-    FR_aux.main,
     Onf(coord_dep),
     Onf(redistrib_synt),
     cleft_sent.main,
+    Onf(clit_verb),
     Onf(del_isolated_token)
   )
 }

@@ -1,66 +1,73 @@
-% Transformation of SUD annotation into DUD (Deep Universal Dependencies) annotations.
+% ===========================================
+% Transformation of SUD annotation into DSUD (Deep Syntax Universal Dependencies) annotations.
 
 % =============================================================================================
-% Addition of deep features.
-package add_features{
-  rule add_deep_lemma{
-    pattern{N[upos=ADP|SCONJ, lemma, !dlemma, !ExtPos, !Indiom]}
-    commands{N.dlemma=N.lemma}
-  }
+% Transformation of flat expressions into atoms.
+rule flat{
+  pattern{d:N1-[1=flat]-> N2}
+  without{N2 -[1=flat]-> *}
+  commands{
+    N1.form= N1.form + "_" + N2.form;
+    N1.lemma= N1.lemma + "_" + N2.lemma;
+    del_edge d}
 }
 
 % =============================================================================================
 % Transformation of idiomatic expressions into atoms.
 package idioms{
 
-% Initialize the deep lemma of idiom leaves.
-  rule initialize_dlemma{
-    pattern{N[lemma, !dlemma, InIdiom=Yes]}
-    commands{N.dlemma=N.wordform}
-  }
-  
-% Raise the deep lemma of an element to its governor, when it is at its left.
-  rule raise_left_dlemma{
-    pattern{D[InIdiom=Yes, dlemma];H[wordform]; e:H -> D; D << H}
-    commands{H.dlemma = D.dlemma + "_"+ H.wordform; del_edge e }
+% ===========================================
+% Contract the expressions into a singlr atom.
+package contract{
+% Initialize the deep form of idiom internal nodes.
+  rule initialize_dform_int{
+    pattern{N[wordform, !dform, InIdiom=Yes]}
+    commands{N.dform=N.wordform}
   }
 
-% Raise the deep lemma of an element to its governor, when it is at its right.
-  rule raise_right_dlemma{
-    pattern{D[InIdiom=Yes, dlemma];H[wordform]; e:H -> D; D >> H}
-    commands{H.dlemma = H.wordform + "_"+ D.dlemma; del_edge e }
+% Initialize the deep form of idiom heads.
+  rule initialize_dform_head{
+    pattern{N[wordform, !dform, Idiom=Yes]}
+    commands{N.dform=N.wordform}
   }
 
-% Transform the head of an idiomatic expression into an idiomatic atom.
-  rule atomize_idiom{
-    pattern{ H[ExtPos,Idiom=Yes]}
-    without{H ->D; D[InIdiom=Yes]}
-    commands{ H.upos=H.ExtPos; del_feat H.ExtPos}
+% Raise the deep form of an element to its governor, when it is at its immediate left.
+  rule raise_left_dform{
+    pattern{D[InIdiom=Yes, dform];H[dform]; d:H -> D; D << H}
+    without{H -> D1; D1[InIdiom=Yes]; D << D1; D1 <<H}
+    commands{H.dform = D.dform + "_"+ H.dform; del_edge d }
+  }
+
+% Raise the deep form of an element to its governor, when it is at its immediate right.
+  rule raise_right_dform{
+    pattern{D[InIdiom=Yes, dform];H[dform]; d:H -> D; D >> H}
+    without{H -> D1; D1[InIdiom=Yes]; H << D1; D1 <<D}
+    commands{H.dform = H.dform + "_"+ D.dform; del_edge d }
   }
 }
 
-% =============================================================================================
-% Treatment of the clitic pronouns that change the meaning of verbs.
-package clit_verb{
-%There is only one clitic.
-  rule simple{
-    pattern{
-      V[upos=VERB,lemma,!dlemma]; CL[upos=PRON];
-      d:V -[comp@expl]-> CL}
-    without{V -[comp@expl]-> CL1; CL << CL1}
-    commands{V.dlemma= CL.form + "_" + V.lemma ; del_edge d}
+% ===========================================
+% Transform the head of an idiomatic expression into an idiomatic atom and replace the upos feature with the ExtPos feature for all words where this feature is present.
+package finalize{
+% Idioms
+  rule idiom{
+    pattern{ H[Idiom=Yes,dform]}
+    commands{H.lemma=H.dform; H.form= H.dform; del_feat H.dform}
   }
 
-%There are several clitics.
-%Ex: s'en prendre à qqun.
-  rule complex{
-    pattern{
-      V[upos=VERB,dlemma]; CL[upos=PRON];
-      d:V -[comp@expl]-> CL}
-    without{V -[comp@expl]-> CL1; CL << CL1}
-    commands{V.dlemma= CL.form + "_" + V.dlemma ; del_edge d}
+% All expressions with an ExtPos feature
+  rule extpos{
+    pattern{ H[ExtPos]}
+    commands{H.upos=H.ExtPos; del_feat H.ExtPos}
   }
 }
+
+% ===========================================
+% Strategy of idiom atomization.
+strat main{Seq(Onf(contract), Onf(finalize))}
+
+}
+
 % =============================================================================================
 % Distribution of the governor of a coordination to all conjuncts.
 package coord_gov{
@@ -75,12 +82,23 @@ package coord_gov{
   }
 
 % The conjuncts of the coordination are prepositional phrases
+% Ex: SUD_French-GSD fr-ud-test_00024 - Ne pas rester[H] seul[CONJ1] ou en[CONJ2] couple dans une zone isolée.
   rule prep_gov{
-    pattern{
-      CONJ1 -[1=conj]-> CONJ2; CONJ1[upos=ADP]; CONJ2[upos=ADP];
-      d1: H -[1 <> conj]-> CONJ1}
+    pattern{CONJ1 -[1=conj]-> CONJ2; d1: H -[1 <> conj]-> CONJ1; CONJ1[!Shared]}
     without{H -> CONJ2}
+    without{CONJ1.upos <> ADP; CONJ2.upos <> ADP}
     commands{add_edge d2:H -> CONJ2; d2.label = d1.label; d2.enhanced=yes}
+  }
+
+% The conjuncts of the coordination are prepositional phrases. The governor H of the first conjunct CONJ1 is itself in a coordination and CONJ1 is a dependent of the whole coordination of which H is a conjunct.
+% Ex: SUD_French-GSD fr-ud-test_00021 - ... l'espoir et les rêves[H] d'[CONJ1]un peuple et de[CONJ2] ses enfants.
+  rule prep-shared_gov{
+    pattern{CONJ1 -[1=conj]-> CONJ2; d1: H -[1 <> conj]-> CONJ1; CONJ1[Shared]}
+    without{H -> CONJ2}
+    without{CONJ1.upos <> ADP; CONJ2.upos <> ADP}
+    commands{
+      add_edge d2:H -> CONJ2; CONJ2.Shared=Yes;
+      d2.label = d1.label; d2.enhanced=yes}
   }
 }
 
@@ -105,11 +123,23 @@ rule right_dep{
     commands{add_edge d2:CONJ1 -> D; d2.label = d1.label; d2.enhanced=yes}
   }
   
+% Right indirect dependents
+% Ex: SUD_French-GSD fr-ud-test_00022 - ... une période d'[CONJ1] irakisation[D1] ou de[CONJ2] somalisation[D2] de[D] la Libye.
+rule right_ind-dep{
+    pattern{
+      CONJ1 -[1=conj]-> CONJ2;
+      d1:CONJ2 -[^punct]-> D2; d2:D2 -[^punct]-> D; D[Shared=Yes]; D2 >> CONJ2; D >> D2;
+      d3: CONJ1 -> D1; d3.1=d1.1; d3.2=d1.2}
+    without{D1 -> D}
+    commands{add_edge d4:D1 -> D; d4.label = d2.label; d4.enhanced=yes}
+  }
+  
 % Subjects of both conjuncts
+% Ex: SUD_French-GSD fr-ud-test_00015 - Belle[CON1], grande[CONJ2], claire, séduisante à souhait, elle[SUBJ] est pourtant déjà à la retraite.
 rule subj{
     pattern{
       CONJ1 -[1=conj]-> CONJ2;
-      d1:CONJ1 -[1=subj]-> SUBJ; SUBJ[!Shared]; SUBJ << CONJ1}
+      d1:CONJ1 -[1=subj]-> SUBJ; SUBJ[!Shared]}
     without{CONJ2 -[1=subj]-> *}
     commands{add_edge d2:CONJ2 -> SUBJ; d2.label = d1.label; d2.enhanced=yes}
   }
@@ -118,37 +148,66 @@ rule subj{
 
 
 % =============================================================================================
-% Every dependency to a preposition is transformed into a dependency to the object of the preposition and the prepostion is added as a Prep feature to the dependency.
-% Ex: SUD_French-GSD fr-ud-train_08025 - de nombreux artistes, parmi[PREP] lesquels[OBJ] les Rolling Stones[H] ou Billy Bragg
-package del_prep{
-  rule shift_dep{
-    pattern{d1: H -[1 <> conj]-> PREP; PREP -[comp:obj]-> OBJ; PREP [upos=ADP, dlemma]}
+% Every dependency to a complementizer CPL (adposition or subordinating conjunction) is transformed into a dependency to the object of CPL and the deep lemma of CPL  is added as a Cpl feature to the dependency. This feature is a concatenation of the complementizers that form a chain.
+%Ex: SUD_French-GSD fr-ud-train_01392 - J'y retourne dès que je peux !
+% retourne -[Cpl=P-dès_C-que]-> peux
+package del_cpl{
+% CPL is an adposition without complementizer as a governor.
+% Ex: SUD_French-GSDfr-ud-train_13709 - Des marées sont présentes[H] jusqu'[CPL] à[OBJ] Chicoutimi.
+% Ex: SUD_French-GSD fr-ud-train_01392 - J'y retourne[H] dès[CPL] que[OBJ] je peux !
+  rule init_shift_adp{
+    pattern{
+      d1: H -[1 <> conj, !Cpl]-> CPL; CPL[upos=ADP,lemma]; H[upos <> ADP|SCONJ];
+      CPL -[1=comp,2=obj]-> OBJ}
     commands{
-      add_edge d: H -> OBJ; d.label= d1.label; d.Prep= PREP.dlemma; d.enhanced=yes;
+      add_edge d2: H -> OBJ; d2.label= d1.label;
+      d2.Cpl= "P-" + CPL.lemma; d2.enhanced=yes;
       del_edge d1}
   }
 
-  rule close_shift{
-    pattern{d:PREP -[comp:obj]-> OBJ; PREP [upos=ADP, dlemma]}
-    without{ * -[1 <> conj]-> PREP}
-    commands{ shift PREP ==> OBJ;del_edge d}
-  }
-}
-
-% =============================================================================================
-% Every dependency to a subordinating conjunction is transformed into a dependency to the object of the conjunction and the conjunction is added as a Conj feature to the dependency.
-package del_sub-conj{
-  rule shift_dep{
-    pattern{d1: H -[1 <> conj]-> CONJ; CONJ -[comp:obj]-> OBJ; CONJ[upos=SCONJ, dlemma]}
+% CPL is a subordinating conjunction without complementizer as a governor.
+% Ex: SUD_French-GSD fr-ud-train_02392 - Mais, c'est[H] un peu comme[CPL] chez[OBJ] John Cale.
+% Ex: SUD_French-GSD fr-ud-dev_00534 - ce n'est[H] même pas comme[CPL] s'[OBJ]ils avaient utilisé beaucoup de matériel
+  rule init_shift_sconj{
+    pattern{
+      d1: H -[1 <> conj, !Cpl]-> CPL; CPL[upos=SCONJ,lemma]; H[upos <> ADP|SCONJ];
+      CPL -[1=comp,2=obj]-> OBJ}
     commands{
-      add_edge d: H -> OBJ; d.label= d1.label; d.Conj= CONJ.dlemma; d.enhanced=yes;
+      add_edge d2: H -> OBJ; d2.label= d1.label;
+      d2.Cpl= "C-" + CPL.lemma; d2.enhanced=yes;
       del_edge d1}
   }
-      
+
+% CPL is an adposition with a complementizer as its governor.
+% Ex: SUD_French-GSD fr-ud-train_13709 - Des marées sont présentes[H] jusqu' à[CPL] Chicoutimi[OBJ].
+% Ex: SUD_French-GSD fr-ud-train_02392 - Mais, c'est[H] un peu comme chez[CPL] John[OBJ] Cale.
+  rule iter_shift_adp{
+    pattern{
+      d1: H -[1 <> conj, Cpl=*]-> CPL; CPL[upos=ADP,lemma]; H[upos <> ADP|SCONJ];
+      CPL -[1=comp,2=obj]-> OBJ}
+    commands{
+      add_edge d2: H -> OBJ; d2.label= d1.label;
+      d2.Cpl= d1.Cpl + "_P-" + CPL.lemma; d2.enhanced=yes;
+      del_edge d1}
+  }
+
+% CPL is a subordinating conjunction with a complementizer as its governor.
+% Ex: SUD_French-GSD fr-ud-train_01392 - J'y retourne[H] dès que[CPL] je peux[OBJ] !
+% Ex: SUD_French-GSD fr-ud-dev_00534 - ce n'est[H] même pas comme s'[CPL]ils avaient[OBJ] utilisé beaucoup de matériel
+  rule iter_shift_sconj{
+    pattern{
+      d1: H -[1 <> conj, Cpl=*]-> CPL; CPL[upos=SCONJ,lemma]; H[upos <> ADP|SCONJ];
+      CPL -[1=comp,2=obj]-> OBJ}
+    commands{
+      add_edge d2: H -> OBJ; d2.label= d1.label;
+      d2.Cpl= d1.Cpl + "_C-" + CPL.lemma; d2.enhanced=yes;
+      del_edge d1}
+  }
+% All dependencies incoming CPL have been shifted.
   rule close_shift{
-    pattern{d:CONJ -[comp:obj]-> OBJ; CONJ [upos=SCONJ, dlemma]}
-    without{ * -[1 <> conj]-> CONJ}
-    commands{ shift CONJ ==> OBJ;del_edge d}
+    pattern{d:CPL -[comp:obj]-> OBJ; CPL [upos=ADP|SCONJ]}
+    without{ * -[1 <> conj]-> CPL}
+    commands{ shift CPL ==> OBJ;del_edge d}
   }
 }
 
@@ -158,25 +217,6 @@ package del_sub-conj{
 rule del_coord-conj{
   pattern{d1: CONJ1 -[1=conj]-> CONJ2; d2: CONJ2 -[1=cc]-> C; CONJ1 << C}
   commands{d1.Conj = C.lemma; d1.enhanced=yes; del_edge d2}
-}
-
-% =============================================================================================
-% Active and passive voices
-package voice{
-% Active voice{
-  rule active{
-    pattern{V[upos=AUX|VERB,!Voice]}
-    without{V[VerbForm=Part,Tense=Past]}
-    commands{V.Voice=Act}
-  }
-
-% Passive voice{
-  rule passive{
-    pattern{V[upos=VERB, VerbForm=Part, Tense=Past, !Voice]}
-    without{* -[comp:aux@tense]-> V}
-    commands{V.Voice=Pass}
-  }
-
 }
 
 
@@ -200,12 +240,31 @@ package control_pred{
     commands{add_edge CPRED -[1=subj,enhanced=yes]-> SUBJ}
   }
 
+% The subject of the controlled predicate CPRED, which is an adjective, is the subject of the control predicate PRED.
+  rule subj_adj{
+    pattern{
+      PRED -[1=comp,2=pred]-> CPRED; CPRED[upos=ADJ];
+      PRED -[1=subj]-> SUBJ}
+    without{CPRED -[1=subj]-> *}
+    without{PRED -[comp:obj]-> OBJ; OBJ[upos=NOUN|NUM|PRON|PROPN|X]}
+    commands{add_edge CPRED -[1=subj,enhanced=yes]-> SUBJ}
+  }
+
 % The subject of the controlled predicate is the direct object of the control predicate.
 %Ex: SUD_French-GSD fr-ud-train_12228 - Je trouve[PRED] cette attitude[OBJ] totalement inadmissible[CPRED] !
 %Ex: SUD_French-GSD fr-ud-train_00581 - Pour autant les différents partis composant la majorité de gauche voient[PRED] leur poids[OBJ] modifié[CPRED].
   rule obj{
     pattern{
       PRED -[1=comp, deep=x]-> CPRED;
+      PRED -[comp:obj]-> OBJ; OBJ[upos=NOUN|NUM|PRON|PROPN|X]}
+    without{CPRED -[1=subj]-> *}
+    commands{add_edge CPRED -[1=subj,enhanced=yes]-> OBJ}
+  }
+
+% The subject of the controlled predicate, which is an adjective, is the direct object of the control predicate.
+  rule obj_adj{
+    pattern{
+      PRED -[1=comp, 2=pred]-> CPRED; CPRED[upos=ADJ];
       PRED -[comp:obj]-> OBJ; OBJ[upos=NOUN|NUM|PRON|PROPN|X]}
     without{CPRED -[1=subj]-> *}
     commands{add_edge CPRED -[1=subj,enhanced=yes]-> OBJ}
@@ -278,7 +337,7 @@ package mod_pred{
   rule mod_pred_adj{
     pattern{
       PRED[upos=ADJ|ADV|AUX|VERB]; ADJ[upos=ADJ];
-      PRED -[1=mod,deep=x]-> ADJ;
+      PRED -[1=mod]-> ADJ;
       PRED -[1=subj]-> SUBJ}
     without{ADJ -[1=subj]-> *}
     commands{add_edge ADJ -[E:subj]-> SUBJ}
@@ -312,7 +371,9 @@ strat main{Seq(Onf(control_pred), Onf(mod_pred), Onf(pass_subj))}
 % =============================================================================================
 % The dependencies to reflexive pronouns are shifted to the subject of the corresponding verb.
 rule refl_pron{
-  pattern{d1: V -> PRON; PRON[upos=PRON,Reflex=Yes]; V -[1=subj]-> SUBJ}
+  pattern{
+    d1: V -[^comp@expl|comp@pass]-> PRON;
+    PRON[upos=PRON,Reflex=Yes]; V -[1=subj]-> SUBJ}
   commands{
     add_edge d2: V -> SUBJ; d2.label=d1.label; d2.enhanced=yes;
     shift_in PRON ==> SUBJ; del_edge d1}
@@ -329,7 +390,7 @@ package mark_rel-pron-ant{
   rule init_mark{
     pattern{ H -> PRO; PRO [PronType=Rel, !InIdiom]}
     without{* -[REF|MARK]-> PRO}
-    without{H -[mod@relcl|comp:cleft]-> PRO}
+    without{H -[mod@relcl|comp:cleft|E:mod@relcl|E:comp:cleft]-> PRO}
     without{H -[1=conj]-> PRO}
     commands{add_edge H -[MARK]->PRO; H.Marked=Yes}
   }
@@ -337,9 +398,9 @@ package mark_rel-pron-ant{
 % The MARK relation is shifted from its source to the governor of this source.
   rule shift_mark{
     pattern{d: M -[MARK]-> PRO; H -> M; H[!Marked]}
-    without{H -[mod@relcl|comp:cleft]-> M}
+    without{H -[mod@relcl|comp:cleft|E:mod@relcl|E:comp:cleft]-> M}
     without{H -[1=comp,2=pred]-> M; H -[comp:cleft]-> *}
-    without{M -[mod@relcl]-> *}
+    without{M -[mod@relcl|E:mod@relcl]-> *}
     without{H -[1=conj]-> M ; H << PRO} 
     commands{del_edge d; add_edge H -[MARK]-> PRO; H.Marked=Yes}
   }
@@ -381,7 +442,7 @@ package mark_rel-pron-ant{
   
 % The MARK relation in a relative clause has the head of the clause as its governor. The governor is shifted to the antecedent.
   rule shift_ref_relcl{
-    pattern{d:M -[MARK]-> PRO; ANT -[mod@relcl]-> M}
+    pattern{d:M -[MARK]-> PRO; ANT -[mod@relcl|E:mod@relcl]-> M}
     commands{ add_edge ANT -[REF]-> PRO; del_edge d}
   }
 }
@@ -465,7 +526,7 @@ package redistrib_synt{
 
 % Agent complements of passive verbs.
   rule agent_obl{
-    pattern{d: V -[1=comp, 2=obl, deep=agent]-> AGT; V[Voice=Pass]}
+    pattern{V[upos=VERB]; d: V -[1=comp, 2=obl, deep=agent]-> AGT}
     commands{add_edge V -[E:subj]-> AGT; del_edge d}
   }
 
@@ -504,7 +565,7 @@ package link_focus{
   rule init_mark_arg{
     pattern{
       V[upos=AUX|VERB]; V -[1=comp,2=pred]-> FOC;
-      V -[1=comp, 2=cleft, Conj=*]-> VCOMP; VCOMP[upos=AUX|VERB]}
+      d:V -[1=comp, 2=cleft, Cpl=*]-> VCOMP; d.Cpl=re"C-.*"; VCOMP[upos=AUX|VERB]}
     without{* -[ARG]-> FOC}
     commands{ add_edge VCOMP -[ARG]-> FOC}
   }
@@ -541,7 +602,7 @@ package label_focus_dep{
 % The constituent in focus is a direct object of the verb that governs it in the REF dependency.
   rule obj{
     pattern{
-      d:VCOMP -[ARG]-> FOC; V -[1=comp, 2=pred, !Prep]-> FOC;
+      d:VCOMP -[ARG]-> FOC; V -[1=comp, 2=pred, !Cpl]-> FOC;
       FOC[upos=NOUN|NUM|PRON|PROPN|X]}
     without{VCOMP -[1=comp,2=obj]-> VCOMP1; VCOMP1[upos=VERB]}
     commands{add_edge VCOMP-[E:comp:obj]-> FOC; del_edge d}
@@ -549,14 +610,14 @@ package label_focus_dep{
 
 % The constituent in focus is introduced by a preposition; therefore, it is an indirect complement of the verb that governs it in the REF dependency.
   rule udep{
-    pattern{d1:VCOMP -[ARG]-> FOC; d2:V -[1=comp, 2=pred, Prep=*]-> FOC}
+    pattern{d1:VCOMP -[ARG]-> FOC; d2:V -[1=comp, 2=pred, Cpl=*]-> FOC}
     without{VCOMP -[1=comp,2=obj]-> VCOMP1; VCOMP1[upos=VERB]}
-    commands{add_edge d3: VCOMP-> FOC; d3.1=udep;d3.Prep=d2.Prep; d3.enhanced=yes; del_edge d1}
+    commands{add_edge d3: VCOMP-> FOC; d3.1=udep;d3.Cpl=d2.Cpl; d3.enhanced=yes; del_edge d1}
    }
  
 % The constituent in focus is an adverb; therefore, it is an indirect complement of the verb that governs it in the REF dependency.
   rule udep_adv{
-    pattern{d:VCOMP -[ARG]-> FOC;d1:V -[1=comp,2=pred, !Prep]-> FOC; FOC[upos= ADV]}
+    pattern{d:VCOMP -[ARG]-> FOC;d1:V -[1=comp,2=pred, !Cpl]-> FOC; FOC[upos= ADV]}
     without{VCOMP -[1=comp,2=obj]-> VCOMP1; VCOMP1[upos=VERB]}
     commands{add_edge VCOMP -[E:udep]-> FOC; del_edge d}
   }
@@ -565,6 +626,18 @@ package label_focus_dep{
 
 strat main{Seq(Iter(link_focus), Onf(label_focus_dep))}
 
+}
+
+% =============================================================================================
+% Treatment of the clitic pronouns that change the meaning of verbs.
+rule clit_verb{
+  pattern{
+    V[upos=VERB,lemma]; CL[upos=PRON];
+    d:V -[comp@expl]-> CL}
+  without{V -[comp@expl]-> CL1; CL << CL1}
+  commands{
+    V.lemma= CL.lemma + "_" + V.lemma ;
+    V.form=  CL.form + "_" + V.form ;del_edge d}
 }
 
 % =============================================================================================
@@ -587,14 +660,11 @@ package del_isolated_token{
 % Strategy that converts a SUD annotation into an DUD annotation.
 strat main{
   Seq(
-    Onf(add_features),
-    Onf(idioms),
-    Onf(clit_verb),
+    Onf(flat),
+    idioms.main,
     Onf(coord_gov),
     Onf(coord_dep), % "coord_dep" must precede "del_prep" because prepositional phrases may depend on a coordination. Ex: SUD_French-GSD fr-ud-test_00001 -
-    Onf(voice),
-    Onf(del_prep),
-    Onf(del_sub-conj),
+    Onf(del_cpl),
     Onf(del_coord-conj),
     deep_subj.main,
     Onf(refl_pron),
@@ -602,6 +672,7 @@ strat main{
     Onf(coord_dep), % Justification of this second application of the coord_dep package: ex SUD_Frecnh-GSD fr-ud-dev_01331 - ...de nombreux journaux libertaires et antimilitaristes, ...
     Onf(redistrib_synt),
     cleft_sent.main,
+    Onf(clit_verb), %This package follows the package related to the treatment of auxiliaries because of the final form of the verbs.
     Onf(del_isolated_token)
   )
 }
