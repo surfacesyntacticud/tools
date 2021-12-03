@@ -454,7 +454,7 @@ package mark_rel-pron-ant{
 % The MARK relation in a cleft sentence has the head of the dependent clause as its governor. The governor is shifted to the head of the focus.
   rule shift_ref_cleft{
     pattern{
-      d:M -[MARK]-> PRO; H -[comp:cleft]-> M;
+      d:M -[MARK]-> PRO; H -[comp:cleft|E:comp:cleft]-> M;
       H -[1=comp,2=pred]-> FOC}
     commands{ add_edge FOC -[REF]-> PRO; del_edge d}
   }
