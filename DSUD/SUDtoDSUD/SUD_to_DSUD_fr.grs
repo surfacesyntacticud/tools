@@ -68,7 +68,7 @@ rule middle{
 rule FR_pron_prep{
   pattern{
     PRO[upos=ADV|PRON,lemma=lex.pron];
-    d: H -[comp:obl|E:comp:obl|mod|E:mod]-> PRO}
+    d: H -[comp:obl|E:comp:obl|mod|E:mod|udep|E:udep]-> PRO}
   commands{d.Cpl= "P-"+lex.prep}
 }
 #BEGIN	lex

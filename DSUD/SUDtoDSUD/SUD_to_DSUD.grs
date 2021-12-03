@@ -157,8 +157,9 @@ package del_cpl{
 % Ex: SUD_French-GSD fr-ud-train_01392 - J'y retourne[H] dès[CPL] que[OBJ] je peux !
   rule init_shift_adp{
     pattern{
-      d1: H -[1 <> conj, !Cpl]-> CPL; CPL[upos=ADP,lemma]; H[upos <> ADP|SCONJ];
+      d1: H -[1 <> conj, !Cpl]-> CPL; CPL[upos=ADP,lemma]; 
       CPL -[1=comp,2=obj]-> OBJ}
+    without{H[upos = ADP|SCONJ]}
     commands{
       add_edge d2: H -> OBJ; d2.label= d1.label;
       d2.Cpl= "P-" + CPL.lemma; d2.enhanced=yes;
@@ -170,8 +171,9 @@ package del_cpl{
 % Ex: SUD_French-GSD fr-ud-dev_00534 - ce n'est[H] même pas comme[CPL] s'[OBJ]ils avaient utilisé beaucoup de matériel
   rule init_shift_sconj{
     pattern{
-      d1: H -[1 <> conj, !Cpl]-> CPL; CPL[upos=SCONJ,lemma]; H[upos <> ADP|SCONJ];
+      d1: H -[1 <> conj, !Cpl]-> CPL; CPL[upos=SCONJ,lemma];
       CPL -[1=comp,2=obj]-> OBJ}
+    without{H[upos = ADP|SCONJ]}
     commands{
       add_edge d2: H -> OBJ; d2.label= d1.label;
       d2.Cpl= "C-" + CPL.lemma; d2.enhanced=yes;
@@ -183,8 +185,9 @@ package del_cpl{
 % Ex: SUD_French-GSD fr-ud-train_02392 - Mais, c'est[H] un peu comme chez[CPL] John[OBJ] Cale.
   rule iter_shift_adp{
     pattern{
-      d1: H -[1 <> conj, Cpl=*]-> CPL; CPL[upos=ADP,lemma]; H[upos <> ADP|SCONJ];
+      d1: H -[1 <> conj, Cpl=*]-> CPL; CPL[upos=ADP,lemma];
       CPL -[1=comp,2=obj]-> OBJ}
+    without{H[upos = ADP|SCONJ]}
     commands{
       add_edge d2: H -> OBJ; d2.label= d1.label;
       d2.Cpl= d1.Cpl + "_P-" + CPL.lemma; d2.enhanced=yes;
@@ -196,8 +199,9 @@ package del_cpl{
 % Ex: SUD_French-GSD fr-ud-dev_00534 - ce n'est[H] même pas comme s'[CPL]ils avaient[OBJ] utilisé beaucoup de matériel
   rule iter_shift_sconj{
     pattern{
-      d1: H -[1 <> conj, Cpl=*]-> CPL; CPL[upos=SCONJ,lemma]; H[upos <> ADP|SCONJ];
+      d1: H -[1 <> conj, Cpl=*]-> CPL; CPL[upos=SCONJ,lemma];
       CPL -[1=comp,2=obj]-> OBJ}
+    without{H[upos = ADP|SCONJ]}
     commands{
       add_edge d2: H -> OBJ; d2.label= d1.label;
       d2.Cpl= d1.Cpl + "_C-" + CPL.lemma; d2.enhanced=yes;
@@ -236,6 +240,7 @@ package control_pred{
       PRED -[1=comp,deep=x]-> CPRED;
       PRED -[1=subj]-> SUBJ}
     without{CPRED -[1=subj]-> *}
+    without{PRED -[1=subj,deep=expl]-> SUBJ}
     without{PRED -[comp:obj]-> OBJ; OBJ[upos=NOUN|NUM|PRON|PROPN|X]}
     commands{add_edge CPRED -[1=subj,enhanced=yes]-> SUBJ}
   }
@@ -246,6 +251,7 @@ package control_pred{
       PRED -[1=comp,2=pred]-> CPRED; CPRED[upos=ADJ];
       PRED -[1=subj]-> SUBJ}
     without{CPRED -[1=subj]-> *}
+    without{PRED -[1=subj,deep=expl]-> SUBJ}
     without{PRED -[comp:obj]-> OBJ; OBJ[upos=NOUN|NUM|PRON|PROPN|X]}
     commands{add_edge CPRED -[1=subj,enhanced=yes]-> SUBJ}
   }
@@ -347,7 +353,7 @@ package mod_pred{
 % If an infinitive INF is a modifier of a predicate PRED, its deep subject is the subject SUBJ of PRED.
 % Ex : SUD_French-GSD fr-ud-train_02692 - Nous[SUBJ] avons retiré[PRED] l'application pour régler[INF] le problème.
 %Ex: SUD_French-GSD fr-ud-test_00121 - Charles[NSUBJ] Mwando Nsimba a sollicité[PRED] un délai supplémentaire avant[ADV] de répondre[INF] aux préoccupations soulevées
-  rule mod_pred_verb{
+  rule mod_pred_inf{
     pattern{
       PRED[upos=ADJ|ADV|AUX|VERB]; INF[VerbForm=Inf];
       PRED -[1=mod,deep=x]-> INF;
@@ -355,6 +361,19 @@ package mod_pred{
     without{INF -[1=subj]-> *}
     commands{add_edge INF -[E:subj]-> SUBJ}
   }
+
+% If an infinitive INF is the complement of an adverb thar is a modifier of a predicate PRED, its deep subject is the subject SUBJ of PRED.
+% Ex : SUD_French-GSD fr-ud-dev_00674 - les cônes[SUBJ] sont tous orientés vers le tronc et peuvent rester 20 ans accrochées[PRED] au tronc avant[ADV] de tomber[INF].
+  rule mod_pred_adv_inf{
+    pattern{
+      PRED[upos=ADJ|ADV|AUX|VERB]; ADV[upos=ADV];
+      PRED -[1=mod,deep=x]-> ADV;
+      INF[VerbForm=Inf]; ADV -[1=comp]-> INF;
+      PRED -[1=subj]-> SUBJ}
+    without{INF -[1=subj]-> *}
+    commands{add_edge INF -[E:subj]-> SUBJ}
+  }
+
 }
 % ===========================================
 % Subjects of verbs in the passive voice are passive subjects.
@@ -435,7 +454,7 @@ package mark_rel-pron-ant{
 % The MARK relation in a cleft sentence has the head of the dependent clause as its governor. The governor is shifted to the head of the focus.
   rule shift_ref_cleft{
     pattern{
-      d:M -[MARK]-> PRO; H -[comp:cleft]-> M;
+      d:M -[MARK]-> PRO; H -[comp:cleft|E:comp:cleft]-> M;
       H -[1=comp,2=pred]-> FOC}
     commands{ add_edge FOC -[REF]-> PRO; del_edge d}
   }
@@ -537,11 +556,12 @@ package redistrib_synt{
     commands{add_edge V -[E:subj]-> OBJ; del_edge d}
   }
 
-% Objects of causative auxilairies.
+% Agent complements of causative auxilairies.
   rule agent_obj-caus{
-    pattern{ AUX -[1=comp, 2=aux, deep=caus]-> V; d: AUX -[1=comp, 2=obj, deep=agent]-> OBJ}
+    pattern{ AUX -[1=comp, 2=aux, deep=caus]-> V; d: AUX -[1=comp, 2=obj|obl, deep=agent]-> OBJ}
     commands{ add_edge V -[E:subj]-> OBJ; del_edge d}
   }
+
 
 % Expletive subjects are deleted
   rule impers_subj{
@@ -572,7 +592,7 @@ package link_focus{
 
 % The ARG relation is shifted from a verb VCOMP to its direct object VCOMP1, which is also a verb.
   rule shift_mark_arg{
-    pattern{ d:VCOMP -[ARG]-> FOC; VCOMP -[1=comp,2=obj]-> VCOMP1; VCOMP1[upos=AUX|VERB]}
+    pattern{ d:VCOMP -[ARG]-> FOC; VCOMP -[1=comp,2=obj|pred]-> VCOMP1; VCOMP1[upos=AUX|VERB]}
     without{VCOMP -[1=conj]-> VCOMP2}
     commands{add_edge VCOMP1 -[ARG]-> FOC; del_edge d}
   }
@@ -587,7 +607,7 @@ package link_focus{
 % There is an ARG relation from a focus FOC to a verb VCOMP and VCOMP has a conjunct VCOMP2 in a coordination. The ARG relation has been added from all conjuncts of VCOMP to FOC.The ARG relation is shifted from a verb VCOMP to its direct object VCOMP1, which is also a verb.
   rule shift_mark_arg_coord2{
     pattern{
-      d:VCOMP -[ARG]-> FOC; VCOMP -[1=comp,2=obj]-> VCOMP1; VCOMP1[upos=AUX|VERB];
+      d:VCOMP -[ARG]-> FOC; VCOMP -[1=comp,2=obj|pred]-> VCOMP1; VCOMP1[upos=AUX|VERB];
       VCOMP -[1=conj]-> VCOMP2; VCOMP2[Mark=Yes]}
     without{VCOMP -[1=conj]-> VCOMP2; VCOMP2[!Mark]}
     commands{add_edge VCOMP1 -[ARG]-> FOC; del_edge d}
