@@ -209,8 +209,8 @@ package unchained_relations {
 package reverse_case_mark {
 % The heads are reversed from the most internal to the most external. The source and the target of the reversed relation are marked "rev = y" so that loops are not possible.
   rule rev_head {
-    pattern {e:H -[comp:obj]-> D; H[upos= ADP|CCONJ|PART|SCONJ]}
-    without{D[upos= ADP|CCONJ|PART|SCONJ]; D -[1=comp,2=obj]-> D1}
+    pattern {e:H -[comp:obj|comp:aff]-> D; H[upos= ADP|CCONJ|PART|SCONJ]}
+    without{D[upos= ADP|CCONJ|PART|SCONJ]; D -[1=comp,2=obj|aff]-> D1}
     commands {
       e.rev=y;
       add_edge f:D -> H; f.label = e.label;
@@ -317,14 +317,14 @@ package case_mark_relations {
 % Adpositions introducing nominals are case dependent.
 % Ex: à Paris - comme à Paris - il ira plutôt à Lyon qu'à Paris.
   rule case_nom_adp{
-    pattern{ e:H -[1=comp,2=obj,rev=y]-> D; H[nom=y]; D[upos=ADP|PART] }
+    pattern{ e:H -[1=comp,2=obj|aff,rev=y]-> D; H[nom=y]; D[upos=ADP|PART] }
     commands {e.1=case}
   }
 
 % Conjunctions introducing nominals without adpositions between them and the conjunction are case dependent.
 % Ex: Lyon est plus près que Paris.
   rule case_nom_conj{
-    pattern{ e:H -[1=comp,2=obj,rev=y]-> D; H[nom=y];D[upos=CCONJ|SCONJ] }
+    pattern{ e:H -[1=comp,2=obj|aff,rev=y]-> D; H[nom=y];D[upos=CCONJ|SCONJ] }
     without{H -> ADP; ADP[upos=ADP|PART]; D << ADP; ADP << H}
     without{H -> ADP; ADP[upos=ADP|PART]; D >> ADP; ADP >> H}
     commands {e.1=case}
@@ -333,7 +333,7 @@ package case_mark_relations {
 % Adpositions introducing adjectives or adverbs are case dependent.
 % Ex: dès demain - en continu
   rule case_pred_adp{
-    pattern{ e:H -[1=comp,2=obj,rev=y]-> D; H[upos=ADV|ADJ];D[upos=ADP|PART] }
+    pattern{ e:H -[1=comp,2=obj|aff,rev=y]-> D; H[upos=ADV|ADJ];D[upos=ADP|PART] }
     % There is no conjunction between the adposition and its governor. Ex: dès que possible.
     without{ H -[1=comp|mark]-> CONJ; CONJ[upos=CCONJ|SCONJ]; D << CONJ; CONJ << H}
     without{ H -[1=comp|mark]-> CONJ; CONJ[upos=CCONJ|SCONJ]; D >> CONJ; CONJ >> H}
@@ -343,7 +343,7 @@ package case_mark_relations {
 % Adpositions or conjunctions introducing verbs are mark dependent.
   rule mark_verb_adp-conj{
     pattern{
-      e:H -[1=comp,2=obj,rev=y]-> D;
+      e:H -[1=comp,2=obj|aff,rev=y]-> D;
       H[upos=AUX|VERB|PART,!nom];
       D[upos=ADP|CCONJ|PART|SCONJ] }
     commands {e.1=mark}
@@ -352,7 +352,7 @@ package case_mark_relations {
 % Conjunctions introducing adjectives or adverbs that are not considered nominal are mark dependent.
 % Ex: si possible
   rule mark_pred_conj{
-    pattern{ e:H -[1=comp,2=obj,rev=y]-> D; H[upos=ADJ|ADV,!nom];D[upos=CCONJ|SCONJ] }
+    pattern{ e:H -[1=comp,2=obj|aff,rev=y]-> D; H[upos=ADJ|ADV,!nom];D[upos=CCONJ|SCONJ] }
     commands {e.1=mark}
   }
 
@@ -360,7 +360,7 @@ package case_mark_relations {
 % Ex: dès que possible
   rule mark_pred_adp-left{
     pattern{
-      e:H -[1=comp,2=obj,rev=y]-> D; D[upos=ADP|PART];
+      e:H -[1=comp,2=obj|aff,rev=y]-> D; D[upos=ADP|PART];
       H -[1=mark]-> CONJ; CONJ[upos=CCONJ|SCONJ]; D << CONJ; CONJ << H}
     commands {e.1=mark}
   }
@@ -369,7 +369,7 @@ package case_mark_relations {
 % Ex:
   rule mark_pred_adp-right{
     pattern{
-      e:H -[1=comp,2=obj,rev=y]-> D; D[upos=ADP|PART];
+      e:H -[1=comp,2=obj|aff,rev=y]-> D; D[upos=ADP|PART];
       H -[1=mark]-> CONJ; CONJ[upos=CCONJ|SCONJ]; D >> CONJ; CONJ >> H}
     commands {e.1=mark}
   }
@@ -378,7 +378,7 @@ package case_mark_relations {
 % Ex: comme à Paris
   rule mark_nom_conj-left{
     pattern{
-      e:H -[1=comp,2=obj,rev=y]-> D;
+      e:H -[1=comp,2=obj|aff,rev=y]-> D;
       H[nom=y];D[upos=CCONJ|SCONJ];
       H -[1=case]-> ADP; D << ADP; ADP << H}
     commands {e.1=mark}
@@ -386,7 +386,7 @@ package case_mark_relations {
 
   rule mark_nom_conj-right{
     pattern{
-      e:H -[1=comp,2=obj,rev=y]-> D;
+      e:H -[1=comp,2=obj|aff,rev=y]-> D;
       H[nom=y];D[upos=CCONJ|SCONJ];
       H -[1=case]-> ADP; D >> ADP; ADP >> H}
     commands {e.1=mark}
@@ -434,6 +434,11 @@ package sub_relations {
   rule aux{
     pattern{ e:H -[1=comp,2=aux]-> D }
     commands {e.1=aux}
+  }
+
+  rule aux_aff{
+    pattern{ e:H -[1=comp,2=aff]-> D; H[upos=AUX]}
+    commands {e.1=aux; e.2=aff}
   }
 
 % Clausal argument without control of its subject.
