@@ -101,96 +101,96 @@ y	à
 % =============================================================================================
 % Auxiliaries are replaced by features assigned to the main verbs and their outgoing dependencies are moved to the main verb.
 % Causative auxiliaries are excluded from the treatement applied to all auxiliaries because they behave like ordinary predicates. For example, we have to distinguish between " Il ne la fait pas abandonner" and "Il la fait ne pas abandonner".
+% This process is performed along auxiliary chains from the beginning to the end in four steps:
+%   1) All auxiliaries that are not causative and are the beginning of an auxiliary chain are marked with the feature Mark=Yes;
+%   2) The function of each marked auxiliary is translated into features of its object. and this object is marked with the feature Mark=Yes.
+%   3) All governors and dependents of each marked auxiliary are shifted to their object.
+%   4) The auxiliaries and the Mark features are deleted.
 package FR_aux{
-% ===========================================
-% Modifiers of auxiliaries, except causative auxiliaries, are shifted to the main verb and their dependency is marked MOD:CL to express that they are clause modifiers.
-rule modif{
-  pattern{AUX[upos=AUX]; d1: AUX -[1=mod,!2]-> MOD; AUX -[1=comp,2=aux]-> V}
-  without{AUX -[comp:aux@caus]-> V}
-  commands{add_edge d2: V -> MOD; d2.label=d1.label; d2.2=cl; d2.enhanced= yes; del_edge d1}
-}
-
-% ===========================================
-% Auxiliaries are replaced with features attached to the main verb. Their dependents are shifted to the main verb.
-package shift_feat-dep{
-% The auxiliary is a finite verb.
-  rule aux_tense-fin{
+% Marking the auxiliaries that are not objects of other auxiliaries, nor causative auxiliaries.
+  rule init_mark{
+    pattern{AUX[upos=AUX, !Mark]; AUX -[1=comp,2=aux]-> *}
+    without{ AUX -[comp:aux@caus]-> *}
+    without{* -[comp:aux]-> AUX}
+    without{* -[1=comp, 2=aux, deep <> caus]-> AUX}
+    commands{AUX.Mark=Yes}
+  }
+  
+% Tense auxiliaries.
+  rule aux-tense{
     pattern{
-      AUX[upos=AUX, Mood=lex.mood, Tense=lex.auxt, VerbForm=Fin];
-      AUX -[comp:aux@tense]-> V}
-    without{V[VerbForm=Fin]}
+      AUX[upos=AUX, Mood=lex.mood, Tense=lex.auxt, VerbForm, Mark=Yes];
+      AUX -[comp:aux@tense]-> V;
+      V[!Mark]}
     commands{
-      V.Mood=AUX.Mood; V.Tense=lex.verbt; V.VerbForm=Fin;
-      V.Voice=Active;V.form= AUX.form + "_" + V.form; shift_out AUX ==> V}
+      V.Mood=AUX.Mood; V.Tense=lex.verbt; V.VerbForm=AUX.VerbForm; V.Mark=Yes;
+      V.Voice=Active;V.form= AUX.form + "_" + V.form}
   }
 #BEGIN	lex
 mood	auxt	verbt
 %-------------------
+Cnd	Pres	Past
+Imp	Pres	PresPerfect
 Ind	Pres	PresPerfect
 Ind	Imp	Pluperfect
 Ind	Fut	AntPast
-Cnd	Pres	Past
+Inf	Pres	PresPerfect
+Part	Pres	PresPerfect
 Sub	Pres	Past
 Sub	Imp	Pluperfect
-Imp	Pres	Past
 #END  
 
-% The auxiliary is an infinitive.
-  rule aux_inf{
-    pattern{AUX[upos=AUX,VerbForm=Inf]; e:AUX -[comp:aux@tense]-> V}
-    without{V[VerbForm=Inf]}
-    commands{
-      V.VerbForm=Inf; V.Tense=Past;
-      V.form= AUX.form + "_" + V.form;shift_out AUX ==> V}
-  }
 
-% The auxiliary is a present participle.
-  rule aux_pres-part{
-    pattern{AUX[upos=AUX,VerbForm=Part,Tense=Pres]; e:AUX -[comp:aux@tense]-> V}
-    without{V[VerbForm=Part,Tense=Pres]}
-    commands{
-      V.VerbForm=Part; V.Tense=Pres;
-      V.form= AUX.form + "_" + V.form; shift_out AUX ==> V}
-  }
-
-% The auxiliary is a passive auxiliary and a finite verb.
-  rule aux_pass_fin{
-    pattern{AUX[upos=AUX,Mood, Tense, VerbForm=Fin]; e:AUX -[comp:aux@pass]-> V}
-    without{V[VerbForm=Fin]}
-    commands{
-     V.Mood=AUX.Mood; V.Tense=AUX.Tense; V.VerbForm=Fin;
-     V.form= AUX.form + "_" + V.form;shift_out AUX ==> V}
-  }
-
-% The auxiliary is a passive auxiliary and an infinitive simple verb.
-  rule aux_pass_inf-simple{
+% Passive auxiliaries.
+  rule aux-pass{
     pattern{
-      AUX[upos=AUX,VerbForm=Inf, !Tense];
-      AUX -[1=comp, 2=aux, deep=pass]-> V}
-    without{V[VerbForm=Inf]}
+      AUX[upos=AUX,Mood, Tense, VerbForm, Mark=Yes];
+      e:AUX -[comp:aux@pass]-> V; V[!Mark]}
     commands{
-      V.VerbForm=Inf; del_feat V.Tense;
-      V.form= AUX.form + "_" + V.form; shift_out AUX =[1 <>comp, 2 <> aux]=> V}
+     V.Mood=AUX.Mood; V.Tense=AUX.Tense;V.Mark=Yes;V.VerbForm=AUX.VerbForm;
+     V.form= AUX.form + "_" + V.form}
   }
+
   
-% The auxiliary is a passive auxiliary and an infinitive compound verb.
-  rule aux_pass_inf-comp{
+% Dependent of auxiliaries are shifted to their object.
+  rule shift_dep{
     pattern{
-      AUX[upos=AUX,VerbForm=Inf,Tense=Past];
-      e:AUX -[1=comp, 2=aux, deep=pass]-> V}
-    without{V[VerbForm=Inf]}
-    commands{
-      V.VerbForm=Inf;  V.Voice=Pass;
-      V.form= AUX.form + "_" + V.form; shift_out AUX ==> V}
+      AUX[upos=AUX, Mark=Yes]; d1: AUX -[1<>mod]-> D;
+      AUX -[1=comp,2=aux]-> V; V[Mark=Yes]}
+    commands{add_edge d2: V -> D; d2.label=d1.label; d2.enhanced= yes; del_edge d1}
   }
 
-% The auxiliary is a passive auxiliary and a present participle.
-  rule aux_pass_pres-part{
-    pattern{AUX[upos=AUX,VerbForm=Part,Tense=Pres]; e:AUX -[comp:aux@pass]-> V}
-    without{V[VerbForm=Part,Tense=Pres]}
-    commands{
-      V.VerbForm=Part; V.Tense=Pres;  V.Voice=Pass;
-      V.form= AUX.form + "_" + V.form;shift_out AUX ==> V}
+% Modifiers of auxiliaries are shifted to their object and their dependency is marked MOD:CL to express that they are clause modifiers.
+  rule shift_modif{
+    pattern{
+      AUX[upos=AUX, Mark=Yes]; d1: AUX -[1=mod,!2]-> MOD;
+      AUX -[1=comp,2=aux]-> V; V[Mark=Yes]}
+    commands{add_edge d2: V -> MOD; d2.label=d1.label; d2.2=cl; d2.enhanced= yes; del_edge d1}
+  }
+
+% The governors of the auxialires become the gouvernors of their object.
+  rule shift_gov{
+    pattern{d1:H -> AUX; AUX -[1=comp,2=aux]-> V; AUX[Mark=Yes]; V[Mark=Yes]}
+    without{H -[1=comp, 2=aux]-> AUX}
+    without{ V1 -[1=conj]-> V}
+    commands{add_edge d2: H -> V; d2.label=d1.label; d2.enhanced=yes; del_edge d1}
+  }
+
+% All dependencies from auxilairies to their object are deleted.
+  rule del_aux-dep{
+    pattern{e:AUX -[1=comp,2=aux]-> V; AUX[Mark=Yes]; V[Mark=Yes]}
+    without{ * -> AUX}
+    without{ AUX -> V1}
+    commands{del_edge e}
+  }
+
+% All Mark features are deleted.
+  rule del_mark{
+    pattern{ V[upos=AUX|VERB, Mark=Yes]}
+    without{* -[comp:aux]-> V}
+    without{* -[1=comp,2=aux,deep <> caus]-> V}
+    without{V -[1=comp,2=aux]-> *}
+    commands{del_feat V.Mark}
   }
 
 % All subjects of passive verbs are marked as passive subjects.
@@ -205,29 +205,6 @@ Imp	Pres	Past
     pattern{V[upos=VERB, Voice=Act]; d: V -[E:subj@pass]-> SUBJ}
     commands{add_edge V -[E:subj]-> SUBJ; del_edge d}
   }
-
-
-}
-
-% ===========================================
-% The governors of the tense and passive auxiliaries become the gouvernors of the main verbs.
-rule shift_gov{
-  pattern{d1:H -> AUX; AUX -[comp:aux@tense|comp:aux@pass]-> V}
-  without{H -[1=comp, 2=aux]-> AUX}
-  without{ V1 -[1=conj]-> V}
-  commands{add_edge d2: H -> V; d2.label=d1.label; d2.enhanced=yes; del_edge d1}
-}
-
-% ===========================================
-% All dependencies from tense and passive auxilairies to their object verb are deleted.
-rule del_aux-dep{
-  pattern{e:AUX -[comp:aux@tense|comp:aux@pass]-> V}
-  commands{del_edge e}
-}
-
-% ===========================================
-% Strategy for treating French auxiliaries.
-strat main{Seq(Onf(modif), Onf(shift_feat-dep), Onf(shift_gov), Onf(del_aux-dep))}
 }
 
 % =============================================================================================
@@ -282,7 +259,7 @@ rule FR_subj_past-part(lex from "lexicons/fr_passivable_verbs.lp"){
 % =============================================================================================
 strat FR_main{
   Seq(
-    Onf(FR_inf-pres),
+    Onf(FR_mood_tense),
     Onf(flat),
     idioms.main,
     Onf(coord_gov),
@@ -291,7 +268,7 @@ strat FR_main{
     Onf(del_cpl),
     Onf(del_coord-conj),
     Onf(FR_pron_prep),
-    FR_aux.main, % This strategy must precede the package FR_deep_subj_controlled_pred because of compound verbs. Ex: SUD_French-GSD fr-ud-test_00042 - La justice française n'a fait qu'obéir et se déjuger.
+    Onf(FR_aux), % This package must precede the package FR_deep_subj_controlled_pred because of compound verbs. Ex: SUD_French-GSD fr-ud-test_00042 - La justice française n'a fait qu'obéir et se déjuger.
     Onf(FR_deep_subj_controlled_pred),
     deep_subj.main,
     Onf(refl_pron),
