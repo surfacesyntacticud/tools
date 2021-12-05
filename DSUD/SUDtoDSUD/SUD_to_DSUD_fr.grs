@@ -2,6 +2,13 @@
 include "SUD_to_DSUD.grs"
 
 % =============================================================================================
+% Addition of the present tense for infinitives.
+rule FR_inf-pres{
+  pattern{V[upos=AUX|VERB, VerbForm=Inf, !Tense]}
+  commands{V.Tense=Pres}
+}
+
+% =============================================================================================
 % Introduction of the Voice feature for French verbs.
 package FR_voice{
 
@@ -267,6 +274,7 @@ rule FR_subj_past-part(lex from "lexicons/fr_passivable_verbs.lp"){
 % =============================================================================================
 strat FR_main{
   Seq(
+    Onf(FR_inf-pres),
     Onf(flat),
     idioms.main,
     Onf(coord_gov),
