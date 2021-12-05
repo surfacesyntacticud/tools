@@ -2,10 +2,18 @@
 include "SUD_to_DSUD.grs"
 
 % =============================================================================================
-% Addition of the present tense for infinitives.
-rule FR_inf-pres{
-  pattern{V[upos=AUX|VERB, VerbForm=Inf, !Tense]}
-  commands{V.Tense=Pres}
+% Addition of a Mood and Tense feature for all verbs.
+package FR_mood_tense{
+  rule inf{
+   pattern{V[upos=AUX|VERB, VerbForm=Inf, !Mood, !Tense]}
+   commands{V.Mood=Inf; V.Tense=Pres}
+  }
+
+  rule part{
+   pattern{V[upos=AUX|VERB, VerbForm=Part, !Mood, Tense]}
+   commands{V.Mood=Part}
+  }
+
 }
 
 % =============================================================================================
