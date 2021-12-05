@@ -131,18 +131,6 @@ Sub	Imp	Pluperfect
     commands{del_feat V.Mark}
   }
 
-% All subjects of passive verbs are marked as passive subjects.
-  rule subj_pass{
-    pattern{V[upos=VERB, Voice=Pass]; d: V -[E:subj]-> SUBJ}
-    commands{d.deep=pass}
-  }
-
-% All subjects of active verbs are marked as active subjects, if they were marked as passive subjects by error before.
-% Ex: SUD_French-GSD fr-ud-test_00046 - En Arabie, on a l'impression que le fondamentalisme a toujours été là, qu'il[SUBJ] se maintient et n'aura[V] aucun mal à perdurer.
-  rule subj_act{
-    pattern{V[upos=VERB, Voice=Act]; d: V -[E:subj@pass]-> SUBJ}
-    commands{add_edge V -[E:subj]-> SUBJ; del_edge d}
-  }
 }
 
 % =============================================================================================
@@ -193,6 +181,19 @@ package FR_voice{
       V[upos=VERB]; CL[upos=PRON,lemma=se];
       d:V -[comp@pass]-> CL}
     commands{V.Voice=Mid ; del_edge d}
+  }
+
+% All subjects of passive or midlle verbs are marked as passive subjects.
+  rule subj_pass{
+    pattern{V[upos=VERB, Voice=Mid|Pass]; d: V -[E:subj]-> SUBJ}
+    commands{d.deep=pass}
+  }
+
+% All subjects of active verbs are marked as active subjects, if they were marked as passive subjects by error before.
+% Ex: SUD_French-GSD fr-ud-test_00046 - En Arabie, on a l'impression que le fondamentalisme a toujours été là, qu'il[SUBJ] se maintient et n'aura[V] aucun mal à perdurer.
+  rule subj_act{
+    pattern{V[upos=VERB, Voice=Act]; d: V -[E:subj@pass]-> SUBJ}
+    commands{add_edge V -[E:subj]-> SUBJ; del_edge d}
   }
 
 }
