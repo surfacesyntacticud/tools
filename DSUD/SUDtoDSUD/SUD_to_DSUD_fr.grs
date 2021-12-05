@@ -17,68 +17,6 @@ package FR_mood_tense{
 }
 
 % =============================================================================================
-% Introduction of the Voice feature for French verbs.
-package FR_voice{
-
-% Active voice for verbs in simple tenses.
-  rule active_simple{
-    pattern{V[upos=VERB,!Voice]}
-    without{V[VerbForm=Part,Tense=Past]}
-    without{
-      AUX[upos=AUX, lemma=faire]; AUX -[comp:aux@pass]-> V;
-      V[VerbForm=Inf];
-      CL[upos=PRON,lemma=se]; d:AUX -[comp@pass]-> CL}
-    commands{V.Voice=Act}
-  }
-
-% Active voice for verbs in compound tenses.
-  rule active_compound{
-    pattern{V[upos=VERB,VerbForm=Part,Tense=Past,!Voice]; AUX -[comp:aux@tense]-> V}
-    commands{V.Voice=Act}
-  }
-
-% Active voice for past participles of non-passivable verbs.
-  rule active_part(lex from "lexicons/fr_passivable_verbs.lp"){
-    pattern{V[upos=VERB, VerbForm=Part, Tense=Past, !Voice]}
-    without{V[lemma=lex.verb]}
-    without{AUX -[1=comp,2=aux]-> V}
-    commands{V.Voice=Act}
-  }
-
-% Passive voice for verbs with a passive auxiliary.
-  rule passive_aux{
-    pattern{
-      V[upos=VERB, VerbForm=Part, Tense=Past, !Voice];
-      AUX -[comp:aux@pass]-> V}
-    commands{V.Voice=Pass}
-  }
-
-% Passive voice for past participles of passivable verbs.
-  rule passive_part(lex from "lexicons/fr_passivable_verbs.lp"){
-    pattern{V[upos=VERB, VerbForm=Part, Tense=Past, lemma=lex.verb, !Voice]}
-    without{AUX -[1=comp,2=aux]-> V}
-    commands{V.Voice=Pass}
-  }
-
-%Passive voice for infinitives used with "se faire".
-% Ex: SUD_French-GSD fr-ud-test_00058 - Sidi M'hamed Deddeche et Amgid Sidi Ahmed ... s'étaient-ils fait[AUX] arrêter[V] mercredi dernier ...
-rule passive_faire{
-  pattern{
-    AUX[upos=AUX, lemma=faire]; AUX -[comp:aux@pass]-> V; V[upos=VERB, VerbForm=Inf];
-    CL[upos=PRON,lemma=se]; d:AUX -[comp@pass]-> CL}
-  commands{V.Voice=Pass ; del_edge d}
-}
-
-% Middle voice for verbs with a reflexive pronoun expressing the middle voice.
-rule middle{
-  pattern{
-    V[upos=VERB]; CL[upos=PRON,lemma=se];
-    d:V -[comp@pass]-> CL}
-  commands{V.Voice=Mid ; del_edge d}
-}
-
-}
-% =============================================================================================
 % For pronouns representing indirect complements, corresponding prepositions are added to the dependencies targeting them.
 rule FR_pron_prep{
   pattern{
@@ -148,7 +86,7 @@ Sub	Imp	Pluperfect
       e:AUX -[comp:aux@pass]-> V; V[!Mark]}
     commands{
      V.Mood=AUX.Mood; V.Tense=AUX.Tense;V.Mark=Yes;V.VerbForm=AUX.VerbForm;
-     V.form= AUX.form + "_" + V.form}
+     V.Voice=Pass; V.form= AUX.form + "_" + V.form}
   }
 
   
@@ -208,6 +146,58 @@ Sub	Imp	Pluperfect
 }
 
 % =============================================================================================
+% Introduction of the Voice feature for French verbs.
+package FR_voice{
+
+% Active voice for verbs that are not past participles.
+  rule active{
+    pattern{V[upos=AUX|VERB,!Voice]}
+    without{V[VerbForm=Part,Tense=Past]}
+    without{V -[comp@pass]-> CL; CL[upos=PRON, lemma=se]}
+    without{
+      AUX[upos=AUX, lemma=faire]; AUX -[comp:aux@pass]-> V;
+      V[VerbForm=Inf];
+      CL[upos=PRON,lemma=se]; d:AUX -[comp@pass]-> CL}
+    commands{V.Voice=Act}
+  }
+
+
+% Active voice for past participles of non-passivable verbs.
+  rule active_part(lex from "lexicons/fr_passivable_verbs.lp"){
+    pattern{V[upos=VERB, VerbForm=Part, Tense=Past, !Voice]}
+    without{V[lemma=lex.verb]}
+    without{AUX -[1=comp,2=aux]-> V}
+    commands{V.Voice=Act}
+  }
+
+
+% Passive voice for past participles of passivable verbs.
+  rule passive_part(lex from "lexicons/fr_passivable_verbs.lp"){
+    pattern{V[upos=VERB, VerbForm=Part, Tense=Past, lemma=lex.verb, !Voice]}
+    without{AUX -[1=comp,2=aux]-> V}
+    commands{V.Voice=Pass}
+  }
+
+%Passive voice for infinitives used with "se faire".
+% Ex: SUD_French-GSD fr-ud-test_00058 - Sidi M'hamed Deddeche et Amgid Sidi Ahmed ... s'étaient-ils fait[AUX] arrêter[V] mercredi dernier ...
+  rule passive_faire{
+    pattern{
+      AUX[upos=AUX, lemma=faire]; AUX -[comp:aux@pass]-> V; V[upos=VERB, VerbForm=Inf];
+      CL[upos=PRON,lemma=se]; d:AUX -[comp@pass]-> CL}
+    commands{V.Voice=Pass ; del_edge d}
+  }
+
+% Middle voice for verbs with a reflexive pronoun expressing the middle voice.
+  rule middle{
+    pattern{
+      V[upos=VERB]; CL[upos=PRON,lemma=se];
+      d:V -[comp@pass]-> CL}
+    commands{V.Voice=Mid ; del_edge d}
+  }
+
+}
+
+% =============================================================================================
 % Predicates that are complement of another verb and the subject of which is controlled by the main verb.
 package FR_deep_subj_controlled_pred{
 
@@ -264,11 +254,11 @@ strat FR_main{
     idioms.main,
     Onf(coord_gov),
     Onf(coord_dep),
-    Onf(FR_voice),
     Onf(del_cpl),
     Onf(del_coord-conj),
     Onf(FR_pron_prep),
     Onf(FR_aux), % This package must precede the package FR_deep_subj_controlled_pred because of compound verbs. Ex: SUD_French-GSD fr-ud-test_00042 - La justice française n'a fait qu'obéir et se déjuger.
+    Onf(FR_voice),
     Onf(FR_deep_subj_controlled_pred),
     deep_subj.main,
     Onf(refl_pron),
