@@ -223,6 +223,48 @@ rule del_coord-conj{
   commands{d1.Conj = C.lemma; d1.enhanced=yes; del_edge d2}
 }
 
+% =============================================================================================
+% Introduction of the Voice feature for all verbs.
+package voice{
+
+% Active voice for verbs that are not past participles.
+  rule active{
+    pattern{V[upos=AUX|VERB,!Voice]}
+    without{V[upos=VERB,VerbForm=Part,Tense=Past]}
+    without{V -[comp@pass]-> CL; CL[upos=PRON]}
+    commands{V.Voice=Act}
+  }
+
+% Passive voice for past participles.
+  rule passive_part{
+    pattern{V[upos=VERB, VerbForm=Part, Tense=Past, !Voice]}
+    without{AUX -[1=comp,2=aux]-> V}
+    commands{V.Voice=Pass}
+  }
+
+% Middle voice for verbs with a pronoun expressing the middle voice.
+  rule middle{
+    pattern{
+      V[upos=VERB]; CL[upos=PRON];
+      d:V -[comp@pass]-> CL}
+    commands{V.Voice=Mid ; del_edge d}
+  }
+
+% All subjects of passive or midlle verbs are marked as passive subjects.
+  rule subj_pass{
+    pattern{V[upos=VERB, Voice=Mid|Pass]; d: V -[E:subj]-> SUBJ}
+    commands{d.deep=pass}
+  }
+
+% All subjects of active verbs are marked as active subjects, if they were marked as passive subjects by error before.
+% Ex: SUD_French-GSD fr-ud-test_00046 - En Arabie, on a l'impression que le fondamentalisme a toujours été là, qu'il[SUBJ] se maintient et n'aura[V] aucun mal à perdurer.
+  rule subj_act{
+    pattern{V[upos=VERB, Voice=Act]; d: V -[E:subj@pass]-> SUBJ}
+    commands{add_edge V -[E:subj]-> SUBJ; del_edge d}
+  }
+
+}
+
 
 % =============================================================================================
 % Deep subjects are added.
@@ -282,10 +324,10 @@ package control_pred{
 % Deep subjects of predicates that are modifiers of nominals or other predicates.
 package mod_pred{
 
-% If a present participle PART is a modifier of a nominal N, its deep subject is N.
-  rule mod_nom_part-pres{
+% If a participle PART is a modifier of a nominal N, its deep subject is N.
+  rule mod_nom_part{
     pattern{
-      PART[VerbForm=Part, Tense=Pres];
+      PART[VerbForm=Part];
       N[upos=NOUN|NUM|PRON|PROPN|X];
       N -[1=mod]-> PART}
     without{ * -[1=conj]-> N}
@@ -293,16 +335,6 @@ package mod_pred{
     commands{add_edge PART -[E:subj]-> N}
   }
 
-% If a past participle PART is a modifier of a nominal N , its deep passive subject is N.
-  rule mod_nom_part-past{
-    pattern{
-      PART[upos=VERB,VerbForm=Part, Tense=Past];
-      N[upos=NOUN|NUM|PRON|PROPN|X];
-      N -[1=mod]-> PART}
-    without{ * -[1=conj]-> N}
-    without{PART -[1=subj]-> *}
-    commands{add_edge PART -[1=subj,deep=pass, enhanced=yes]-> N; PART.Voice=Pass}
-  }
 
 % If an adjective ADJ is attributive of a nominal N, its subject is N.
   rule mod_nom_adj{
@@ -315,28 +347,19 @@ package mod_pred{
     commands{add_edge ADJ -[E:subj]-> N}
   }
 
-% If a present participle PART is a modifier of a predicate PRED, its deep subject is the subject SUBJ of PRED.
+% If a participle PART is a modifier of a predicate PRED, its deep subject is the subject SUBJ of PRED.
 %Ex:  UD_French-GSD fr-ud-train_14101 - Elle[SUBJ se prononce[PRED] en quittant[DPRED] les toilettes.
 %Ex:  UD_French-GSD fr-ud-train_00042 - Étant atteint[DPRED] du syndrome de Marfan, il est très grand[PRED] et mince.
-  rule mod_pred_part-pres{
+%Ex: SUD_French-GSD fr-ud-train_13855 - Créé[DPRED] en janvier 1932, il[SUBJ] fut dissous[PRED] en 1964.
+  rule mod_pred_part{
     pattern{
-      PRED[upos=ADJ|ADV|AUX|VERB]; PART[VerbForm=Part,Tense=Pres];
+      PRED[upos=ADJ|ADV|AUX|VERB]; PART[VerbForm=Part];
       PRED -[1=mod,deep=x]-> PART;
       PRED -[1=subj]-> SUBJ}
     without{PART -[1=subj]-> *}
     commands{add_edge PART -[E:subj]-> SUBJ}
   }
 
-% If a past participle PART is a modifier of a predicate PRED, its deep passive subject is the subject SUBJ of PRED.
-%Ex: SUD_French-GSD fr-ud-train_13855 - Créé[DPRED] en janvier 1932, il[SUBJ] fut dissous[PRED] en 1964.
-  rule mod_pred_part-pass{
-    pattern{
-      PRED[upos=ADJ|ADV|AUX|VERB]; PART[VerbForm=Part,Tense=Past];
-      PRED -[1=mod,deep=x]-> PART;
-      PRED -[1=subj]-> SUBJ}
-    without{PART -[1=subj]-> *}
-    commands{add_edge PART -[E:subj@pass]-> SUBJ}
-  }
 
 % If an adjective ADJ is a modifier of a predicate PRED, its deep subject is the subject SUBJ of PRED.
 %Ex: UD_French-GSD fr-ud-train_03936 - Très laide[DPRED], elle[SUBJ] provoquerait[PRED] l'effroi en la voyant.
@@ -565,7 +588,7 @@ package redistrib_synt{
 
 % Expletive subjects are deleted
   rule impers_subj{
-    pattern{d: V -[subj@expl]-> SUBJ}
+    pattern{d: V -[subj@expl|E:subj@expl]-> SUBJ}
     commands{del_edge d}
   }
 }
@@ -686,6 +709,7 @@ strat main{
     Onf(coord_dep), % "coord_dep" must precede "del_prep" because prepositional phrases may depend on a coordination. Ex: SUD_French-GSD fr-ud-test_00001 -
     Onf(del_cpl),
     Onf(del_coord-conj),
+    Onf(voice),
     deep_subj.main,
     Onf(refl_pron),
     rel-pron.main,
