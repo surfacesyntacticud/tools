@@ -143,7 +143,7 @@ will	Ind	Past	Inf	Pres	PastFut
   rule aux-pass{
     pattern{
       AUX[upos=AUX,Mood, Tense, VerbForm];
-      e:AUX -[comp:aux@pass]-> V; V[Mark=Obj, !Voice]}
+      AUX -[comp:aux@pass]-> V; V[Mark=Obj, !Voice]}
     commands{
      V.Mood=AUX.Mood; V.Tense=AUX.Tense;V.VerbForm=AUX.VerbForm;
      V.Voice=Pass; V.form= AUX.form + "_" + V.form}
