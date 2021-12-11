@@ -1,0 +1,240 @@
+% Conversion of SUD annotations to DSUD annotations of English corpora.
+% =============================================================================================
+include "SUD_to_DSUD.grs"
+
+% =============================================================================================
+% Correction of lemmas.
+rule EN_correct_lemma{
+  pattern{V[lemma=lex.old]}
+  commands{V.lemma=lex.new}
+}
+#BEGIN	lex
+old	new
+%----------
+could	can
+might	may
+should	shall
+would	will
+#END
+
+% =============================================================================================
+% Addition of a Mood and Tense feature for all verbs.
+package EN_mood_tense{
+  rule fin(lex from "lexicons/en_aux_wordforms.lp"){
+   pattern{V[upos=AUX|VERB, VerbForm=Fin, !Mood, !Tense, wordform=lex.verb]}
+   commands{V.Mood=Ind; V.Tense=lex.tense}
+  }
+
+  rule ger{
+   pattern{V[upos=AUX|VERB, VerbForm=Ger, !Mood, !Tense]}
+   commands{V.Mood=Part; V.Tense=Pres}
+  }
+
+  rule inf{
+   pattern{V[upos=AUX|VERB, VerbForm=Inf, !Mood, !Tense]}
+   commands{V.Mood=Inf; V.Tense=Pres}
+  }
+
+  rule part{
+   pattern{V[upos=AUX|VERB, VerbForm=Part, !Mood, Tense]}
+   commands{V.Mood=Part}
+  }
+
+}
+
+% =============================================================================================
+% For pronouns representing indirect complements, corresponding prepositions are added to the dependencies targeting them.
+rule EN_pron_prep{
+  pattern{
+    PRO[upos=ADV|PRON,lemma=lex.pron];
+    d: H -[comp:obl|E:comp:obl|mod|E:mod|udep|E:udep]-> PRO}
+  commands{d.Cpl= "_P-"+lex.prep}
+}
+#BEGIN	lex
+pron	prep
+%-----------
+anyone	to
+he	to
+herself	to
+himself	to
+it	to
+I	to
+myself	to
+she	to
+someone	to
+themselves	to
+they	to
+us	to
+we	to
+which	to
+you	to
+yourself	to
+#END
+
+
+% =============================================================================================
+% Auxiliaries are replaced by features assigned to the main verbs and their outgoing dependencies are moved to the main verb.
+% Causative auxiliaries are excluded from the treatement applied to all auxiliaries because they behave like ordinary predicates. For example, we have to distinguish between " Il ne la fait pas abandonner" and "Il la fait ne pas abandonner".
+% This process is performed by going up auxiliary chains from the end to the beginning recursively:
+%   1) init_mark: All auxiliaries at the end of a chain is marked.
+%   2) feat: The function of each marked auxiliary is translated into features of its object.
+%   3) dupl_rel: All governors and dependents of each marked auxiliary are shifted to their object.
+%   4) del_aux-dep: All dependencies from marked auxiliaries are deleted.
+%   5) del_mark: All marks are deleted.
+package EN_aux{
+
+% ===========================================
+% Marking the auxiliaries that are not objects of other auxiliaries, nor causative auxiliaries.
+rule init_mark{
+  pattern{V[!Mark]; AUX -[1=comp,2=aux]-> V}
+  without{AUX -[comp:aux@caus]-> V}
+  without{V -[comp:aux]-> *}
+  without{V -[1=comp, 2=aux, deep <> caus]-> *}
+  commands{V.Mark=Obj; AUX.Mark=Aux}
+}
+
+% ===========================================
+% The function of each marked auxiliary is translated into features of its object.
+package feat{
+%Tense auxiliaries.
+  rule tense{
+    pattern{
+      AUX[upos=AUX, lemma=lex.aux, Mood=lex.mooda, Tense=lex.tensea, VerbForm];
+      AUX -[1=comp, 2=aux]-> V;
+      V[upos=AUX|VERB, Mood=lex.moodv, Tense=lex.tensev,Mark=Obj]}
+    commands{
+      V.Mood=AUX.Mood; V.Tense=lex.tense; V.VerbForm=AUX.VerbForm;
+      V.form= AUX.form + "_" + V.form}
+  }
+#BEGIN	lex
+aux	mooda	tensea	moodv	tensev	tense
+%--------------------------------------------
+do	Ind	Pres	Inf	Pres	Pres
+do	Ind	Past	Inf	Pres	Past
+have	Ind	Pres	Part	Past	PresPerfect
+have	Ind	Past	Part	Past	PastPerfect
+will	Ind	Pres	Inf	Pres	Fut
+will	Ind	Pres	InfPerfect	Pres	FutPerfect
+will	Ind	Past	Inf	Pres	PastFut	
+#END  
+
+% Progressive auxiliary "be".
+  rule progressive{
+    pattern{
+      AUX[upos=AUX, lemma=be, Mood, Tense, VerbForm];
+      AUX -[1=comp, 2=aux]-> V; V[upos=AUX|VERB, VerbForm=Part, Tense=Pres,Mark=Obj]}
+    commands{
+      V.Mood=AUX.Mood; V.Tense=AUX.Tense; V.VerbForm=AUX.VerbForm; 
+      V.Aspect=Prog; V.form= AUX.form + "_" + V.form}
+  }
+
+
+% Modal auxiliaries.
+  rule modal{
+    pattern{
+      AUX[upos=AUX, lemma=can|get|may|must|ought|shall, Mood, Tense, VerbForm];
+      AUX -[1=comp, 2=aux]-> V; V[upos=AUX|VERB, VerbForm=Inf, Mark=Obj]}
+    commands{
+      V.Mood=AUX.Mood; V.Tense=AUX.Tense; V.VerbForm=AUX.VerbForm; 
+      V.Modal=AUX.lemma; V.form= AUX.form + "_" + V.form}
+  }
+
+% Passive auxiliaries.
+  rule aux-pass{
+    pattern{
+      AUX[upos=AUX,Mood, Tense, VerbForm];
+      e:AUX -[comp:aux@pass]-> V; V[Mark=Obj, !Voice]}
+    commands{
+     V.Mood=AUX.Mood; V.Tense=AUX.Tense;V.VerbForm=AUX.VerbForm;
+     V.Voice=Pass; V.form= AUX.form + "_" + V.form}
+  }
+}
+
+ % ===========================================
+% Dependencies attached to auxiliaries are duplicated to their object.
+package dupl_rel{
+% Dependents of auxiliaries, which are not modifiers
+  rule dep{
+    pattern{
+      AUX -[1=comp,2=aux]-> V;V[Mark=Obj];
+      d1: AUX -[1<>mod]-> D}
+    without{ d1.1=comp; d1.2=aux}
+    without{V -> D}
+    commands{add_edge d2: V -> D; d2.label=d1.label; d2.enhanced= yes}
+  }
+
+% Modifiers of auxiliaries are duplicated to their object and their dependency is marked MOD:CL to express that they are clause modifiers.
+  rule modif{
+    pattern{
+      AUX -[1=comp,2=aux]-> V;V[Mark=Obj];
+      d1: AUX -[1=mod,!2]-> MOD}
+    without{V -> MOD}
+    commands{add_edge d2: V -> MOD; d2.label=d1.label; d2.2=cl; d2.enhanced= yes}
+  }
+
+% The governors of the auxiliaries become the gouvernors of their object.
+  rule gov{
+    pattern{d1:H -> AUX; AUX -[1=comp,2=aux]-> V;V[Mark=Obj]}
+    without{ V1 -[1=conj]-> V}
+    commands{add_edge d2: H -> V; d2.label=d1.label; d2.enhanced=yes; del_edge d1}
+  }
+}
+
+% ===========================================
+% All dependencies attached to auxiliaries are deleted.
+rule del_aux-dep{
+  pattern{d:AUX -> V; AUX[Mark=Aux]}
+  commands{del_edge d}
+}
+
+% ===========================================
+% All Mark features are deleted.
+rule del_mark{
+  pattern{ V[Mark=Aux|Obj]}
+  commands{del_feat V.Mark}
+}
+
+% ===========================================
+% Strategy for integrating auxiliaries into full verbs.
+strat main{Iter(Seq(Onf(init_mark), Onf(feat), Onf(dupl_rel), Onf(del_aux-dep), Onf(del_mark)))}
+  
+}
+
+
+% =============================================================================================
+% Some expletives are deleted
+rule EN_clit_verb{
+  pattern{V[upos=AUX|VERB]; d:V -[comp@expl]-> CLIT; CLIT[upos=PRON,lemma=it]}
+  commands{del_edge d}
+}
+
+% =============================================================================================
+% Strategies
+% =============================================================================================
+strat EN_main{
+  Seq(
+    Onf(EN_correct_lemma),
+    Onf(EN_mood_tense),
+    Onf(flat),
+    idioms.main,
+    Onf(coord_gov),
+    Onf(coord_dep),
+    Onf(del_cpl),
+    Onf(del_coord-conj),
+    Onf(EN_pron_prep),
+    EN_aux.main,
+    %Onf(FR_voice),
+    Onf(voice),
+    %Onf(FR_deep_subj_controlled_pred),
+    deep_subj.main,
+    Onf(refl_pron),
+    %Onf(FR_subj_past-part),
+    rel-pron.main,
+    Onf(coord_dep),
+    Onf(redistrib_synt),
+    cleft_sent.main,
+    Onf(EN_clit_verb),
+    Onf(clit_verb),
+    Onf(del_isolated_token)
+  )
+}
