@@ -92,8 +92,20 @@ Sub	Imp	Pluperfect
       AUX -[comp:aux@pass]-> V;
       V[upos=AUX|VERB, Mood=Part, Tense=Past, Mark=Obj, !Voice]}
     commands{
-     V.Mood=AUX.Mood; V.Tense=AUX.Tense;V.Mark=Yes;V.VerbForm=AUX.VerbForm;
+     V.Mood=AUX.Mood; V.Tense=AUX.Tense;V.VerbForm=AUX.VerbForm;
      V.Voice=Pass; V.form= AUX.form + "_" + V.form}
+  }
+
+%Passive voice for infinitives used with "se faire".
+% Ex: SUD_French-GSD fr-ud-test_00058 - Sidi M'hamed Deddeche et Amgid Sidi Ahmed ... s'étaient-ils fait[AUX] arrêter[V] mercredi dernier ...
+  rule aux-pass-faire{
+    pattern{
+      AUX[upos=AUX, lemma=faire]; AUX -[comp:aux@pass]-> V;
+      V[upos=VERB, VerbForm=Inf, Mark=Obj, !Voice];
+      CL[upos=PRON,lemma=se]; d:V -[comp:obj]-> CL}
+    commands{
+      V.Mood=AUX.Mood; V.Tense=AUX.Tense;V.VerbForm=AUX.VerbForm;
+      V.Voice=Pass ;  V.form= CL.form + "_"+ AUX.form + "_" + V.form;del_edge d}
   }
 
 }
@@ -162,14 +174,6 @@ package FR_voice{
     commands{V.Voice=Act}
   }
 
-%Passive voice for infinitives used with "se faire".
-% Ex: SUD_French-GSD fr-ud-test_00058 - Sidi M'hamed Deddeche et Amgid Sidi Ahmed ... s'étaient-ils fait[AUX] arrêter[V] mercredi dernier ...
-  rule passive_faire{
-    pattern{
-      AUX[upos=AUX, lemma=faire]; AUX -[comp:aux@pass]-> V; V[upos=VERB, VerbForm=Inf];
-      CL[upos=PRON,lemma=se]; d:AUX -[comp@pass]-> CL}
-    commands{V.Voice=Pass ; del_edge d}
-  }
 
 }
 
