@@ -63,7 +63,7 @@ package feat{
 % Tense auxiliaries.
   rule aux-tense{
     pattern{
-      AUX[upos=AUX, Mood=lex.mood, Tense=lex.auxt, VerbForm, Mark=Yes];
+      AUX[upos=AUX, Mood=lex.mood, Tense=lex.auxt, VerbForm];
       AUX -[comp:aux@tense]-> V;
       V[upos=AUX|VERB, Mood=Part, Tense=Past, Mark=Obj]}
     commands{
