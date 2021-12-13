@@ -1,0 +1,171 @@
+% The package morph2word contains eight rules with all combinations of
+% * InflAff / DerAff
+% * the affixe is before / after the stem (rule name starting with pre_ or post_)
+% * the affixe is a dependant / a governor of the stem (rule name ending with _dep or _gov)
+package morph2word {
+  rule pre_InflAff_dep {
+    pattern {
+      STEM [];
+      IA [TokenType=InflAff];
+      IA < STEM;
+      e: STEM -[2=aff]-> IA;
+    }
+    commands {
+      STEM.form = IA.form + STEM.form;
+      prepend_feats IA =[re"RX\|GE\|Number\|Gender"]=> STEM;
+      STEM.AlignBegin = IA.AlignBegin;
+      del_node IA;
+    }
+  }
+
+  rule post_InflAff_dep {
+    pattern {
+      STEM [];
+      IA [TokenType=InflAff];
+      STEM < IA;
+      e: STEM -[2=aff]-> IA;
+    }
+    commands {
+      STEM.form = STEM.form + IA.form;
+      append_feats IA =[re"RX\|GE\|Number\|Gender"]=> STEM;
+      STEM.AlignEnd = IA.AlignEnd;
+      del_node IA;
+    }
+  }
+
+  rule pre_InflAff_gov {
+    pattern {
+      STEM [];
+      IA [TokenType=InflAff];
+      IA < STEM;
+      e: IA -[2=aff]-> STEM;
+    }
+    commands {
+      shift IA ==> STEM;
+      STEM.form = IA.form + STEM.form;
+      prepend_feats IA =[re"RX\|GE\|Number\|Gender"]=> STEM;
+      STEM.AlignBegin = IA.AlignBegin;
+      del_node IA;
+    }
+  }
+
+  rule post_InflAff_gov {
+    pattern {
+      STEM [];
+      IA [TokenType=InflAff];
+      STEM < IA;
+      e: IA -[2=aff]-> STEM;
+    }
+    commands {
+      shift IA ==> STEM;
+      STEM.form = STEM.form + IA.form;
+      append_feats IA =[re"RX\|GE\|Number\|Gender"]=> STEM;
+      STEM.AlignEnd = IA.AlignEnd;
+      del_node IA;
+    }
+  }
+
+
+
+  rule post_DerAff_gov {
+    pattern {
+      STEM [];
+      DA [TokenType=DerAff];
+      STEM < DA;
+      e: DA -[2=aff]-> STEM;
+    }
+    without { STEM -[2=aff]-> DA2; DA [TokenType=DerAff]; }
+    commands {
+      shift DA ==> STEM;
+      STEM.form = STEM.form + DA.form;
+      append_feats DA =[re"RX\|GE\|Number\|Gender"]=> STEM;
+      STEM.AlignEnd = DA.AlignEnd;
+      STEM.upos = DA.DerPos;
+      del_node DA;
+    }
+  }
+
+  rule pre_DerAff_gov {
+    pattern {
+      STEM [];
+      DA [TokenType=DerAff];
+      DA < STEM;
+      e: DA -[2=aff]-> STEM;
+    }
+    commands {
+      shift DA ==> STEM;
+      STEM.form = DA.form + STEM.form;
+      prepend_feats DA =[re"RX\|GE\|Number\|Gender"]=> STEM;
+      STEM.AlignBegin = DA.AlignBegin;
+      STEM.upos = DA.DerPos;
+      del_node DA;
+    }
+  }
+
+
+
+  rule pre_DerAff_dep {
+    pattern {
+      STEM [];
+      DA [TokenType=DerAff];
+      DA < STEM;
+      e: STEM -[2=aff]-> DA;
+    }
+    commands {
+      STEM.form = DA.form + STEM.form;
+      prepend_feats DA =[re"RX\|GE\|Number\|Gender"]=> STEM;
+      STEM.AlignBegin = DA.AlignBegin;
+      STEM.upos = DA.DerPos;
+      shift_out DA ==> STEM;
+      del_node DA;
+    }
+  }
+
+  rule post_DerAff_dep {
+    pattern {
+      STEM [];
+      DA [TokenType=DerAff];
+      STEM < DA;
+      e: STEM -[2=aff]-> DA;
+    }
+    commands {
+      STEM.form = STEM.form + DA.form;
+      append_feats DA =[re"RX\|GE\|Number\|Gender"]=> STEM;
+      STEM.AlignEnd = DA.AlignEnd;
+      STEM.upos = DA.DerPos;
+      shift_out DA ==> STEM;
+      del_node DA;
+    }
+  }
+}
+
+package clitic_included {
+
+  % A special case in the Beja corpus: http://match.grew.fr/?corpus=SUD_Beja-NSC@latest&custom=61b7690c7ca5b
+  % where there is a clitic between the stem and its affix
+  % See section 2.4 in the SyntaxFest 2021 paper
+  rule noun_clit_InflAff {
+    pattern {
+      STEM [upos=NOUN]; POSS []; IA [TokenType=InflAff];
+      STEM < POSS; POSS < IA;
+      STEM -[mod:poss]-> POSS;
+      e: IA -[2=aff]-> STEM;
+    }
+    commands {
+      % add a MWT
+      STEM.textform = STEM.form + POSS.form + IA.form;
+      POSS.textform = "_";
+      
+      shift IA ==> STEM;
+      STEM.form = STEM.form + IA.form;
+      append_feats IA =[re"RX\|GE\|Number\|Gender"]=> STEM;
+      STEM.AlignEnd = IA.AlignEnd;
+      del_node IA;
+    }
+  }
+}
+
+strat main { Seq(Onf (morph2word), Onf(clitic_included)) }
+
+% the rules sould be deterministic and Onf can be safely used. The iter start is just used for testing.
+% strat iter { Seq(Iter (p), Iter(clitic_included)) }
