@@ -1,3 +1,26 @@
+
+
+% In a few case in SUD_Beja-NSC, the affixe is not directly linked to the stem 
+% See: http://match.grew.fr/?corpus=SUD_Beja-NSC@latest&custom=61bc53b75739b
+% The rule [aff_on_aff] reorganize [*.aff] relations to prepare data for the main [morph2word] package
+% NB: This rule is SUD_Beja-NSC based and may need to be generalized for other corpora or language.
+rule aff_on_aff {
+  pattern {
+    STEM [TokenType=Stem];
+    IA1 [TokenType=InflAff]; 
+    IA2 [TokenType=InflAff];
+    IA2 -[2=aff]-> STEM;
+    e: IA2 -[2=aff]-> IA1;
+  }
+  commands {
+    add_edge f: STEM -> IA1;
+    f.label = e.label;
+    del_edge e;
+  }
+}
+
+
+
 % The package morph2word contains eight rules with all combinations of
 % * InflAff / DerAff
 % * the affixe is before / after the stem (rule name starting with pre_ or post_)
@@ -5,13 +28,13 @@
 package morph2word {
   rule pre_InflAff_dep {
     pattern {
-      STEM [];
+      STEM [TokenType=Stem];
       IA [TokenType=InflAff];
       IA < STEM;
       e: STEM -[2=aff]-> IA;
     }
     commands {
-      STEM.form = IA.form + STEM.form;
+      STEM.form = IA.form[:-1] + STEM.form;
       prepend_feats IA =[re"RX\|GE\|Number\|Gender"]=> STEM;
       STEM.AlignBegin = IA.AlignBegin;
       del_node IA;
@@ -20,13 +43,13 @@ package morph2word {
 
   rule post_InflAff_dep {
     pattern {
-      STEM [];
+      STEM [TokenType=Stem];
       IA [TokenType=InflAff];
       STEM < IA;
       e: STEM -[2=aff]-> IA;
     }
     commands {
-      STEM.form = STEM.form + IA.form;
+      STEM.form = STEM.form + IA.form[1:];
       append_feats IA =[re"RX\|GE\|Number\|Gender"]=> STEM;
       STEM.AlignEnd = IA.AlignEnd;
       del_node IA;
@@ -35,14 +58,14 @@ package morph2word {
 
   rule pre_InflAff_gov {
     pattern {
-      STEM [];
+      STEM [TokenType=Stem];
       IA [TokenType=InflAff];
       IA < STEM;
       e: IA -[2=aff]-> STEM;
     }
     commands {
       shift IA ==> STEM;
-      STEM.form = IA.form + STEM.form;
+      STEM.form = IA.form[:-1] + STEM.form;
       prepend_feats IA =[re"RX\|GE\|Number\|Gender"]=> STEM;
       STEM.AlignBegin = IA.AlignBegin;
       del_node IA;
@@ -51,14 +74,14 @@ package morph2word {
 
   rule post_InflAff_gov {
     pattern {
-      STEM [];
+      STEM [TokenType=Stem];
       IA [TokenType=InflAff];
       STEM < IA;
       e: IA -[2=aff]-> STEM;
     }
     commands {
       shift IA ==> STEM;
-      STEM.form = STEM.form + IA.form;
+      STEM.form = STEM.form + IA.form[1:];
       append_feats IA =[re"RX\|GE\|Number\|Gender"]=> STEM;
       STEM.AlignEnd = IA.AlignEnd;
       del_node IA;
@@ -69,7 +92,7 @@ package morph2word {
 
   rule post_DerAff_gov {
     pattern {
-      STEM [];
+      STEM [TokenType=Stem];
       DA [TokenType=DerAff];
       STEM < DA;
       e: DA -[2=aff]-> STEM;
@@ -77,7 +100,7 @@ package morph2word {
     without { STEM -[2=aff]-> DA2; DA [TokenType=DerAff]; }
     commands {
       shift DA ==> STEM;
-      STEM.form = STEM.form + DA.form;
+      STEM.form = STEM.form + DA.form[1:];
       append_feats DA =[re"RX\|GE\|Number\|Gender"]=> STEM;
       STEM.AlignEnd = DA.AlignEnd;
       STEM.upos = DA.DerPos;
@@ -87,14 +110,14 @@ package morph2word {
 
   rule pre_DerAff_gov {
     pattern {
-      STEM [];
+      STEM [TokenType=Stem];
       DA [TokenType=DerAff];
       DA < STEM;
       e: DA -[2=aff]-> STEM;
     }
     commands {
       shift DA ==> STEM;
-      STEM.form = DA.form + STEM.form;
+      STEM.form = DA.form[:-1] + STEM.form;
       prepend_feats DA =[re"RX\|GE\|Number\|Gender"]=> STEM;
       STEM.AlignBegin = DA.AlignBegin;
       STEM.upos = DA.DerPos;
@@ -106,13 +129,13 @@ package morph2word {
 
   rule pre_DerAff_dep {
     pattern {
-      STEM [];
+      STEM [TokenType=Stem];
       DA [TokenType=DerAff];
       DA < STEM;
       e: STEM -[2=aff]-> DA;
     }
     commands {
-      STEM.form = DA.form + STEM.form;
+      STEM.form = DA.form[:-1] + STEM.form;
       prepend_feats DA =[re"RX\|GE\|Number\|Gender"]=> STEM;
       STEM.AlignBegin = DA.AlignBegin;
       STEM.upos = DA.DerPos;
@@ -123,13 +146,13 @@ package morph2word {
 
   rule post_DerAff_dep {
     pattern {
-      STEM [];
+      STEM [TokenType=Stem];
       DA [TokenType=DerAff];
       STEM < DA;
       e: STEM -[2=aff]-> DA;
     }
     commands {
-      STEM.form = STEM.form + DA.form;
+      STEM.form = STEM.form + DA.form[1:];
       append_feats DA =[re"RX\|GE\|Number\|Gender"]=> STEM;
       STEM.AlignEnd = DA.AlignEnd;
       STEM.upos = DA.DerPos;
@@ -146,7 +169,7 @@ package clitic_included {
   % See section 2.4 in the SyntaxFest 2021 paper
   rule noun_clit_InflAff {
     pattern {
-      STEM [upos=NOUN]; POSS []; IA [TokenType=InflAff];
+      STEM [TokenType=Stem,upos=NOUN]; POSS []; IA [TokenType=InflAff];
       STEM < POSS; POSS < IA;
       STEM -[mod:poss]-> POSS;
       e: IA -[2=aff]-> STEM;
@@ -165,7 +188,13 @@ package clitic_included {
   }
 }
 
-strat main { Seq(Onf (morph2word), Onf(clitic_included)) }
+strat main { 
+  Seq(
+    Onf (aff_on_aff),
+    Onf (morph2word),
+    Onf(clitic_included)
+    ) 
+  }
 
 % the rules sould be deterministic and Onf can be safely used. The iter start is just used for testing.
 % strat iter { Seq(Iter (p), Iter(clitic_included)) }
