@@ -10,9 +10,9 @@ See: Sylvain Kahane, Martine Vanhove, Rayan Ziane and Bruno Guillaume, "A morph-
 
 The system will probably need to be adapted to be applied on some other corpora.
 
-Two kinds of affixes are taken into account: inflectional and derivational; annotated with features TokenType=InflAff and TokenType=DerAff.
+Two kinds of affixes are taken into account: inflectional and derivational; annotated with features `TokenType=InflAff` and `TokenType=DerAff`.
 
-**Note:** Minimum Grew version is 1.8 (not released yet).
+**Note:** Minimum [Grew](https://grew.fr) version is 1.8.
 
 Try the GRS online on Grew-web:
  * [BEJ_MV_NARR_03_camel](http://transform.grew.fr/?grs=https://raw.githubusercontent.com/surfacesyntacticud/tools/master/morph2word/morph2word.grs&corpus=https://raw.githubusercontent.com/surfacesyntacticud/SUD_Beja-NSC/master/BEJ_MV_NARR_03_camel.conllu)
