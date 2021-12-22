@@ -661,15 +661,29 @@ strat main{Seq(Iter(link_focus), Onf(label_focus_dep))}
 }
 
 % =============================================================================================
-% Treatment of the clitic pronouns that change the meaning of verbs.
-rule clit_verb{
-  pattern{
-    V[upos=VERB,lemma]; CL[upos=PRON];
-    d:V -[comp@expl]-> CL}
-  without{V -[comp@expl]-> CL1; CL << CL1}
-  commands{
-    V.lemma= CL.lemma + "_" + V.lemma ;
-    V.form=  CL.form + "_" + V.form ;del_edge d}
+% Treatment of the clitic pronouns or particles that change the meaning of verbs.
+package clit-part_verb{
+%Clitic pronouns
+  rule clit{
+    pattern{
+      V[upos=VERB,lemma]; CL[upos=PRON];
+      d:V -[comp@expl]-> CL}
+    without{V -[comp@expl]-> CL1; CL << CL1}
+    commands{
+      V.lemma= CL.lemma + "_" + V.lemma ;
+      V.form=  CL.form + "_" + V.form ;del_edge d}
+  }
+
+%Particles
+  rule part{
+    pattern{
+      V[upos=VERB,lemma]; P[upos=PART];
+      d:V -[compound@prt]-> P; V << P}
+    commands{
+      V.lemma= V.lemma + "_" + P.lemma;
+      V.form=  V.form + "_" + P.form ;del_edge d}
+  }
+
 }
 
 % =============================================================================================
@@ -705,7 +719,7 @@ strat main{
     Onf(coord_dep), % Justification of this second application of the coord_dep package: ex SUD_Frecnh-GSD fr-ud-dev_01331 - ...de nombreux journaux libertaires et antimilitaristes, ...
     Onf(redistrib_synt),
     cleft_sent.main,
-    Onf(clit_verb), %This package follows the package related to the treatment of auxiliaries because of the final form of the verbs.
+    Onf(clit-part_verb), %This package follows the package related to the treatment of auxiliaries because of the final form of the verbs.
     Onf(del_isolated_token)
   )
 }
