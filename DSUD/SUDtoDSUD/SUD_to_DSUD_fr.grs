@@ -185,8 +185,8 @@ package FR_deep_subj_controlled_pred{
   rule obl(lex from "lexicons/fr_verbs_a_noun_de_inf.lp"){
     pattern{
       V[upos=VERB,lemma=lex.verb]; INF[upos=AUX|VERB,VerbForm=Inf];
-      d1:V -[1=comp,2=obj,Cpl=*]-> INF; d1.Cpl ="P-de";
-      d2:V -[1=comp, 2=obl, Cpl=*]-> N; d2.Cpl= "P-à";  N[upos=NOUN|NUM|PRON|PROPN|X]}
+      d1:V -[1=comp,2=obj,Cpl=*]-> INF; d1.Cpl ="_P-de";
+      d2:V -[1=comp, 2=obl, Cpl=*]-> N; d2.Cpl= "_P-à";  N[upos=NOUN|NUM|PRON|PROPN|X]}
     without{ INF -[1=subj]-> *}
     commands{add_edge INF -[E:subj]-> N}
   }
