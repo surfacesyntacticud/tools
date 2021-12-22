@@ -364,21 +364,22 @@ package mod_pred{
   }
 
 
-% If an infinitive INF is a modifier of a predicate PRED, its deep subject is the subject SUBJ of PRED.
-% Ex : SUD_French-GSD fr-ud-train_02692 - Nous[SUBJ] avons retiré[PRED] l'application pour régler[INF] le problème.
-%Ex: SUD_French-GSD fr-ud-test_00121 - Charles[NSUBJ] Mwando Nsimba a sollicité[PRED] un délai supplémentaire avant[ADV] de répondre[INF] aux préoccupations soulevées
-  rule mod_pred_prep_inf{
+% If a verb V is a modifier of a predicate PRED via a preposition PREP, its deep subject is the subject SUBJ of PRED.
+% Ex : SUD_French-GSD fr-ud-train_02692 - Nous[SUBJ] avons retiré[PRED] l'application pour[PREP] régler[V] le problème.
+%Ex: UD_French-GSD fr-ud-train_03936 - Très laide, elle[SUBJ] provoquerait[PRED] l'effroi en[PREP] la voyant[V].
+  rule mod_pred_prep_verb{
     pattern{
       PRED[upos=ADJ|ADV|AUX|VERB]; PRED -[1=subj]-> SUBJ;
       PRED -[1=mod,deep=x]-> PREP; PREP[upos=ADP];
-      PREP -[1=comp,2=obj]-> INF; INF[VerbForm=Inf];
+      PREP -[1=comp,2=obj]-> V; V[upos=AUX|VERB];
      }
-    without{INF -[1=subj]-> *}
-    commands{add_edge INF -[E:subj]-> SUBJ}
+    without{V -[1=subj]-> *}
+    commands{add_edge V -[E:subj]-> SUBJ}
   }
 
 % If an infinitive INF is the complement of an adverb thar is a modifier of a predicate PRED, its deep subject is the subject SUBJ of PRED.
 % Ex : SUD_French-GSD fr-ud-dev_00674 - les cônes[SUBJ] sont tous orientés vers le tronc et peuvent rester 20 ans accrochées[PRED] au tronc avant[ADV] de tomber[INF].
+%Ex: SUD_French-GSD fr-ud-test_00121 - Charles[NSUBJ] Mwando Nsimba a sollicité[PRED] un délai supplémentaire avant[ADV] de répondre[INF] aux préoccupations soulevées
   rule mod_pred_adv_inf{
     pattern{
       PRED[upos=ADJ|ADV|AUX|VERB]; ADV[upos=ADV];
@@ -716,7 +717,7 @@ strat main{
     Onf(del_cpl),
     Onf(del_coord-conj),
     Onf(voice),
-    deep_subj.main,
+    Iter(deep_subj.main),% The strategy must be iterated because of examples such as: SUD_French-GSD fr-ud-test_00070 - De nombreux Marocains le pensent en n'hésitant pas à l'accuser
     Onf(refl_pron),
     rel-pron.main,
     Onf(coord_dep), % Justification of this second application of the coord_dep package: ex SUD_Frecnh-GSD fr-ud-dev_01331 - ...de nombreux journaux libertaires et antimilitaristes, ...
