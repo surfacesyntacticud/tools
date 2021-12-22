@@ -22,7 +22,7 @@ rule FR_pron_prep{
   pattern{
     PRO[upos=ADV|PRON,lemma=lex.pron];
     d: H -[comp:obl|E:comp:obl|mod|E:mod|udep|E:udep]-> PRO}
-  commands{d.Cpl= "_P-"+lex.prep}
+  commands{d.Cpl= "_P-"+lex.prep;d.enhanced=yes}
 }
 #BEGIN	lex
 pron	prep
