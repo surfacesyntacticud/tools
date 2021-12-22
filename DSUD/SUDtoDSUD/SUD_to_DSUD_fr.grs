@@ -51,8 +51,8 @@ package FR_aux{
 % Marking the auxiliaries that are not objects of other auxiliaries, nor causative auxiliaries.
 rule init_mark{
   pattern{V[!Mark]; AUX -[1=comp,2=aux]-> V}
-  without{AUX -[comp:aux@caus]-> V}
-  without{V -[comp:aux]-> *}
+  without{AUX -[deep=caus]-> V}
+  without{V -[comp:aux|E:comp:aux]-> *}
   without{V -[1=comp, 2=aux, deep <> caus]-> *}
   commands{V.Mark=Obj; AUX.Mark=Aux}
 }
@@ -64,7 +64,7 @@ package feat{
   rule aux-tense{
     pattern{
       AUX[upos=AUX, Mood=lex.mood, Tense=lex.auxt, VerbForm];
-      AUX -[comp:aux@tense]-> V;
+      AUX -[1=comp, 2=aux, deep=tense]-> V;
       V[upos=AUX|VERB, Mood=Part, Tense=Past, Mark=Obj]}
     commands{
       V.Mood=AUX.Mood; V.Tense=lex.verbt; V.VerbForm=AUX.VerbForm;
@@ -76,12 +76,12 @@ mood	auxt	verbt
 Cnd	Pres	Past
 Imp	Pres	PresPerfect
 Ind	Pres	PresPerfect
-Ind	Imp	Pluperfect
-Ind	Fut	AntPast
+Ind	Imp	PastPerfect
+Ind	Fut	FutPerfect
 Inf	Pres	PresPerfect
 Part	Pres	PresPerfect
 Sub	Pres	Past
-Sub	Imp	Pluperfect
+Sub	Imp	Pastperfect
 #END  
 
 
@@ -89,7 +89,7 @@ Sub	Imp	Pluperfect
   rule aux-pass{
     pattern{
       AUX[upos=AUX,Mood, Tense, VerbForm];
-      AUX -[comp:aux@pass]-> V;
+      AUX -[1=comp, 2=aux, deep=pass]-> V;
       V[upos=AUX|VERB, Mood=Part, Tense=Past, Mark=Obj, !Voice]}
     commands{
      V.Mood=AUX.Mood; V.Tense=AUX.Tense;V.VerbForm=AUX.VerbForm;
@@ -100,9 +100,9 @@ Sub	Imp	Pluperfect
 % Ex: SUD_French-GSD fr-ud-test_00058 - Sidi M'hamed Deddeche et Amgid Sidi Ahmed ... s'étaient-ils fait[AUX] arrêter[V] mercredi dernier ...
   rule aux-pass-faire{
     pattern{
-      AUX[upos=AUX, lemma=faire]; AUX -[comp:aux@pass]-> V;
+      AUX[upos=AUX, lemma=faire]; AUX -[1=comp, 2=aux, deep=pass]-> V;
       V[upos=VERB, VerbForm=Inf, Mark=Obj, !Voice];
-      CL[upos=PRON,lemma=se]; d:V -[comp:obj]-> CL}
+      CL[upos=PRON,lemma=se]; d:AUX -[comp@pass]-> CL}
     commands{
       V.Mood=AUX.Mood; V.Tense=AUX.Tense;V.VerbForm=AUX.VerbForm;
       V.Voice=Pass ;  V.form= CL.form + "_"+ AUX.form + "_" + V.form;del_edge d}
