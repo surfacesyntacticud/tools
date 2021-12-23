@@ -158,12 +158,23 @@ rule subj{
 %Ex: SUD_French-GSD fr-ud-train_01392 - J'y retourne dès que je peux !
 % retourne -[Cpl=P-dès_C-que]-> peux
 package del_cpl{
-% Initialization of the Cpl feature for dependencies to adpositions, conjunctions and particles
+% Initialization of the Cpl feature for dependencies to complementizers.
   rule init{
     pattern{
       d: H -[1 <> conj|mod|udep, !Cpl]-> CPL; CPL[upos=ADP|SCONJ|PART]; 
       CPL -[1=comp,2=obj]-> *}
     without{H[upos = ADP|PART|SCONJ]; H -[comp:obj|E:comp:obj]-> CPL}
+    commands{d.Cpl= ""}
+  }
+
+% Initialization of the Cpl feature for dependencies to complementizers governed by complementizers that are not erasable.
+% Ex: SUD_French-GSD fr-ud-dev_01490 - ...fut l'un des hauts dirigeants du Parti communiste chinois avant[CPL0] de[CPL] connaître la disgrâce
+  rule init2{
+    pattern{
+      CPL0[upos=ADP|SCONJ|PART];
+      d: CPL0 -[1=comp,2=obj]-> CPL; CPL[upos=ADP|SCONJ|PART]; 
+      CPL -[1=comp,2=obj]-> *}
+    without{ H -[1 <> conj|mod|udep]-> CPL0}
     commands{d.Cpl= ""}
   }
 
