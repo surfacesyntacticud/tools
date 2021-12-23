@@ -146,6 +146,7 @@ rule subj{
       CONJ1 -[1=conj]-> CONJ2;
       d1:CONJ1 -[1=subj]-> SUBJ; SUBJ[!Shared]}
     without{CONJ2 -[1=subj]-> *}
+    without{CONJ1[upos=ADJ]; CONJ2[upos <> ADJ|VERB]}
     commands{add_edge d2:CONJ2 -> SUBJ; d2.label = d1.label; d2.enhanced=yes}
   }
 
@@ -321,7 +322,6 @@ package mod_pred{
       PART[VerbForm=Part];
       N[upos=NOUN|NUM|PRON|PROPN|X];
       N -[1=mod]-> PART}
-    without{ * -[1=conj]-> N}
     without{PART -[1=subj]-> *}
     commands{add_edge PART -[E:subj]-> N}
   }
@@ -333,7 +333,6 @@ package mod_pred{
       ADJ[upos=ADJ];
       N[upos=NOUN|NUM|PRON|PROPN|X];
       N -[1=mod]-> ADJ}
-    without{ * -[1=conj]-> N}
     without{ADJ -[1=subj]-> *}
     commands{add_edge ADJ -[E:subj]-> N}
   }
@@ -720,8 +719,8 @@ strat main{
     Iter(deep_subj.main),% The strategy must be iterated because of examples such as: SUD_French-GSD fr-ud-test_00070 - De nombreux Marocains le pensent en n'hésitant pas à l'accuser
     Onf(refl_pron),
     rel-pron.main,
-    Onf(coord_dep), % Justification of this second application of the coord_dep package: ex SUD_Frecnh-GSD fr-ud-dev_01331 - ...de nombreux journaux libertaires et antimilitaristes, ...
-    Iter(deep_subj.main), %  Justification of this second application of the 
+    Onf(coord_dep), % Justification of this second application of the coord_dep package: ex SUD_French-GSD fr-ud-dev_01331 - ...de nombreux journaux libertaires et antimilitaristes, ...
+    Iter(deep_subj.main), %  Justification of this second application of the deep_subj.main strategy: ex SUD_French-GSD fr-ud-test_00124 -  les citoyens + Facebookant et Tweetant + avec passion, tout en participant en nombre record aux meetings traditionnels"
     Onf(redistrib_synt),
     cleft_sent.main,
     Onf(clit-part_verb), %This package follows the package related to the treatment of auxiliaries because of the final form of the verbs.
