@@ -44,7 +44,8 @@ y	à
 %   2) feat: The function of each marked auxiliary is translated into features of its object.
 %   3) dupl_rel: All governors and dependents of each marked auxiliary are shifted to their object.
 %   4) del_aux-dep: All dependencies from marked auxiliaries are deleted.
-%   5) del_mark: All marks are deleted.
+%   5) del_mark: All Mark features are deleted.
+% The rules use the hypothesis that a verb is the object of one auxiliary at most.
 package FR_aux{
 
 % ===========================================
@@ -67,8 +68,7 @@ package feat{
       AUX -[1=comp, 2=aux, deep=tense]-> V;
       V[upos=AUX|VERB, Mood=Part, Tense=Past, Mark=Obj]}
     commands{
-      V.Mood=AUX.Mood; V.Tense=lex.verbt; V.VerbForm=AUX.VerbForm;
-      V.form= AUX.form + "_" + V.form}
+      V.Mood=AUX.Mood; V.Tense=lex.verbt; V.VerbForm=AUX.VerbForm}
   }
 #BEGIN	lex
 mood	auxt	verbt
@@ -92,8 +92,7 @@ Sub	Imp	Pastperfect
       AUX -[1=comp, 2=aux, deep=pass]-> V;
       V[upos=AUX|VERB, Mood=Part, Tense=Past, Mark=Obj, !Voice]}
     commands{
-     V.Mood=AUX.Mood; V.Tense=AUX.Tense;V.VerbForm=AUX.VerbForm;
-     V.Voice=Pass; V.form= AUX.form + "_" + V.form}
+     V.Mood=AUX.Mood; V.Tense=AUX.Tense;V.VerbForm=AUX.VerbForm; V.Voice=Pass}
   }
 
 %Passive voice for infinitives used with "se faire".
@@ -105,7 +104,7 @@ Sub	Imp	Pastperfect
       CL[upos=PRON,lemma=se]; d:AUX -[comp@pass]-> CL}
     commands{
       V.Mood=AUX.Mood; V.Tense=AUX.Tense;V.VerbForm=AUX.VerbForm;
-      V.Voice=Pass ;  V.form= CL.form + "_"+ AUX.form + "_" + V.form;del_edge d}
+      V.Voice=Pass ;del_edge d}
   }
 
 }
@@ -144,21 +143,24 @@ package dupl_rel{
 % ===========================================
 % All dependencies attached to auxiliaries are deleted.
 rule del_aux-dep{
-  pattern{d:AUX -> V; AUX[Mark=Aux]}
-  commands{del_edge d}
+  pattern{d:AUX -> V; AUX[Mark=Aux]; V[Mark=Obj]}
+  commands{
+    V.form= AUX.form + "_" + V.form;
+    del_feat AUX.Mark; del_feat V.Mark; del_edge d}
 }
 
 % ===========================================
-% All Mark features are deleted.
+% All Mark features are deleted. Mark features must be deleted after aux dependencies, because one auxiliary can have several objects.
+% Ex: SUD_French-GSD fr-ud-train_00848 - Il est[V] développé et édité par Namco.
 rule del_mark{
-  pattern{ V[Mark=Aux|Obj]}
+  pattern{V[Mark]}
   commands{del_feat V.Mark}
 }
+  
 
 % ===========================================
 % Strategy for integrating auxiliaries into full verbs.
 strat main{Iter(Seq(Onf(init_mark), Onf(feat), Onf(dupl_rel), Onf(del_aux-dep), Onf(del_mark)))}
-  
 
 }
 

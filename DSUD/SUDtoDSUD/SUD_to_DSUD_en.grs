@@ -68,6 +68,8 @@ yourself	to
 %   2) feat: The function of each marked auxiliary is translated into features of its object.
 %   3) dupl_rel: All governors and dependents of each marked auxiliary are shifted to their object.
 %   4) del_aux-dep: All dependencies from marked auxiliaries are deleted.
+%   5) del_mark: All Mark features are deleted.
+% The rules use the hypothesis that a verb is the object of one auxiliary at most.
 package EN_aux{
 
 % ===========================================
@@ -185,8 +187,16 @@ rule del_aux-dep{
 }
 
 % ===========================================
+% All Mark features are deleted. Mark features must be deleted after aux dependencies, because one auxiliary can have several objects.
+% Ex: SUD_English-PUD w01057041 - he would[V] either die of old age after an uneventful life, or die young in a battlefield and gain immortality through poetry
+rule del_mark{
+  pattern{V[Mark]}
+  commands{del_feat V.Mark}
+}
+
+% ===========================================
 % Strategy for integrating auxiliaries into full verbs.
-strat main{Iter(Seq(Onf(init_mark), Onf(feat), Onf(dupl_rel), Onf(del_aux-dep)))}
+strat main{Iter(Seq(Onf(init_mark), Onf(feat), Onf(dupl_rel), Onf(del_aux-dep), Onf(del_mark)))}
   
 }
 
