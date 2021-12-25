@@ -2,42 +2,31 @@
 % =============================================================================================
 include "SUD_to_DSUD.grs"
 
-% =============================================================================================
-% Correction of lemmas.
-rule EN_correct_lemma{
-  pattern{V[lemma=lex.old]}
-  commands{V.lemma=lex.new}
-}
-#BEGIN	lex
-old	new
-%----------
-could	can
-might	may
-should	shall
-would	will
-#END
 
 % =============================================================================================
-% Addition of a Mood and Tense feature for all verbs.
-package EN_mood_tense{
-  rule fin(lex from "lexicons/en_aux_wordforms.lp"){
-   pattern{V[upos=AUX|VERB, VerbForm=Fin, !Mood, !Tense, wordform=lex.verb]}
-   commands{V.Mood=Ind; V.Tense=lex.tense}
+% Addition and correction of verb features.
+package EN_verb_feat{
+% Auxiliary features
+  rule aux(lex from "lexicons/en_aux.lp"){
+    pattern{V[upos=AUX, VerbForm=Fin, !Tense, form=lex.form]}
+    commands{V.wordform=lex.wform; V.lemma=lex.lemma; V.Tense=lex.tense}
   }
 
-  rule ger{
-   pattern{V[upos=AUX|VERB, VerbForm=Ger, !Mood, !Tense]}
-   commands{V.Mood=Part; V.Tense=Pres}
+  rule will{
+    pattern{AUX[wordform=will,!Mood]}
+    commands{AUX.Mood=Ind}
   }
 
+% Infinitives
   rule inf{
-   pattern{V[upos=AUX|VERB, VerbForm=Inf, !Mood, !Tense]}
-   commands{V.Mood=Inf; V.Tense=Pres}
+    pattern{V[upos=AUX|VERB, VerbForm=Inf, !Mood, !Tense]}
+    commands{V.Mood=Inf; V.Tense=Pres}
   }
 
+% Participles
   rule part{
-   pattern{V[upos=AUX|VERB, VerbForm=Part, !Mood, Tense]}
-   commands{V.Mood=Part}
+    pattern{V[upos=AUX|VERB, VerbForm=Part, !Mood]}
+    commands{V.Mood=Part}
   }
 
 }
@@ -74,17 +63,15 @@ yourself	to
 
 % =============================================================================================
 % Auxiliaries are replaced by features assigned to the main verbs and their outgoing dependencies are moved to the main verb.
-% Causative auxiliaries are excluded from the treatement applied to all auxiliaries because they behave like ordinary predicates. For example, we have to distinguish between " Il ne la fait pas abandonner" and "Il la fait ne pas abandonner".
 % This process is performed by going up auxiliary chains from the end to the beginning recursively:
 %   1) init_mark: All auxiliaries at the end of a chain is marked.
 %   2) feat: The function of each marked auxiliary is translated into features of its object.
 %   3) dupl_rel: All governors and dependents of each marked auxiliary are shifted to their object.
 %   4) del_aux-dep: All dependencies from marked auxiliaries are deleted.
-%   5) del_mark: All marks are deleted.
 package EN_aux{
 
 % ===========================================
-% Marking the auxiliaries that are not objects of other auxiliaries, nor causative auxiliaries.
+% Marking the auxiliaries that are not objects of other auxiliaries.
 rule init_mark{
   pattern{V[!Mark]; AUX -[1=comp,2=aux]-> V}
   without{AUX -[comp:aux@caus]-> V}
@@ -96,57 +83,65 @@ rule init_mark{
 % ===========================================
 % The function of each marked auxiliary is translated into features of its object.
 package feat{
+
 %Tense auxiliaries.
+% When an auxiliary is ambiguous, we choose the most frequent use: indicative future for will + inf.
+% Ex: UD_English-PUD n02022015 - One doesn't know in which way both dramatists would[AUX] (have worked)[V] together.
+% Ex: UD_English-EWT answers-20111108105749AABv7vx_ans-0016 - he will[AUX] (have made)[V] it his,
+% Ex: UD_English-PUD n01133014 - they will[AUX] (be commercializing)[V] their electric motorcycle
+% Ex: UD_English-EWT answers-20111106032810AA43zpY_ans-0003 - You would[AUX] (be violating)[V] the law. 
   rule tense{
     pattern{
-      AUX[upos=AUX, lemma=lex.aux, Mood=lex.mooda, Tense=lex.tensea, VerbForm];
+      AUX[upos=AUX, lemma=lex.aux, Mood, Tense=lex.tensea, VerbForm, Mark=Aux];
       AUX -[1=comp, 2=aux]-> V;
-      V[upos=AUX|VERB, Mood=lex.moodv, Tense=lex.tensev,Mark=Obj]}
-    commands{
-      V.Mood=AUX.Mood; V.Tense=lex.tense; V.VerbForm=AUX.VerbForm;
-      V.form= AUX.form + "_" + V.form}
+      V[upos=AUX|VERB, VerbForm=lex.vfv, Tense=lex.tensev,Mark=Obj]}
+    commands{V.Mood=AUX.Mood;V.Tense=lex.tense; V.VerbForm=AUX.VerbForm}
   }
 #BEGIN	lex
-aux	mooda	tensea	moodv	tensev	tense
+aux	tensea	vfv	tensev	tense
 %--------------------------------------------
-do	Ind	Pres	Inf	Pres	Pres
-do	Ind	Past	Inf	Pres	Past
-have	Ind	Pres	Part	Past	PresPerfect
-have	Ind	Past	Part	Past	PastPerfect
-will	Ind	Pres	Inf	Pres	Fut
-will	Ind	Pres	InfPerfect	Pres	FutPerfect
-will	Ind	Past	Inf	Pres	PastFut	
+do	Pres	Inf	Pres	Pres
+do	Past	Inf	Pres	Past
+have	Pres	Part	Past	PresPerfect
+have	Past	Part	Past	PastPerfect
+will	Pres	Inf	Pres	Fut
+will	Pres	Inf	PresPerfect	FutPerfect
 #END  
 
+  
 % Progressive auxiliary "be".
+% Ex: UD_English-PUD n01133014 - they will be[AUX] commercializing[V] their electric motorcycle
+% Ex: UD_English-EWT answers-20111106032810AA43zpY_ans-0003 - You would be[AUX] violating[V] the law. 
   rule progressive{
     pattern{
       AUX[upos=AUX, lemma=be, Mood, Tense, VerbForm];
-      AUX -[1=comp, 2=aux]-> V; V[upos=AUX|VERB, VerbForm=Part, Tense=Pres,Mark=Obj]}
-    commands{
-      V.Mood=AUX.Mood; V.Tense=AUX.Tense; V.VerbForm=AUX.VerbForm; 
-      V.Aspect=Prog; V.form= AUX.form + "_" + V.form}
+      AUX -[1=comp, 2=aux]-> V; V[upos=AUX|VERB, !Aspect, VerbForm=Part, Tense=Pres, Mark=Obj]}
+    commands{V.Mood=AUX.Mood;V.Tense=AUX.Tense; V.Aspect=Prog; V.VerbForm=AUX.VerbForm}
   }
 
-
-% Modal auxiliaries.
-  rule modal{
+% Modal auxiliaries. A Modal feature expresses the modality as the wordform of the used auxiliary.
+  rule modal(lex from "lexicons/en_aux.lp"){
     pattern{
-      AUX[upos=AUX, lemma=can|get|may|must|ought|shall, Mood, Tense, VerbForm];
-      AUX -[1=comp, 2=aux]-> V; V[upos=AUX|VERB, VerbForm=Inf, Mark=Obj]}
-    commands{
-      V.Mood=AUX.Mood; V.Tense=AUX.Tense; V.VerbForm=AUX.VerbForm; 
-      V.Modal=AUX.lemma; V.form= AUX.form + "_" + V.form}
+      AUX[upos=AUX, wordform=lex.wform, VerbForm];
+      AUX -[1=comp, 2=aux]-> V; V[upos=AUX|VERB, Mood, VerbForm=Inf, !Modal, Mark=Obj]}
+    without{AUX[wordform=will]}
+    commands{V.Modal=AUX.wordform; V.VerbForm=AUX.VerbForm; del_feat V.Mood}
   }
 
 % Passive auxiliaries.
-  rule aux-pass{
+  rule passive{
     pattern{
-      AUX[upos=AUX,Mood, Tense, VerbForm];
+      AUX[upos=AUX, Mood, Tense, VerbForm];
       AUX -[comp:aux@pass]-> V; V[Mark=Obj, !Voice]}
-    commands{
-     V.Mood=AUX.Mood; V.Tense=AUX.Tense;V.VerbForm=AUX.VerbForm;
-     V.Voice=Pass; V.form= AUX.form + "_" + V.form}
+    commands{V.Mood=AUX.Mood;V.Tense=AUX.Tense;V.Voice=Pass; V.VerbForm=AUX.VerbForm}
+  }
+
+%Passive gerundives
+  rule passive_ger{
+    pattern{
+      AUX[upos=AUX, VerbForm=Ger];
+      AUX -[comp:aux@pass]-> V; V[Mark=Obj, !Voice]}
+    commands{V.Voice=Pass; V.VerbForm=AUX.VerbForm }
   }
 }
 
@@ -183,20 +178,15 @@ package dupl_rel{
 % ===========================================
 % All dependencies attached to auxiliaries are deleted.
 rule del_aux-dep{
-  pattern{d:AUX -> V; AUX[Mark=Aux]}
-  commands{del_edge d}
-}
-
-% ===========================================
-% All Mark features are deleted.
-rule del_mark{
-  pattern{ V[Mark=Aux|Obj]}
-  commands{del_feat V.Mark}
+  pattern{d:AUX -> V; AUX[Mark=Aux]; V[Mark=Obj]}
+  commands{
+    V.form= AUX.form + "_" + V.form;
+    del_feat AUX.Mark; del_feat V.Mark; del_edge d}
 }
 
 % ===========================================
 % Strategy for integrating auxiliaries into full verbs.
-strat main{Iter(Seq(Onf(init_mark), Onf(feat), Onf(dupl_rel), Onf(del_aux-dep), Onf(del_mark)))}
+strat main{Iter(Seq(Onf(init_mark), Onf(feat), Onf(dupl_rel), Onf(del_aux-dep)))}
   
 }
 
@@ -213,8 +203,7 @@ rule EN_clit_verb{
 % =============================================================================================
 strat EN_main{
   Seq(
-    Onf(EN_correct_lemma),
-    Onf(EN_mood_tense),
+    Onf(EN_verb_feat),
     Onf(flat),
     idioms.main,
     Onf(coord_gov),
@@ -234,7 +223,7 @@ strat EN_main{
     Onf(redistrib_synt),
     cleft_sent.main,
     Onf(EN_clit_verb),
-    Onf(clit_verb),
+    Onf(clit-part_verb),
     Onf(del_isolated_token)
   )
 }
