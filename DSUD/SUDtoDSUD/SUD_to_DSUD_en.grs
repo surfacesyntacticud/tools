@@ -153,7 +153,7 @@ package dupl_rel{
 % Dependents of auxiliaries, which are not modifiers
   rule dep{
     pattern{
-      AUX -[1=comp,2=aux]-> V;V[Mark=Obj];
+      AUX -[1=comp,2=aux]-> V;AUX[Mark=Aux];V[Mark=Obj];
       d1: AUX -[1<>mod]-> D}
     without{ d1.1=comp; d1.2=aux}
     without{V -> D}
@@ -163,7 +163,7 @@ package dupl_rel{
 % Modifiers of auxiliaries are duplicated to their object and their dependency is marked MOD:CL to express that they are clause modifiers.
   rule modif{
     pattern{
-      AUX -[1=comp,2=aux]-> V;V[Mark=Obj];
+      AUX -[1=comp,2=aux]-> V;AUX[Mark=Aux];V[Mark=Obj];
       d1: AUX -[1=mod,!2]-> MOD}
     without{V -> MOD}
     commands{add_edge d2: V -> MOD; d2.label=d1.label; d2.2=cl; d2.enhanced= yes}
@@ -171,7 +171,7 @@ package dupl_rel{
 
 % The governors of the auxiliaries become the gouvernors of their object.
   rule gov{
-    pattern{d1:H -> AUX; AUX -[1=comp,2=aux]-> V;V[Mark=Obj]}
+    pattern{d1:H -> AUX; AUX -[1=comp,2=aux]-> V;AUX[Mark=Aux];V[Mark=Obj]}
     without{ V1 -[1=conj]-> V}
     commands{add_edge d2: H -> V; d2.label=d1.label; d2.enhanced=yes; del_edge d1}
   }
@@ -180,7 +180,7 @@ package dupl_rel{
 % ===========================================
 % All dependencies attached to auxiliaries are deleted.
 rule del_aux-dep{
-  pattern{d:AUX -> V; AUX[Mark=Aux]; V[Mark=Obj]}
+  pattern{d:AUX -> V; AUX[Mark=Aux]}
   commands{
     V.form= AUX.form + "_" + V.form;
     del_feat AUX.Mark; del_feat V.Mark; del_edge d}
