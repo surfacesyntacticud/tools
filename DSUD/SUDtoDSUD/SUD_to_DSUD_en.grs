@@ -122,7 +122,7 @@ will	Pres	Inf	PresPerfect	FutPerfect
   }
 
 % Modal auxiliaries. A Modal feature expresses the modality as the wordform of the used auxiliary.
-  rule modal(lex from "lexicons/en_aux.lp"){
+  rule modal(lex from "lexicons/en_modal_aux.lp"){
     pattern{
       AUX[upos=AUX, wordform=lex.wform, VerbForm];
       AUX -[1=comp, 2=aux]-> V; V[upos=AUX|VERB, Mood, VerbForm=Inf, !Modal, Mark=Obj]}
