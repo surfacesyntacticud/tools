@@ -1,0 +1,253 @@
+% Conversion of SUD annotations to DSUD annotations of German corpora.
+% =============================================================================================
+include "SUD_to_DSUD.grs"
+
+% =============================================================================================
+% German relative pronouns
+rule DE_rel-pron{
+  pattern{PRO[xpos=REL,!PronType]}
+  commands{PRO.PronType=Rel}
+}
+
+% =============================================================================================
+% German verbal particles
+rule DE_verb_part{
+  pattern{ V[upos=VERB]; P[upos=VERB]; V -[compound@prt]-> P}
+  commands{P.upos=PART}
+}
+
+% =============================================================================================
+% Addition of Mood, Tense and VerbForm features for all verbs.
+package DE_mood_tense{
+
+  rule fin{
+   pattern{V[upos=AUX|VERB, !VerbForm, Mood=Imp|Ind|Sub]}
+   commands{V.VerbForm=Fin}
+  }
+
+  rule inf1{
+   pattern{V[upos=AUX|VERB, !VerbForm, Mood=Inf]}
+   commands{V.VerbForm=Inf}
+  }
+
+  rule inf2{
+    pattern{V[upos=AUX|VERB, VerbForm=Inf, !Mood, !Tense]}
+    commands{V.Mood=Inf; V.Tense=Pres}
+  }
+
+  rule inf_aux{
+    pattern{
+      V[upos=AUX|VERB, !VerbForm]; AUX -[1=comp,2=aux]-> V;
+      AUX[upos=AUX, lemma="dürfen"|"können"|"mögen"|"müssen"|sollen|werden]}
+    commands{V.VerbForm=Inf;V.Mood=Inf; V.Tense=Pres}
+  }
+
+  rule inf_zu{
+    pattern{
+      V[upos=AUX|VERB, V, !VerbForm]; ZU -[comp:obj]-> V;
+      ZU[upos=PART,lemma=zu]}
+    commands{V.VerbForm=Inf;V.Mood=Inf; V.Tense=Pres}
+  }
+
+  rule past-part1{
+   pattern{V[upos=AUX|VERB, VerbForm=Part, !Mood, !Tense]}
+   commands{V.Mood=Part; V.Tense=Past}
+  }
+
+  rule past-part2{
+   pattern{V[upos=AUX|VERB, !VerbForm, !Mood, Tense=Past]}
+   commands{V.VerbForm=Part; V.Mood=Part}
+  }
+
+}
+
+
+% =============================================================================================
+% Auxiliaries are replaced by features assigned to the main verbs and their outgoing dependencies are moved to the main verb.
+% This process is performed by going up auxiliary chains from the end to the beginning recursively:
+%   1) init_mark: All auxiliaries at the end of a chain is marked.
+%   2) feat: The function of each marked auxiliary is translated into features of its object.
+%   3) dupl_rel: All governors and dependents of each marked auxiliary are shifted to their object.
+%   4) del_aux-dep: All dependencies from marked auxiliaries are deleted.
+%   5) del_mark: All Mark features are deleted.
+% The rules use the hypothesis that a verb is the object of one auxiliary at most.
+package DE_aux{
+
+% ===========================================
+% Marking the auxiliaries that are not objects of other auxiliaries, nor causative auxiliaries.
+rule init_mark{
+  pattern{V[!Mark]; AUX -[1=comp,2=aux]-> V}
+  without{AUX -[comp:aux@caus]-> V}
+  without{V -[comp:aux]-> *}
+  without{V -[1=comp, 2=aux, deep <> caus]-> *}
+  commands{V.Mark=Obj; AUX.Mark=Aux}
+}
+
+% ===========================================
+% The function of each marked auxiliary is translated into features of its object.
+package feat{
+%Tense auxiliaries.
+  rule tense{
+    pattern{
+      AUX[upos=AUX, lemma=lex.aux, Mood=lex.mooda, Tense=lex.tensea, VerbForm];
+      AUX -[1=comp, 2=aux]-> V;
+      V[upos=AUX|VERB, Mood=lex.moodv, Tense=lex.tensev,Mark=Obj]}
+    commands{V.Mood=lex.mood; V.Tense=lex.tense; V.VerbForm=AUX.VerbForm}
+  }
+#BEGIN	lex
+aux	mooda	tensea	moodv	tensev	mood	tense
+%----------------------------------------------------
+haben	Ind	Pres	Part	Past	Ind	PresPerfect
+haben	Ind	Past	Part	Past	Ind	PastPerfect
+haben	Inf	Pres	Part	Past	Inf	PresPerfect
+haben	Sub	Pres	Part	Past	Sub	PresPerfect
+haben	Sub	Past	Part	Past	Sub	PastPerfect
+sein	Ind	Pres	Part	Past	Ind	PresPerfect
+sein	Ind	Past	Part	Past	Ind	PastPerfect
+sein	Inf	Pres	Part	Past	Inf	PresPerfect
+sein	Sub	Pres	Part	Past	Sub	PresPerfect
+sein	Sub	Past	Part	Past	Sub	PastPerfect
+werden	Ind	Pres	Inf	Pres	Ind	Fut
+werden	Ind	Pres	Inf	PresPerfect	Ind	FutPerfect
+werden	Sub	Past	Inf	Pres	Cnd	Pres
+werden	Sub	Past	Inf	PresPerfect	Cnd	PresPerfect
+#END  
+
+% Modal auxiliaries.
+  rule modal(lex1 from "lexicons/de_modal_aux.lp"){
+    pattern{
+      AUX[upos=AUX, lemma=lex1.aux, Mood, Tense=lex2.tensea, VerbForm];
+      AUX -[1=comp, 2=aux]-> V;
+      V[upos=AUX|VERB, Tense=lex2.tensev, VerbForm=Inf, !Modal,Mark=Obj]}
+    commands{
+      V.Mood=AUX.Mood; V.Tense=lex2.tense; V.VerbForm=AUX.VerbForm; V.Modal=AUX.lemma}
+  }
+#BEGIN	lex2
+tensea	tensev	tense
+%--------------------
+%Pres	Pres	Pres
+Pres	Pres	Pres
+Pres	PresPerfect	PresPerfect
+Past	Pres	Past
+Past	PresPerfect	PastPerfect
+#END
+
+% Passive auxiliaries.
+  rule passive{
+    pattern{
+      AUX[upos=AUX,Mood, Tense, VerbForm];
+      AUX -[comp:aux@pass]-> V; V[Mark=Obj, !Voice]}
+    commands{V.Mood=AUX.Mood; V.Tense=AUX.Tense;V.VerbForm=AUX.VerbForm;V.Voice=Pass}
+  }
+}
+
+ % ===========================================
+% Dependencies attached to auxiliaries are duplicated to their object.
+package dupl_rel{
+% Dependents of auxiliaries, which are not modifiers
+  rule dep{
+    pattern{
+      AUX -[1=comp,2=aux]-> V;AUX[Mark=Aux];V[Mark=Obj];
+      d1: AUX -[1<>mod]-> D}
+    without{ d1.1=comp; d1.2=aux}
+    without{V -> D}
+    commands{add_edge d2: V -> D; d2.label=d1.label; d2.enhanced= yes}
+  }
+
+% Modifiers of auxiliaries are duplicated to their object and their dependency is marked MOD:CL to express that they are clause modifiers.
+  rule modif{
+    pattern{
+      AUX -[1=comp,2=aux]-> V;AUX[Mark=Aux];V[Mark=Obj];
+      d1: AUX -[1=mod,!2]-> MOD}
+    without{V -> MOD}
+    commands{add_edge d2: V -> MOD; d2.label=d1.label; d2.2=cl; d2.enhanced= yes}
+  }
+
+% The governors of the auxiliaries become the gouvernors of their object.
+% Ex: SUD_German-PUD n01024013 - Die Ergebnisse dieses Experiments liefern weitere Belege dafür, dass Rucolasamen zur Internationalen Raumstation geflogen und dort sechs Monate aufbewahrt[V] werden[AUX] können[H],
+  rule gov{
+    pattern{d1:H -> AUX; AUX -[1=comp,2=aux]-> V;AUX[Mark=Aux];V[Mark=Obj]}
+    without{V1 -[1=conj]-> V; d1.1 <>comp}% The governor of a coordination is not propagated to all conjuncts, except if it is an auxiliary.
+    without{V1 -[1=conj]-> V; d1.2 <>aux}
+    without{H -> V}
+    commands{add_edge d2: H -> V; d2.label=d1.label; d2.enhanced=yes}
+  }
+}
+
+% ===========================================
+% All dependencies attached to auxiliaries are deleted.
+package del_aux-dep{
+% Main dependency from the auxiliary to its object
+  rule main{
+    pattern{d:AUX -[1=comp,2=aux]-> V; AUX[Mark=Aux]; V[Mark=Obj]}
+    commands{V.form= AUX.form + "_" + V.form; del_edge d}
+  }
+
+% Side dependencies of the auxiliary.
+  rule side_dep{
+    pattern{d:AUX -> D; AUX[Mark=Aux]; D[!Mark]}
+    commands{ del_edge d}
+  }
+
+% Side governors of the auxiliary.
+  rule side_gov{
+    pattern{d:H -> AUX; AUX[Mark=Aux]}
+    commands{ del_edge d}
+  }
+}
+
+% ===========================================
+% All Mark features are deleted. Mark features must be deleted after aux dependencies, because one auxiliary can have several objects.
+% Ex: SUD_German-PUD n04005016 - Es wird ein Gutschein generiert, der auf dem Smartphone (gespeichert werden) oder an der Kasse (vorgezeigt werden) kann[V]. 
+rule del_mark{
+  pattern{V[Mark]}
+  commands{del_feat V.Mark}
+}
+  
+
+% ===========================================
+% Strategy for integrating auxiliaries into full verbs.
+strat main{Iter(Seq(init_mark, feat, Onf(dupl_rel), Onf(del_aux-dep), Onf(del_mark)))}
+  
+}
+
+% =============================================================================================
+% Verbs with particles
+rule DE_part_verb{
+  pattern{
+    V[upos=VERB,lemma]; P[upos=PART];
+    d:V -[compound@prt]-> P; V << P}
+  commands{
+      V.lemma= P.lemma+ V.lemma;
+      V.form=  V.form + "_" + P.form ;del_edge d}
+}
+
+
+
+% =============================================================================================
+% Strategies
+% =============================================================================================
+strat DE_main{
+  Seq(
+    Onf(DE_rel-pron),
+    Onf(DE_verb_part),
+    Onf(DE_mood_tense),
+    Onf(flat),
+    idioms.main,
+    Onf(coord_gov),
+    Onf(coord_dep),
+    Onf(del_cpl),
+    Onf(del_coord-conj),
+    DE_aux.main,
+    Onf(voice),
+    deep_subj.main,
+    Onf(refl_pron),
+    rel-pron.main,
+    Onf(coord_dep),
+    Onf(redistrib_synt),
+    cleft_sent.main,
+    Onf(DE_part_verb),
+    Onf(clit-part_verb),
+    Onf(del_isolated_token)
+  )
+}
