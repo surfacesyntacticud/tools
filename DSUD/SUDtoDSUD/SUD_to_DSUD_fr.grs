@@ -133,10 +133,13 @@ package dupl_rel{
   }
 
 % The governors of the auxiliaries become the gouvernors of their object.
+% Ex: SUD_French-GSD fr-ud-train_00545 - le championnat a été[AUX] financé et organisé[V] par la Seattle Chess Foundation 
   rule gov{
-    pattern{d1:H -> AUX; AUX -[1=comp,2=aux]-> V;V[Mark=Obj]}
-    without{ V1 -[1=conj]-> V}
-    commands{add_edge d2: H -> V; d2.label=d1.label; d2.enhanced=yes; del_edge d1}
+    pattern{d1:H -> AUX; AUX -[1=comp,2=aux]-> V;AUX[Mark=Aux];V[Mark=Obj]}
+    without{V1 -[1=conj]-> V; d1.1 <>comp}% The governor of a coordination is not propagated to all conjuncts, except if it is an auxiliary.
+    without{V1 -[1=conj]-> V; d1.2 <>aux}
+    without{H -> V}
+    commands{add_edge d2: H -> V; d2.label=d1.label; d2.enhanced=yes}
   }
 }
 
@@ -150,10 +153,17 @@ package del_aux-dep{
   }
 
 % Side dpendencies of the auxiliary.
-  rule side{
+  rule side_dep{
     pattern{d:AUX -> D; AUX[Mark=Aux]; D[!Mark]}
     commands{ del_edge d}
   }
+
+% Side governors of the auxiliary.
+  rule side_gov{
+    pattern{d:H -> AUX; AUX[Mark=Aux]}
+    commands{ del_edge d}
+  }
+}
 }
 
 % ===========================================

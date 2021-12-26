@@ -112,8 +112,8 @@ will	Pres	Inf	PresPerfect	FutPerfect
 
   
 % Progressive auxiliary "be".
-% Ex: UD_English-PUD n01133014 - they will be[AUX] commercializing[V] their electric motorcycle
-% Ex: UD_English-EWT answers-20111106032810AA43zpY_ans-0003 - You would be[AUX] violating[V] the law. 
+% Ex: SUD_English-PUD n01133014 - they will be[AUX] commercializing[V] their electric motorcycle
+% Ex: SUD_English-EWT answers-20111106032810AA43zpY_ans-0003 - You would be[AUX] violating[V] the law. 
   rule progressive{
     pattern{
       AUX[upos=AUX, lemma=be, Mood, Tense, VerbForm];
@@ -170,10 +170,13 @@ package dupl_rel{
   }
 
 % The governors of the auxiliaries become the gouvernors of their object.
+% Ex: SUD_English-PUD n01024013 - rocket seeds can be[AUX] flown and stored[V] on the International Space Station
   rule gov{
     pattern{d1:H -> AUX; AUX -[1=comp,2=aux]-> V;AUX[Mark=Aux];V[Mark=Obj]}
-    without{ V1 -[1=conj]-> V}
-    commands{add_edge d2: H -> V; d2.label=d1.label; d2.enhanced=yes; del_edge d1}
+    without{V1 -[1=conj]-> V; d1.1 <>comp}% The governor of a coordination is not propagated to all conjuncts, except if it is an auxiliary.
+    without{V1 -[1=conj]-> V; d1.2 <>aux}
+    without{H -> V}
+    commands{add_edge d2: H -> V; d2.label=d1.label; d2.enhanced=yes}
   }
 }
 
@@ -187,10 +190,17 @@ package del_aux-dep{
   }
 
 % Side dpendencies of the auxiliary.
-  rule side{
+  rule side_dep{
     pattern{d:AUX -> D; AUX[Mark=Aux]; D[!Mark]}
     commands{ del_edge d}
   }
+
+% Side governors of the auxiliary.
+  rule side_gov{
+    pattern{d:H -> AUX; AUX[Mark=Aux]}
+    commands{ del_edge d}
+  }
+
 }
 
 % ===========================================
