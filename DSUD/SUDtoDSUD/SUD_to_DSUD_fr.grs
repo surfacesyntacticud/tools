@@ -148,7 +148,7 @@ package dupl_rel{
 package del_aux-dep{
 % Main dependency from the auxiliary to its object
   rule main{
-    pattern{d:AUX -> V; AUX[Mark=Aux]; V[Mark=Obj]}
+    pattern{d:AUX -[1=comp,2=aux]-> V; AUX[Mark=Aux]; V[Mark=Obj]}
     commands{V.form= AUX.form + "_" + V.form; del_edge d}
   }
 
@@ -164,7 +164,7 @@ package del_aux-dep{
     commands{ del_edge d}
   }
 }
-}
+
 
 % ===========================================
 % All Mark features are deleted. Mark features must be deleted after aux dependencies, because one auxiliary can have several objects.
@@ -177,7 +177,7 @@ rule del_mark{
 
 % ===========================================
 % Strategy for integrating auxiliaries into full verbs.
-strat main{Iter(Seq(Onf(init_mark), Onf(feat), Onf(dupl_rel), Onf(del_aux-dep), Onf(del_mark)))}
+strat main{Iter(Seq(init_mark, feat, Onf(dupl_rel), Onf(del_aux-dep), Onf(del_mark)))}
 
 }
 
