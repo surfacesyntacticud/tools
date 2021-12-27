@@ -183,10 +183,16 @@ package dupl_rel{
 % ===========================================
 % All dependencies attached to auxiliaries are deleted.
 package del_aux-dep{
-% Main dependency from the auxiliary to its object
-  rule main{
-    pattern{d:AUX -[1=comp,2=aux]-> V; AUX[Mark=Aux]; V[Mark=Obj]}
+% Main dependency from the auxiliary to its object, when the auxiliary is on the left of the object.
+  rule main_left{
+    pattern{d:AUX -[1=comp,2=aux]-> V; AUX[Mark=Aux]; V[Mark=Obj]; AUX << V}
     commands{V.form= AUX.form + "_" + V.form; del_edge d}
+  }
+
+% Main dependency from the auxiliary to its object, when the auxiliary is on the right of the object.
+  rule main_right{
+    pattern{d:AUX -[1=comp,2=aux]-> V; AUX[Mark=Aux]; V[Mark=Obj]; AUX >> V}
+    commands{V.form=  V.form + "_" + AUX.form ; del_edge d}
   }
 
 % Side dpendencies of the auxiliary.

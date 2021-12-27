@@ -86,8 +86,8 @@ rule init_mark{
 % ===========================================
 % The function of each marked auxiliary is translated into features of its object.
 package feat{
-%Tense auxiliaries.
-  rule tense{
+%Tense mood auxiliaries.
+  rule tense_mood{
     pattern{
       AUX[upos=AUX, lemma=lex.aux, Mood=lex.mooda, Tense=lex.tensea, VerbForm];
       AUX -[1=comp, 2=aux]-> V;
@@ -141,7 +141,7 @@ Past	PresPerfect	PastPerfect
   }
 }
 
- % ===========================================
+% ===========================================
 % Dependencies attached to auxiliaries are duplicated to their object.
 package dupl_rel{
 % Dependents of auxiliaries, which are not modifiers
@@ -177,10 +177,16 @@ package dupl_rel{
 % ===========================================
 % All dependencies attached to auxiliaries are deleted.
 package del_aux-dep{
-% Main dependency from the auxiliary to its object
-  rule main{
-    pattern{d:AUX -[1=comp,2=aux]-> V; AUX[Mark=Aux]; V[Mark=Obj]}
+% Main dependency from the auxiliary to its object, when the auxiliary is on the left of the object.
+  rule main_left{
+    pattern{d:AUX -[1=comp,2=aux]-> V; AUX[Mark=Aux]; V[Mark=Obj]; AUX << V}
     commands{V.form= AUX.form + "_" + V.form; del_edge d}
+  }
+
+% Main dependency from the auxiliary to its object, when the auxiliary is on the right of the object.
+  rule main_right{
+    pattern{d:AUX -[1=comp,2=aux]-> V; AUX[Mark=Aux]; V[Mark=Obj]; AUX >> V}
+    commands{V.form=  V.form + "_" + AUX.form ; del_edge d}
   }
 
 % Side dependencies of the auxiliary.
