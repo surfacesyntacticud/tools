@@ -677,21 +677,31 @@ strat main{Seq(Iter(link_focus), Onf(label_focus_dep))}
 % =============================================================================================
 % Treatment of the clitic pronouns or particles that change the meaning of verbs.
 package clit-part_verb{
-%Clitic pronouns
-  rule clit{
+% Clitic pronouns before the verb.
+  rule clit_pre{
     pattern{
       V[upos=VERB,lemma]; CL[upos=PRON];
-      d:V -[comp@expl]-> CL}
-    without{V -[comp@expl]-> CL1; CL << CL1}
+      d:V -[comp@expl]-> CL; V >> CL}
+    without{V -[comp@expl]-> CL1; V >> CL1; CL1 >> CL}
     commands{
       V.lemma= CL.lemma + "_" + V.lemma ;
       V.form=  CL.form + "_" + V.form ;del_edge d}
   }
 
+% Clitic pronouns after the verb.
+  rule clit_post{
+    pattern{
+      V[upos=VERB,lemma]; CL[upos=PRON];
+      d:V -[comp@expl]-> CL; V << CL}
+    without{V -[comp@expl]-> CL1; V << CL1; CL1 << CL}
+    commands{
+      V.lemma= CL.lemma + "_" + V.lemma ;
+      V.form=  V.form + "_" + CL.form ;del_edge d}
+  }
 %Particles
   rule part{
     pattern{
-      V[upos=VERB,lemma]; P[upos=PART];
+      V[upos=VERB,lemma]; P[upos=ADP|PART];
       d:V -[compound@prt]-> P; V << P}
     commands{
       V.lemma= V.lemma + "_" + P.lemma;

@@ -7,7 +7,7 @@ include "SUD_to_DSUD.grs"
 % Addition and correction of verb features.
 package EN_verb_feat{
 % Auxiliary features
-  rule aux(lex from "lexicons/en_aux.lp"){
+  rule aux(lex from "lexicons/en_modal_aux.lp"){
     pattern{V[upos=AUX, VerbForm=Fin, !Tense, form=lex.form]}
     commands{V.wordform=lex.wform; V.lemma=lex.lemma; V.Tense=lex.tense}
   }

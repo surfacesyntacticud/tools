@@ -217,18 +217,6 @@ strat main{Iter(Seq(init_mark, feat, Onf(dupl_rel), Onf(del_aux-dep), Onf(del_ma
   
 }
 
-% =============================================================================================
-% Verbs with particles
-rule DE_part_verb{
-  pattern{
-    V[upos=VERB,lemma]; P[upos=PART];
-    d:V -[compound@prt]-> P; V << P}
-  commands{
-      V.lemma= P.lemma+ V.lemma;
-      V.form=  V.form + "_" + P.form ;del_edge d}
-}
-
-
 
 % =============================================================================================
 % Strategies
@@ -252,7 +240,6 @@ strat DE_main{
     Onf(coord_dep),
     Onf(redistrib_synt),
     cleft_sent.main,
-    Onf(DE_part_verb),
     Onf(clit-part_verb),
     Onf(del_isolated_token)
   )
