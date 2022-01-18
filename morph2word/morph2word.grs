@@ -35,6 +35,7 @@ package morph2word {
     }
     commands {
       STEM.form = IA.form[:-1] + STEM.form;
+      STEM.wordform = IA.wordform[:-1] + STEM.wordform;
       prepend_feats IA =[re"RX\|GE\|Number\|Gender"]=> STEM;
       STEM.AlignBegin = IA.AlignBegin;
       del_node IA;
@@ -51,6 +52,7 @@ package morph2word {
     commands {
       shift IA ==> STEM;
       STEM.form = IA.form[:-1] + STEM.form;
+      STEM.wordform = IA.wordform[:-1] + STEM.wordform;
       prepend_feats IA =[re"RX\|GE\|Number\|Gender"]=> STEM;
       STEM.AlignBegin = IA.AlignBegin;
       del_node IA;
@@ -66,6 +68,7 @@ package morph2word {
     }
     commands {
       STEM.form = STEM.form + IA.form[1:];
+      STEM.wordform = STEM.wordform + IA.wordform[1:];
       append_feats IA =[re"RX\|GE\|Number\|Gender"]=> STEM;
       STEM.AlignEnd = IA.AlignEnd;
       del_node IA;
@@ -82,6 +85,7 @@ package morph2word {
     commands {
       shift IA ==> STEM;
       STEM.form = STEM.form + IA.form[1:];
+      STEM.wordform = STEM.wordform + IA.wordform[1:];
       append_feats IA =[re"RX\|GE\|Number\|Gender"]=> STEM;
       STEM.AlignEnd = IA.AlignEnd;
       del_node IA;
@@ -98,6 +102,7 @@ package morph2word {
     }
     commands {
       STEM.form = DA.form[:-1] + STEM.form;
+      STEM.wordform = DA.wordform[:-1] + STEM.wordform;
       prepend_feats DA =[re"RX\|GE\|Number\|Gender"]=> STEM;
       STEM.AlignBegin = DA.AlignBegin;
       STEM.upos = DA.DerPos;
@@ -116,6 +121,7 @@ package morph2word {
     commands {
       shift DA ==> STEM;
       STEM.form = DA.form[:-1] + STEM.form;
+      STEM.wordform = DA.wordform[:-1] + STEM.wordform;
       prepend_feats DA =[re"RX\|GE\|Number\|Gender"]=> STEM;
       STEM.AlignBegin = DA.AlignBegin;
       STEM.upos = DA.DerPos;
@@ -132,6 +138,7 @@ package morph2word {
     }
     commands {
       STEM.form = STEM.form + DA.form[1:];
+      STEM.wordform = STEM.wordform + DA.wordform[1:];
       append_feats DA =[re"RX\|GE\|Number\|Gender"]=> STEM;
       STEM.AlignEnd = DA.AlignEnd;
       STEM.upos = DA.DerPos;
@@ -151,6 +158,7 @@ package morph2word {
     commands {
       shift DA ==> STEM;
       STEM.form = STEM.form + DA.form[1:];
+      STEM.wordform = STEM.wordform + DA.wordform[1:];
       append_feats DA =[re"RX\|GE\|Number\|Gender"]=> STEM;
       STEM.AlignEnd = DA.AlignEnd;
       STEM.upos = DA.DerPos;
@@ -177,6 +185,7 @@ package clitic_included {
       
       shift IA ==> STEM;
       STEM.form = STEM.form + IA.form;
+      STEM.wordform = STEM.wordform + IA.wordform;
       append_feats IA =[re"RX\|GE\|Number\|Gender"]=> STEM;
       STEM.AlignEnd = IA.AlignEnd;
       del_node IA;
