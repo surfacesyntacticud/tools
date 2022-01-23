@@ -4,11 +4,9 @@ The GRS file `morph2word.grs` is used to convert a morph-based SUD or UD corpus 
 
 It was built and tested on the [Beja SUD treebank](https://github.com/surfacesyntacticud/SUD_Beja-NSC).
 
-See: Sylvain Kahane, Martine Vanhove, Rayan Ziane and Bruno Guillaume, "A morph-based and a word-based treebank for Beja", SyntaxFest 2021
+See: Sylvain Kahane, Martine Vanhove, Rayan Ziane and Bruno Guillaume, "[A morph-based and a word-based treebank for Beja](https://aclanthology.org/2021.tlt-1.5.pdf)", SyntaxFest 2021
 
-**TODO**: add link to the paper when available online
-
-The system will probably need to be adapted to be applied on some other corpora.
+The system will probably need to be adapted to be applied on other corpora or language.
 
 Two kinds of affixes are taken into account: inflectional and derivational; annotated with features `TokenType=InflAff` and `TokenType=DerAff`.
 
