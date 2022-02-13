@@ -22,7 +22,7 @@ rule FR_pron_prep{
   pattern{
     PRO[upos=ADV|PRON,lemma=lex.pron];
     d: H -[comp:obl|E:comp:obl|mod|E:mod|udep|E:udep]-> PRO}
-  commands{d.Cpl= "_P-"+lex.prep;d.enhanced=yes}
+  commands{d.Cpl= "_P-"+lex.prep}
 }
 #BEGIN	lex
 pron	prep
@@ -120,7 +120,7 @@ package dupl_rel{
       d1: AUX -[1<>mod]-> D}
     without{ d1.1=comp; d1.2=aux}
     without{V -> D}
-    commands{add_edge d2: V -> D; d2.label=d1.label; d2.enhanced= yes}
+    commands{add_edge d2: V -> D; d2.label=d1.label}
   }
 
 % Modifiers of auxiliaries are duplicated to their object and their dependency is marked MOD:CL to express that they are clause modifiers.
@@ -129,7 +129,7 @@ package dupl_rel{
       AUX -[1=comp,2=aux]-> V;V[Mark=Obj];
       d1: AUX -[1=mod,!2]-> MOD}
     without{V -> MOD}
-    commands{add_edge d2: V -> MOD; d2.label=d1.label; d2.2=cl; d2.enhanced= yes}
+    commands{add_edge d2: V -> MOD; d2.label=d1.label; d2.2=cl}
   }
 
 % The governors of the auxiliaries become the gouvernors of their object.
@@ -139,7 +139,7 @@ package dupl_rel{
     without{V1 -[1=conj]-> V; d1.1 <>comp}% The governor of a coordination is not propagated to all conjuncts, except if it is an auxiliary.
     without{V1 -[1=conj]-> V; d1.2 <>aux}
     without{H -> V}
-    commands{add_edge d2: H -> V; d2.label=d1.label; d2.enhanced=yes}
+    commands{add_edge d2: H -> V; d2.label=d1.label}
   }
 }
 
@@ -260,7 +260,6 @@ strat FR_main{
     Onf(coord_gov),
     Onf(coord_dep),
     Onf(del_cpl),
-    Onf(del_coord-conj),
     Onf(FR_pron_prep),
     FR_aux.main, % This package must precede the package FR_deep_subj_controlled_pred because of compound verbs. Ex: SUD_French-GSD fr-ud-test_00042 - La justice française n'a fait qu'obéir et se déjuger.
     Onf(FR_voice),
