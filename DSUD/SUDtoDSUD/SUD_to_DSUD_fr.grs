@@ -50,13 +50,17 @@ package FR_aux{
 
 % ===========================================
 % Marking the auxiliaries that are not objects of other auxiliaries, nor causative auxiliaries.
-rule init_mark{
-  pattern{V[!Mark]; AUX -[1=comp,2=aux]-> V}
-  without{AUX -[deep=caus]-> V}
-  without{V -[comp:aux|E:comp:aux]-> *}
-  without{V -[1=comp, 2=aux, deep <> caus]-> *}
-  commands{V.Mark=Obj; AUX.Mark=Aux}
-}
+  rule init_mark_aux{
+      pattern{AUX[!Mark]; AUX -[1=comp,2=aux]-> V}
+      without{AUX -[deep=caus]-> V}
+      without{V -[1=comp, 2=aux, deep <> caus]-> *}
+      commands{AUX.Mark=Aux}
+  }
+
+  rule init_mark_verb{
+    pattern{AUX[Mark=Aux]; V[!Mark]; AUX -[1=comp,2=aux]-> V}
+    commands{V.Mark=Obj}
+  }
 
 % ===========================================
 % The function of each marked auxiliary is translated into features of its object.
@@ -183,7 +187,11 @@ rule del_mark{
 
 % ===========================================
 % Strategy for integrating auxiliaries into full verbs.
-strat main{Iter(Seq(init_mark, feat, Onf(dupl_rel), Onf(del_aux-dep), Onf(del_mark)))}
+strat main{
+  Iter(
+    Seq(
+      init_mark_aux, Onf(init_mark_verb),feat, Onf(dupl_rel),
+      Onf(del_aux-dep), Onf(del_mark)))}
 
 }
 
