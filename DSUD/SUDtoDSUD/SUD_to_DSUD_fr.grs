@@ -256,6 +256,18 @@ rule FR_deep_obj_nom_a_inf{
   without{INF -[1=comp,2=obj]-> *}
   commands{add_edge INF -[E:comp:obj]-> NOUN}
 }
+% =============================================================================================
+% Adjectives that are not predicates and have no subject.
+rule FR_nonpred_adj{
+  pattern{ADJ[upos=ADJ,lemma=lex.adj, !Pred]}
+  commands{ADJ.Pred=No}
+}
+#BEGIN lex
+adj
+%---
+autre
+tout
+#END
 
 % =============================================================================================
 % Strategies
@@ -274,6 +286,7 @@ strat FR_main{
     Onf(voice),
     Onf(FR_deep_subj_controlled_pred),
     Onf(FR_deep_obj_nom_a_inf),
+    Onf(FR_nonpred_adj),
     Iter(deep_subj.main),
     Onf(refl_pron),
     rel-pron.main,

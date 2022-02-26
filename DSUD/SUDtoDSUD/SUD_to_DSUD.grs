@@ -143,7 +143,7 @@ rule right_ind-dep{
 % Ex: SUD_French-GSD fr-ud-test_00015 - Belle[CON1], grande[CONJ2], claire, séduisante à souhait, elle[SUBJ] est pourtant déjà à la retraite.
 rule subj{
     pattern{
-      CONJ1 -[1=conj]-> CONJ2;
+      CONJ1 -[1=conj]-> CONJ2; CONJ2[upos=ADJ|AUX|VERB];
       d1:CONJ1 -[1=subj]-> SUBJ; SUBJ[!Shared]}
     without{CONJ2 -[1=subj]-> *}
     without{CONJ1[upos=ADJ]; CONJ2[upos <> ADJ|VERB]}
@@ -338,6 +338,7 @@ package mod_pred{
       N[upos=NOUN|NUM|PRON|PROPN|X];
       N -[1=mod]-> ADJ}
     without{ADJ -[1=subj]-> *}
+    without{ADJ[Pred=No]}
     commands{add_edge ADJ -[E:subj]-> N}
   }
 
@@ -363,6 +364,7 @@ package mod_pred{
       PRED -[1=mod]-> ADJ;
       PRED -[1=subj]-> SUBJ}
     without{ADJ -[1=subj]-> *}
+    without{ADJ[Pred=No]}
     commands{add_edge ADJ -[E:subj]-> SUBJ}
   }
 
