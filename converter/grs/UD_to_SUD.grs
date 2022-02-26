@@ -49,7 +49,7 @@ package sub_relations {
 % Clitic pronouns linked to pronominal verbs.
 % Ex: les enfants s'enfuient.
   rule comp-expl_expl-pv{
-    pattern{e: H -[expl:pv]-> D}
+    pattern{e: H -[expl:pv|expl:comp]-> D}
     commands{del_edge e; add_edge H -[comp@expl]-> D}
   }
 
