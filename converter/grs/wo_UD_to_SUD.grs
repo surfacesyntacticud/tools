@@ -25,8 +25,12 @@ strat wo_main {
 
 package wo_levels {
   rule na {
-    pattern { e: V -[aux]-> A; A[lemma="na"] }
-    commands { e.level = 100 }
+    pattern { e: V -[1=aux, !level]-> A; A[lemma="na"] }
+    commands { e.level = 8 }
+  }
+  rule aux {
+    pattern { e: V -[1=aux|cop, !level]-> A; A[lemma<>"na"] }
+    commands { e.level = 6 }
   }
 }
 

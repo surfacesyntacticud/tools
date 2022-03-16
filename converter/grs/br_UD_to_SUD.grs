@@ -1,0 +1,42 @@
+include "UD_to_SUD.grs"
+
+% Defined a strategy specific to Breton: the universal strategy with one specific package br_levels, called before reverse_relations.main.
+strat br_main {
+  Seq (
+    Onf (eud_to_ud),
+    Onf (idioms),
+    specific_expr_init,
+    Onf (sub_relations),
+    Onf (rel_extensions),
+    Onf (relations),
+
+    Onf (br_levels),
+
+    reverse_relations.main,
+    Onf (shared_left_conj-dep),
+    Onf (unshared_left_conj-dep),
+    Onf (minimize_right_conj-dep),
+    Onf (add_conj_emb),
+    Onf (chained_relations),
+    specific_expr_close,
+    Onf (unk_rel),
+  )
+}
+
+package br_levels {
+  rule mark {
+    pattern { e: V -[1=mark,!level]-> A; }
+    commands { e.level = 50 }
+  }
+
+  rule a_e {
+    pattern { e: V -[1=aux,!level]-> A; A[lemma="a"|"e", upos=AUX] }
+    commands { e.level = 40 }
+  }
+  
+  rule tense {
+    pattern { e: V -[!level]-> A; A[upos=AUX, VerbForm=Fin] }
+    commands { e.level = 30 }
+  }
+}
+

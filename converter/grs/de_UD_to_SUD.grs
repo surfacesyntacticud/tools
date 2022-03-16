@@ -1,0 +1,41 @@
+include "UD_to_SUD.grs"
+
+% Defined a strategy specific to German: the universal strategy with one specific package de_levels, called before reverse_relations.main.
+strat de_main {
+  Seq (
+    Onf (eud_to_ud),
+    Onf (idioms),
+    specific_expr_init,
+    Onf (sub_relations),
+    Onf (rel_extensions),
+    Onf (relations),
+
+    Onf (de_levels),
+
+    reverse_relations.main,
+    Onf (shared_left_conj-dep),
+    Onf (unshared_left_conj-dep),
+    Onf (minimize_right_conj-dep),
+    Onf (add_conj_emb),
+    Onf (chained_relations),
+    specific_expr_close,
+    Onf (unk_rel),
+  )
+}
+
+package de_levels {
+  rule zu {
+    pattern { e: V -[!level]-> A; A[upos=PART, lemma="zu"] }
+    commands { e.level = 2 }
+  }
+  rule aux_fin {
+    pattern { e: V -[!level]-> A; A[upos=AUX, VerbForm=Fin] }
+    commands { e.level = 4 }
+  }
+  % à tester: est-ce que la règle ci-dessous est utile (diff avec/sans)
+  rule aux_not_fin {
+    pattern { e: V -[!level]-> A; A[upos=AUX, VerbForm<>Fin] }
+    commands { e.level = 6 }
+  }
+}
+
