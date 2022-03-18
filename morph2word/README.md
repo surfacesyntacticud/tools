@@ -6,7 +6,7 @@ It was built and tested on the [Beja SUD treebank](https://github.com/surfacesyn
 
 See: Sylvain Kahane, Martine Vanhove, Rayan Ziane and Bruno Guillaume, "[A morph-based and a word-based treebank for Beja](https://aclanthology.org/2021.tlt-1.5.pdf)", SyntaxFest 2021
 
-The system will probably need to be adapted to be applied on other corpora or language.
+The system will probably need to be adapted to be applied on other corpora or languages.
 
 Two kinds of affixes are taken into account: inflectional and derivational; annotated with features `TokenType=InflAff` and `TokenType=DerAff`.
 
