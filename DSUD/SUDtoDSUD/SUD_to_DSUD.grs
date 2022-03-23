@@ -190,9 +190,9 @@ rule subj{
 package del_cpl{
 % Initialization of the Cpl feature for dependencies to complementizers.
   rule init{
-    pattern{
-      d: H -[1 <> conj|mod|udep, !Cpl]-> CPL; CPL[upos=ADP|SCONJ|PART]; 
-      CPL -[1=comp,2=obj]-> *}
+    pattern{d: H -[1 <> conj|mod|udep, !Cpl]-> CPL; CPL[upos=ADP|SCONJ|PART]}
+    without{CPL [ExtPos <> ADP|SCONJ|PART]}
+    without{H[upos=AUX]; H -[1=comp,2=pred]-> CPL}
     without{H[upos = ADP|PART|SCONJ]; H -[comp:obj|E:comp:obj]-> CPL}
     commands{d.Cpl= ""}
   }
@@ -204,6 +204,7 @@ package del_cpl{
       CPL0[upos=ADP|SCONJ|PART];
       d: CPL0 -[1=comp,2=obj]-> CPL; CPL[upos=ADP|SCONJ|PART]; 
       CPL -[1=comp,2=obj]-> *}
+    without{CPL [ExtPos <> ADP|SCONJ|PART]}
     without{ H -[1 <> conj|mod|udep]-> CPL0}
     commands{d.Cpl= ""}
   }
@@ -228,6 +229,18 @@ package del_cpl{
     pattern{
       d1: H -[Cpl=*]-> CPL; CPL[upos=SCONJ,lemma];
       d2: CPL -[1=comp,2=obj]-> OBJ}
+    commands{
+      add_edge d3: H -> OBJ; d3.label= d1.label;
+      d3.Cpl= d1.Cpl + "_C-" + CPL.lemma;
+      shift CPL ==> OBJ; del_edge d1; del_edge d2}
+  }
+
+% CPL is a subordinating conjunction and its object is an orphan dependent.
+% Ex: Fracas_FR 177P1 : Jean a dit que Marie avait écrit un rapport et que Guillaume aussi.
+  rule sconj_orphan{
+    pattern{
+      d1: H -[Cpl=*]-> CPL; CPL[upos=SCONJ,lemma];
+      d2: CPL -[orphan]-> OBJ}
     commands{
       add_edge d3: H -> OBJ; d3.label= d1.label;
       d3.Cpl= d1.Cpl + "_C-" + CPL.lemma;
