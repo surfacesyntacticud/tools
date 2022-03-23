@@ -13,7 +13,9 @@ strat wo_main {
     Onf (wo_levels),
 
     reverse_relations.main,
-    Onf (minimize_conj_dep),
+    Onf (shared_left_conj-dep),
+    Onf (unshared_left_conj-dep),
+    Onf (minimize_right_conj-dep),
     Onf (add_conj_emb),
     Onf (chained_relations),
     specific_expr_close,
@@ -23,8 +25,12 @@ strat wo_main {
 
 package wo_levels {
   rule na {
-    pattern { e: V -[aux]-> A; A[lemma="na"] }
-    commands { e.level = 100 }
+    pattern { e: V -[1=aux, !level]-> A; A[lemma="na"] }
+    commands { e.level = 8 }
+  }
+  rule aux {
+    pattern { e: V -[1=aux|cop, !level]-> A; A[lemma<>"na"] }
+    commands { e.level = 6 }
   }
 }
 
