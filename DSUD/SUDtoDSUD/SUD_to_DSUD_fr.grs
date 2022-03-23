@@ -257,16 +257,34 @@ rule FR_deep_obj_nom_a_inf{
   commands{add_edge INF -[E:comp:obj]-> NOUN}
 }
 % =============================================================================================
-% Adjectives that are not predicates and have no subject.
-rule FR_nonpred_adj{
-  pattern{ADJ[upos=ADJ,lemma=lex.adj, !Pred]}
-  commands{ADJ.Pred=No}
+% Adjectives and adverbs that are not predicates and have no subject.
+rule FR_nonpred_adj-adv{
+  pattern{A[upos=ADJ|ADV,lemma=lex.lemma, !Pred]; * -[mod|mod:cl]-> A}
+  commands{A.Pred=No}
 }
 #BEGIN lex
-adj
+lemma
 %---
+alors
+aussi
 autre
+au_moins
+au_plus
+Au_moins
+Au_plus
+de_moins
+de_plus
+déjà
+ensuite
+également
+moins
+plus
+premier
+principal
+seul
+seulement
 tout
+très
 #END
 
 % =============================================================================================
@@ -286,7 +304,7 @@ strat FR_main{
     Onf(voice),
     Onf(FR_deep_subj_controlled_pred),
     Onf(FR_deep_obj_nom_a_inf),
-    Onf(FR_nonpred_adj),
+    Onf(FR_nonpred_adj-adv),
     Iter(deep_subj.main),
     Onf(refl_pron),
     rel-pron.main,
