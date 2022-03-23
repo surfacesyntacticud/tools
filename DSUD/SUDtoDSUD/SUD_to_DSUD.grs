@@ -17,33 +17,44 @@ rule flat{
 package idioms{
 
 % ===========================================
-% Contract the expressions into a singlr atom.
+% Contract the expressions into a single atom.
 package contract{
 % Initialize the deep form of idiom internal nodes.
   rule initialize_dform_int{
-    pattern{N[wordform, !dform, InIdiom=Yes]}
-    commands{N.dform=N.wordform}
+    pattern{N[textform, !dform, InIdiom=Yes]}
+    commands{N.dform=N.textform}
   }
 
 % Initialize the deep form of idiom heads.
   rule initialize_dform_head{
-    pattern{N[wordform, !dform, Idiom=Yes]}
-    commands{N.dform=N.wordform}
+    pattern{N[textform, !dform, Idiom=Yes]}
+    commands{N.dform=N.textform}
   }
 
 % Raise the deep form of an element to its governor, when it is at its immediate left.
   rule raise_left_dform{
-    pattern{D[InIdiom=Yes, dform];H[dform]; d:H -> D; D << H}
+    pattern{D[InIdiom=Yes, dform];H[dform]; d:H -> D; D < H}
+    without{D.dform = "_"}
     without{H -> D1; D1[InIdiom=Yes]; D << D1; D1 <<H}
     commands{H.dform = D.dform + "_"+ H.dform; del_edge d }
   }
 
+
 % Raise the deep form of an element to its governor, when it is at its immediate right.
   rule raise_right_dform{
-    pattern{D[InIdiom=Yes, dform];H[dform]; d:H -> D; D >> H}
-    without{H -> D1; D1[InIdiom=Yes]; H << D1; D1 <<D}
+    pattern{D[InIdiom=Yes, dform];H[dform]; d:H -> D; D > H}
+    without{D.dform = "_"}
+    without{H -> D1; D1[InIdiom=Yes]; H << D1; D1 << D}
     commands{H.dform = H.dform + "_"+ D.dform; del_edge d }
   }
+
+% The deep form of a dependent internal element is empty.
+  rule empty_dform{
+    pattern{D[InIdiom=Yes, dform="_"];H[dform]; d:H -> D}
+    without{H -> D1; D1[InIdiom=Yes]; D << D1; D1 <<H}
+    commands{del_edge d; del_node D }
+  }
+
 }
 
 % ===========================================
