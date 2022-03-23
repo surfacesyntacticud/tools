@@ -294,10 +294,10 @@ package control_pred{
     commands{add_edge CPRED -[1=subj,enhanced=yes]-> SUBJ}
   }
 
-% The subject of the controlled predicate CPRED, which is an adjective, is the subject of the control predicate PRED.
-  rule subj_adj{
+% The subject of the controlled predicate CPRED, which is an adjective or adverb, is the subject of the control predicate PRED.
+  rule subj_adj-adv{
     pattern{
-      PRED -[1=comp,2=pred]-> CPRED; CPRED[upos=ADJ];
+      PRED -[1=comp,2=pred]-> CPRED; CPRED[upos=ADJ|ADV];
       PRED -[1=subj]-> SUBJ}
     without{CPRED -[1=subj]-> *}
     without{PRED -[1=subj,deep=expl]-> SUBJ}
@@ -305,6 +305,16 @@ package control_pred{
     commands{add_edge CPRED -[1=subj,enhanced=yes]-> SUBJ}
   }
 
+% The subject of the controlled predicate CPRED, which is a past participle, is the passive subject of the control predicate PRED.
+  rule subj_past-part{
+    pattern{
+      PRED -[1=comp,2=pred]-> CPRED; CPRED[upos=VERB,Tense=Past,VerbForm=Part];
+      PRED -[1=subj]-> SUBJ}
+    without{CPRED -[1=subj]-> *}
+    without{PRED -[1=subj,deep=expl]-> SUBJ}
+    without{PRED -[comp:obj]-> OBJ; OBJ[upos=NOUN|NUM|PRON|PROPN|X]}
+    commands{add_edge CPRED -[1=subj,deep=pass, enhanced=yes]-> SUBJ}
+  }
 % The subject of the controlled predicate is the direct object of the control predicate.
 %Ex: SUD_French-GSD fr-ud-train_12228 - Je trouve[PRED] cette attitude[OBJ] totalement inadmissible[CPRED] !
 %Ex: SUD_French-GSD fr-ud-train_00581 - Pour autant les différents partis composant la majorité de gauche voient[PRED] leur poids[OBJ] modifié[CPRED].
