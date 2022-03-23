@@ -144,7 +144,7 @@ package coord_dep{
 rule left_dep{
     pattern{
       CONJ1 -[1=conj]-> CONJ2;
-      d1:CONJ1 -[^cc|punct]-> D; D[Shared=Yes]; D << CONJ1}
+      d1:CONJ1 -[1 <> cc|punct|subj]-> D; D[Shared=Yes]; D << CONJ1}
     without{CONJ2 -> D}
     commands{add_edge d2:CONJ2 -> D; d2.label = d1.label}
   }
@@ -174,7 +174,7 @@ rule right_ind-dep{
 rule subj{
     pattern{
       CONJ1 -[1=conj]-> CONJ2; CONJ2[upos=ADJ|AUX|VERB];
-      d1:CONJ1 -[1=subj]-> SUBJ; SUBJ[!Shared]}
+      d1:CONJ1 -[1=subj]-> SUBJ}
     without{CONJ2 -[1=subj]-> *}
     without{CONJ1[upos=ADJ]; CONJ2[upos <> ADJ|VERB]}
     commands{add_edge d2:CONJ2 -> SUBJ; d2.label = d1.label}
