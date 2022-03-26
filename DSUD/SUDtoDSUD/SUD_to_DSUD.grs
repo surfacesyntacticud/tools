@@ -36,7 +36,7 @@ package contract{
     pattern{D[InIdiom=Yes, dform];H[dform]; d:H -> D; D < H}
     without{D.dform = "_"}
     without{H -> D1; D1[InIdiom=Yes]; D << D1; D1 <<H}
-    commands{H.dform = D.dform + "_"+ H.dform; del_edge d }
+    commands{H.dform = D.dform + "_"+ H.dform; del_edge d; del_node D}
   }
 
 
@@ -45,7 +45,7 @@ package contract{
     pattern{D[InIdiom=Yes, dform];H[dform]; d:H -> D; D > H}
     without{D.dform = "_"}
     without{H -> D1; D1[InIdiom=Yes]; H << D1; D1 << D}
-    commands{H.dform = H.dform + "_"+ D.dform; del_edge d }
+    commands{H.dform = H.dform + "_"+ D.dform; del_edge d; del_node D }
   }
 
 % The deep form of a dependent internal element is empty.
