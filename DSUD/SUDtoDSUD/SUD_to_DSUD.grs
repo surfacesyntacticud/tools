@@ -123,11 +123,12 @@ package coord_gov{
 
 % The conjuncts of the coordination are identical complementizers.
 % Ex: Fracas 249P1 - Le PC-6082 est plus rapide que[CONJ1] l'ITEL-ZX[C1] et que[CONJ2] l'ITEL-ZY[C2].
+% Ex  Fracas 177P1 - Jean a dit que[CONJ1] Marie avait[C1] écrit un rapport et que[CONJ2] Guillaume[C2] aussi.
   rule cpl_gov_id{
     pattern{
       d1:CONJ1 -[1=conj]-> CONJ2;
       CONJ1[upos = ADP|PART|SCONJ]; CONJ1 -[comp:obj]-> C1;
-      CONJ2[upos = ADP|PART|SCONJ]; CONJ2 -[comp:obj]-> C2;
+      CONJ2[upos = ADP|PART|SCONJ]; CONJ2 -[comp:obj|orphan]-> C2;
       CONJ1.lemma = CONJ2.lemma
       }
     commands{
@@ -144,7 +145,7 @@ package coord_dep{
 rule left_dep{
     pattern{
       CONJ1 -[1=conj]-> CONJ2;
-      d1:CONJ1 -[1 <> cc|punct|subj]-> D; D[Shared=Yes]; D << CONJ1}
+      d1:CONJ1 -[1 =comp|dislocated|det]-> D; D[Shared=Yes]; D << CONJ1}
     without{CONJ2 -> D}
     commands{add_edge d2:CONJ2 -> D; d2.label = d1.label}
   }
@@ -153,7 +154,7 @@ rule left_dep{
 rule right_dep{
     pattern{
       CONJ1 -[1=conj]-> CONJ2;
-      d1:CONJ2 -[^punct]-> D; D[Shared=Yes]; D >> CONJ2}
+      d1:CONJ2 -[1=comp]-> D; D[Shared=Yes]; D >> CONJ2}
     without{CONJ1 -> D}
     commands{add_edge d2:CONJ1 -> D; d2.label = d1.label}
   }
@@ -175,6 +176,7 @@ rule subj{
     pattern{
       CONJ1 -[1=conj]-> CONJ2; CONJ2[upos=ADJ|AUX|VERB];
       d1:CONJ1 -[1=subj]-> SUBJ}
+    without{CONJ1 << SUBJ; SUBJ << CONJ2}
     without{CONJ2 -[1=subj]-> *}
     without{CONJ1[upos=ADJ]; CONJ2[upos <> ADJ|VERB]}
     commands{add_edge d2:CONJ2 -> SUBJ; d2.label = d1.label}
@@ -190,7 +192,9 @@ rule subj{
 package del_cpl{
 % Initialization of the Cpl feature for dependencies to complementizers.
   rule init{
-    pattern{d: H -[1 <> conj|mod|udep, !Cpl]-> CPL; CPL[upos=ADP|SCONJ|PART]}
+    pattern{
+      d: H -[1 <> cc|conj|mod|reparandum|udep, !Cpl]-> CPL;
+      CPL[upos=ADP|SCONJ|PART]; CPL -[^ conj]-> *} % Ex SUD_French-GSD fr-ud-train_14326 - Auckland est située[H] sur[CPL] et autour d'un isthme...
     without{CPL [ExtPos <> ADP|SCONJ|PART]}
     without{H[upos=AUX]; H -[1=comp,2=pred]-> CPL}
     without{H[upos = ADP|PART|SCONJ]; H -[comp:obj|E:comp:obj]-> CPL}
@@ -222,6 +226,7 @@ package del_cpl{
       shift CPL ==> OBJ; del_edge d1; del_edge d2}
   }
 
+% CPL is an adposition, which is coordinated
 % CPL is a subordinating conjunction.
 % Ex: SUD_French-GSD fr-ud-train_01392 - J'y retourne[H] dès que[CPL] je peux[OBJ] !
 % Ex: SUD_French-GSD fr-ud-dev_00534 - ce n'est[H] même pas comme s'[CPL]ils avaient[OBJ] utilisé beaucoup de matériel
