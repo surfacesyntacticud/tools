@@ -3,6 +3,7 @@ include "UD_to_SUD.grs"
 % Defined a strategy specific to Breton: the universal strategy with one specific package br_levels, called before reverse_relations.main.
 strat br_main {
   Seq (
+    Onf (init),
     Onf (eud_to_ud),
     Onf (idioms),
     specific_expr_init,
@@ -23,20 +24,22 @@ strat br_main {
   )
 }
 
-package br_levels {
-  rule mark {
-    pattern { e: V -[1=mark,!level]-> A; }
-    commands { e.level = 50 }
+package init {
+  rule aux_sconj { % https://arbres.iker.cnrs.fr/index.php?title=Le_rannig
+    pattern { e: M -[aux]-> N; N[lemma="a"|"e", upos=AUX] }
+    commands { N.upos=SCONJ; del_edge e; add_edge M -[mark]-> N; }
   }
 
-  rule a_e {
-    pattern { e: V -[1=aux,!level]-> A; A[lemma="a"|"e", upos=AUX] }
-    commands { e.level = 40 }
+  rule en_em { % https://arbres.iker.cnrs.fr/index.php?title=Tournures_r%C3%A9fl%C3%A9chies#Pronom_invariable_en_em
+    pattern { e: M -[aux]-> N1; N1 [lemma="en", upos=AUX]; N2 [lemma="em"]; N1 < N2 }
+    commands { N1.upos=PRON; del_edge e; add_edge M -[obj]-> N1; }
   }
-  
-  rule tense {
-    pattern { e: V -[!level]-> A; A[upos=AUX, VerbForm=Fin] }
-    commands { e.level = 30 }
+}
+
+package br_levels {
+  rule mark {
+    pattern { e: V -[1=mark,!level]-> A; A [upos=SCONJ]; }
+    commands { e.level = 20 }
   }
 }
 
