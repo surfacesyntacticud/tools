@@ -145,6 +145,18 @@ package FR_shift_out_edges{
     }
   }
 
+% passive constructions in the form "se" + "faire" + INF
+% Ex: French-GSD fr-ud-test_00058 - Sidi M'hamed Deddeche et Amgid Sidi Ahmed, deux activistes pacifistes des territoires occupés comme Mme Haïder, s'[SE]étaient-ils fait[AUX] arrêter[INF] mercredi dernier à l'entrée de Smara,
+  rule se_faire_passive{
+    pattern{
+      AUX[upos=AUX,lemma=faire];
+      INF[upos=VERB,VerbForm=Inf];
+      AUX -[comp:aux@pass]-> INF;
+      SE[upos=PRON,lemma=se];
+      d: INF -[comp@pass]-> SE}
+    commands{del_edge d; add_edge AUX -[comp@pass]-> SE}
+  }
+  
 % constructions in the form SUBJ + de  + INF.
 %Ex: French-GSD fr-ud-train_11118 - » et Secombe de répondre : « De quelle couleur ?
   rule subj_de_inf{
@@ -254,19 +266,79 @@ package FR_shift_out_back_edges{
 
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Mark some left dependents of a coordination with the feature Shared=Yes.
+package FR_shared_left_conj-dep{
+
+% Shared adverbs
+  rule adv{
+    pattern {
+      d1:C1 -[1=conj]-> C2;
+      C1 -[1=mod]-> D1; D1[upos=ADV, !InIdiom,lemma=lex.adv,!Shared]; D1 << C1}
+    without{d2: C -> C1; d2.label=d1.label}% C1 is the first conjunct of the coordination.
+    without{d2: C -> C1; d2.label="conj@emb"; d1.label=conj} % C1 is the first conjunct of the coordination.
+    commands{D1.Shared=Yes}
+  }
+#BEGIN lex
+adv
+%----
+combien
+que
+#END
+
+% Shared determiners
+  rule det{
+    pattern{
+      d1:C1 -[1=conj]-> C2;
+      C1[upos=NOUN|PRON];C2[upos=NOUN|PRON];
+      C1 -[1=det]-> D1; D1[!InIdiom,!Shared]; D1 << C1}
+    without{d2: C -> C1; d2.label=d1.label}% C1 is the first conjunct of the coordination.
+    without{d2: C -> C1; d2.label="conj@emb"; d1.label=conj} % C1 is the first conjunct of the coordination.
+    without{C2 -[1=det]->  *}
+    commands{D1.Shared=Yes}
+  }
+
+% Shared interrogative and relative pronouns.
+% Ex: SUD_French-GSD fr-ud-dev_00647 - ... plusieurs autres pays dont le Canada et la Nouvelle-Zélande ...
+  rule int-rel-pron{
+    pattern{
+      d1:C1 -[1=conj]-> C2;
+      C1 -> D1; D1[!InIdiom,!Shared, PronType=Int|Rel]; D1 << C1}
+    without{d2: C -> C1; d2.label=d1.label}% C1 is the first conjunct of the coordination.
+    without{d2: C -> C1; d2.label="conj@emb"; d1.label=conj} % C1 is the first conjunct of the coordination.
+    without{ C2 -> D2; D2[PronType=Int|Rel]; D2 << C2}
+    commands{D1.Shared=Yes}
+  }
+  
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Some left dependents of the first conjunct of a coordination are not shared by all conjuncts.
 package FR_unshared_left_conj-dep{
+
+% Unshared attributive adjectives
+  rule attr_adj{
+    pattern {
+      d1:C1 -[1=conj]-> C2; C1[upos=NOUN|PRON];
+      C1 -[1=mod]-> D1; D1[upos=ADJ,!InIdiom]; D1 << C1;
+      C2 -[1=mod]-> D2; D1[upos=ADJ]; D2 << C2}
+    without{D1[Shared=No]}
+    without{d2: C -> C1; d2.label=d1.label}% C1 is the first conjunct of the coordination.
+    without{d2: C -> C1; d2.label="conj@emb"; d1.label=conj} % C1 is the first conjunct of the coordination.
+    commands{D1.Shared=No}
+  }
+
 % Unshared modifiers.
 % Ex: SUD_French-GSD fr-ud-train_08681 - Son cabinet est très[D] agréable[C1] et chaleureux[C2].
-
-  rule unshared_mod {
+  rule mod {
     pattern {
-      C1 -[1=conj]-> C2;
-      e:C1 -[mod]-> D; D << C1;
-      D[upos=lex.pos, lemma=lex.adv,!Shared]}
-    commands{D.Shared=No}
+      d1:C1 -[1=conj]-> C2;
+      C1 -[mod]-> D1; D1 << C1;
+      D1[upos=lex.pos,!InIdiom, lemma=lex.adv]}
+    without{D1[Shared=No]}
+    without{d2: C -> C1; d2.label=d1.label}% C1 is the first conjunct of the coordination.
+    without{d2: C -> C1; d2.label="conj@emb"; d1.label=conj} % C1 is the first conjunct of the coordination.
+    commands{D1.Shared=No}
   }
 #BEGIN	lex
 adv	pos
@@ -291,54 +363,49 @@ trop	ADV
 ultra	ADV
 #END
 
+% Repeated complenmentizer in a coordination.
+  rule rep_conj{
+    pattern{
+      d1:C1 -[1=conj]-> C2;
+      C1 -[cc|mod]-> CPL1; CPL1[upos=ADV|CCONJ, lemma=ni|plus|soit|"tantôt"];
+      C2 -[cc|mod]-> CPL2; CPL2[upos=ADV|CCONJ, lemma];CPL2.lemma = CPL1.lemma}
+    without{CPL1[Shared=No]}
+    without{d2: C -> C1; d2.label=d1.label}% C1 is the first conjunct of the coordination.
+    without{d2: C -> C1; d2.label="conj@emb"; d1.label=conj} % C1 is the first conjunct of the coordination.
+    commands{CPL1.Shared=No}
+  }
+
+% Repeated conjunction of coordination.
+% Ex: SUD_French-GSD fr-ud-dev_01116 - En effet, plus la proximité génétique est grande, plus il devrait y avoir d'amibes prêtes à se sacrifier ...
+  rule rep_conj_dep{
+    pattern{
+      d1:C1 -[1=conj]-> C2;
+      C1 -[cc|mod]-> CPL1; CPL1[upos=ADV|CCONJ, lemma=ni|plus|soit|"tantôt"];
+      C2 -[cc|mod]-> CPL2; CPL2[upos=ADV|CCONJ, lemma];CPL2.lemma = CPL1.lemma;
+      C1 -> D1; D1[!Shared]; D1 << CPL1}
+    without{d2: C -> C1; d2.label=d1.label}% C1 is the first conjunct of the coordination.
+    without{d2: C -> C1; d2.label="conj@emb"; d1.label=conj} % C1 is the first conjunct of the coordination.
+    commands{D1.Shared=Yes}
+  }
 % The second conjunct is introduced by the conjunction "car".
 % Ex: SUD_French-GSD fr-ud-train_05527 - En[D] plus il m'a[C1] expliqué les résultats, car je n'y connais[C2] rien en électricité.
   rule car{
     pattern{
-      C1 -[1=conj]-> C2;
-      e:C1 -[1 <> subj]-> D; D << C1;
-      D[!Shared];
+      d1:C1 -[1=conj]-> C2;
+      C1 -[1 <> subj]-> D; D << C1;
       C2 -[cc]-> CONJ; CONJ[upos=CCONJ,lemma=car]}
-    commands{D.Shared=No}
-  }
-
-% The left dependent of the first conjunct is a clitic pronoun "en" or "y".
-% Ex: SUD_French-GSD fr-ud-train_09075 - L'UNFP en[D] sera durablement affaiblie[C1] et son dirigeant assassiné[C2] à Paris, ...
-  rule en{
-    pattern{
-      C1 -[1=conj]-> C2;
-      e:C1 -> D; D << C1;
-      D[upos=PRON, lemma=en, !Shared]}
-    commands{D.Shared=No}
-  }
-
-% The left dependent, which is not shared by all conjuncts, is a modifier extraposed at the beginning of a clause.
-% Ex: French-GSD fr-ud-train_01726 - Élève[D] depuis deux ans, je suis[C1] très satisfait de mon professeur de batterie, et je recommande[C2] cette école !
-  rule left_extraposition(lex from "lexicons/noun_adv.lp") {
-    pattern{
-      C1 -[1=conj]-> C2;
-      e:C1 -[1=mod]-> D; D[!Shared];
-      D[upos=ADJ|NOUN|PRON|PROPN|VERB];
-      C1 -[1=subj]-> SUBJ; D << SUBJ; SUBJ << C1}
-    without{D -[1=case]-> *}
-    without{D[upos=NOUN,lemma= lex.noun]}
-    without{% Modifiers in the form NOUN + PREP + NOUN.
-            % Ex: fr-ud-dev_00322 - Couche par couche, Morin arrange ...
-      C[upos=NOUN];
-      P[upos=ADP,lemma="après"|par|sur];
-      N[upos=NOUN];
-      N -[1=case]-> P;
-      C -[1=udep]-> N;
-      N.lemma=D.lemma}
+    without{D[Shared=No]}
+    without{d2: C -> C1; d2.label=d1.label}% C1 is the first conjunct of the coordination.
+    without{d2: C -> C1; d2.label="conj@emb"; d1.label=conj} % C1 is the first conjunct of the coordination.
     commands{D.Shared=No}
   }
 
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% The conversion of "suite à", "face à" are invalid ('advmod' should be 'ADV' but it is 'NOUN')
-% To avoid this, we transform these phrase as idiom in order to make them fixed after conversion
+% The conversion of "suite à", "face à" are invalid ('advmod' should be 'ADV' but it is 'NOUN'). To avoid this, we transform these phrase into idiom in the SUDto UD conversion. In the reverse conversion, we make the reverse transformation.
 package FR_noun_adv{
+% The phrase is restructured.
   rule adp_to_adv (lex from "lexicons/noun_adv_prep.lp"){
     pattern{
       N[upos=NOUN, lemma=lex.noun, ExtPos=ADP, Idiom=Yes];
@@ -351,13 +418,26 @@ package FR_noun_adv{
       del_edge e; add_edge P -[comp:obj]-> N1}  
   }
 
+% If the phrase is an UDEP dependent of a governor, it becomes a MOD dependent.
   rule udep_to_mod (lex from "lexicons/noun_adv_prep.lp"){
     pattern{
       N[upos=NOUN, lemma=lex.noun, ExtPos=ADV];
       e: H -[udep]-> N}
     commands{del_edge e; add_edge H -[mod]-> N}  
   }
+
+% If the noun in the phrase is shared by a coordination, it is no longer shared.
+  rule shared_dep (lex from "lexicons/noun_adv_prep.lp"){
+    pattern{
+      N[upos=NOUN, lemma=lex.noun, ExtPos=ADV];
+      P[upos=ADP, lemma=lex.prep];
+      N -[comp:obl]-> P;
+      d: P -[comp:obj]-> N1; N1[Shared]}
+    commands{del_feat N1.Shared}
+  }
+
 }
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 strat fr_main {
@@ -372,14 +452,17 @@ strat fr_main {
     reverse_relations.main,
     Onf(FR_shift_out_edges),
     Onf(FR_shift_out_back_edges),
-    Onf(FR_unshared_left_conj-dep),
-    Onf(shared_left_conj-dep),
-    Onf(unshared_left_conj-dep),
     Onf (minimize_right_conj-dep),
     Onf (add_conj_emb),
     Onf (chained_relations),
-    Onf (unk_rel),
     specific_expr_close,
-    Onf(FR_noun_adv),
+    Onf(FR_shared_left_conj-dep),
+    Onf(FR_unshared_left_conj-dep),
+    Onf(shared_left_conj-dep),
+    Onf(unshared_left_conj-dep),
+    Onf(unshared_right_conj-dep),
+    Onf(extpos),
+    Onf(FR_noun_adv), % Package FR_noun_adv must follow rule extpos because it acts on idioms in their definitive form.
+    Onf (unk_rel),
   )
 }

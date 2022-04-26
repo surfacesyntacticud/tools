@@ -60,6 +60,7 @@ package spoken {
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Dependencies of coordinations to their right  are marked in SUD with feature Shared=Yes and they are attached at the rightmost conjunct. In UD, they are attached at the head of the coordination and feature  Shared=Yes is useless.
 package shared {
+
 % The shared dependent is directly attached at the head of the last conjunct.
   rule move_relation {
     pattern {
@@ -823,6 +824,7 @@ strat main_UDplus {
     Onf (reverse_close),
     Onf (final),
     specific_expr_close, % Closing a specific treatment for idioms, titles and converted words.
+    Onf(extpos),
   )
 }
 
