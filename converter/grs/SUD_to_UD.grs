@@ -833,13 +833,23 @@ rule remove_UDplus_subtypes {
   commands { del_feat e.2 }
 }
 
+rule non_projective_punct {
+  % track invalid UD structure "Punctuation must not cause non-projectivity"
+  pattern { e: A -[punct]-> B; f: C -> D; e >< f; B << f }
+  commands { 
+    del_edge e; 
+    add_edge C -[punct]-> B; 
+  }
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Universal main strategy for converting any SUD annotation into a UD annotation.
 strat u_main{
   Seq (
     main_UDplus,
     flatten_idioms,
-    Onf(remove_UDplus_subtypes)
+    Onf(remove_UDplus_subtypes),
+    Onf(non_projective_punct),
   )
 }
 
