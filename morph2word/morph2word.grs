@@ -19,7 +19,31 @@ rule aff_on_aff {
   }
 }
 
+package init_MGloss_Mseg {
+  rule gov { 
+    pattern { 
+      N1 [TokenType=DerAff|InflAff|Stem, !MGloss, !MSeg];
+      N2 [TokenType=DerAff|InflAff|Stem];
+      N1 -[2=aff]-> N2;
+    }
+    commands {
+      N1.MGloss = N1.GE;
+      N1.MSeg = N1.form;
+    }
+  }
 
+  rule dep { 
+    pattern { 
+      N1 [TokenType=DerAff|InflAff|Stem];
+      N2 [TokenType=DerAff|InflAff|Stem, !MGloss, !MSeg];
+      N1 -[2=aff]-> N2;
+    }
+    commands {
+      N2.MGloss = N2.GE;
+      N2.MSeg = N2.form;
+    }
+  }
+}
 
 % The package morph2word contains eight rules with all combinations of
 % * InflAff / DerAff
@@ -36,6 +60,8 @@ package morph2word {
     commands {
       STEM.form = IA.form[:-1] + STEM.form;
       STEM.wordform = IA.wordform[:-1] + STEM.wordform;
+      STEM.MGloss = IA.MGloss + STEM.MGloss;
+      STEM.MSeg = IA.MSeg + STEM.MSeg;
       prepend_feats IA =[re"RX\|GE\|Number\|Gender"]=> STEM;
       STEM.AlignBegin = IA.AlignBegin;
       del_node IA;
@@ -53,6 +79,8 @@ package morph2word {
       shift IA ==> STEM;
       STEM.form = IA.form[:-1] + STEM.form;
       STEM.wordform = IA.wordform[:-1] + STEM.wordform;
+      STEM.MGloss = IA.MGloss + STEM.MGloss;
+      STEM.MSeg = IA.MSeg + STEM.MSeg;
       prepend_feats IA =[re"RX\|GE\|Number\|Gender"]=> STEM;
       STEM.AlignBegin = IA.AlignBegin;
       del_node IA;
@@ -69,6 +97,8 @@ package morph2word {
     commands {
       STEM.form = STEM.form + IA.form[1:];
       STEM.wordform = STEM.wordform + IA.wordform[1:];
+      STEM.MGloss = STEM.MGloss + IA.MGloss;
+      STEM.MSeg = STEM.MSeg + IA.MSeg;
       append_feats IA =[re"RX\|GE\|Number\|Gender"]=> STEM;
       STEM.AlignEnd = IA.AlignEnd;
       del_node IA;
@@ -86,6 +116,8 @@ package morph2word {
       shift IA ==> STEM;
       STEM.form = STEM.form + IA.form[1:];
       STEM.wordform = STEM.wordform + IA.wordform[1:];
+      STEM.MGloss = STEM.MGloss + IA.MGloss;
+      STEM.MSeg = STEM.MSeg + IA.MSeg;
       append_feats IA =[re"RX\|GE\|Number\|Gender"]=> STEM;
       STEM.AlignEnd = IA.AlignEnd;
       del_node IA;
@@ -103,6 +135,8 @@ package morph2word {
     commands {
       STEM.form = DA.form[:-1] + STEM.form;
       STEM.wordform = DA.wordform[:-1] + STEM.wordform;
+      STEM.MGloss = DA.MGloss + STEM.MGloss;
+      STEM.MSeg = DA.MSeg + STEM.MSeg;
       prepend_feats DA =[re"RX\|GE\|Number\|Gender"]=> STEM;
       STEM.AlignBegin = DA.AlignBegin;
       STEM.upos = DA.DerPos;
@@ -122,6 +156,8 @@ package morph2word {
       shift DA ==> STEM;
       STEM.form = DA.form[:-1] + STEM.form;
       STEM.wordform = DA.wordform[:-1] + STEM.wordform;
+      STEM.MGloss = DA.MGloss + STEM.MGloss;
+      STEM.MSeg = DA.MSeg + STEM.MSeg;
       prepend_feats DA =[re"RX\|GE\|Number\|Gender"]=> STEM;
       STEM.AlignBegin = DA.AlignBegin;
       STEM.upos = DA.DerPos;
@@ -139,6 +175,8 @@ package morph2word {
     commands {
       STEM.form = STEM.form + DA.form[1:];
       STEM.wordform = STEM.wordform + DA.wordform[1:];
+      STEM.MGloss = STEM.MGloss + DA.MGloss;
+      STEM.MSeg = STEM.MSeg + DA.MSeg;
       append_feats DA =[re"RX\|GE\|Number\|Gender"]=> STEM;
       STEM.AlignEnd = DA.AlignEnd;
       STEM.upos = DA.DerPos;
@@ -159,6 +197,8 @@ package morph2word {
       shift DA ==> STEM;
       STEM.form = STEM.form + DA.form[1:];
       STEM.wordform = STEM.wordform + DA.wordform[1:];
+      STEM.MGloss = STEM.MGloss + DA.MGloss;
+      STEM.MSeg = STEM.MSeg + DA.MSeg;
       append_feats DA =[re"RX\|GE\|Number\|Gender"]=> STEM;
       STEM.AlignEnd = DA.AlignEnd;
       STEM.upos = DA.DerPos;
@@ -196,6 +236,7 @@ package clitic_included {
 strat main { 
   Seq(
     Onf (aff_on_aff),
+    Onf (init_MGloss_Mseg),
     Onf (morph2word),
     Onf (clitic_included)
     ) 
