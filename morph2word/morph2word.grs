@@ -226,6 +226,8 @@ package clitic_included {
       shift IA ==> STEM;
       STEM.form = STEM.form + IA.form;
       STEM.wordform = STEM.wordform + IA.wordform;
+      STEM.MGloss = STEM.MGloss + IA.MGloss;
+      STEM.MSeg = STEM.MSeg + IA.MSeg;
       append_feats IA =[re"RX\|GE\|Number\|Gender"]=> STEM;
       STEM.AlignEnd = IA.AlignEnd;
       del_node IA;
