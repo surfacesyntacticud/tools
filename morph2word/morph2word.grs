@@ -45,6 +45,108 @@ package init_MGloss_Mseg {
   }
 }
 
+rule remove_bracket {
+  pattern { N[MGloss = lex.search]}
+  commands { N.MGloss = lex.replace}
+}
+#BEGIN lex
+search	replace
+%-----------------------------
+-[3PL]	-3PL
+-[AOR].[1SG]	-AOR.1SG
+-[AOR].[3SG].[M]	-AOR.3SG.M
+-[CAUS]	-CAUS
+-[CVB].[MNR]	-CVB.MNR
+-[CVB].[SMLT]	-CVB.SMLT
+-[EMPH]	-EMPH
+-[GEN]	-GEN
+-[GEN].[PL]	-GEN.PL
+-[IMP].[PL]	-IMP.PL
+-[IMP].[SG].[F]	-IMP.SG.F
+-[IMP].[SG].[M]	-IMP.SG.M
+-[IPFV].[2PL]	-IPFV.2PL
+-[IPFV].[3SG].[M]	-IPFV.3SG.M
+-[L]	-L
+-[MID]	-MID
+-[N].[AC]	-N.AC
+-[PFV].[1PL]	-PFV.1PL
+-[PFV].[1SG]	-PFV.1SG
+-[PFV].[2SG].[M]	-PFV.2SG.M
+-[PFV].[3SG].[F]	-PFV.3SG.F
+-[PFV].[3SG].[M]	-PFV.3SG.M
+-[PL]	-PL
+-[VN]	-VN
+-[VOC]	-VOC
+[1PL]-	1PL-
+[1SG]-	1SG-
+[2SG].[F]-	2SG.F-
+[2SG].[M]-	2SG.M-
+[3SG].[F]-	3SG.F-
+[3SG].[M]-	3SG.M-
+[3]-	3-
+[CAUS]-	CAUS-
+[N].[AC]-	N.AC-
+[PASS].[INT]-	PASS.INT-
+[PLAC]~drip	PLAC~drip
+[PLAC]~sit\[MID]	PLAC~sit\MID
+[RECP]-	RECP-
+be_awake\[MID]	be_awake\MID
+be_down\[PFV]	be_down\PFV
+be_there\[AOR]	be_there\AOR
+be_there\[IPFV]	be_there\IPFV
+be_unable\[INT].[PFV]	be_unable\INT.PFV
+become\[AOR]	become\AOR
+become\[IPFV]	become\IPFV
+become\[NEG].[OPT]	become\NEG.OPT
+become\[PFV]	become\PFV
+child\[F]	child\F
+come\[PFV]	come\PFV
+come_back\[MID].[PFV]	come_back\MID.PFV
+convey\[IPFV]	convey\IPFV
+do\[PFV]	do\PFV
+find~[PLAC]find~PLAC	find~PLACfind~PLAC
+go\[INT].[PFV]	go\INT.PFV
+go_out\[PFV]	go_out\PFV
+have\[AOR]	have\AOR
+have\[IPFV]	have\IPFV
+hear\[INT].[PFV]	hear\INT.PFV
+kneel\[PFV]	kneel\PFV
+know\[MID]	know\MID
+know\[MID].[IPFV]	know\MID.IPFV
+know\[MID].[PFV]	know\MID.PFV
+lean\[PFV]	lean\PFV
+leave\[PFV]	leave\PFV
+look\[INT].[PFV]	look\INT.PFV
+look\[PFV]	look\PFV
+move_away\[PFV]	move_away\PFV
+pursue\[PFV]	pursue\PFV
+rain\[INT].[PFV]	rain\INT.PFV
+resemble\[PFV]	resemble\PFV
+ride\[MID]	ride\MID
+ride\[MID].[NEG].[OPT]	ride\MID.NEG.OPT
+say\[PFV]	say\PFV
+sit\[MID]	sit\MID
+sit\[MID].[PFV]	sit\MID.PFV
+take\[AOR]	take\AOR
+take\[PFV]	take\PFV
+take_off\[INT].[PFV]	take_off\INT.PFV
+take_shelter\[INT]	take_shelter\INT
+take_shelter\[INT].[AOR]	take_shelter\INT.AOR
+take_shelter\[INT].[PFV]	take_shelter\INT.PFV
+wait\[PFV]	wait\PFV
+#END
+
+
+
+
+
+
+
+
+
+
+
+
 % The package morph2word contains eight rules with all combinations of
 % * InflAff / DerAff
 % * the affixe is before / after the stem (rule name starting with pre_ or post_)
@@ -239,6 +341,7 @@ strat main {
   Seq(
     Onf (aff_on_aff),
     Onf (init_MGloss_Mseg),
+    Onf (remove_bracket),
     Onf (morph2word),
     Onf (clitic_included)
     ) 
