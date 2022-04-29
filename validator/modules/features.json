@@ -1,0 +1,21 @@
+{
+  "title": "Features",
+  "items": [
+
+    {
+      "pattern": "pattern { upos <> ADJ|ADP|ADV|AUX|CCONJ|DET|INTJ|NOUN|NUM|PART|PRON|PROPN|PUNCT|SCONJ|SYM|VERB|X }",
+      "description": "Invalid upos (see [UD guidelines](https://universaldependencies.org/u/pos/index.html))",
+      "level": "error"
+    },
+    {
+      "pattern": "pattern { ExtPos <> ADJ|ADP|ADV|AUX|CCONJ|DET|INTJ|NOUN|NUM|PART|PRON|PROPN|PUNCT|SCONJ|SYM|VERB|X }",
+      "description": "Invalid ExtPos (see [UD guidelines](https://universaldependencies.org/u/pos/index.html))",
+      "level": "error"
+    },
+    {
+      "pattern": "pattern { N[Foreign, !Lang] }",
+      "description": "A foreign node should have a `Lang` feature",
+      "level": "warning"
+    }
+  ]
+}
