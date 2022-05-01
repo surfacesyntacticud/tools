@@ -6,6 +6,7 @@ strat bej_main {
     Onf (bej_pre),
     u_main,
     Onf(bej_post),
+    Onf(bej_valid),
   )
 }
 
@@ -57,16 +58,21 @@ package bej_post {
     pattern { e:N -[conj:redup]-> M; }
     commands { del_edge e; add_edge N -[dep:redup]-> M; }
   }
+}
 
-% The UD validator does not accect 3 relations nusbj on the same head
-% In sentence [BEJ_MV_NARR_03_camel_068-071], one of the [nsubj:aff] is replaced by [dep]
-  rule three_subj {
-    pattern {
-      G -[nsubj:aff]-> O_1;
-      e: G -[nsubj:aff]-> O_2;
-      G -[nsubj]-> S;
-      O_1 << O_2
-    }
-    commands { del_edge e; add_edge G -[dep]-> O_2; }
+package bej_valid {
+  rule VerbClass {
+    pattern { N [upos=NOUN, VerbClass] }
+    commands { del_feat N.VerbClass }
+  }
+
+  rule Voice {
+    pattern { N [upos=NOUN, Voice] }
+    commands { del_feat N.Voice }
+  }
+
+  rule Number {
+    pattern { N [upos=ADJ, Number] }
+    commands { del_feat N.Number }
   }
 }
