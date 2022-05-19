@@ -1,0 +1,928 @@
+% =============================================================================================
+include "DSUD_to_AMR.grs"
+
+
+% =============================================================================================
+% Noun phrases in the form: noun phrase + "de" + noun phrase.
+package FR_np_de_np{
+% Constructions (quantity adverb + "de" + noun).
+% Ex: Fracas  024H__040P1 - Beaucoup[ADV] de délégués[N] ont obtenu des résultats à partir de l'enquête.
+  rule quant_adv(lex from "lexicons/adv_quant.lp"){
+    pattern{
+      ADV[upos=ADV,lemma=lex.adv]; N[upos=NOUN];
+      d:ADV -[1=comp,2=obl]-> N; d.Cpl="_P-de"}
+    commands{
+      del_edge d; shift_in ADV ==> N;
+      add_edge N -[det]-> ADV; ADV.concept=lex.concept}
+  }
+
+% Constructions (pronoun + "de" + noun phrase).
+  rule pron{
+    pattern{
+      PRO[upos=PRON, lemma = lex.pro];
+      d1:PRO -[udep]-> DE; DE[upos=ADP,lemma=de];
+      d2:DE -[comp:obj]-> N; N[upos=NOUN|PRON]}
+    commands{
+      add_edge PRO -[subset-of]-> N;
+      del_edge d1; del_edge d2; del_node DE;
+      PRO.concept=lex.concept}
+  }
+#BEGIN	lex
+pro	concept	
+%-----
+aucun	nobody
+certain	some
+chacun	everyone
+deux	2
+la_plupart	most
+plusieurs	several
+un	one
+#END
+
+% Constructions (nominalized predicate + "de" + noun phrase).
+  rule nom-pred{
+    pattern{
+      N1[upos=NOUN, lemma = lex.nom];
+      d1:N1 -[udep]-> DE; DE[upos=ADP,lemma=de];
+      d2:DE -[comp:obj]-> N2; N2[upos=NOUN|PRON]}
+    commands{
+      add_node N:> N1; N.form=_;
+      N.concept=lex.pred;
+      N1.concept=lex.agent;
+      add_edge d3:N1 -> N; d3.1=lex.arg1;d3.enhanced=yes;
+      add_edge d4:N -> N2; d4.label=lex.arg2;
+      del_edge d1; del_edge d2; del_node DE}
+  }
+#BEGIN	lex
+nom	pred	agent	arg1	arg2	
+%--------------------------------------------------
+habitant	inhabit-01	person	ARG0-of	ARG1
+membre	member	person	ARG1-of	ARG2
+résident	reside-01	person	ARG0-of	ARG1
+#END
+
+
+}
+
+% =============================================================================================
+% Comparative constructions. In a comparison, the property PROP related to a referent REF1 is compared to the same property related to a second referent REF2, according to a degreee DEGR. A new node COMP is created with four arguments: ARG1 for REF1, ARG2 for PROP, ARG3 for DEGR and ARG4 for REF2. 
+package FR_compar{
+% PROP si comp:pred complement of a verb, which has REF1 as its subject of object.
+% Ex: Fracas 216H - Jean[REF1] est plus[DEGR] gros[PROP] que Guillaume[REF2].
+  rule verb_subj-obj-ref1_comppred-prop (lex from "lexicons/compar_adv.lp"){ 
+    pattern{
+      V[upos=AUX|VERB]; V -[1=obj|subj]-> REF1;
+      V -[1=comp,2=pred]-> PROP;
+      PROP -[1=subj]-> REF1; PROP[upos=ADJ|ADV];
+      d1:PROP -[mod]-> DEGR; DEGR[upos=ADV,lemma=lex.degr];
+      d2:DEGR -[1=comp,2=obj,Cpl=_C-que]-> REF2}
+    commands{
+      add_node COMP:>PROP;
+      COMP.concept=have-degree-91; COMP.form=_;
+      add_edge COMP -[ARG1]-> REF1;
+      add_edge PROP -[E:ARG2-of]-> COMP; 
+      add_edge COMP -[ARG3]-> DEGR;del_edge d1;
+      DEGR.concept=lex.concept;
+      add_edge COMP -[ARG4]-> REF2; del_edge d2}
+   }
+
+% PROP is an argument of modifier of REF1.
+% Ex: Fracas 216P1 - Jean est un politicien plus gros que Guillaume.
+% Ex: Fracas 318H - Le récit de Marie a duré[REF1] aussi[DEGR] longtemps[PROP] que la mise[REF2] à jour du programme par Durand.
+  rule ref1_mod_prep (lex from "lexicons/compar_adv.lp"){ 
+    pattern{
+      REF1 -[1=comp|mod]-> PROP; PROP[upos=ADV];
+      PROP -[mod]-> DEGR; DEGR[upos=ADV,lemma=lex.degr];
+      d:DEGR -[1=comp,2=obj,Cpl=_C-que]-> REF2}
+    commands{
+      add_node COMP:> PROP;
+      COMP.concept=have-degree-91; COMP.form=_;
+      shift_in PROP ==> COMP;
+      add_edge REF1 -[E:ARG1-of]-> COMP; 
+      add_edge COMP -[ARG2]-> PROP; 
+      add_edge COMP -[ARG3]-> DEGR; DEGR.concept=lex.concept;
+      add_edge COMP -[ARG4]-> REF2; del_edge d}
+   }
+
+% Constructions (Degree Adverb + "de" +  Noun)
+% Ex: Fracas 230P1__231P1__232P1__233P1__234P1__235P1 - ITEL a remporté plus[DEGR] de commandes[N] qu'APCOM[REF2].
+  rule adv-DEGR_de_noun(lex from "lexicons/compar_adv.lp"){
+    pattern{
+      DEGR[upos=ADV,lemma=lex.degr];
+      N[upos=NOUN];
+      d1:N -[det]-> DEGR;
+      d2:DEGR -[1=comp,2=obj,Cpl=_C-que]-> REF2}
+    without{DEGR -[1=comp,2=obl, Cpl=_P-de]-> DET}
+    commands{
+      add_node D:< N;
+      D.form=_; D.upos=DET; D.concept=a;
+      add_edge N -[det]-> D; del_edge d1;
+      add_node COMP:> N;
+      COMP.concept=have-degree-91;COMP.form=_;
+      add_edge D -[E:ARG1-of]-> COMP;
+      add_node PROP:< REF2;
+      PROP.concept=quant; PROP.form=_;
+      add_edge COMP -[ARG2]-> PROP;
+      add_edge COMP -[ARG3]-> DEGR; del_edge d2;
+      add_edge COMP -[ARG4]-> REF2}
+    }
+
+% Constructions (Degree Adverb + "de" + DET+ Noun)
+% Ex: Fracas 237H - ITEL a remporté plus d'une commande.
+  rule adv-DEGR_de_det_noun(lex from "lexicons/compar_adv.lp"){
+    pattern{
+      DEGR[upos=ADV,lemma=lex.degr];
+      d1:DEGR -[1=comp,2=obl, Cpl=_P-de]-> DET; DET[upos=DET|NUM];
+      d2:N -[det]-> DEGR; N[upos=NOUN]}
+    commands{
+      add_node D:< N;
+      D.form=_; D.upos=NUM; D.lemma=_; D.concept=a;
+      add_edge N -[det]-> D; del_edge d2;
+      add_node COMP:> N;
+      COMP.concept=have-degree-91;COMP.form=_;
+      add_edge D -[E:ARG1-of]-> COMP;
+      add_node PROP:> COMP;
+      PROP.concept=quant; PROP.form=_;
+      add_edge COMP -[ARG2]-> PROP;
+      add_edge COMP -[ARG3]-> DEGR;
+      add_edge COMP -[ARG4]-> DET; del_edge d1}
+    }
+
+% Constructions (NUM + Noun + "de" + Degree Adverb + Ref2)
+% Ex: Fracas 243P1 - ITEL a vendu 3000[DET] ordinateurs[N] de plus[DEGR] que APCOM[REF2].
+  rule num_noun_de_adv-DEGR_ref2{
+    pattern{
+      N[upos=NOUN]; d1:N -[det]-> DET; DET[upos=DET|NUM];
+      d2:N -[udep]-> DEGR;
+      DEGR[upos=ADV,lemma=lex.degr];
+      d3:DEGR -[1=comp, 2=obj,Cpl=_C-que]-> REF2}
+    commands{
+      add_node COMP:> N;
+      COMP.concept=have-degree-91;COMP.form=_;
+      add_node D:< N;
+      D.form=_; D.upos=DET; D.concept=a;
+      add_edge N -[det]-> D;
+      add_edge D -[E:ARG1-of]-> COMP;
+      add_node PROP:< REF2;
+      PROP.form=_; PROP.concept=quant;
+      add_edge COMP -[ARG2]-> PROP;
+      add_edge COMP -[ARG3]-> DET;
+      DET.concept=DET.lemma + "_" + lex.concept;
+      del_edge d1;del_edge d2;del_edge d3;
+      del_node DEGR;
+      add_edge COMP -[ARG4]-> REF2}
+    }
+#BEGIN	lex
+degr	concept
+%--------------
+de_moins	less
+de_plus	more
+#END
+
+% Superlative constructions in the form: definite article + degree adverb + adjective + noun
+% Ex: Fracas 001H - Il y a eu un Italien qui est devenu le[D] plus[DEGR] grand[PROP] ténor[REF] du monde.
+  rule superlative{ 
+    pattern{
+      REF -[det]-> D; D[upos=DET,Definite=Def,PronType=Art];
+      d1:REF -[E:ARG1-of]-> PROP;
+      d2:PROP -[mod]-> DEGR; DEGR[upos=ADV,lemma=lex.adv]}
+    commands{
+      add_node COMP:>D; COMP.form = _; COMP.concept=have-degree-91;
+      add_edge REF -[E:ARG1-of]-> COMP;
+      add_edge COMP -[ARG2]-> PROP; 
+      add_edge COMP -[ARG3]-> DEGR; DEGR.concept=lex.concept;
+      del_edge d1; del_edge d2}
+   }
+#BEGIN	lex
+adv	concept
+%----------------
+moins	least
+plus	most
+#END
+
+% If a noun phrase is a superlative and has a complement introduced by the preposition "de", this complement is considered as ARG5 od the superlative head (the superset considered as the reference for the superlative).
+% Ex: Fracas 010P1 -  La plupart[REF] des[DE] grands ténors[S] sont italiens.
+  rule superset{
+    pattern{
+      REF -[E:ARG1-of]-> COMP; COMP[concept=have-degree-91];
+      COMP -[ARG3]-> DEGR; DEGR[concept=least|most];
+      REF -[udep]-> DE; DE[upos=ADP, lemma=de];
+      DE -[ARG1]-> S}
+    without{COMP -[ARG5]-> *}
+    commands{add_edge COMP -[ARG5]-> S; del_node DE}
+  }
+}
+
+% =============================================================================================
+% Various specific constructions
+package FR_specif_constr{
+
+% Since negation adverbs are marked with the Polarity=Neg feature , "ne" particles are unnecessary and can be removed.
+% Ex: Fracas 022H__038P1 - Aucun délégué n'a terminé le rapport.
+  rule del_ne{
+    pattern{NE[upos=ADV,lemma=ne]}
+    commands{del_node NE}
+  }
+
+% Modifier pronouns
+% Ex: Fracas 155P2__156P2 - Guillaume en[P] possède[V] une aussi.
+% Ex: SUD_French-GSD fr-ud-train_00387 - ...Schuon y[P] aborde[V] les grandes lignes de la tradition islamique ...
+  rule modif_pron-adv{
+    pattern{
+      V[upos=VERB]; d1:V -[1=mod, Cpl=*]-> P;
+      P[upos=ADV|PRON, lemma=lex.pro]; d1.Cpl=lex.cpl}
+    commands{
+      add_node PREP:< P;
+      PREP.concept=lex.concept; PREP.form=_;
+      P.concept=it;
+      add_edge V -[E:ARG1-of]-> PREP; del_edge d1;
+      add_edge PREP -[ARG2]-> P}
+  }
+#BEGIN	lex
+pro	cpl	concept
+%----------------------
+en	_P-de	from
+y	_P-à	at
+#END
+
+% modal verbs
+% Ex: Fracas 018H__020H__034P1__036P1 - Tout Européen peut circuler librement en Europe.
+  rule modal_verb{
+    pattern{
+      V[upos=VERB,lemma=lex.verb,!concept];
+      d1:V -[subj]-> SUBJ;
+      d2:V -[comp:obj@x]-> OBJ}
+    commands{
+      V.concept = lex.concept; del_edge d1;
+      add_edge d3: V -> OBJ; d3.1=lex.obj; del_edge d2}
+  }
+#BEGIN	lex
+verb	obj	concept
+%----------
+aller	ARG1	immediate_future
+devoir	ARG1	have-02
+pouvoir	ARG1	possible-01
+#END
+
+
+
+% Coordination with correlated conjunctions.
+% Ex: Fracas 346H - Dupont a vu soit Durand signer le contrat, soit Durand rayer la clause principale.
+  rule soit_soit{
+    pattern{
+      d1:C1 -[1=conj]-> C2;
+      d2:C1 -[cc]-> CONJ1; CONJ1[upos=CCONJ, lemma=soit];
+      d3:C2 -[cc]-> CONJ2; CONJ2[upos=CCONJ, lemma=soit]}
+    commands{
+      add_node CONJ:< CONJ2; CONJ.concept=or-excl; shift_in C1 ==> CONJ;
+      add_edge CONJ -[op1]-> C1; del_edge d1; del_edge d2; del_node CONJ1;
+      add_edge CONJ -[op2]-> C2; del_edge d3; del_node CONJ2}
+  }
+	
+}
+
+% =============================================================================================
+% Idiomatic expressions
+package FR_idioms{
+% Idioms W1 -> W2
+  rule w1_w2{
+    pattern{
+      W1[upos=lex.pos1,lemma=lex.w1]; W2[upos=lex.pos2,lemma=lex.w2];
+      W1 -> W2 ; W1 << W2}
+    without{W2 -[!enhanced]-> *}	
+    commands{
+      W1.textform = W1.textform + "_" + W2.textform;
+      W1.form = W1.textform;
+      W1.upos = lex.pos;
+      W1.concept=lex.concept;
+      del_node W2}
+  }
+#BEGIN	lex
+w1	pos1	w2	pos2	pos	concept
+%-----------------------------------------------
+agent	NOUN	boursier	ADJ	NOUN	stockbroker
+à	ADP	temps	NOUN	ADV	on_time
+cadre	NOUN	exécutif	ADJ	NOUN	executive
+disque	NOUN	dur	ADJ	NOUN	hard_disk
+en	ADP	retard	NOUN	ADV	late
+en	ADP	surpoids	NOUN	ADV	overweight
+œuvre	NOUN	caritatif	ADJ	NOUN	charity
+ordinateur	NOUN	portable	ADJ	NOUN	laptop
+sans	ADP	emploi	NOUN	ADV	unemployed
+#END
+
+% Idioms W2 -> W1
+  rule w2_w1{
+    pattern{
+      W1[upos=lex.pos1,lemma=lex.w1]; W2[upos=lex.pos2,lemma=lex.w2];
+      W2 -> W1 ; W1 << W2}
+    without{W1 -[!enhanced]-> *}
+    commands{
+      W1.textform = W1.textform + "_" + W2.textform;
+      W1.form = W1.textform;
+      W1.upos = lex.pos;
+      W1.concept=lex.concept;
+      del_node W1}
+  }
+#BEGIN	lex
+w1	pos1	w2	pos2	pos	concept
+%----------------------------------------------
+bon	ADJ	marché	NOUN	ADJ	cheap
+#END
+
+% Idioms W1 -> W2 -> W3
+  rule w1_w2_w3{
+    pattern{
+      W1[upos=lex.pos1,lemma=lex.w1];
+      W2[upos=lex.pos2,lemma=lex.w2]; W1 << W2; W1 -> W2;
+      W3[upos=lex.pos3,lemma=lex.w3]; W2 << W3 ; W2 -> W3}
+    without{W2 -[!enhanced]-> W}
+    without{W3 -[!enhanced]-> *}
+    commands{
+      W1.textform = W1.textform + "_" +W2.textform + "_" + W3.textform;
+      W1.form = W1.textform;
+      W1.upos = lex.pos;
+      W1.concept=lex.concept;
+      del_node W2; del_node W3}
+  }
+#BEGIN	lex
+w1	pos1	w2	pos2	w3	pos3	pos	concept
+%-----------------------------------------------------------------
+à	ADP	temps	NOUN	partiel	ADJ	ADV	part-time
+chef	NOUN	de	ADP	entreprise	NOUN	NOUN	company_manager
+homme	NOUN	de	ADP	affaire	NOUN	NOUN	businessman
+mettre	VERB	à	ADP	jour	NOUN	VERB	update-01
+mise	NOUN	à	ADP	jour	NOUN	NOUN	update-01
+#END
+
+% Idioms W1 -> W3 -> W2
+  rule w1_w3_w2{
+    pattern{
+      W1[upos=lex.pos1,lemma=lex.w1];
+      W2[upos=lex.pos2,lemma=lex.w2]; W1 << W2;
+      W3[upos=lex.pos3,lemma=lex.w3]; W2 << W3 ;
+      W1 -> W3;W3 -> W2}
+    without{W3 -[!enhanced]-> W}
+    without{W2 -[!enhanced]-> *}
+    commands{
+      W1.textform = W1.textform + "_" +W2.textform + "_" + W3.textform;
+      W1.form = W1.textform;
+      W1.upos = lex.pos;
+      W1.concept=lex.concept;
+      del_node W2; del_node W3}
+  }
+#BEGIN	lex
+w1	pos1	w2	pos2	w3	pos3	pos	concept
+%-------------------------------------------------------------
+de	ADP	premier	ADJ	plan	NOUN	ADV	proeminent
+mettre	VERB	à	ADP	jour	NOUN	VERB	update-01
+mise	NOUN	à	ADP	jour	NOUN	NOUN	update-01
+#END
+
+% Idioms W1 -> W2 -> W4 -> W3
+  rule w1_w2_w4_w3{
+    pattern{
+      W1[upos=lex.pos1,lemma=lex.w1];
+      W2[upos=lex.pos2,lemma=lex.w2]; W1 << W2; 
+      W3[upos=lex.pos3,lemma=lex.w3]; W2 << W3 ;
+      W4[upos=lex.pos4,lemma=lex.w4]; W3 << W4 ;
+      W1 -> W2;W2 -> W4; W4 -> W3}
+    without{W2 -[!enhanced]-> W}
+    without{W4 -[!enhanced]-> W}
+    without{W3 -[!enhanced]-> *}
+    commands{
+      W1.textform = W1.textform + "_" +W2.textform + "_" + W3.textform + "_" + W4.textform;
+      W1.form = W1.textform;
+      W1.upos = lex.pos;
+      W1.concept=lex.concept;
+      del_node W2; del_node W3; del_node W4}
+  }
+#BEGIN	lex
+w1	pos1	w2	pos2	w3	pos3	w4	pos4	pos	concept
+%--------------------------------------------------------------------------------
+ordre	NOUN	de	ADP	le	DET	jour	NOUN	NOUN	agenda
+vérificateur	NOUN	à	ADP	le	DET	compte	NOUN	NOUN	auditor
+#END
+
+}
+
+% =============================================================================================
+% Light verbs
+package FR_light_verbs{
+  rule obj{
+    pattern{
+      V[upos=VERB,lemma=lex.verb]; N[upos=NOUN,textform=lex.noun];
+      V -[comp:obj@lvc]-> N}
+    commands{
+      N.lemma = V.lemma + "_" + N.textform;
+      N.textform = V.textform + "_" + N.textform;
+      N.form = N.textform;
+      N.concept=lex.concept;
+      N.Mood = V.Mood;
+      N.Tense = V.Tense;
+      N.VerbForm = V.VerbForm;
+      N.upos=VERB;
+      del_feat N.Gender; del_feat N.Number;
+      shift V ==> N; del_node V}
+  }
+#BEGIN	lex
+verb	noun	concept
+%-----------------------
+avoir	besoin	need-01
+donner	lecture	read_out
+prendre	part	participate-01
+#END
+
+  rule det_obj{
+    pattern{
+      V[upos=VERB,lemma=lex.verb]; N[upos=NOUN,textform=lex.noun];
+      N -[det]-> D; D[upos=DET,textform=lex.det];
+      V -[comp:obj@lvc]-> N}
+    commands{
+      N.lemma = V.lemma + "_" + D.textform + "_" + N.textform;
+      N.textform = V.textform + "_" + D.textform + "_" + N.textform;
+      N.form = N.textform;
+      N.concept=lex.concept;
+      N.Mood = V.Mood;
+      N.Tense = V.Tense;
+      N.VerbForm = V.VerbForm;
+      N.upos=VERB;
+      del_feat N.Gender; del_feat N.Number;
+      shift V ==> N; del_node V; del_node D}
+  }
+#BEGIN	lex
+verb	det	noun	concept
+%-----------------------
+avoir	le	droit	have_the_right
+#END
+
+}
+
+% =============================================================================================
+% Arguments of adjectives and adverbs.
+package FR_arg_adj-adv{
+% One oblique argument
+  rule obl(lex from "lexicons/adj_obl.lp"){
+    pattern{
+      A[upos=ADJ,lemma=lex.adj];
+      d1:A -[1=comp,2=obl,Cpl=*]->OBL; d1.Cpl=lex.cpl}
+    commands{
+      add_edge d2: A -> OBL; d2.1=lex.obl;
+      del_edge d1; A.concept=lex.concept}
+  }
+
+}
+% =============================================================================================
+% Arguments of verbs
+package FR_arg_verb{
+% Intransitive use of verbs.
+  rule subj(lex from "lexicons/verb_subj.lp"){
+    pattern{V[upos=AUX|VERB,lemma=lex.verb]; d1:V -[1=subj]-> SUBJ}
+    without{V -[1=comp]-> *}
+    without{V[upos=AUX]; lex.verb <> be_01}
+    commands{
+      add_edge d2: V -> SUBJ; d2.1=lex.subj; del_edge d1;
+      V.concept = lex.concept}
+  }
+  
+% Transitive use of verbs with a subject and a direct object as the only arguments.
+  rule subj_obj(lex from "lexicons/verb_subj_obj.lp"){
+    pattern{
+      V[upos=VERB,lemma=lex.verb]; d1:V -[1=subj]-> SUBJ;
+      d2:V -[1=comp,2=obj]-> OBJ}
+    without{V -[1=comp]-> C}
+    commands{
+      add_edge d3: V -> SUBJ; d3.1=lex.subj; del_edge d1;
+      add_edge d4: V -> OBJ; d4.1=lex.obj; del_edge d2;
+      V.concept = lex.concept}
+  }
+  
+% Transitive use of verbs with a direct object as the only argument in a passive diathesis.
+  rule obj_pass(lex from "lexicons/verb_subj_obj.lp"){
+    pattern{
+      V[upos=VERB,lemma=lex.verb]; lex.pass=yes;
+      d1:V -[1=comp,2=obj]-> OBJ}
+    without{V -[1=comp|subj]-> C}
+    commands{
+      add_edge d2: V -> OBJ; d2.1=lex.obj; del_edge d1;
+      V.concept = lex.concept}
+  }
+
+% Impersonal verbs with a direct object as the only argument.
+  rule obj_impers{
+    pattern{
+      V[upos=VERB,lemma=lex.verb];
+      d1:V -[1=comp,2=obj]-> OBJ}
+    without{V -[1=comp|subj]-> C}
+    commands{
+      add_edge d2: V -> OBJ; d2.1=lex.obj; del_edge d1;
+      V.concept = lex.concept}
+  }
+#BEGIN lex
+verb	obj	concept
+%-----------------------
+y_avoir	ARG1	exist-01
+#END
+
+% Verbs with a subject and a predicative complement as the only arguments.
+  rule subj_pred(lex from "lexicons/verb_subj_pred.lp"){
+    pattern{
+      V[upos=AUX|VERB,lemma=lex.verb]; d1:V -[1=subj]-> SUBJ;
+      d2:V -[1=comp,2=pred]-> OBJ}
+    without{V -[1=comp]-> C}
+    commands{
+      add_edge d3: V -> SUBJ; d3.1=lex.subj; del_edge d1;
+      add_edge d4: V -> OBJ; d4.1=lex.pred; del_edge d2;
+      V.concept = lex.concept}
+  }
+
+% Verbs with an oblique complement and a subject as the only arguments
+  rule subj_obl(lex from "lexicons/verb_subj_obl.lp"){
+    pattern{
+      V[upos=VERB,lemma=lex.verb];
+      d1:V -[1=subj]-> SUBJ;
+      d2:V -[1=comp,2=obl,Cpl=*]-> OBL;
+      d2.Cpl=lex.cpl}
+    without{V -[1=comp]-> C}
+    commands{
+      add_edge d3: V -> SUBJ; d3.1=lex.subj; del_edge d1;
+      add_edge d4: V -> OBL; d4.1=lex.obl; del_edge d2;
+      V.concept = lex.concept}
+  }
+
+% Verbs with an oblique locative complement and a subject as the only arguments. The preposition introducing the oblique argument must be kept.
+% Ex Fracas 252P2__253P2__254P2__255P2__256P2__257P2 - Nous[SUBJ] sommes[V] maintenant en 1996[OBL].
+  rule subj_loc(lex from "lexicons/verb_subj_loc.lp"){
+    pattern{
+      V[upos=VERB,lemma=lex.verb];
+      d1:V -[1=subj]-> SUBJ;
+      d2:V -[1=comp,2=obl,Cpl=*]-> OBL;
+      d2.Cpl=lex.cpl}
+    without{V -[1=comp]-> C}
+    commands{
+      add_edge d3: V -> SUBJ; d3.1=lex.subj; del_edge d1;
+      add_edge d4: V -> OBL; d4.1=loc; d4.2=lex.obl; del_edge d2;
+      V.concept = lex.concept}
+  }
+% Verbs with an oblique complement, which is not introduced by a preposition, and a subject as the only arguments
+  rule subj_obl-dir(lex from "lexicons/verb_subj_obl-dir.lp"){
+    pattern{
+      V[upos=VERB,lemma=lex.verb];
+      d1:V -[1=subj]-> SUBJ;
+      d2:V -[1=comp,2=obl,!Cpl]-> OBL}
+    without{V -[1=comp]-> C}
+    commands{
+      add_edge d3: V -> SUBJ; d3.1=lex.subj; del_edge d1;
+      add_edge d4: V -> OBL; d4.1=lex.obl; del_edge d2;
+      V.concept = lex.concept}
+  }
+
+% Verbs with an location adverb as an oblique complement and a subject as the only arguments
+  rule subj_obl-adv{
+    pattern{
+      V[upos=VERB,lemma=lex1.verb];
+      d1:V -[1=subj]-> SUBJ;
+      d2:V -[1=comp,2=obl]-> ADV; ADV[upos=ADV, lemma=lex2.adv]}
+    without{V -[1=comp]-> C}
+    commands{
+      add_edge V -[ARG1]-> SUBJ; del_edge d1;
+      add_edge V -[loc]-> ADV; del_edge d2;
+      V.concept = lex1.concept1;
+      ADV.concept= lex2.concept2}
+  }
+#BEGIN	lex1
+verb	concept1
+%--------------
+être	be	
+habiter	live-in
+résider	live-in
+vivre	live-in
+#END
+
+#BEGIN	lex2
+adv	concept2
+%---------------
+là	there
+n'_importe_où	anywhere
+#END
+
+% Verbs with a direct object and an oblique complement as the only arguments in the passive diathesis.
+% Ex: Fracas 090P1 - Le président donne lecture des points[OBJ] inscrits[V] à l'ordre[OBL] du jour.
+  rule obj-pass_obl(lex from "lexicons/verb_subj_obj_obl.lp"){
+    pattern{
+      V[upos=VERB,lemma=lex.verb];
+      d2: V -[1=comp, 2=obj]-> OBJ;
+      d3:V -[1=comp,2=obl,Cpl=*]-> OBL; d3.Cpl=lex.cpl}
+    without{V -[1=comp]-> C}
+    commands{
+      add_edge d5: V -> OBJ; d5.1=lex.obj; del_edge d2;
+      add_edge d6: V -> OBL; d6.1=lex.obl; del_edge d3;
+      V.concept = lex.concept}
+  }
+
+% Verbs with a direct object, a predicative complement and a subject as the only arguments
+% Ex: Fracas 163P1 - Jean a vu son papier accepté.
+  rule subj_obj_pred(lex from "lexicons/verb_subj_obj_pred.lp"){
+    pattern{
+      V[upos=VERB,lemma=lex.verb]; d1:V -[1=subj]-> SUBJ;
+      d2: V -[1=comp, 2=obj]-> OBJ;
+      d3:V -[1=comp,2=pred]-> PRED}
+    without{V -[1=comp]-> C}
+    commands{
+      add_edge d4: V -> SUBJ; d4.1=ARG0; del_edge d1;
+      add_edge d5: V -> PRED; d5.1=ARG1; del_edge d2;
+      del_edge d3;
+      V.concept = lex.concept}
+  }
+
+% Verbs with a direct object, an oblique complement and a subject as the only arguments
+  rule subj_obj_obl(lex from "lexicons/verb_subj_obj_obl.lp"){
+    pattern{
+      V[upos=VERB,lemma=lex.verb]; d1:V -[1=subj]-> SUBJ;
+      d2: V -[1=comp, 2=obj]-> OBJ;
+      d3:V -[1=comp,2=obl,Cpl=*]-> OBL; d3.Cpl=lex.cpl}
+    without{V -[1=comp]-> C}
+    commands{
+      add_edge d4: V -> SUBJ; d4.1=lex.subj; del_edge d1;
+      add_edge d5: V -> OBJ; d5.1=lex.obj; del_edge d2;
+      add_edge d6: V -> OBL; d6.1=lex.obl; del_edge d3;
+      V.concept = lex.concept}
+  }
+
+% Verbs with two oblique complements and a subject as the only arguments
+  rule subj_obl_obl(lex from "lexicons/verb_subj_obl_obl.lp"){
+    pattern{
+      V[upos=VERB,lemma=lex.verb]; d1:V -[1=subj]-> SUBJ;
+      d2: V -[1=comp, 2=obl,Cpl=*]-> OBL1; d2.Cpl=_P-de;
+      d3:V -[1=comp,2=obl, Cpl=*]-> OBL2; d3.Cpl=lex.cpl2}
+    without{V -[1=comp]-> C}
+    commands{
+      add_edge d4: V -> SUBJ; d4.1=lex.subj; del_edge d1;
+      add_edge d5: V -> OBL1; d5.1=lex.obl1; del_edge d2;
+      add_edge d6: V -> OBL2; d6.1=lex.obl2; del_edge d3;
+      V.concept = lex.concept}
+  }
+
+}
+
+% =============================================================================================
+% Temporal expressions
+package FR_time{
+% Construction in the form "à" + NUM + "heures"
+% Ex: Fracas 143H__144H - Guillaume a parlé[H] à Marie à[A] quatre[D] heures[T].
+  rule a_num_h{
+    pattern{
+      A[upos=ADP,lemma="à"]; d1:H -[1=mod|udep]-> A;
+      d2:A -[comp:obj]-> T; T[upos=NOUN,lemma=heure];
+      D[upos=NUM]; T -[det]-> D}
+    commands{
+      A.concept=be-temporally-at-91;
+      add_edge H -[E:ARG1-of]-> A; del_edge d1;
+      add_node TE:> A; TE.form=_; TE.concept=date-entity;
+      add_edge A -[ARG2]-> TE;
+      add_edge d3:TE -> T;d3.1=time; T.concept=hour;
+      del_edge d2}
+  }
+
+% Construction in the form a temporal preposition followed by a number expressing a year. The whole is a modifier.
+% Ex Fracas 252H - ITEL était[H] à Birmingham en[EN] 1993[NUM].
+  rule prep_year_mod{
+    pattern{
+       d1:H -[1=mod]-> P; P[upos=ADP,lemma=lex.prep];
+      d2:P -[comp:obj]-> NUM; NUM[upos=NUM]}
+    commands{
+      P.concept=lex.concept;
+      add_edge H -[E:ARG1-of]-> P; del_edge d1;
+      add_node TE:> P; TE.form=_; TE.concept=date-entity;
+      add_edge P -[ARG2]-> TE;
+      add_edge d3:TE -> NUM;d3.1=year; NUM.concept=NUM.lemma;
+      del_edge d2}
+  }
+#BEGIN lex
+prep	concept
+%---------------
+en	be-temporally-at-91
+depuis	since
+#END
+
+% Construction in the form a temporal preposition followed by a number expressing a month. The whole is a modifier.
+% Ex Fracas 316P1 - Durand a obtenu[H] son diplôme en[P] mars[M] et a toujours été employé depuis.
+  rule prep_month_mod(lex1 from "lexicons/months.lp"){
+    pattern{
+       d1:H -[1=mod]-> P; P[upos=ADP,lemma=lex2.prep];
+      d2:P -[comp:obj]-> M; M[upos=NOUN,lemma=lex1.mois]}
+    commands{
+      P.concept=lex2.concept;
+      add_edge H -[E:ARG1-of]-> P; del_edge d1;
+      add_node TE:> P; TE.form=_; TE.concept=date-entity;
+      add_edge P -[ARG2]-> TE;
+      add_edge d3:TE -> M;d3.1=month; M.concept=lex1.concept;
+      del_edge d2}
+  }
+#BEGIN lex2
+prep	concept
+%---------------
+en	be-temporally-at-91
+depuis	since
+#END
+
+% Construction in the form a temporal preposition followed by a number expressing a year. The whole is an argument of a predicate.
+% Ex Fracas 252P2__253P2__254P2__255P2__256P2__257P2 - Nous sommes[H] maintenant en 1996[Y].
+  rule prep_year_arg{
+    pattern{d1:H -[1=loc,2=in]-> Y; Y[upos=NUM]}
+    commands{
+      add_node TE:< Y; TE.form=_; TE.concept=date-entity;
+      add_edge d2: H -> TE; d2.label=d1.label; del_edge d1;
+      add_edge d3:TE -> Y;d3.1=year; Y.concept=Y.lemma}
+  }
+
+
+% Construction in the form a temporal preposition followed by a month and a number expressing a year.
+% Ex Fracas 258P1 - En mars 1993 APCOM a fondé ITEL.
+  rule prep_month_year(lex1 from "lexicons/months.lp"){
+    pattern{
+      d1:H -[1=mod]-> P; P[upos=ADP,lemma=lex.prep];
+      d2:P -[comp:obj]-> M; M[upos=NOUN,lemma=lex1.mois];
+      d3: M -[mod]-> Y; Y[upos=NUM]}
+    commands{
+      P.concept=lex.concept;
+      add_edge H -[E:ARG1-of]-> P; del_edge d1;
+      add_node TE:> P; TE.form=_; TE.concept=date-entity;
+      add_edge P -[ARG2]-> TE;
+      add_edge d4:TE -> M;d4.1=month; M.concept=lex1.concept;
+      add_edge d5:TE -> Y;d5.1=year; Y.concept=Y.lemma;
+      del_edge d2; del_edge d3}
+  }
+#BEGIN lex
+prep	concept
+%---------------
+en	be-temporally-at-91
+depuis	since
+#END
+
+% Construction in the form of a number expressing a day followed by a month and a number expressing a year. This expression is a modifier.
+% Ex Fracas 259H - La conférence était terminée le 8 juillet 1994.
+  rule day_month_year_mod(lex1 from "lexicons/months.lp"){
+    pattern{
+      d1:H -[1=mod]-> D; D[upos=NUM];
+      d2:D -[udep]-> M; M[upos=NOUN,lemma=lex1.mois];
+      d3: M -[mod]-> Y; Y[upos=NUM]}
+    commands{
+      add_node T:< D; T.form=_; T.concept=be-temporally-at-91;
+      add_edge H -[E:ARG1-of]-> T; del_edge d1;
+      add_node TE:> T; TE.form=_; TE.concept=date-entity;
+      add_edge T -[ARG2]-> TE;
+      add_edge d4:TE -> D; d4.1=day; D.concept=D.lemma;
+      add_edge d5:TE -> M;d5.1=month; M.concept=lex1.concept;
+      add_edge d6:TE -> Y;d6.1=year; Y.concept=Y.lemma;
+      del_edge d2; del_edge d3}
+  }
+
+% Construction in the form of a number expressing a day followed by a month and a number expressing a year. This expression is an argument of another expression.
+% Ex Fracas 314P2 - Aujourd'hui, nous sommes[H] le 15[D] mai 1995.
+  rule day_month_year_arg(lex1 from "lexicons/months.lp"){
+    pattern{
+      d1:H -[1=ARG1|ARG2|ARG|time]-> D; D[upos=NUM];
+      d2:D -[udep]-> M; M[upos=NOUN,lemma=lex1.mois];
+      d3: M -[mod]-> Y; Y[upos=NUM]}
+    commands{
+      add_node TE:< D; TE.form=_; TE.concept=date-entity;
+      add_edge d4:H -> TE;d4.label=d1.label; del_edge d1;
+      add_edge d5:TE -> D; d5.1=day; D.concept=D.lemma;
+      add_edge d6:TE -> M;d6.1=month; M.concept=lex1.concept;
+      add_edge d7:TE -> Y;d7.1=year; Y.concept=Y.lemma;
+      del_edge d2; del_edge d3}
+  }
+% Nouns behaving as temporal adverbs without preposition.
+% Ex: Fracas 147H - Guillaume a parlé[H] à Marie lundi[N].
+  rule temp_noun(lex from "lexicons/temp_nouns.lp"){
+    pattern{d1:H -[mod|mod:cl]-> N; N[upos=NOUN,lemma=lex.noun]}
+    commands{
+      add_node T:> H; T.concept=be-temporally-at-91;T.form=_;
+      add_edge H -[E:ARG1-of]-> T;
+      add_node TE:< N; TE.form=_; TE.concept=date-entity;
+      add_edge T -[ARG2]-> TE;
+      add_edge d2:TE -> N;d2.1=lex.rel; N.concept=lex.concept;
+      del_edge d1}
+  }
+
+% Ordering events in the time.
+% Ex: Fracas 169P1__170P1 - Jean a trouvé[E1] Marie avant[T] Guillaume[E2].
+  rule order(lex1 from "lexicons/duration.lp"){
+    pattern{
+      d1:E1 -[1=mod]-> T; T[upos=ADP|ADV|SCONJ,lemma=lex2.cpl];
+      d2:T -[1=comp, 2=obj]-> E2; E2[upos=NOUN|PROPN|VERB]}
+    without{E2.lemma= lex1.noun}
+    commands{
+      add_edge E1 -[ARG1-of]-> T; del_edge d1;
+      add_edge T -[ARG2]-> E2; del_edge d2;
+      T.concept=lex2.concept}
+  }
+#BEGIN	lex2
+cpl	concept
+%-----------------
+après	after
+avant	before
+lorsque	when
+pendant	during
+quand	when
+#END
+
+% Modifier as  a duration complement introduced by a preposition.
+% Ex: Fracas 284P1__285P1__286P1__287P1__288P1 - Dupont a écrit[H] un rapport en[P] deux[D] heures[N].
+  rule prep_duration(lex from "lexicons/duration.lp"){
+    pattern{
+      d1:H -[1=mod]-> P; P[upos=ADP,lemma=durant|en|pendant];
+      d2:P -[comp:obj]-> N; N[upos=NOUN,lemma=lex.noun];
+      N -[det]-> D; D[upos=NUM]}
+    commands{
+      P.concept=last-01;
+      add_edge H -[ARG1-of]-> P; del_edge d1;
+      add_node TQ:> P; TQ.form=_; TQ.concept=temporal-quantity;
+      add_edge P -[ARG2]-> TQ; del_edge d2;
+      add_edge TQ -[quant]-> D; D.concept=D.lemma;
+      add_edge TQ -[unit]-> N; N.concept=lex.concept}
+    }
+
+% Modifier as a start or end point in the past expressed by a duration.
+% Ex: Fracas 319P2 - Depuis qu'APCOM a acheté ses actuels bureaux, ils ont payé des intérêts hypothécaires depuis plus de 10 ans.
+  rule bound_duration(lex from "lexicons/duration.lp"){
+    pattern{
+      d1:H -[1=mod]-> P; P[upos=ADP,lemma=lex2.prep];
+      d2:P -[comp:obj]-> N; N[upos=NOUN,lemma=lex.noun];
+      N -[det]-> D; D[upos=DET|NUM]}
+    commands{
+      P.concept= lex2.concept;
+      add_edge H -[ARG1-of]-> P; del_edge d1;
+      add_node TQ:> P; TQ.form=_; TQ.concept=temporal-quantity;
+      add_edge P -[ARG2]-> TQ; del_edge d2;
+      add_edge TQ -[quant]-> D;
+      add_edge TQ -[unit]-> N; N.concept=lex.concept}
+    }
+#BEGIN lex2
+prep	concept
+%----------------
+dans	in
+depuis	since
+#END
+
+% Date intervals
+% Ex: Fracas 330P1 - ITEL détenait APCOM de 1988 à 1992.
+  rule year_interval{
+    pattern{
+      DE[upos=ADP,lemma=de];
+      d1:DE -[comp:obj]-> BEG; BEG[upos=NUM];
+      d2:DE -[1=comp,2=obl]-> END; END[upos=NUM]; d2.Cpl="_P-à" }
+    commands{
+      DE.concept=date-interval;
+      add_node Y1:> DE; Y1.form=_; Y1.concept=date-entity;
+      add_edge DE -[op1]-> Y1;  add_edge Y1 -[year]-> BEG; del_edge d1;
+      add_node Y2:< END; Y2.form=_; Y2.concept=date-entity;
+      add_edge DE -[op2]-> Y2; add_edge Y2 -[year]-> END;del_edge d2}
+  }
+
+}
+
+% =============================================================================================
+% Addition of English concepts
+package FR_add_concepts{
+% Addition of concepts from the PropBank lexicon.
+  rule propbank(lex from "lexicons/propbank.lp"){
+    pattern{W[upos=lex.upos,lemma=lex.lemma, !concept]}
+    commands{W.concept=lex.concept}
+  }
+
+% Other concepts.
+  rule other(lex from "lexicons/english_concepts.lp"){
+    pattern{W[upos=lex.upos,lemma=lex.lemma, !concept]}
+    commands{W.concept=lex.concept}
+  }
+}
+
+
+% =============================================================================================
+% Strategies
+% =============================================================================================
+strat FR_main{
+  Seq(
+    Onf(del_punct),
+    Onf(normalize),
+    coord.main,
+    Onf(FR_np_de_np),
+    Onf(FR_compar),% Package FR_compar must precede all packages transforming syntactic functions into semantic arguments,because these syntactic functions are used in some comparatinve constructions. Ex: Fracas 212H - Dumbo est plus grand que Mickey.
+    Onf(FR_specif_constr),
+    Onf(FR_idioms),
+    Onf(FR_light_verbs),
+    Onf(FR_arg_adj-adv),
+    Onf(FR_arg_verb),
+    Onf(FR_time), % Package FR_time must follow all packages transforming syntactic functions into semantic arguments because of the rule prep_year_arg.
+    Onf(FR_add_concepts),
+    Onf(add_concepts),
+    Onf(arg),
+    %Onf(del_enhanced_dep),
+    Onf(mod-udep),
+    mod_relcl.main,
+    Onf(poss_det),
+   % Onf(del_det)
+  )
+}

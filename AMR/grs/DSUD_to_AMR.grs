@@ -1,0 +1,503 @@
+% Transformation of DSUD annotation into SemUD (Semantic Universal Dependencies) annotations.
+% =============================================================================================
+% Deleting punctuation
+rule del_punct{
+  pattern{d:H -[1=punct]-> P}
+  commands{del_edge d; del_node P}
+}
+
+% =============================================================================================
+% Noramization of deep structures.
+package normalize{
+% Cleft sentences are replaced by standard sentences and a feature Focus=Yes is added to the focus.
+  rule cleft_sent{
+    pattern{
+      COP[upos=AUX|VERB]; d1: COP -[1=comp,2=pred]-> F;
+      d2: COP -[1=comp,2=cleft]-> COMP}
+    commands{
+      del_edge d1; del_edge d2;
+      shift COP ==> COMP;
+      F.Focus=Yes; del_node COP}
+  }
+
+% Mod dependencies including a complementizer. An independent complementizer is created.
+% Ex: SUD_French-GSD - Ils sont arrivés à Saint-Junien[D] où ils peuvent parfaire[H] leur français et faire le plein de vitamines.
+  rule modif{
+    pattern{ d1:H -[1=mod, Cpl=*]-> D; d1.Cpl=lex.cpl}
+    commands{
+      add_node P:< D; P.concept = lex.concept; P.upos=ADP;
+      add_edge d2: H -> P; d2.label = d1.label; del_feat d2.Cpl; del_edge d1;
+      add_edge P -[comp:obj]-> D}
+  }
+#BEGIN	lex
+cpl	concept
+%-------------------
+_P-loc	at
+#END
+
+}
+
+% =============================================================================================
+% The coordination heads become the coordinating conjunctions. The conjuncts are attached to the conjunction by op1, op2 ... dependencies.
+%Ex: SUD_French-GSD fr-ud-test_00021 - Ce qui transparaît dans tous ces textes est l'espoir et les rêves d'un peuple et de ses enfants.
+% Ex: SUD_French-GSD fr-ud-test_00003 - ...diverses atteintes aux droits humains, comme la détention arbitraire, les coups et les tortures
+package coord{
+
+% =============================================
+% We start with embedded coordinations.
+  package emb{
+% If there is no coordinating conjunction in a coordination, conjunction "and" is added by default.
+    rule add_coord_conj{
+      pattern{d1:C1 -[conj@emb]-> C2}
+      without{C2 -[conj@emb]-> *}
+      without{C2 -[cc]-> *}
+      commands{
+        add_node CONJ :< C2; CONJ.upos=CCONJ;CONJ.concept=and;
+        add_edge C2 -[cc]-> CONJ}
+    }
+ 
+% The process is initialized on the last conjunct. 
+% Ex: SUD_French-GSD fr-ud-test_00012 - ... vous observerez que l'on peut être traditionaliste ET intégriste, mais que les intégristes n'ont[C1] pas le monopole du traditionalisme, et[CONJ] réciproquement[C2]
+    rule init{
+      pattern{d1:C1 -[conj@emb]-> C2; d2:C2 -[cc]-> CONJ}
+      without{C2 -[conj@emb]-> *}
+      commands{
+        del_edge d1; del_edge d2;
+	CONJ.Emb=Yes;
+        add_edge CONJ -[op]-> C1; add_edge CONJ -[op]-> C2;
+        shift_in C1 =[1=conj]=> CONJ; shift_out C1 =[cc]=> CONJ;
+  	shift_out C2 =[conj]=> CONJ}
+    }
+
+% If there is more than two conjuncts in the coordination, the process is propagated to the first conjuncts.
+    rule propag{
+      pattern{d: C1 -[conj@emb]-> CONJ; CONJ -[op]-> C2}
+      without{CONJ -[cc]-> *}
+      commands{del_edge d; add_edge CONJ -[op]-> C1; shift_in C1 =[1=conj]=> CONJ}
+    }
+
+  }
+  
+% =============================================
+% We continue with non-embedded coordinations.
+  package non-emb{
+% If there is no coordinating conjunction in a coordination, conjunction "and" is added by default.
+    rule add_coord_conj{
+      pattern{d1:C1 -[conj]-> C2}
+      without{C2 -[conj]-> *}
+      without{C2 -[cc]-> *}
+      commands{
+        add_node CONJ :< C2; CONJ.upos=CCONJ;CONJ.concept=and;
+        add_edge C2 -[cc]-> CONJ}
+    }
+
+% The process is initialized on the last conjunct. 
+    rule init{
+      pattern{d1:C1 -[conj]-> C2; d2:C2 -[cc]-> CONJ}
+      without{C2 -[conj]-> *}
+      commands{
+        del_edge d1; del_edge d2;
+	CONJ.Emb=Yes;
+        add_edge CONJ -[op]-> C1; add_edge CONJ -[op]-> C2;
+        shift_in C1 =[1=conj]=> CONJ; shift_out C1 =[cc]=> CONJ;
+  	shift_out C2 =[conj]=> CONJ}
+    }
+
+% If there is more than two conjuncts in the coordination, the process is propagated to the first conjuncts.
+    rule propag{
+      pattern{d: C1 -[conj]-> CONJ; CONJ -[op]-> C2}
+      without{CONJ -[cc]-> *}
+      commands{del_edge d; add_edge CONJ -[op]-> C1; shift_in C1 =[1=conj]=> CONJ}
+    }
+  }
+
+% =============================================
+% In the deep structure, there are governors of conjuncts that are not governors of the coordination. We have to distinguish between them when we raise governors to the conjunctions that are new heads of coordinations.
+% Ex: SUD_French-GSD fr-ud-train_12874 - Déboisement, pollution et[CONJ] les pièges[C1] qu'on lui tend menacent[H] son existence.
+  package shared_gov{
+    rule gov{
+      pattern{d1: H -> C1; CONJ -[op]-> C1}
+      without{C1 -[1=mod]-> H}
+      without{d1.1=mod; C1 -> H}
+      without{H -[1=mod]-> C1; C1[upos=ADP|SCONJ]}
+      without{C1 -[mod@relcl]-> D1; H >> C1; H -[1=comp|mod|subj|udep]-> C1} % C1 cannot be a dependent on an element H of a relative clause that is a modifier of C1.
+      commands{add_edge d2: H -> CONJ; d2.label=d1.label; del_edge d1}
+    }
+
+% H is an adjective or adverb modifier of the coordination and it has a conjunct as its subject. It cannot be raised.
+% Ex:  SUD_French-GSD fr-ud-train_01709 - Alain Cophignon est un écrivain et[CONJ] esthéticien[C1] français[H].
+    rule mod_adj-adv{
+      pattern{
+        d1: H -[1=subj]-> C1; CONJ -[op]-> C1;
+	d2: C1 -[1=mod]-> H; H[upos=ADJ|ADV,Shared=Yes]}
+      commands{
+        add_edge d3:H -> CONJ; d3.label = d1.label; del_edge d1;
+	add_edge d4:CONJ -> H; d4.label = d2.label; del_edge d2}
+    }
+
+% The coordination is modified by a relative clause.
+% Ex: SUD_French-GSD  fr-ud-train_07506 - ... les structures[C1] et infra structure que doit[D] posséder[H] une teinturerie.
+    rule mod_relcl{
+      pattern{
+        d1: H -[1=comp|mod|subj|udep]-> C1; CONJ -[op]-> C1; H >> C1;
+	d2: C1 -[mod@relcl]-> D; D[Shared=Yes]}
+      commands{
+        add_edge d3:H -> CONJ; d3.label = d1.label; del_edge d1;
+	add_edge CONJ -[mod@relcl]-> D; del_edge d2}
+    }
+  }
+
+% =============================================
+% Shared dependents that are not distributed on all conjuncts are raised to conjunctions.
+  rule shared_dep{
+    pattern{d1: C1 -[1 <> subj|comp]-> D; D[Shared=Yes]; CONJ -[op]-> C1}
+    without{CONJ -[op]-> C2; d2: C2 -> D}
+    commands{add_edge d2: CONJ -> D; d2.label=d1.label; del_edge d1}
+  }
+
+% =============================================
+% If a coordination head has no governor, its dependencies are reversed.
+  rule nohead_coord{
+    pattern{CONJ[upos=CCONJ]; d: CONJ -[op]-> C}
+    without{* -[^ E:op-of]-> CONJ}
+    commands{add_edge C -[E:op-of]-> CONJ; del_edge d}
+  }
+
+% =============================================
+% Op operators are numbered from the left to the right and Emb marks are removed.
+  package mark{
+    rule op1{
+      pattern{d:CONJ -[op]-> C1}
+      without{CONJ -[op|op1|op2|op3|op4|op5]-> C; C << C1}
+      commands{del_edge d; add_edge CONJ -[op1]-> C1}
+    }
+
+    rule op2{
+      pattern{d:CONJ -[op]-> C2; CONJ -[op1]-> C1}
+      without{CONJ -[op|op2|op3|op4|op5]-> C; C << C2}
+      commands{del_edge d; add_edge CONJ -[op2]-> C2}
+    }
+
+    rule op3{
+      pattern{d:CONJ -[op]-> C3; CONJ -[op2]-> C2}
+      without{CONJ -[op|op3|op4|op5]-> C; C << C3}
+      commands{del_edge d; add_edge CONJ -[op3]-> C3}
+    }
+
+    rule op4{
+      pattern{d:CONJ -[op]-> C4; CONJ -[op3]-> C3}
+      without{CONJ -[op|op4|op5]-> C; C << C4}
+      commands{del_edge d; add_edge CONJ -[op4]-> C4}
+    }
+
+    rule op5{
+      pattern{d:CONJ -[op]-> C4; CONJ -[op4]-> C3}
+      without{CONJ -[op|op5]-> C; C << C4}
+      commands{del_edge d; add_edge CONJ -[op5]-> C4}
+    }
+
+    rule op1-of{
+      pattern{d:C1 -[E:op-of]-> CONJ}
+      without{C -[1=op-of|op1-of|op2-of|op3-of|op4-of|op5-of]-> CONJ; C << C1}
+      commands{del_edge d; add_edge C1 -[E:op1-of]-> CONJ}
+    }
+
+    rule op2-of{
+      pattern{d:C2 -[E:op-of]-> CONJ; C1 -[E:op1-of]-> CONJ}
+      without{C -[1=op-of|op2-of|op3-of|op4-of|op5-of]-> CONJ; C << C2}
+      commands{del_edge d; add_edge C2 -[E:op2-of]-> CONJ}
+    }
+
+    rule op3-of{
+      pattern{d:C3 -[E:op-of]-> CONJ; C2 -[E:op2-of]-> CONJ}
+      without{C -[1=op-of|op3-of|op4-of|op5-of]-> CONJ; C << C3}
+      commands{del_edge d; add_edge C3 -[E:op3-of]-> CONJ}
+    }
+
+    rule op4-of{
+      pattern{d:C4 -[E:op-of]-> CONJ; C3 -[E:op3-of]-> CONJ}
+      without{C -[1=op-of|op4-of|op5-of]-> CONJ; C << C4}
+      commands{del_edge d; add_edge C4 -[E:op4-of]-> CONJ}
+    }
+    rule op5-of{
+      pattern{d:C5 -[E:op-of]-> CONJ; C4 -[E:op4-of]-> CONJ}
+      without{C -[1=op-of|op5-of]-> CONJ; C << C4}
+      commands{del_edge d; add_edge C5 -[E:op5-of]-> CONJ}
+    }
+
+    rule del_emb_mark{
+      pattern{CONJ[upos=CCONJ, Emb]}
+      commands{del_feat CONJ.Emb}
+    }
+   }
+   
+% =============================================
+strat main{
+  Seq(
+    Onf(emb.add_coord_conj), Iter(Seq(emb.init, Onf(emb.propag),Onf(shared_gov),Onf(shared_dep),
+    Onf(nohead_coord), Onf(mark))),
+    Onf(non-emb.add_coord_conj), Iter(Seq(non-emb.init, Onf(non-emb.propag), Onf(shared_gov),
+    Onf(shared_dep),Onf(nohead_coord), Onf(mark))))}
+}
+
+% =============================================================================================
+% Addition of concepts
+package add_concepts{
+% Concepts for proper names and numerals.
+  rule propnamme_numeral{
+    pattern{W[upos=PROPN|NUM, lemma, !concept]}
+    commands{W.concept=W.lemma}
+  }
+
+}
+
+% =============================================================================================
+% Transformation of syntactic arguments into semantic arguments.
+package arg{
+% Subjects of predicates that are not adjectives or adverbs become ARG0 arguments, if the predicates are not verbs with predicative complements.
+  rule arg0_pred_subj{
+    pattern{PRED[upos <> ADJ|ADV]; d:PRED -[1=subj]-> SUBJ}
+    without{PRED -[1=comp,2=pred]-> *}
+    commands{add_edge PRED -[ARG0]-> SUBJ; del_edge d}
+  }
+
+% Adjective and adverb subjects become ARG1 arguments.
+  rule arg1_adj_subj{
+    pattern{ADJ[upos=ADJ|ADV]; d:ADJ -[1=subj]-> SUBJ}
+    commands{add_edge ADJ -[ARG1]-> SUBJ; del_edge d}
+  }
+
+% Direct objects of causative auxiliaries become ARG1 arguments.
+  rule arg1_caus{
+    pattern{d:AUX -[comp:aux@caus]-> V}
+    commands{add_edge AUX -[ARG1]-> V; del_edge d}
+  }
+  
+% Direct objects without complementizer become ARG1 arguments.
+  rule arg1_obj-dir{
+    pattern{d:PRED -[1=comp,2=obj, !Cpl]-> OBJ}
+    commands{add_edge PRED -[ARG1]-> OBJ; del_edge d}
+  }
+
+% Direct objects with complementizer become ARG1 arguments, and the complementizer is kept in memory.
+  rule arg1_obj-indir{
+    pattern{d1:PRED -[1=comp,2=obj, Cpl=*]-> OBJ}
+    commands{add_edge d2:PRED -> OBJ; d2.1=ARG1; d2.Cpl=d1.Cpl; del_edge d1}
+  }
+
+% Direct predicative complement become ARG2 arguments and corresponding subjects become ARG1 arguments.
+  rule arg1_pred-dir_arg0_subj{
+    pattern{
+      d1: PRED -[1=subj]-> SUBJ;
+      d2:PRED -[1=comp,2=pred, !Cpl]-> PCOMP}
+    without{PRED -[ARG1]-> PCOMP}
+    without{PRED -[ARG0]-> SUBJ}
+    commands{
+      add_edge PRED -[ARG1]-> SUBJ; del_edge d1;
+      add_edge PRED -[ARG2]-> PCOMP; del_edge d2}
+  }
+
+% Indirect predicative complement become ARG1 arguments and corresponding subjects become ARG1 arguments.
+  rule arg1_pred-ind_arg0_subj{
+    pattern{
+      d1: PRED -[1=subj]-> SUBJ;
+      d2:PRED -[1=comp,2=pred, Cpl=*]-> PCOMP}
+    without{PRED -[ARG1]-> PCOMP}
+    without{PRED -[ARG0]-> SUBJ}
+    commands{
+      add_edge PRED -[ARG1]-> SUBJ; del_edge d1;
+      add_edge d3: PRED -> PCOMP; d3.1=ARG1; d3.Cpl=d2.Cpl; del_edge d2}
+  }
+
+% Indirect complements become ARG2 arguments.
+  rule arg2_comp{
+    pattern{d:PRED -[1=comp, 2=obl, !Cpl]-> COMPL}
+    commands{add_edge PRED -[ARG2]-> COMPL; del_edge d}
+  }
+
+% Indirect complements introduced with an adposition become ARG2 arguments.
+  rule arg2_comp-ind{
+    pattern{d1:PRED -[1=comp, 2=obl, Cpl=*]-> COMPL}
+    commands{add_edge d2:PRED -> COMPL; d2.1=ARG2; d2.Cpl=d1.Cpl; del_edge d1}
+  }
+
+% Direct predicative complements, with direct objects become ARG2 arguments.
+  rule arg2_pred-dir{
+    pattern{
+      d:PRED -[1=comp, 2=pred, !Cpl]-> PCOMP;
+      PRED -[ARG1|comp:obj]-> *}
+    commands{add_edge PRED -[ARG2]-> PCOMP; del_edge d}
+  }
+
+% Indirect predicative complements, with direct objects become ARG2 arguments.
+  rule arg2_pred-ind{
+    pattern{
+      d1:PRED -[1=comp, 2=pred, Cpl=*]-> PCOMP;
+      PRED -[ARG1|comp:obj]-> *}
+    commands{add_edge d2:PRED -> PCOMP; d2.1=ARG2; d2.Cpl=d1.Cpl; del_edge d1}
+  }
+
+% Pronouns that are udep indirect complements introduced with an adposition become ARG2 arguments.
+% Ex: SUD_French-GSD fr-ud-test_00007 - ... mais c'est à lui qu'ils s'en prennent.
+  rule arg2_udep-ind-pron{
+    pattern{d1:PRED -[1=udep, Cpl=*]-> PRON; PRON[upos=PRON]}
+    commands{add_edge d2:PRED -> PRON; d2.1=ARG2; d2.Cpl=d1.Cpl; del_edge d1}
+  }
+
+}
+
+% =============================================================================================
+% Converting deep dependencies into ordinary dependencies
+rule del_enhanced_dep{
+  pattern{d: H -[enhanced=yes]-> D}
+  commands{del_feat d.enhanced}
+}
+
+% =============================================================================================
+% Addtion of ARG1 relations for MOD and UDEP relations into semantic reverse arguments.
+package mod-udep{
+  rule cpl{
+    pattern{
+      d1: H -[1=mod|udep]-> M; M[upos=ADP|SCONJ];
+      d2: M -[1=comp, 2=obj]-> OBJ}
+    commands{
+      add_edge H -[E:ARG1-of]-> M; del_edge d1;
+      add_edge M -[ARG2]-> OBJ; del_edge d2}
+  }
+
+  rule attr{
+    pattern{d1: H -[1=mod]-> M; d2:M -[ARG0|ARG1]-> H}
+    commands{
+      add_edge d3:H -> M; d3.1 = d2.1 + "-of";
+      d3.enhanced = yes; del_edge d1; del_edge d2}
+  }
+}
+
+
+% =============================================================================================
+% For a  H -[1=mod]-> D dependency, all paths D -> ... -> H are reversed.
+package mod_relcl{
+  rule init{
+    pattern{N -[mod@relcl]-> M; M[!Mod, !Mark]; N[!Mod]}
+    commands{M.Mark=Yes; N.Mod=Head; M.Mod=Dep }
+  }
+
+% =============================================
+  package explore{
+    rule step_ahead{
+      pattern{N1[Mark=Yes]; N1 -[!rev]-> N2; N2[!Mark]}
+        %without{N1 -> N3; N3[Mark]}
+        without{N2[Mod=Head]}
+        commands{N2.Mark=Yes}
+       }
+
+    rule init_success{
+      pattern{N1[Mark=Yes]; d: N1 -[!rev]-> N2; N2[Mod=Head]}
+      commands{d.rev=yes}
+    }
+    
+    rule back_success{
+      pattern{
+        N1[Mark=Yes]; N1 -[rev=yes]-> N2;
+	N0[Mark=Yes]; d:N0 -[!rev]-> N1}
+      without{N1[Mod=Head]}
+      without{N0 -[rev=yes]-> N2} % Ex: Fracas 002H__003H - Il y a des Italiens qui veulent[N0] être[N1] de grands ténors.
+      commands{d.rev=yes}
+    }
+  }
+  
+% =============================================
+  package conclude{
+    rule rev_dep{
+      pattern{d1:H -[rev=yes]-> D}
+      commands{
+        add_edge d2: D -> H; d2.label=d1.label; d2.1=d1.1 + "-of";
+    	del_feat d2.rev; d2.enhanced=yes;
+    	del_edge d1}
+    }
+
+    rule del_mark{
+      pattern{N[Mark=Yes]}
+      commands{del_feat N.Mark}
+    }
+
+    rule del_mod{
+      pattern{N[Mod=Head]; M[Mod=Dep]; d: N -[mod@relcl]-> M; * -[1 <> mod|udep]-> M}
+      commands{del_edge d}
+    }
+    rule del_mod-mark{
+      pattern{N[Mod]}
+      without{ * -[mod@relcl]-> N}
+      without{N -[mod@relcl]-> *}
+      commands{del_feat N.Mod}
+    }
+   }
+
+% =============================================
+  strat main{Iter(Seq(init,Onf(explore),Onf(conclude)))}
+}
+
+% =============================================================================================
+% Possessive determiners
+rule poss_det{
+  pattern{
+    D[upos=DET,PronType=Prs, Number__psor=lex.num, Pers__psor=lex.pers];
+    N -[det]-> D}
+  without{N -[E:ARG1-of]-> POSS; POSS[concept=possess-01]}
+  commands{
+    add_node POSS :> N; POSS.concept=possess-01;POSS.form=_;
+    add_node PERS :> N; PERS.concept=lex.concept; PERS.form=_;
+    D.concept = the;
+    add_edge N -[E:ARG1-of]-> POSS;
+    add_edge POSS -[ARG0]-> PERS}
+}
+#BEGIN	lex
+num	pers	concept
+%----------------------
+Sing	1	i
+Sing	2	you
+Sing	3	he-she
+Plur	1	we
+Plur	2	you
+Plur	3	they
+#END
+
+% =============================================================================================
+% Determiners are removed.
+package del_det{
+  rule init{
+    pattern{d:N -[1=det]-> D}
+    commands{del_edge d; D.Mark=Yes}
+  }
+
+  rule propag{
+    pattern{H[Mark=Yes]; d:H -> D}
+    commands{del_edge d; D.Mark=Yes}
+  }
+
+  rule conclude{
+    pattern{N[Mark=Yes]}
+    without{ N -> *}
+    without{* -> N}
+    commands{del_node N}
+  }
+}
+
+% =============================================================================================
+% Strategies
+% =============================================================================================
+% Strategy that converts a DSUD annotation into an SemUD annotation.
+strat main{
+  Seq(
+    Onf(del_punct),
+    Onf(normalize),
+    coord.main, % This strategy must precede the package ARG because od the constraints on the raising of shared arguments.
+    % Ex: Fracas 137P2 - ICM est l'une de ces entreprises et possède 150 ordinateurs.
+    Onf(arg),
+    Onf(del_enhanced_dep), % this rule must follow the coord.main strategy because enhanced governors of coordination must be distinguished from ordinary governors. It must precede the mod-udep  package where inverted dependencies are distinguished.
+% Ex: SUD_French-GSD fr-ud-test_00003 - ...diverses atteintes aux droits humains, comme la détention arbitraire, les coups et les tortures
+    Onf(mod-udep),
+    mod_relcl.main,
+    %Onf(del_det)
+  )
+}
