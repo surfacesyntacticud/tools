@@ -15,6 +15,25 @@ package FR_mood_tense{
   }
 
 }
+% =============================================================================================
+% Compound temporal expressions.
+rule FR_comp_temp{
+  pattern{
+    T1[upos=NOUN,lemma=lex.noun];
+    T1 -[det]-> D; D[upos=NUM];
+    d:T1 -[conj]-> T2}
+  commands{add_edge T1 -[mod]-> T2; del_edge d}
+}
+#BEGIN	lex
+noun
+%-------
+an
+année
+heure
+jour
+mois
+semaine
+#END
 
 % =============================================================================================
 % For pronouns representing indirect complements, corresponding prepositions are added to the dependencies targeting them.
@@ -299,6 +318,7 @@ strat FR_main{
     Onf(FR_mood_tense),
     Onf(flat),
     idioms.main,
+    Onf(FR_comp_temp),
     Onf(coord_gov),
     Onf(coord_dep),
     Onf(del_cpl),
