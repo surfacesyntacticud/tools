@@ -1,0 +1,23 @@
+verb	subj	cpl	obl	concept
+%----------------------------------------------
+aller	ARG0	_P-à	ARG4	go-01
+arriver	ARG1	_P-à	ARG4	arrive-01
+assister	ARG0	_P-à	ARG1	attend-01
+avoir_besoin	ARG0	_P-de	ARG1	need-01
+avoir_le_droit	ARG0	_P-de	ARG1	have_the_right
+circuler	ARG0	_P-en	loc	move-01
+commencer	ARG0	_P-à	ARG1	start-01
+être	ARG1	_P-à	loc	be
+habiter	ARG0	_P-à	ARG1	inhabit-01
+habiter	ARG0	_P-en	ARG1	inhabit-01
+nager	ARG0	_P-jusqu'_à	loc	swim-01	
+parler	ARG0	_P-à	ARG2	speak-01
+partir	ARG0	_P-de	ARG1	leave-01
+prendre_part	ARG0	_P-à	ARG1	participate-01
+provenir	ARG0	_P-de	ARG3	come-01
+résider	ARG0	_P-en	ARG1	reside-01
+réussir	ARG0	_P-à	ARG1	succeed-01
+se_rendre	ARG0	_P-à	ARG4	go-01
+venir	ARG1	_P-de	ARG3	come-01
+vivre	ARG0	_P-à	loc	live-01
+voter	ARG0	_P-pour	ARG1	vote-01
