@@ -22,13 +22,13 @@ package contract{
 % Initialize the deep form of idiom internal nodes.
   rule initialize_dform_int{
     pattern{N[textform, !dform, InIdiom=Yes]}
-    commands{N.dform=N.textform}
+    commands{N.dform=N.wordform}
   }
 
 % Initialize the deep form of idiom heads.
   rule initialize_dform_head{
     pattern{N[textform, !dform, Idiom=Yes]}
-    commands{N.dform=N.textform}
+    commands{N.dform=N.wordform}
   }
 
 % Raise the deep form of an element to its governor, when it is at its immediate left.
