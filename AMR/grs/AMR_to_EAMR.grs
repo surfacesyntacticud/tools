@@ -1,0 +1,502 @@
+% =============================================================================================
+% ARG-OF dependencies are reversed.
+rule rev_arg-of{
+  pattern{d1: E -[enhanced=yes]-> P; d1.1=lex.argof}
+  commands{del_edge d1; add_edge d2: P -> E; d2.1=lex.arg; d2.rev=Yes}
+}
+#BEGIN	lex
+argof	arg
+%----------
+ARG0-of	ARG0
+ARG1-of	ARG1
+ARG2-of	ARG2
+ARG3-of	ARG3
+ARG4-of	ARG4
+ARG5-of	ARG5
+op1-of	op1
+op2-of	op2
+op3-of	op3
+op4-of	op4
+#END
+
+% =============================================================================================
+% Adding the individuation feature to entities
+package indiv{
+
+% Mass nouns
+  rule mass(lex from "lexicons/mass_nouns.lp"){
+    pattern{N[upos=NOUN,concept=lex.noun,!indiv]}
+    commands{N.indiv=mass}
+  }
+
+% Count nouns
+  rule count(lex from "lexicons/mass_nouns.lp"){
+    pattern{N[upos=NOUN|PRON|PROPN|X,concept,!indiv]}
+    without{N.concept=lex.noun}
+    commands{N.indiv=count}
+  }
+
+}
+% =============================================================================================
+% Adding the involvement and determinacy features to entities.
+package add_involv_det{
+% Entities with a determiner, the number of which does not determine the involvement feature.
+  rule det_ent{
+    pattern{E -[det]-> D; E[!det,!involv, indiv=count]; D[concept=lex.concept]}
+    commands{E.involv=lex.involv; E.det=lex.det}
+  }
+#BEGIN lex
+concept	involv	det
+%-------------------
+all	all	no
+a_lot_of	some	no
+every	all	no
+few	some	no
+how_many	some	no
+more	some	no
+most	most	no
+no	no	no
+some	some	no
+#END
+
+% Entities with a determiner, the number of which determines the involvement feature.
+  rule det_ent_number{
+    pattern{E -[det]-> D; E[Number=lex.number,!det,!involv, indiv=count];
+    D[concept=lex.concept]}
+    commands{E.involv=lex.involv; E.det=lex.det}
+  }
+#BEGIN lex
+concept	number	involv	det
+%---------------------------
+a	Sing	single	no
+a	Plur	some	no
+any	Sing	single	no
+any	Plur	some	no
+the	Sing	single	yes
+the	Plur	all	yes
+this	Sing	single	yes
+this	Plur	all	yes
+which	Sing	single	yes
+which	Plur	all	yes
+#END
+
+% Entities with a plural numeric determiner.
+  rule num_ent{
+    pattern{E -[det]-> D; E[!det,!involv]; D[upos=NUM,lemma <> 1|_,concept]}
+    commands{E.involv=some; E.det=no}
+  }
+
+
+% Pronouns, the number of which does not determine the involvment feature.
+  rule pro{
+    pattern{E[upos=PRON,concept=lex.concept, !det, !involv]}
+    commands{E.involv=lex.involv; E.det=lex.det}
+  }
+#BEGIN	lex
+concept	involv	det
+%-------------------
+everyone	all	no
+most	most	no
+nobody	no	no
+one	single	no
+some	some	no
+someone	single	no
+2	some	no
+#END
+
+
+% Pronouns, the number of which determines the involvment feature.
+  rule pro_number{
+    pattern{E[upos=PRON,Number=lex.number, concept=lex.concept, indiv=count, !det, !involv]}
+    commands{E.involv=lex.involv; E.det=lex.det}
+  }
+#BEGIN	lex
+concept	number	involv	det
+%-------------------
+any	Sing	single	no
+any	Plur	some	no
+he	Sing	single	yes
+he	Plur	all	yes
+it	Sing	single	yes
+it	Plur	all	yes
+this	Sing	single	yes
+this	Plur	all	yes
+which	Sing	single	yes
+which	Plur	all	yes
+#END
+
+% Proper nouns.
+  rule prop-noun{
+    pattern{E[upos=PROPN, !det, !involv]}
+    commands{E.det=yes;E.involv=single}
+  }
+
+% Mass nouns with a determiner.
+  rule mass-noun_det{
+    pattern{
+      E[indiv=mass, !det, !involv];
+      E -[det]-> D; D[concept=lex.concept]}
+    commands{E.det=lex.det;E.involv=lex.involv}
+  }
+#BEGIN lex
+concept	involv	det
+%-------------------
+a	single	no
+all	all	no
+a_lot_of	single	no
+every	all	no
+more	single	no
+most	most	no
+no	no	no
+part	single	no
+some	single	no
+#END
+
+% Mass nouns without a determiner.
+  rule mass-noun{
+    pattern{E[indiv=mass, !det, !involv]}
+    without{E -[det]-> *}
+    commands{E.det=no;E.involv=single}
+  }
+
+% Determinacy of the coordination of two entities.
+  rule coord_det{
+    pattern{
+      C1[det=lex.det1]; C2[det=lex.det2];
+      C[upos=CCONJ,!det]; C -[op1]-> C1; C -[op2]-> C2}
+    commands{C.det=lex.det}
+  }
+#BEGIN	lex
+det1	det2	det
+%-------------------
+no	no	no
+no	yes	no
+yes	no	no
+yes	yes	yes
+#END
+
+}
+
+% =============================================================================================
+% Involvement of coordinations.
+% A level is assigned to all the involvement features of conjuncts. The involvement feature of a coordination "and" is that of the conjunct with a minimal level. The involvement feature of a or-coordination is that of all conjuncts if they are equal, otherwise no  involvement feature is assigned to the coordination.
+package coord_involv{
+  rule init{
+    pattern{CONJ[upos=CCONJ, !involv,!level]; CONJ -[op1]-> *}
+    commands{CONJ.level=10}
+  }
+
+% =======================================
+% A level is assigned to each conjunct according to its involvement feature : all 4, most 3, single 2, some 1, no 0.
+  package set_level{
+    rule all{
+      pattern{
+        CONJ[upos=CCONJ,level];
+	CONJ -[op1|op2|op3|op4|op5]-> C;
+	C[involv=all,!level]}
+      commands{C.level=4}
+    }
+
+    rule most{
+      pattern{
+        CONJ[upos=CCONJ,level];
+	CONJ -[op1|op2|op3|op4|op5]-> C;
+	C[involv=most,!level]}
+      commands{C.level=3}
+    }
+
+    rule single{
+      pattern{
+        CONJ[upos=CCONJ,level];
+	CONJ -[op1|op2|op3|op4|op5]-> C;
+	C[involv=single,!level]}
+      commands{C.level=2}
+    }
+
+    rule some{
+      pattern{
+        CONJ[upos=CCONJ,level];
+	CONJ -[op1|op2|op3|op4|op5]-> C;
+	C[involv=some,!level]}
+      commands{C.level=1}
+    }
+
+    rule no{
+      pattern{
+        CONJ[upos=CCONJ,level];
+	CONJ -[op1|op2|op3|op4|op5]-> C;
+	C[involv=no,!level]}
+      commands{C.level=0}
+    }
+  }
+
+% =======================================
+% The involvement features of the conjuncts are checked from left to right.
+  package propag{
+% The coordination is a and-coordination and the level of the checked conjunct is lower than the conjunction level and different from 2.
+    rule and_sup{
+      pattern{
+        CONJ[upos=CCONJ,concept=and,level]; CONJ -[op1|op2|op3|op4|op5]-> C;
+        C[involv, level<>2,!mark]; C.level < CONJ.level}
+      without{CONJ -[op1|op2|op3|op4|op5]-> C1; C1[!mark]; C1 << C}
+      commands{CONJ.level=C.level; CONJ.involv=C.involv; C.mark=yes}
+    }
+
+% The coordination is a and-coordination and the level of the checked conjunct is lower than the conjunction level and equal to 2.
+    rule and_sup_2{
+      pattern{
+        CONJ[upos=CCONJ,concept=and,level]; CONJ -[op1|op2|op3|op4|op5]-> C;
+        C[involv, level=2,!mark]; C.level < CONJ.level}
+      without{CONJ -[op1|op2|op3|op4|op5]-> C1; C1[!mark]; C1 << C}
+      commands{CONJ.level=1; CONJ.involv=some; C.mark=yes}
+    }
+
+% The coordination is a and-coordination and the level of the checked conjunct is higher than the conjunction level.
+    rule and_inf-eq{
+      pattern{
+        CONJ[upos=CCONJ,concept=and,level]; CONJ -[op1|op2|op3|op4|op5]-> C;
+        C[level,!mark]; CONJ.level <= C.level}
+      without{CONJ -[op1|op2|op3|op4|op5]-> C1; C1[!mark]; C1 << C}
+      commands{C.mark=yes}
+    }
+ % The coordination is a or-coordination and the checked conjunct is the first.
+    rule or_first{
+      pattern{
+        CONJ[upos=CCONJ,concept=or,level =10]; CONJ -[op1|op2|op3|op4|op5]-> C;
+        C[level,involv,!mark]}
+      commands{CONJ.level=C.level; CONJ.involv=C.involv;C.mark=yes}
+    }
+ 
+
+% The coordination is a or-coordination and the level of the checked conjunct is equal to the conjunction level.
+    rule or_next{
+      pattern{
+        CONJ[upos=CCONJ,concept=or,level <> 10]; CONJ -[op1|op2|op3|op4|op5]-> C;
+        C[level,!mark]; CONJ.level = C.level}
+      without{CONJ -[op1|op2|op3|op4|op5]-> C1; C1[!mark]; C1 << C}
+      commands{C.mark=yes}
+    }
+
+% The coordination is an or-coordination and the level of the checked conjunct is different from the conjunction level. The assignement fails.
+    rule or_fail{
+      pattern{
+        CONJ[upos=CCONJ,concept=or,level<>10]; CONJ -[op1|op2|op3|op4|op5]-> C;
+        C[level,!mark]; CONJ.level <> C.level}
+      commands{del_feat CONJ.level; del_feat CONJ.involv}
+    }
+
+% There is no longer a conjunct to check.
+    rule close{
+      pattern{CONJ[upos=CCONJ,level,involv]}
+      without{CONJ -[op1|op2|op3|op4|op5]-> C; C[!mark,involv]}
+      commands{del_feat CONJ.level}
+    }
+  }
+% =======================================
+% All mark and level features are removed.
+  package del_features{
+    rule mark{
+      pattern{CONJ[upos=CCONJ]; CONJ -[op1|op2|op3|op4|op5]-> C; C[mark=yes]}
+      commands{del_feat C.mark}
+    }
+
+    rule level{
+      pattern{C[level]}
+      commands{del_feat C.level}
+    }
+  }
+% =======================================
+  strat main{Seq(init, Onf(set_level), Onf(propag), Onf(del_features))}
+
+}
+
+% =============================================================================================
+% Adding the distribution feature "collective" to participation relations.
+rule distrib{
+  pattern{p:EV -> E; p.1=lex.arg; EV.concept=lex.evt}
+  without{p.distr=collect}
+  commands{p.distr=collect}
+}
+#BEGIN	lex
+evt	arg
+%------------
+pass-03	ARG1
+spend-02	ARG1
+#END
+
+% =============================================================================================
+% When two entities E1 and E2 are related by a chain of dependencies, a scope relation is introduced between them (wide by default).
+package scope_intro{
+% E1 and E2 are arguments of type ARG of the same predicate and E1 is not a single individual.
+% Ex: Fracas 002P1 - Tout Italien[E1] veut être[P] un grand ténor[E2].
+  rule arg_pred_arg{
+    pattern{
+      d1:P -> E1; d1.1=re"ARG.*";
+      d2:P -> E2; d2.1=re"ARG.*";
+      E1[involv]; E2[involv]}
+    without{E1[involv=no|single]}
+    without{d1.distrib=collect}
+    without{ E1 -> E2}
+    without{ E2 -> E1}
+    commands{add_edge E1 -[1=wide,enhanced=yes]-> E2}
+  }
+
+% E1 is argument of type ARG of a predicate P and E2 is a location argument of P.
+% Ex: Fracas 025P1__041H__073P1 - Plusieurs délégués[E1] ont publié[P] les résultats dans de grands quotidiens[E2] nationaux.
+  rule arg_pred_loc{
+    pattern{
+      d1:P -> E1; d1.1=re"ARG.*";
+      P -[1=loc]-> E2;
+      E1[involv]; E2[involv]}
+    without{E1[involv=single]; E2[involv=single]}
+    without{ E1 -> E2}
+    without{ E2 -> E1}
+    commands{add_edge E1 -[1=wide,enhanced=yes]-> E2}
+  }
+% E1 is argument of a predicate P and E2 depends on P via an adposition.
+% Ex: Fracas 024H__040P1 - Beaucoup de délégués[E1] ont obtenu[P] des résultats à[ADP] partir de l'enquête[E2].
+  rule arg_pred_mod_adp_arg{
+    pattern{
+      d1:P -> E1; d1.1=re"ARG.*";
+      P -[1=mod]-> ADP; ADP[upos=ADP, concept <> during];
+      d2: ADP -> E2; d2.1=re"ARG.*";
+      E1[involv]; E2[involv]}
+    without{E1[involv=no|single]; E2[involv=no|single]}
+    without{ E1 -> E2}
+    without{ E2 -> E1}
+    commands{add_edge E1 -[1=wide,enhanced=yes]-> E2}
+  }
+
+% E1 has an adposition ADP as udep dependent and ADP has E2 as an argument.
+% Ex: Fracas 021H - Les résidents[E1] des[ADP] états[E2] membres peuvent circuler librement en Europe.
+  rule udep_adp_arg{
+    pattern{
+      E1 -[1=udep]-> ADP; ADP[upos=ADP];
+      d2: ADP -> E2; d2.1=re"ARG.*";
+      E1[involv]; E2[involv]}
+    without{E1[involv=no|single]; E2[involv=no|single]}
+    without{ E1 -> E2}
+    without{ E2 -> E1}
+    commands{add_edge E1 -[1=wide,enhanced=yes]-> E2}
+  }
+
+}
+
+% =============================================================================================
+% The scope dependency E1 -> E2 is specified or reversed in some cases according to the involvement or plural features attached to E1 and E2.
+package scope_spec{
+
+% Cumulative reading between E1 and E2
+% Ex: Fracas 021H - Les résidents[E1] des états[E2] membres peuvent circuler librement en Europe.
+  rule dual_def{
+    pattern{
+      d1:E1 -[1=wide,enhanced=yes]-> E2;
+      E1[involv=all|most|some];
+      E2[involv=all|most|some]; }
+    without{E1.involv <> E2.involv; E1[involv=some]}
+    without{E1.involv <> E2.involv; E2[involv=some]}
+    without{E2 -[det]-> D2; D2.Number__psor= E1.Number}
+    commands{d1.1=dual}
+  }
+
+% The scope dependency is reversed according to the involvement feature attached to E1 and E2
+  rule involv1_involv2{
+    pattern{
+      d1:E1 -[1=wide,enhanced=yes]-> E2;
+      E1[involv=lex.involv1];
+      E2[involv=lex.involv2, det=lex.det2]}
+    without{E2 -[det]-> D2; D2.Number__psor= E1.Number}
+    commands{del_edge d1; add_edge E2 -[1=wide,enhanced=yes]-> E1}
+  }
+#BEGIN	lex
+involv1	involv2	det2
+%------------------------
+all	single	yes
+some	all	no
+some	all	no
+some	single	yes
+#END
+
+% The scope dependency is reversed according to the plural of E1 and the determinacy feature attached to E2.
+% Ex: Fracas 024H__040P1 - Beaucoup de délégués[E1] ont obtenu des résultats à partir de l'enquête[E2].
+  rule number1_involv2{
+    pattern{
+      d1:E1 -[1=wide,enhanced=yes]-> E2;
+      E1[involv=all|most|some];
+      E2[det=yes]}
+    without{E2 -[det]-> D2; D2.Number__psor= E1.Number}
+    without{E1.det=yes; E2[involv=all|most|some]}
+    without{
+      ADP[upos=ADP]; d2: ADP -> E1; d2.1=re"ARG.*";
+      E2 -[1=udep]-> ADP} 
+    commands{del_edge d1; add_edge E2 -[1=wide,enhanced=yes]-> E1}
+  }
+
+%  The scope dependency is reversed according to the plural of E2 and the involvement feature attached to E1.
+  rule involv1_plural2{
+    pattern{
+      d1:E1 -[1=wide,enhanced=yes]-> E2;
+      E1[involv=no|single,det=no];
+      E2[involv=all|most|some]}
+    commands{del_edge d1; add_edge E2 -[1=wide,enhanced=yes]-> E1}
+  }
+
+}
+
+% =============================================================================================
+% Scope dependencies starting from singular determiners; which are not in the scope of another determiner are removed.
+% Ex Fracas 024H__040P1 - Beaucoup de délégués[E2] ont obtenu des résultats à partir de l'enquête[E1].
+rule scope_del{
+  pattern{d: E1 -[1=wide,enhanced=yes]-> E2; E1[involv=a|no|single]}
+  without{* -[enhanced=yes]-> E1}
+  commands{del_edge d}
+}
+
+% =============================================================================================
+% Simplification of scope dependencies.
+package scope_simplif{
+  rule wide_dual-wide_wide{
+    pattern{
+      E1 -[1=wide,enhanced=yes]-> E2;
+      E2 -[1=wide|dual,enhanced=yes]-> E3;
+      d:E1 -[1=wide,enhanced=yes]-> E3}
+   commands{del_edge d}
+  }
+
+% Ex:  Fracas 057P1 - Plusieurs délégués[E1] portugais ont publié leurs résultats[E2] dans de grands quotidiens[E3] nationaux.
+  rule wide_wide_dual{
+    pattern{
+      E1 -[1=wide,enhanced=yes]-> E2;
+      d:E2 -[1=wide,enhanced=yes]-> E3;
+      E1 -[1=dual,enhanced=yes]-> E3}
+   commands{del_edge d}
+  }
+
+
+}
+
+% =============================================================================================
+% ARG-of dependencies are restaured.
+rule restaure_arg-of{
+  pattern{d1: P -[rev=Yes]-> E}
+  commands{add_edge d2:E -> P; d2.1 = d1.1 + "-of"; del_edge d1}
+}
+
+
+% =============================================================================================
+% Strategies
+% =============================================================================================
+strat main{
+  Seq(
+  Onf(rev_arg-of),
+  Onf(indiv),
+  Onf(add_involv_det),
+  Iter(coord_involv.main),
+  Onf(distrib),
+  Onf(scope_intro),
+  Onf(scope_spec),
+  Onf(scope_del),
+  Onf(scope_simplif),
+  Onf(restaure_arg-of)
+  )
+}
