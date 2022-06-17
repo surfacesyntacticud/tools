@@ -2,7 +2,7 @@ noun	concept	rel
 %-------------------------------
 lundi	monday	weekday
 mardi	tuesday	weekday
-mercredi	wenesday	weekday
+mercredi	wednesday	weekday
 mois	month	month	
 jeudi	thursday	weekday
 samedi	saturday	weekday

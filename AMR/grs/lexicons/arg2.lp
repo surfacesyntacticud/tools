@@ -13,7 +13,7 @@ avant	ADV	before	comp	obl	ARG2
 avec	ADP	with	comp	obj	ARG2
 avoir_besoin	VERB	need-01	comp	obl	ARG1
 à	ADP	at	comp	obj	ARG2
-circuler	VERB	move-01	comp	obl	loc
+circuler	VERB	move-01	comp	obl	ARG-loc
 commencer	VERB	start-01	comp	obl	ARG1
 croire	VERB	believe-01	comp	obj	ARG1
 de	ADP	possess-01	comp	obj	ARG0	
@@ -33,10 +33,10 @@ en_train	ADV	in_the_process	comp	obl	ARG1
 essayer	VERB	try-01	comp	obj	ARG1
 écrire	VERB	write-01	comp	obl	ARG2
 être	AUX	be-01	comp	pred	ARG2
-être	VERB	be	comp	obl	loc
+être	VERB	be	comp	obl	ARG-loc
 faire	VERB	make-06	comp	obj	ARG2
 finir	VERB	finish-01	comp	obj	ARG1
-habiter	VERB	live-01	comp	obl	loc
+habiter	VERB	live-01	comp	obl	ARG-loc
 inscrire	VERB	record-01	comp	obl	loc
 installer	VERB	base-01	comp	obl	loc
 jusqu'_à	ADP	to	comp	obj	ARG2
@@ -56,7 +56,7 @@ pour	ADP	for	comp	obj	ARG2
 prendre_part	VERB	participate-01	comp	obl	ARG1
 prétendre	VERB	claim-01	comp	obj	ARG1
 provenir	VERB	come-01	comp	obl	ARG3
-publier	VERB	publish-01	comp	obl	loc
+publier	VERB	publish-01	comp	obl	ARG-loc
 quand	SCONJ	when	comp	obj	ARG2
 remettre	VERB	give-01	comp	obl	ARG2
 résider	VERB	reside-01	comp	obl	ARG1
@@ -68,5 +68,5 @@ suggérer	VERB	suggest-01	comp	obj	ARG1
 suggérer	VERB	suggest-01	comp	obl	ARG2
 sur	ADP	on	comp	obj	ARG2
 venir	VERB	come-01	comp	obl	ARG3
-vivre	VERB	live-01	comp	obl	loc
+vivre	VERB	live-01	comp	obl	ARG-loc
 voter	VERB	vote-01	comp	obl	ARG1

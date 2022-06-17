@@ -42,7 +42,7 @@ faire	make-06	ARG1	ARG2	yes
 finir	finish-01	ARG0	ARG1	yes
 fonder	found-01	ARG0	ARG1	yes
 grossir	grow-01	ARG0	ARG1	yes
-habiter	live-01	ARG0	loc	yes
+habiter	live-01	ARG0	ARG-loc	yes
 impressionner	impress-01	ARG0	ARG1	yes
 inscrire	record-01	ARG0	ARG1	yes
 installer	base-01	ARG0	ARG1	yes
