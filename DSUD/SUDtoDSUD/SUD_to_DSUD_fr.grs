@@ -249,7 +249,7 @@ package FR_deep_subj_controlled_pred{
   rule subj(lex from "lexicons/fr_verbs_obj_prep_inf.lp"){
     pattern{
       V[upos=VERB,lemma=lex.verb];  INF[upos=AUX|VERB,VerbForm=Inf];
-      V -[1=comp,2=obl,Cpl=*]-> INF; V.Cpl = lex.prep;
+      d:V -[1=comp,2=obl,Cpl=*,deep=x]-> INF; d.Cpl = lex.prep;
       V -[1=comp, 2=obj]-> *; V -[1=subj]-> SUBJ}
     without{ INF -[1=subj]-> *}
     commands{add_edge INF -[E:subj]-> SUBJ}
