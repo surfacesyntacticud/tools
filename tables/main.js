@@ -13,14 +13,27 @@ var app = new Vue({
     filter_kind: "rows", // can be "rows" or "cols"
     filter_value: "",
     columns: [],
-    display_mode: 1, // 1 -> occurences, 2 -> ratio per sent, 3 -> ration per token
+    display_mode: 0, // 0 -> occurences, 1 -> ratio per sent, 2 -> ration per token
 
   },
   watch: {
     display_mode: function () {
+      this.update_sorting();
+      this.refresh_columns();
       this.gridApi.redrawRows();
     },
-    filter_value: function() {
+    filter_value: function() { this.refresh_columns() } 
+  },
+  methods: {
+    update_sorting() {
+      this.columns.forEach(c => { 
+        c.comparator= (function (v1,v2) {
+          return v1[app.display_mode] - v2[app.display_mode]
+        });
+      });
+    },
+    // method called both atfer filering changes and display mode change (sortering should be changed)
+    refresh_columns(){
       if (app.filter_kind == "rows") {
         let filtered_rows = this.cells.filter(l => l.treebank.indexOf(this.filter_value) >= 0);
         this.gridApi.setRowData(filtered_rows);
@@ -41,27 +54,24 @@ var app = new Vue({
         let filtered_rows = this.cells.filter(l => Object.keys(l).some(k => fields.has(k)));
         this.gridApi.setRowData(filtered_rows);
       }
-    }
-  },
-  methods: {
+    },
     cell(data) {
       if (data.colDef.field == "treebank") {
         return `<B>${data.value}</B>`;
       } else {
         let v = "undef"
         if (data.value != undefined) {
-          if (this.display_mode == 1) {
+          if (this.display_mode == 0) {
             v = data.value[0];
-          } else if (this.display_mode == 2) {
+          } else if (this.display_mode == 1) {
             v = data.value[1].toFixed(4)
-          } else if (this.display_mode == 3) {
+          } else if (this.display_mode == 2) {
             v = data.value[2].toFixed(6)
           }
           return (`<a class="btn btn-success btn-sm" onclick='grew_match("${data.data.treebank}","${data.colDef.field}")'>${v}</a>`)
         }
       }
     }
-
   }
 })
 
@@ -77,6 +87,7 @@ function build_grid(data) {
   app.title = md.render(data.title);
   app.cells = data.cells;
   app.columns = data.columns;
+  app.update_sorting(); // ensure that sorting is done on the right component
   global_grew_match = data.grew_match;
   const gridOptions = {
     columnDefs: [col0].concat(app.columns),

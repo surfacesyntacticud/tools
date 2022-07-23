@@ -59,13 +59,13 @@
     <div v-if='alert==""' style="margin-bottom: 10px;">
       Display:
       <div class="btn-group" role="group">
-        <button type="button" class="btn btn-sm" v-bind:class="{ 'btn-success': display_mode==1, 'btn-secondary': display_mode!=1 }" v-on:click="display_mode=1">Occurrences</button>
-        <button type="button" class="btn btn-sm" v-bind:class="{ 'btn-success': display_mode==2, 'btn-secondary': display_mode!=2 }" v-on:click="display_mode=2">Ratio / sents</button>
-        <button type="button" class="btn btn-sm" v-bind:class="{ 'btn-success': display_mode==3, 'btn-secondary': display_mode!=3 }" v-on:click="display_mode=3">Ratio / tokens</button>
+        <button type="button" class="btn btn-sm" v-bind:class="{ 'btn-success': display_mode==0, 'btn-secondary': display_mode!=0 }" v-on:click="display_mode=0">Occurrences</button>
+        <button type="button" class="btn btn-sm" v-bind:class="{ 'btn-success': display_mode==1, 'btn-secondary': display_mode!=1 }" v-on:click="display_mode=1">Ratio / sents</button>
+        <button type="button" class="btn btn-sm" v-bind:class="{ 'btn-success': display_mode==2, 'btn-secondary': display_mode!=2 }" v-on:click="display_mode=2">Ratio / tokens</button>
       </div>
 
       &nbsp;&nbsp;•••&nbsp;&nbsp;
-      Filter on <input id="toggle-state" type="checkbox" checked data-toggle="toggle" data-on="Rows" data-off="Columns" data-onstyle="light" data-offstyle="light" data-size="sm">
+      Filter on <input id="toggle-state" type="checkbox" checked data-toggle="toggle" data-on="Rows" data-off="Columns" data-onstyle="success" data-offstyle="success" data-size="sm">
       : <input type="text" v-model="filter_value" />
       <i v-on:click="filter_value = ''" class="fa fa-times-circle fa-lg"></i>
     </div>
