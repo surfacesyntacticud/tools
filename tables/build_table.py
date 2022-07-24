@@ -1,12 +1,15 @@
+import sys
 import subprocess
 import json
 import re
 import glob
 import os.path
-import sys
+import argparse
+from xml.dom.expatbuilder import parseString
 
 
 # The list of features used in UD 2.10 is needed or generated the right Grew pattern for the MISC case
+# See: https://grew.fr/doc/conllu/#how-the-misc-field-is-handled-by-grew
 ud_feats_2_10 = [
     "Abbr", "AdjType", "AdpType", "AdvType", "Agglutination", "Analyt", "Animacy", "Animacy[gram]", "Antr", "Aspect", "Augm",
     "Case", "Cfm", "Clas", "Class", "Clitic", "Clusivity", "Clusivity[obj]", "Clusivity[psor]", "Clusivity[subj]", "Compound", "Comt", 
@@ -28,25 +31,35 @@ ud_feats_2_10 = [
     "Shared" # SUD
   ]
 
-verbose = True
+parser = argparse.ArgumentParser()
+parser.add_argument("basedir", help = "the main folder where all corpora are stored as subdirs")
+parser.add_argument("columns", help = "Must be one either of the values 'FEATS', 'MISC', 'DEPS' or is interpreted as a feature name")
+parser.add_argument("-f", "--filter", help = "The template for selecting treebanks", default="*")
+parser.add_argument("-o", "--out_file", help = "The name of the output json file")
+parser.add_argument("-s", "--suffix", default="@2.10", help = "The suffix used in Grew-match naming of the corpus")
+parser.add_argument("-t", "--title", help = "The title of the final webpage")
+parser.add_argument("-q", "--quiet", action="store_true", default = False, help = "turn off the progession info printing")
+args=parser.parse_args()
+
+
 
 
 
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------------
 # Parameters
-basedir = "/users/guillaum/resources/ud-treebanks-v2.10"
-version = "2.10"
-filter = "*UD_B*"
-column = "Gender"  # known values are one of the values "FEATS", "MISC", "DEPS", "FEAT" or is interpreted as a feature name
-out_file = "ud_gender.json"
+# basedir = "/users/guillaum/resources/ud-treebanks-v2.10"
+# version = "2.10"
+# filter = "*UD_B*"
+# column = "Gender"  # 
+# out_file = "ud_gender.json"
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------------
 # ==== Step 1 ====
 # Build the list in corpora to consider in [corpus_list]
-corpus_list = [os.path.basename(d) for d in glob.glob(basedir+"/"+filter)]
-if verbose:
-    print ("%d corpora found: %s" % (len(corpus_list), str(corpus_list)))
+corpus_list = [os.path.basename(d) for d in glob.glob(args.basedir+"/"+args.filter)]
+if (not args.quiet):
+    print ("%d corpora found: %s" % (len(corpus_list), str(corpus_list)),file=sys.stderr)
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------------
 # ==== Step 2 ====
@@ -61,17 +74,17 @@ def add_corpus (corpus):
     corpus_cpt += 1
     sub_dict = {}
 
-    nb_token = int(subprocess.run(['cat %s/%s/*.conllu | egrep "^[0-9]+\t" | wc -l' % (basedir, corpus)], capture_output=True, shell=True, encoding='UTF-8').stdout)
-    nb_sent = int(subprocess.run(['cat %s/%s/*.conllu | grep "^# sent_id =" | wc -l' % (basedir, corpus)], capture_output=True, shell=True, encoding='UTF-8').stdout)
+    nb_token = int(subprocess.run(['cat %s/%s/*.conllu | egrep "^[0-9]+\t" | wc -l' % (args.basedir, corpus)], capture_output=True, shell=True, encoding='UTF-8').stdout)
+    nb_sent = int(subprocess.run(['cat %s/%s/*.conllu | grep "^# sent_id =" | wc -l' % (args.basedir, corpus)], capture_output=True, shell=True, encoding='UTF-8').stdout)
 
-    if column == "FEATS":
-        command = 'cat %s/%s/*.conllu | egrep "^[0-9]+\t" | cut -f 6 | grep -v "_" | tr "|" "\n" | cut -f 1 -d "=" | sort | uniq -c' % (basedir, corpus)
-    elif column == "DEPS":
-        command = 'cat %s/%s/*.conllu | egrep "^[0-9]+\t" | cut -f 8 | sort | uniq -c' % (basedir, corpus)
-    elif column == "MISC":
-        command = 'cat %s/%s/*.conllu | egrep "^[0-9]+\t" | cut -f 10 | grep -v "_" | tr "|" "\n" | grep "=" | cut -f 1 -d "=" | sort | uniq -c' % (basedir, corpus)
+    if args.columns == "FEATS":
+        command = 'cat %s/%s/*.conllu | egrep "^[0-9]+\t" | cut -f 6 | grep -v "_" | tr "|" "\n" | cut -f 1 -d "=" | sort | uniq -c' % (args.basedir, corpus)
+    elif args.columns == "DEPS":
+        command = 'cat %s/%s/*.conllu | egrep "^[0-9]+\t" | cut -f 8 | sort | uniq -c' % (args.basedir, corpus)
+    elif args.columns == "MISC":
+        command = 'cat %s/%s/*.conllu | egrep "^[0-9]+\t" | cut -f 10 | grep -v "_" | tr "|" "\n" | grep "=" | cut -f 1 -d "=" | sort | uniq -c' % (args.basedir, corpus)
     else:
-        command = 'cat %s/%s/*.conllu | egrep "^[0-9]+\t" | cut -f 6 | grep -v "_" | tr "|" "\n" | grep "^%s=" | cut -f 2 -d "=" | sort | uniq -c' % (basedir, corpus, column)
+        command = 'cat %s/%s/*.conllu | egrep "^[0-9]+\t" | cut -f 6 | grep -v "_" | tr "|" "\n" | grep "^%s=" | cut -f 2 -d "=" | sort | uniq -c' % (args.basedir, corpus, args.columns)
     raw = subprocess.run([command], capture_output=True, shell=True, encoding='UTF-8')
     column_cpt = 0 
     for line in raw.stdout.split("\n"):
@@ -84,8 +97,8 @@ def add_corpus (corpus):
     dict[corpus] = sub_dict
 
 for corpus in corpus_list:
-    if verbose:
-        print ("---> %d/%d: %s" % (corpus_cpt + 1, len(corpus_list), corpus))
+    if (not args.quiet):
+        print ("---> %d/%d: %s" % (corpus_cpt + 1, len(corpus_list), corpus),file=sys.stderr)
     add_corpus(corpus)
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -140,33 +153,33 @@ def pattern_feat (feat_name, feat_value):
     return (['pattern { N [%s="%s"] }' % (grew_feat_name(feat_name), feat_value)], None)
 
 def pattern (x):
-    if column == "FEATS":
+    if args.columns == "FEATS":
         return pattern_feats(x)
-    elif column == "DEPS":
+    elif args.columns == "DEPS":
         return pattern_deps(x)
-    elif column == "MISC":
+    elif args.columns == "MISC":
         return pattern_misc(x)
     else:
-        return pattern_feat(column, x)
+        return pattern_feat(args.columns, x)
 
-def title (x):
-    if column == "FEATS":
-        return "## Usage of features in UD treebanks ("+version+") in `FEATS` CoNLL column"
-    elif column == "DEPS":
-        return "## Usage of dependency relations in SUD treebanks ("+version+")"
-    elif column == "MISC":
-        return "## Usage of features in UD treebanks ("+version+") in `MISC` CoNLL column (see [Grew doc](https://grew.fr/doc/conllu/#how-the-misc-field-is-handled-by-grew))"
+def default_title (x):
+    if args.columns == "FEATS":
+        return "## Usage of features in `FEATS` CoNLL column"
+    elif args.columns == "MISC":
+        return "## Usage of features in `MISC` CoNLL column (see [Grew doc](https://grew.fr/doc/conllu/#how-the-misc-field-is-handled-by-grew))"
+    elif args.columns == "DEPS":
+        return "## Usage of dependency relations"
     else:
-        return "## Usage of `%s` feature in UD treebanks (%s)" % (column, version)
+        return "## Usage of `%s` feature" % (args.columns)
 
 def build_row(corpus):
     d = dict[corpus]
     l = len(d)
-    d.update({"treebank": corpus+"@"+version+" ⮕ "+str(l)})
+    d.update({"treebank": corpus+args.suffix+" ⮕ "+str(l)})
     return d
 
 grid = {
-    "title": title(column),
+    "title": "## " + args.title if args.title != None else default_title(args.columns),
     "grew_match": 
         {feat: {
             "code": pattern(feat)[0], 
@@ -180,5 +193,8 @@ grid = {
 # ------------------------------------------------------------------------------------------------------------------------------------------------------
 # ==== Step 5 ====
 # Store the final JSON object in a file
-with open(out_file, "w") as file:
-    json.dump(grid, file, indent=2)
+if args.out_file == None:
+    json.dump(grid, sys.stdout, indent=2)
+else:
+    with open(args.out_file, "w") as file:
+        json.dump(grid, file, indent=2)
