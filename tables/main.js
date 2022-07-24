@@ -28,11 +28,13 @@ var app = new Vue({
     update_sorting() {
       this.columns.forEach(c => { 
         c.comparator= (function (v1,v2) {
-          return v1[app.display_mode] - v2[app.display_mode]
+          let n1 = v1 == undefined ? 0 : v1[app.display_mode];
+          let n2 = v2 == undefined ? 0 : v2[app.display_mode];
+          return n1 - n2
         });
       });
     },
-    // method called both atfer filering changes and display mode change (sortering should be changed)
+    // method called both atfer filering changes and display mode change (sorting should be changed)
     refresh_columns(){
       if (app.filter_kind == "rows") {
         let filtered_rows = this.cells.filter(l => l.treebank.indexOf(this.filter_value) >= 0);
