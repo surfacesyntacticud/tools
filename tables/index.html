@@ -53,19 +53,81 @@
 <body>
   <div id="app" class="example-wrapper">
     <div>
-      <div class="alert alert-info" role="alert" v-if='alert != ""' v-html="alert"></div>
       <div v-if='title != ""' v-html="title" style="text-align: center;"></div>
     </div>
-    <div v-if='alert==""' style="margin-bottom: 10px;">
+    <div v-if="portal">
+      <h1>Universal tables</h1>
+      <div class="alert alert-info" role="alert" v-if='alert != ""' v-html="alert"></div>
+
+      <p>This page proposes a set of tables which describe the global usage of dependency relations, features and
+        feature values in the UD / SUD treebanks collections (version 2.10).</p>
+
+      <p>See <a href="https://github.com/surfacesyntacticud/tools/tree/master/tables">Github</a> for more info or issues
+        reporting.</p>
+
+      <p>The following tables are available:</p>
+
+      <ul>
+        <li>On dependency relations:</li>
+        <ul>
+          <li><a href="?data=ud/deps">UD</a></li>
+          <li><a href="?data=sud/deps">SUD</a></li>
+        </ul>
+        <li>On Features used in UD</li>
+        <ul>
+          <li><a href="?data=ud/feats">FEATS</a></li>
+          <li><a href="?data=ud/misc">MISC</a></li>
+        </ul>
+        <li>On Features values in UD (only major features, listed <a
+            href="https://universaldependencies.org/u/feat/index.html">here</a> are given)</li>
+        <ul>
+          <li>PronType</li>
+          <li>Gender</li>
+          <li>VerbForm</li>
+          <li>NumType</li>
+          <li>Animacy</li>
+          <li>Mood</li>
+          <li>Poss</li>
+          <li>NounClass</li>
+          <li>Tense</li>
+          <li>Reflex</li>
+          <li>Number</li>
+          <li>Aspect</li>
+          <li>Foreign</li>
+          <li>Case</li>
+          <li>Voice</li>
+          <li>Abbr</li>
+          <li>Definite</li>
+          <li>Evident</li>
+          <li>Typo</li>
+          <li>Degree</li>
+          <li>Polarity</li>
+          <li>Person</li>
+          <li>Polite</li>
+          <li>Clusivity</li>
+        </ul>
+    </div>
+
+    <div v-show='!portal && alert==""' style="margin-bottom: 10px;">
+      <a href="."><button type="button" class="btn btn-success btn-sm">Top</button></a>
+      
+      &nbsp;&nbsp;•••&nbsp;&nbsp;
       Display:
       <div class="btn-group" role="group">
-        <button type="button" class="btn btn-sm" v-bind:class="{ 'btn-success': display_mode==0, 'btn-secondary': display_mode!=0 }" v-on:click="display_mode=0">Occurrences</button>
-        <button type="button" class="btn btn-sm" v-bind:class="{ 'btn-success': display_mode==1, 'btn-secondary': display_mode!=1 }" v-on:click="display_mode=1">Ratio / sents</button>
-        <button type="button" class="btn btn-sm" v-bind:class="{ 'btn-success': display_mode==2, 'btn-secondary': display_mode!=2 }" v-on:click="display_mode=2">Ratio / tokens</button>
+        <button type="button" class="btn btn-sm"
+          v-bind:class="{ 'btn-success': display_mode==0, 'btn-secondary': display_mode!=0 }"
+          v-on:click="display_mode=0">Occurrences</button>
+        <button type="button" class="btn btn-sm"
+          v-bind:class="{ 'btn-success': display_mode==1, 'btn-secondary': display_mode!=1 }"
+          v-on:click="display_mode=1">Ratio / sents</button>
+        <button type="button" class="btn btn-sm"
+          v-bind:class="{ 'btn-success': display_mode==2, 'btn-secondary': display_mode!=2 }"
+          v-on:click="display_mode=2">Ratio / tokens</button>
       </div>
 
       &nbsp;&nbsp;•••&nbsp;&nbsp;
-      Filter on <input id="toggle-state" type="checkbox" checked data-toggle="toggle" data-on="Rows" data-off="Columns" data-onstyle="success" data-offstyle="success" data-size="sm">
+      Filter on
+       <input id="toggle-state" type="checkbox" checked data-toggle="toggle" data-on="Rows" data-off="Columns" data-onstyle="success" data-offstyle="success" data-size="sm" style="width: 100px;">
       : <input type="text" v-model="filter_value" />
       <i v-on:click="filter_value = ''" class="fa fa-times-circle fa-lg"></i>
     </div>

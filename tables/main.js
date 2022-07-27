@@ -6,6 +6,7 @@ var md = new Remarkable();
 var app = new Vue({
   el: '#app',
   data: {
+    portal: true,
     title: "",
     alert: "",
     gridApi: null,
@@ -86,6 +87,7 @@ const col0 = {
 }
 
 function build_grid(data) {
+  app.portal = false;
   app.title = md.render(data.title);
   app.cells = data.cells;
   app.columns = data.columns;
@@ -137,8 +139,6 @@ document.addEventListener('DOMContentLoaded', () => {
       .catch((error) => {
         app.alert = md.render(`## Cannot find file \`${file}.json\`.`)
       });
-  } else {
-    app.alert = md.render("## This web page is expected a `data` GET argument.");
   }
 
   $('#toggle-state').change(function() {
