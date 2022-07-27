@@ -20,7 +20,7 @@ ud_feats:
 
 start:
 	python -m http.server &
-	open "http://localhost:8000?data=data/ud_misc"
+	open "http://localhost:8000?data=ud/feats"
 
 stop:
 	kill `lsof -t -i :8000`
