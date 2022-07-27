@@ -1,11 +1,11 @@
 UD=/users/guillaum/resources/ud-treebanks-v2.10
 SUD=/users/guillaum/resources/sud-treebanks-v2.10
 
-sud:
+sud_build:
 	mkdir -p sud
 	python build_table.py -f "*UD_B*" -o sud/sud_deps.json ${SUD} DEPS
 
-ud:
+ud_build:
 	mkdir -p ud
 	python build_table.py -f "*UD_B*" -o ud/ud_deps.json ${UD} DEPS
 	python build_table.py -f "*UD_B*" -o ud/ud_feats.json ${UD} FEATS
@@ -18,3 +18,9 @@ ud_feats:
 		python build_table.py -f "*UD_B*" -o ud/$$feat.json ${UD} $$feat ; \
 	done
 
+start:
+	python -m http.server &
+	open "http://localhost:8000?data=data/ud_misc"
+
+stop:
+	kill `lsof -t -i :8000`
