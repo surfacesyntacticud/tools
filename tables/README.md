@@ -44,20 +44,23 @@ The tables are available through the URL http://tables.grew.fr with direct links
     * filtering on rows automatically filters the non empty columns
     * filtering on columns automatically filters the non empty rows   
  * Columns are sortable and can be moved
- * Counting in celles is available as:
+ * Counting in cells is available as:
     * `Occurences` &rarr; the number of times the corresponding element is present in the corpus
     * `Ratio / sents` &rarr; the `Occurences` number divided by the number of sentences in the corpus
     * `Ratio / tokens` &rarr; the `Occurences` number divided by the number of tokens in the corpus
  * Each observation is linked to the corresponding [Grew-match](http://match.grew.fr) request (with a clustering on values in the case of *feature name* tables).
 
-## Computing tables
-
-The python script `build_table.py` builds the JSON file.
-
 ## Issues
 Problems, suggestions… can be reported [here](https://github.com/surfacesyntacticud/tools/issues/new?labels=tables).
 
-## Local usage of the tables
+## Dev info
+
+### Computing tables
+
+The python script `build_table.py` builds the JSON file.
+See `python build_table.py --help` or examples in [`Makefile`](./Makefile) for usage. 
+
+### Local rendering of the tables
 
 In the `tables` folder, run the command `python -m http.server`.
 Then open of the page http://localhost:8000 to have access to the different tables.
