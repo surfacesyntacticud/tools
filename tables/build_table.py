@@ -61,17 +61,18 @@ def add_corpus (corpus):
     corpus_cpt += 1
     sub_dict = {}
 
-    nb_token = int(subprocess.run(['cat %s/%s/*.conllu | egrep "^[0-9]+\t" | wc -l' % (args.basedir, corpus)], capture_output=True, shell=True, encoding='UTF-8').stdout)
+    nb_token = int(subprocess.run(['cat %s/%s/*.conllu | egrep "^[.0-9]+\t" | wc -l' % (args.basedir, corpus)], capture_output=True, shell=True, encoding='UTF-8').stdout)
     nb_sent = int(subprocess.run(['cat %s/%s/*.conllu | grep "^# sent_id =" | wc -l' % (args.basedir, corpus)], capture_output=True, shell=True, encoding='UTF-8').stdout)
 
     if args.columns == "FEATS":
-        command = 'cat %s/%s/*.conllu | egrep "^[0-9]+\t" | cut -f 6 | grep -v "_" | tr "|" "\n" | cut -f 1 -d "=" | sort | uniq -c' % (args.basedir, corpus)
+        command = 'cat %s/%s/*.conllu | egrep "^[.0-9]+\t" | cut -f 6 | grep -v "_" | tr "|" "\n" | cut -f 1 -d "=" | sort | uniq -c' % (args.basedir, corpus)
     elif args.columns == "DEPS":
-        command = 'cat %s/%s/*.conllu | egrep "^[0-9]+\t" | cut -f 8 | sort | uniq -c' % (args.basedir, corpus)
+        command = 'cat %s/%s/*.conllu | egrep "^[.0-9]+\t" | cut -f 8 | sort | uniq -c' % (args.basedir, corpus)
     elif args.columns == "MISC":
-        command = 'cat %s/%s/*.conllu | egrep "^[0-9]+\t" | cut -f 10 | grep -v "_" | tr "|" "\n" | grep "=" | cut -f 1 -d "=" | sort | uniq -c' % (args.basedir, corpus)
+        command = 'cat %s/%s/*.conllu | egrep "^[.0-9]+\t" | cut -f 10 | tr "|" "\n" | grep "=" | cut -f 1 -d "=" | sort | uniq -c' % (args.basedir, corpus)
+        print (command)
     else:
-        command = 'cat %s/%s/*.conllu | egrep "^[0-9]+\t" | cut -f 6 | grep -v "_" | tr "|" "\n" | grep "^%s=" | cut -f 2 -d "=" | sort | uniq -c' % (args.basedir, corpus, args.columns)
+        command = 'cat %s/%s/*.conllu | egrep "^[.0-9]+\t" | cut -f 6 | tr "|" "\n" | grep "^%s=" | cut -f 2 -d "=" | sort | uniq -c' % (args.basedir, corpus, args.columns)
     raw = subprocess.run([command], capture_output=True, shell=True, encoding='UTF-8')
     column_cpt = 0 
     for line in raw.stdout.split("\n"):
@@ -161,7 +162,6 @@ def default_title (x):
 
 def build_row(corpus):
     d = dict[corpus]
-    l = len(d)
     d.update({"treebank": corpus+args.suffix})
     return d
 
