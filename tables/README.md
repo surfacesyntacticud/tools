@@ -26,7 +26,7 @@ The rendering of the table is done with [ag-grid JS library](https://www.ag-grid
 ## Local usage
 
 In the `tables` folder, run the command `python -m http.server`.
-Then used one of the links: [MISC](http://localhost:8000?data=data/ud_misc), [FEATS](http://localhost:8000?data=data/ud_feats), [UD relations](http://localhost:8000?data=data/ud_deps) or [SUD relations](http://localhost:8000?data=data/sud_deps).
+Then open of the page http://localhost:8000 to have access to the different tables.
 
 ## Python script
 
@@ -41,5 +41,5 @@ Problems, suggestions… can be reported [here](https://github.com/surfacesyntac
 
  ## Acknowledgement
 
- Thanks to Santiago for letting me know about the [ag-grid JS library](https://www.ag-grid.com/)! 
+ Thanks to Santiago for letting me know about the perfect [ag-grid JS library](https://www.ag-grid.com/)! 
  Thanks to the users of the previous versions for their feedback and suggestions.
