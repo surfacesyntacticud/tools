@@ -41,19 +41,6 @@ parser.add_argument("-t", "--title", help = "The title of the final webpage")
 parser.add_argument("-q", "--quiet", action="store_true", default = False, help = "turn off the progession info printing")
 args=parser.parse_args()
 
-
-
-
-
-
-# ------------------------------------------------------------------------------------------------------------------------------------------------------
-# Parameters
-# basedir = "/users/guillaum/resources/ud-treebanks-v2.10"
-# version = "2.10"
-# filter = "*UD_B*"
-# column = "Gender"  # 
-# out_file = "ud_gender.json"
-
 # ------------------------------------------------------------------------------------------------------------------------------------------------------
 # ==== Step 1 ====
 # Build the list in corpora to consider in [corpus_list]
@@ -175,7 +162,7 @@ def default_title (x):
 def build_row(corpus):
     d = dict[corpus]
     l = len(d)
-    d.update({"treebank": corpus+args.suffix+" ⮕ "+str(l)})
+    d.update({"treebank": corpus+args.suffix})
     return d
 
 grid = {
@@ -186,7 +173,7 @@ grid = {
             "key": pattern(feat)[1], 
             "users": users}
         for (feat, users) in key_list },
-    "columns": [{"field": feat, "headerName": feat+" ⮕ "+str(users)} for (feat, users) in key_list],
+    "columns": [{"field": feat, "headerName": feat} for (feat, users) in key_list],
     "cells": [build_row(corpus) for corpus in corpus_list]
 }
 
