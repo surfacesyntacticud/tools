@@ -37,7 +37,7 @@ parser.add_argument("columns", help = "Must be one either of the values 'FEATS',
 parser.add_argument("-f", "--filter", help = "The template for selecting treebanks", default="*")
 parser.add_argument("-o", "--out_file", help = "The name of the output json file")
 parser.add_argument("-s", "--suffix", default="@2.10", help = "The suffix used in Grew-match naming of the corpus")
-parser.add_argument("-t", "--title", help = "The title of the final webpage")
+parser.add_argument("-c", "--collection", help = "The name of the collection of corpora")
 parser.add_argument("-q", "--quiet", action="store_true", default = False, help = "turn off the progession info printing")
 args=parser.parse_args()
 
@@ -70,7 +70,6 @@ def add_corpus (corpus):
         command = 'cat %s/%s/*.conllu | egrep "^[.0-9]+\t" | cut -f 8 | sort | uniq -c' % (args.basedir, corpus)
     elif args.columns == "MISC":
         command = 'cat %s/%s/*.conllu | egrep "^[.0-9]+\t" | cut -f 10 | tr "|" "\n" | grep "=" | cut -f 1 -d "=" | sort | uniq -c' % (args.basedir, corpus)
-        print (command)
     else:
         command = 'cat %s/%s/*.conllu | egrep "^[.0-9]+\t" | cut -f 6 | tr "|" "\n" | grep "^%s=" | cut -f 2 -d "=" | sort | uniq -c' % (args.basedir, corpus, args.columns)
     raw = subprocess.run([command], capture_output=True, shell=True, encoding='UTF-8')
@@ -150,7 +149,7 @@ def pattern (x):
     else:
         return pattern_feat(args.columns, x)
 
-def default_title (x):
+def title (x):
     if args.columns == "FEATS":
         return "## Usage of features in `FEATS` CoNLL column"
     elif args.columns == "MISC":
@@ -166,11 +165,11 @@ def build_row(corpus):
     return d
 
 grid = {
-    "title": "## " + args.title if args.title != None else default_title(args.columns),
+    "title": title(args.columns) + (" ••• " + args.collection) if args.collection != None else "",
     "grew_match": 
         {feat: {
-            "code": pattern(feat)[0], 
-            "key": pattern(feat)[1], 
+            "code": pattern(feat)[0],
+            "key": pattern(feat)[1],
             "users": users}
         for (feat, users) in key_list },
     "columns": [{"field": feat, "headerName": feat} for (feat, users) in key_list],
