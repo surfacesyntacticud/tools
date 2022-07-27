@@ -67,5 +67,5 @@ Then open of the page http://localhost:8000 to have access to the different tabl
 
 ## Acknowledgement
 
- * Thanks to Santiago for letting me know about the perfect [ag-grid JS library].(https://www.ag-grid.com/)! 
+ * Thanks to Santiago for letting me know about the perfect [ag-grid JS library](https://www.ag-grid.com/)! 
  * Thanks to the users of the first version for their feedbacks and suggestions.
