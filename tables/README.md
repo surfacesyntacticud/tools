@@ -3,18 +3,9 @@
 This folder contains the website files, a few tables and the python code for the table constructions.
 The rendering of the tables is done with [ag-grid JS library](https://www.ag-grid.com/).
 
-## Main features
- * Filtering is available on `Rows` (*i.e.* on Treebanks names) or on `Columns` (*i.e.* dependency relation, feature name or feature value).
-    * filtering on rows automatically filters the non empty columns
-    * filtering on columns automatically filters the non empty rows   
- * Columns are sortable and can be moved
- * Counting in celles is available as:
-    * `Occurences` &rarr; the number of times the corresponding element is present in the corpus
-    * `Ratio / sents` &rarr; the `Occurences` number divided by the number of sentences in the corpus
-    * `Ratio / tokens` &rarr; the `Occurences` number divided by the number of tokens in the corpus
- * Each observation is linked to the corresponding [Grew-match](http://match.grew.fr) request (with a clustering on values in the case of *feature name* tables).
-
 ## Available tables
+
+The tables are available through the URL http://tables.grew.fr with direct links to the tables below:
 
 * On dependency relations
   * In UD 2.10: http://tables.grew.fr/?data=ud/deps
@@ -48,6 +39,16 @@ The rendering of the tables is done with [ag-grid JS library](https://www.ag-gri
   * [Polite](http://tables.grew.fr/?data=ud/Polite)
   * [Clusivity](http://tables.grew.fr/?data=ud/Clusivity)
 
+## Main features
+ * Filtering is available on `Rows` (*i.e.* on Treebanks names) or on `Columns` (*i.e.* dependency relation, feature name or feature value).
+    * filtering on rows automatically filters the non empty columns
+    * filtering on columns automatically filters the non empty rows   
+ * Columns are sortable and can be moved
+ * Counting in celles is available as:
+    * `Occurences` &rarr; the number of times the corresponding element is present in the corpus
+    * `Ratio / sents` &rarr; the `Occurences` number divided by the number of sentences in the corpus
+    * `Ratio / tokens` &rarr; the `Occurences` number divided by the number of tokens in the corpus
+ * Each observation is linked to the corresponding [Grew-match](http://match.grew.fr) request (with a clustering on values in the case of *feature name* tables).
 
 ## Computing tables
 
