@@ -81,6 +81,7 @@ var app = new Vue({
 const col0 = {
   field: "treebank",
   width: 240,
+  sortingOrder: ['asc', 'desc', null],
   pinned: "left",
   lockPinned: true,
   cellClass: "lock-pinned"
@@ -98,6 +99,7 @@ function build_grid(data) {
     defaultColDef: {
       width: 150,
       sortable: true,
+      sortingOrder: ['desc', 'asc'],
       resizable: true,
       cellRenderer: app.cell,
     },
