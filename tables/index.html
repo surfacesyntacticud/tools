@@ -52,60 +52,79 @@
 
 <body>
   <div id="app" class="example-wrapper">
+
+    <!-- The Modal NB: should be at the top to be started from JS (stackoverflow.com/questions/18553726) -->
+    <div class="modal fade" id="myModal">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+        
+          <!-- Modal Header -->
+          <div class="modal-header">
+            <h1 class="modal-title">Universal tables</h1>
+            <button v-if="!portal" type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+          
+          <!-- Modal body -->
+          <div class="modal-body">
+            <div class="alert alert-danger" role="alert" v-if='alert != ""' v-html="alert"></div>
+
+            <p>This page proposes a set of tables which describe the global usage of dependency relations, features and
+              feature values in the treebanks from the <a href="http://universaldependencies.org/">UD</a> and <a href="https://surfacesyntacticud.github.io/">SUD</a> projects (version 2.10).</p>
+      
+            <p>See the 
+              <a href="https://github.com/surfacesyntacticud/tools/blob/master/tables/README.md">README</a>
+              for more info or for
+              <a href="https://github.com/surfacesyntacticud/tools/issues">issue reporting or suggestions</a>
+              in the 
+              <a href="https://github.com/surfacesyntacticud/tools/tree/master/tables">Github project</a>.
+             </p>
+
+
+             <div class="row" style="width: 100%; margin: auto">
+              <div class="col-sm-4">
+                <a href="?data=ud_feats/FEATS">
+                  <div class="card">
+                    <div class="card-header">Features in UD</code></div>
+                    <div class="card-body" style="text-align: center;">
+                      <img src="https://universaldependencies.org/logos/logo-ud.png" style="width:15%; margin-right:30px;" alt="UD">
+                    </div>
+                  </div>
+                </a>
+              </div>
+              <div class="col-sm-4">
+                <a href="?data=ud_deps/DEPS">
+                  <div class="card">
+                    <div class="card-header">Dependencies in UD</code></div>
+                    <div class="card-body" style="text-align: center;">
+                      <img src="https://universaldependencies.org/logos/logo-ud.png" style="width:15%; margin-right:30px;" alt="UD">
+                    </div>
+                  </div>
+                </a>
+              </div>
+              <div class="col-sm-4">
+                <a href="?data=sud_deps/DEPS">
+                  <div class="card">
+                    <div class="card-header">Dependencies in SUD</code></div>
+                    <div class="card-body" style="text-align: center;">
+                      <img src="https://surfacesyntacticud.github.io/images/sud.svg" style="width:15%; margin-left:30px" alt="SUD">
+                    </div>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Modal footer -->
+          <div v-if="!portal" class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  
     <div>
       <div v-if='title != ""' v-html="title" style="text-align: center;"></div>
-    </div>
-    <div v-if="portal">
-      <h1>Universal tables</h1>
-      <div class="alert alert-info" role="alert" v-if='alert != ""' v-html="alert"></div>
-
-      <p>This page proposes a set of tables which describe the global usage of dependency relations, features and
-        feature values in the UD / SUD treebanks collections (version 2.10).</p>
-
-      <p>See <a href="https://github.com/surfacesyntacticud/tools/tree/master/tables">Github</a> for more info or issues
-        reporting.</p>
-
-      <p>The following tables are available:</p>
-
-      <ul>
-        <li>On dependency relations:</li>
-        <ul>
-          <li><a href="?data=ud/deps">UD</a></li>
-          <li><a href="?data=sud/deps">SUD</a></li>
-        </ul>
-        <li>On Features used in UD</li>
-        <ul>
-          <li><a href="?data=ud/feats">FEATS</a></li>
-          <li><a href="?data=ud/misc">MISC</a></li>
-        </ul>
-        <li>On Features values in UD (only major features, listed <a
-            href="https://universaldependencies.org/u/feat/index.html">here</a> are given)</li>
-        <ul>
-          <li><a href="?data=ud/PronType">PronType</a></li>
-          <li><a href="?data=ud/Gender">Gender</a></li>
-          <li><a href="?data=ud/VerbForm">VerbForm</a></li>
-          <li><a href="?data=ud/NumType">NumType</a></li>
-          <li><a href="?data=ud/Animacy">Animacy</a></li>
-          <li><a href="?data=ud/Mood">Mood</a></li>
-          <li><a href="?data=ud/Poss">Poss</a></li>
-          <li><a href="?data=ud/NounClass">NounClass</a></li>
-          <li><a href="?data=ud/Tense">Tense</a></li>
-          <li><a href="?data=ud/Reflex">Reflex</a></li>
-          <li><a href="?data=ud/Number">Number</a></li>
-          <li><a href="?data=ud/Aspect">Aspect</a></li>
-          <li><a href="?data=ud/Foreign">Foreign</a></li>
-          <li><a href="?data=ud/Case">Case</a></li>
-          <li><a href="?data=ud/Voice">Voice</a></li>
-          <li><a href="?data=ud/Abbr">Abbr</a></li>
-          <li><a href="?data=ud/Definite">Definite</a></li>
-          <li><a href="?data=ud/Evident">Evident</a></li>
-          <li><a href="?data=ud/Typo">Typo</a></li>
-          <li><a href="?data=ud/Degree">Degree</a></li>
-          <li><a href="?data=ud/Polarity">Polarity</a></li>
-          <li><a href="?data=ud/Person">Person</a></li>
-          <li><a href="?data=ud/Polite">Polite</a></li>
-          <li><a href="?data=ud/Clusivity">Clusivity</a></li>
-        </ul>
     </div>
 
     <div v-show='!portal && alert==""' style="margin-bottom: 10px;">
@@ -156,7 +175,7 @@
       </a>
     </div>
 
-    <a href="."><button type="button" class="btn btn-success btn-sm">Top</button></a>
+    <button type="button" class="btn btn-success btn-sm" onclick="javascript:open_modal()">Collections</button>
       
       &nbsp;&nbsp;•••&nbsp;&nbsp;
       Display:

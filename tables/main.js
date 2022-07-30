@@ -135,6 +135,10 @@ function grew_match(treebank, field) {
   window.open('http://universal.grew.fr' + get_param, '_blank');
 }
 
+function open_modal() {
+  $("#myModal").modal('show');
+}
+
 // setup the grid after the page has finished loading
 document.addEventListener('DOMContentLoaded', () => {
   let file = urlParams.get('data');
@@ -146,8 +150,14 @@ document.addEventListener('DOMContentLoaded', () => {
         build_grid(data);
       })
       .catch((error) => {
-        app.alert = md.render(`## Cannot find file \`${file}.json\`.`)
+        open_modal()
+        app.alert = md.render(`### Cannot find file \`${file}.json\`.`)
       });
+  } else {
+    $('#myModal').modal({
+      backdrop: 'static',
+      keyboard: false
+    });
   }
 
   $('#toggle-state').change(function() {
