@@ -9,6 +9,9 @@
   <!-- JQuery -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
+  
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"></script>
+
   <!-- Bootstrap 4 and Cie -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
@@ -133,63 +136,135 @@
     <div v-show='!portal && alert==""'>
 
     <!---------------------------- UD + FEATS ----------------------------->
-    <div v-if='collection=="ud_feats"' style="margin-bottom: 10px;">
+    <div v-show='collection=="ud_feats"' style="margin-bottom: 10px;">
       <a href='?data=ud_feats/FEATS'>
-        <button type="button" class="btn btn-sm" :class="{ 'btn-warning': table=='FEATS', 'btn-secondary' : table!='FEATS' }">FEATS</button>
+        <button
+          type="button"
+          class="btn btn-sm"
+          data-toggle="tooltip"
+          title="All feature names used in the column 6 in CoNLL"
+          :class="{ 'btn-warning': table=='FEATS', 'btn-secondary' : table!='FEATS' }">
+          FEATS
+        </button>
       </a>
       •••
       <a href='?data=ud_feats/MISC'>
-        <button type="button" class="btn btn-sm" :class="{ 'btn-warning': table=='MISC', 'btn-secondary' : table!='MISC' }">MISC</button>
+        <button 
+          type="button" 
+          class="btn btn-sm" 
+          data-toggle="tooltip" 
+          title="All feature names used in the column 10 in CoNLL" 
+          :class="{ 'btn-warning': table=='MISC', 'btn-secondary' : table!='MISC' }">
+          MISC
+        </button>
       </a>
       •••
       <a href='?data=ud/UDEPS'>
         <a v-for="feat in features" v-bind:href='"?data=" + collection + "/" + feat'>
-        <button type="button" class="btn btn-sm" :class="{ 'btn-warning': table==feat, 'btn-secondary' : table!=feat }">{{feat}}</button>
+        <button 
+          type="button"
+          class="btn btn-sm" 
+          :class="{ 'btn-warning': table==feat, 'btn-secondary' : table!=feat }">
+          {{feat}}
+        </button>
       </a>
     </div>
 
     <!---------------------------- UD + DEPS ----------------------------->
-    <div v-if='collection=="ud_deps"' style="margin-bottom: 10px;">
+    <div v-show='collection=="ud_deps"' style="margin-bottom: 10px;">
       <a href='?data=ud_deps/DEPS'>
-        <button type="button" class="btn btn-sm" :class="{ 'btn-warning': table=='DEPS', 'btn-secondary' : table!='DEPS' }">DEPS</button>
+        <button
+          type="button"
+          data-toggle="tooltip"
+          title="All deps with their subtytpe (nsubj and nsubj:pass are two different columns)." 
+          class="btn btn-sm"
+          :class="{ 'btn-warning': table=='DEPS', 'btn-secondary' : table!='DEPS' }">
+          DEPS
+        </button>
       </a>
       •••
       <a href='?data=ud_deps/UDEPS'>
-        <button type="button" class="btn btn-sm" :class="{ 'btn-warning': table=='UDEPS', 'btn-secondary' : table!='UDEPS' }">UDEPS</button>
+        <button 
+          type="button"
+          data-toggle="tooltip"
+          title="Universal deps: without taking subtypes into account (nsubj and nsubj:pass are in the same columns)" 
+          class="btn btn-sm"
+          :class="{ 'btn-warning': table=='UDEPS', 'btn-secondary' : table!='UDEPS' }">
+          UDEPS
+        </button>
       </a>
       •••
       <a v-for="dep in ud_deps" v-bind:href='"?data=" + collection + "/" + dep'>
-        <button type="button" class="btn btn-sm" :class="{ 'btn-warning': table==dep, 'btn-secondary' : table!=dep }">{{dep}}</button>
+        <button
+          type="button"
+          class="btn btn-sm"
+          :class="{ 'btn-warning': table==dep, 'btn-secondary' : table!=dep }">
+          {{dep}}
+        </button>
       </a>
     </div>
 
     <!---------------------------- SUD + DEPS ----------------------------->
-    <div v-if='collection=="sud_deps"' style="margin-bottom: 10px;">
+    <div v-show='collection=="sud_deps"' style="margin-bottom: 10px;">
       <a href='?data=sud_deps/DEPS'>
-        <button type="button" class="btn btn-sm" :class="{ 'btn-warning': table=='DEPS', 'btn-secondary' : table!='DEPS' }">DEPS</button>
+        <button
+          type="button" 
+          data-toggle="tooltip"
+          title="All deps with their subtytpe (nsubj and nsubj:pass are two different columns)" 
+          class="btn btn-sm" 
+          :class="{ 'btn-warning': table=='DEPS', 'btn-secondary' : table!='DEPS' }">
+          DEPS
+        </button>
       </a>
       •••
       <a href='?data=sud_deps/UDEPS'>
-        <button type="button" class="btn btn-sm" :class="{ 'btn-warning': table=='UDEPS', 'btn-secondary' : table!='UDEPS' }">UDEPS</button>
+        <button
+          type="button" 
+          data-toggle="tooltip"
+          title="Universal deps: without taking subtypes into account (nsubj and nsubj:pass are in the same columns)" 
+          class="btn btn-sm" 
+          :class="{ 'btn-warning': table=='UDEPS', 'btn-secondary' : table!='UDEPS' }">
+          UDEPS
+        </button>
       </a>
       •••
       <a v-for="dep in sud_deps" v-bind:href='"?data=" + collection + "/" + dep'>
-        <button type="button" class="btn btn-sm" :class="{ 'btn-warning': table==dep, 'btn-secondary' : table!=dep }">{{dep}}</button>
+        <button
+          type="button" 
+          class="btn btn-sm" 
+          :class="{ 'btn-warning': table==dep, 'btn-secondary' : table!=dep }">
+          {{dep}}
+        </button>
       </a>
     </div>
 
     <div style="margin-bottom: 10px;">
     Display:
       <div class="btn-group" role="group">
-        <button type="button" class="btn btn-sm"
+        <button 
+          type="button" 
+          class="btn btn-sm"
+          style="margin-right: 0;"
           v-bind:class="{ 'btn-success': display_mode==0, 'btn-secondary': display_mode!=0 }"
-          v-on:click="display_mode=0">Occurrences</button>
-        <button type="button" class="btn btn-sm"
+          v-on:click="display_mode=0">
+          Occurrences
+        </button>
+        <button
+          type="button" 
+          class="btn btn-sm"
+          style="margin-right: 0;"
           v-bind:class="{ 'btn-success': display_mode==2, 'btn-secondary': display_mode!=2 }"
-          v-on:click="display_mode=2">Ratio / tokens</button>
-          <button type="button" class="btn btn-sm"
-          v-bind:class="{ 'btn-success': display_mode==1, 'btn-secondary': display_mode!=1 }"
-          v-on:click="display_mode=1">Ratio / sents</button>
+          v-on:click="display_mode=2">
+          Ratio / tokens
+        </button>
+          <button
+            type="button"
+            class="btn btn-sm"
+            style="margin-right: 0;"
+            v-bind:class="{ 'btn-success': display_mode==1, 'btn-secondary': display_mode!=1 }"
+            v-on:click="display_mode=1">
+            Ratio / sents
+          </button>
       </div>
 
       &nbsp;&nbsp;•••&nbsp;&nbsp;
