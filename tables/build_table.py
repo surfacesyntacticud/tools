@@ -132,8 +132,10 @@ def grew_feat_name(f):
 
 # build the Grew pattern
 def pattern (x):
-    if args.columns == "DEPS" or args.columns == "UDEPS" or args.columns[0:7] == "SUBREL:":
+    if args.columns == "DEPS" or args.columns[0:7] == "SUBREL:":
         return (['pattern {M -[%s]-> N}' % x], None)
+    elif args.columns == "UDEPS":
+        return (['pattern {M -[1=%s]-> N}' % x], None)
     elif args.columns == "FEATS":
         grew_feature = grew_feat_name(x)
         return (['pattern { N [%s] }' % grew_feature], "N.%s" % grew_feature)
