@@ -109,7 +109,54 @@
     </div>
 
     <div v-show='!portal && alert==""' style="margin-bottom: 10px;">
-      <a href="."><button type="button" class="btn btn-success btn-sm">Top</button></a>
+
+    <!---------------------------- UD + FEATS ----------------------------->
+    <div v-if='collection=="ud_feats"'>
+      <a href='?data=ud_feats/FEATS'>
+        <button type="button" class="btn btn-warning btn-sm">FEATS</button>
+      </a>
+      •••
+      <a href='?data=ud_feats/MISC'>
+        <button type="button" class="btn btn-warning btn-sm">MISC</button>
+      </a>
+      •••
+      <a href='?data=ud/UDEPS'>
+        <a v-for="feat in features" v-bind:href='"?data=" + collection + "/" + feat'>
+        <button type="button" class="btn btn-warning btn-sm">{{feat}}</button>
+      </a>
+    </div>
+
+    <!---------------------------- UD + DEPS ----------------------------->
+    <div v-if='collection=="ud_deps"'>
+      <a href='?data=ud_deps/DEPS'>
+        <button type="button" class="btn btn-warning btn-sm">DEPS</button>
+      </a>
+      •••
+      <a href='?data=ud_deps/UDEPS'>
+        <button type="button" class="btn btn-warning btn-sm">UDEPS</button>
+      </a>
+      •••
+      <a v-for="dep in ud_deps" v-bind:href='"?data=" + collection + "/" + dep'>
+        <button type="button" class="btn btn-warning btn-sm">{{dep}}</button>
+      </a>
+    </div>
+
+    <!---------------------------- SUD + DEPS ----------------------------->
+    <div v-if='collection=="sud_deps"'>
+      <a href='?data=sud_deps/DEPS'>
+        <button type="button" class="btn btn-warning btn-sm">DEPS</button>
+      </a>
+      •••
+      <a href='?data=sud_deps/UDEPS'>
+        <button type="button" class="btn btn-warning btn-sm">UDEPS</button>
+      </a>
+      •••
+      <a v-for="dep in sud_deps" v-bind:href='"?data=" + collection + "/" + dep'>
+        <button type="button" class="btn btn-warning btn-sm">{{dep}}</button>
+      </a>
+    </div>
+
+    <a href="."><button type="button" class="btn btn-success btn-sm">Top</button></a>
       
       &nbsp;&nbsp;•••&nbsp;&nbsp;
       Display:

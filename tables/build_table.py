@@ -32,8 +32,8 @@ ud_feats_2_10 = [
   ]
 
 parser = argparse.ArgumentParser()
-parser.add_argument("basedir", help = "the main folder where all corpora are stored as subdirs")
-parser.add_argument("columns", help = "Must be one either of the values 'FEATS', 'MISC', 'DEPS' or is interpreted as a feature name")
+parser.add_argument("basedir", help = "The main folder where all corpora are stored as subdirs")
+parser.add_argument("columns", help = "Must be one either of the values 'DEPS', 'UDEPS', 'SUBREL:xxx (where xxx is a udep), 'FEATS', 'MISC', 'FEAT:xxx' (where xxx is a feature name)")
 parser.add_argument("-f", "--filter", help = "The template for selecting treebanks", default="*")
 parser.add_argument("-o", "--out_file", help = "The name of the output json file")
 parser.add_argument("-s", "--suffix", default="@2.10", help = "The suffix used in Grew-match naming of the corpus")
@@ -64,14 +64,22 @@ def add_corpus (corpus):
     nb_token = int(subprocess.run(['cat %s/%s/*.conllu | egrep "^[.0-9]+\t" | wc -l' % (args.basedir, corpus)], capture_output=True, shell=True, encoding='UTF-8').stdout)
     nb_sent = int(subprocess.run(['cat %s/%s/*.conllu | grep "^# sent_id =" | wc -l' % (args.basedir, corpus)], capture_output=True, shell=True, encoding='UTF-8').stdout)
 
-    if args.columns == "FEATS":
-        command = 'cat %s/%s/*.conllu | egrep "^[.0-9]+\t" | cut -f 6 | grep -v "_" | tr "|" "\n" | cut -f 1 -d "=" | sort | uniq -c' % (args.basedir, corpus)
-    elif args.columns == "DEPS":
+    if args.columns == "DEPS":
         command = 'cat %s/%s/*.conllu | egrep "^[.0-9]+\t" | cut -f 8 | sort | uniq -c' % (args.basedir, corpus)
+    elif args.columns == "UDEPS":
+        command = 'cat %s/%s/*.conllu | egrep "^[.0-9]+\t" | cut -f 8 | cut -f 1 -d ":" | cut -f 1 -d "@" | sort | uniq -c' % (args.basedir, corpus)
+    elif args.columns[0:7] == "SUBREL:":
+        dep = args.columns[7:]
+        command = 'cat %s/%s/*.conllu | egrep "^[.0-9]+\t" | cut -f 8 | cut -f 1 -d "@" | egrep "^%s(:|$)" | sort | uniq -c' % (args.basedir, corpus, dep)
+    elif args.columns == "FEATS":
+        command = 'cat %s/%s/*.conllu | egrep "^[.0-9]+\t" | cut -f 6 | grep -v "_" | tr "|" "\n" | cut -f 1 -d "=" | sort | uniq -c' % (args.basedir, corpus)
     elif args.columns == "MISC":
         command = 'cat %s/%s/*.conllu | egrep "^[.0-9]+\t" | cut -f 10 | tr "|" "\n" | grep "=" | cut -f 1 -d "=" | sort | uniq -c' % (args.basedir, corpus)
+    elif args.columns[0:5] == "FEAT:":
+        feat = args.columns[5:]
+        command = 'cat %s/%s/*.conllu | egrep "^[.0-9]+\t" | cut -f 6 | tr "|" "\n" | grep "^%s=" | cut -f 2 -d "=" | sort | uniq -c' % (args.basedir, corpus, feat)
     else:
-        command = 'cat %s/%s/*.conllu | egrep "^[.0-9]+\t" | cut -f 6 | tr "|" "\n" | grep "^%s=" | cut -f 2 -d "=" | sort | uniq -c' % (args.basedir, corpus, args.columns)
+        raise Exception('Unknonwn column definition', args.columns)
     raw = subprocess.run([command], capture_output=True, shell=True, encoding='UTF-8')
     column_cpt = 0 
     for line in raw.stdout.split("\n"):
@@ -123,41 +131,39 @@ def grew_feat_name(f):
     return (sp[0]+"__"+sp[1] if len(sp) > 1 else f)
 
 # build the Grew pattern
-def pattern_feats (feature):
-    grew_feature = grew_feat_name(feature)
-    return (['pattern { N [%s] }' % grew_feature], "N.%s" % grew_feature)
-
-# build the Grew pattern
-def pattern_misc (feature):
-    prefix = "__MISC__" if feature in ud_feats_2_10 else ""
-    grew_feature = prefix + grew_feat_name(feature)
-    return (['pattern { N [%s] }' % grew_feature], "N.%s" % grew_feature)
-
-def pattern_deps (dep):
-    return (['pattern {M -[%s]-> N}' %dep], None)
-
-def pattern_feat (feat_name, feat_value):
-    return (['pattern { N [%s="%s"] }' % (grew_feat_name(feat_name), feat_value)], None)
-
 def pattern (x):
-    if args.columns == "FEATS":
-        return pattern_feats(x)
-    elif args.columns == "DEPS":
-        return pattern_deps(x)
+    if args.columns == "DEPS" or args.columns == "UDEPS" or args.columns[0:7] == "SUBREL:":
+        return (['pattern {M -[%s]-> N}' % x], None)
+    elif args.columns == "FEATS":
+        grew_feature = grew_feat_name(x)
+        return (['pattern { N [%s] }' % grew_feature], "N.%s" % grew_feature)
     elif args.columns == "MISC":
-        return pattern_misc(x)
+        prefix = "__MISC__" if x in ud_feats_2_10 else ""
+        grew_feature = prefix + grew_feat_name(x)
+        return (['pattern { N [%s] }' % grew_feature], "N.%s" % grew_feature)
+    elif args.columns[0:5] == "FEAT:":
+        feat = args.columns[5:]
+        return (['pattern { N [%s="%s"] }' % (grew_feat_name(feat), x)], None)
     else:
-        return pattern_feat(args.columns, x)
+        raise Exception('Unknonwn column definition', args.columns)
 
 def title (x):
-    if args.columns == "FEATS":
+    if args.columns == "DEPS":
+        return "## Usage of dependency relations (with subtypes)"
+    elif args.columns == "UDEPS":
+        return "## Usage of dependency relations (without subtypes)"
+    elif args.columns[0:7] == "SUBREL:":
+        dep = args.columns[7:]
+        return "## Usage of subtypes of relation `%s`" % dep
+    elif args.columns == "FEATS":
         return "## Usage of features in `FEATS` CoNLL column"
     elif args.columns == "MISC":
         return "## Usage of features in `MISC` CoNLL column (see [Grew doc](https://grew.fr/doc/conllu/#how-the-misc-field-is-handled-by-grew))"
-    elif args.columns == "DEPS":
-        return "## Usage of dependency relations"
+    elif args.columns[0:5] == "FEAT:":
+        feat = args.columns[5:]
+        return "## Usage of `%s` feature" % feat
     else:
-        return "## Usage of `%s` feature" % (args.columns)
+        raise Exception('Unknonwn column definition', args.columns)
 
 def build_row(corpus):
     d = dict[corpus]
