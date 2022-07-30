@@ -6,6 +6,7 @@ var md = new Remarkable();
 var app = new Vue({
   el: '#app',
   data: {
+    table: "",
     portal: true,
     title: "",
     alert: "",
@@ -147,6 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
       .then((response) => response.json())
       .then((data) => {
         app.collection = file.split("/")[0];
+        app.table = file.split("/")[1];
         build_grid(data);
       })
       .catch((error) => {

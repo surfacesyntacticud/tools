@@ -123,62 +123,63 @@
       </div>
     </div>
   
-    <div>
-      <div v-if='title != ""' v-html="title" style="text-align: center;"></div>
-    </div>
+    <div class="row" style="width: 100%; margin: auto">
+      <div class="col-sm-1" style="padding-left: 0;">
+        <button type="button" class="btn btn-success btn-sm" onclick="javascript:open_modal()">Collections</button>
+      </div>
+      <div class="col-sm-10" v-html="title" style="text-align: center;"></div>
+    </div> 
 
-    <div v-show='!portal && alert==""' style="margin-bottom: 10px;">
+    <div v-show='!portal && alert==""'>
 
     <!---------------------------- UD + FEATS ----------------------------->
-    <div v-if='collection=="ud_feats"'>
+    <div v-if='collection=="ud_feats"' style="margin-bottom: 10px;">
       <a href='?data=ud_feats/FEATS'>
-        <button type="button" class="btn btn-warning btn-sm">FEATS</button>
+        <button type="button" class="btn btn-sm" :class="{ 'btn-warning': table=='FEATS', 'btn-secondary' : table!='FEATS' }">FEATS</button>
       </a>
       •••
       <a href='?data=ud_feats/MISC'>
-        <button type="button" class="btn btn-warning btn-sm">MISC</button>
+        <button type="button" class="btn btn-sm" :class="{ 'btn-warning': table=='MISC', 'btn-secondary' : table!='MISC' }">MISC</button>
       </a>
       •••
       <a href='?data=ud/UDEPS'>
         <a v-for="feat in features" v-bind:href='"?data=" + collection + "/" + feat'>
-        <button type="button" class="btn btn-warning btn-sm">{{feat}}</button>
+        <button type="button" class="btn btn-sm" :class="{ 'btn-warning': table==feat, 'btn-secondary' : table!=feat }">{{feat}}</button>
       </a>
     </div>
 
     <!---------------------------- UD + DEPS ----------------------------->
-    <div v-if='collection=="ud_deps"'>
+    <div v-if='collection=="ud_deps"' style="margin-bottom: 10px;">
       <a href='?data=ud_deps/DEPS'>
-        <button type="button" class="btn btn-warning btn-sm">DEPS</button>
+        <button type="button" class="btn btn-sm" :class="{ 'btn-warning': table=='DEPS', 'btn-secondary' : table!='DEPS' }">DEPS</button>
       </a>
       •••
       <a href='?data=ud_deps/UDEPS'>
-        <button type="button" class="btn btn-warning btn-sm">UDEPS</button>
+        <button type="button" class="btn btn-sm" :class="{ 'btn-warning': table=='UDEPS', 'btn-secondary' : table!='UDEPS' }">UDEPS</button>
       </a>
       •••
       <a v-for="dep in ud_deps" v-bind:href='"?data=" + collection + "/" + dep'>
-        <button type="button" class="btn btn-warning btn-sm">{{dep}}</button>
+        <button type="button" class="btn btn-sm" :class="{ 'btn-warning': table==dep, 'btn-secondary' : table!=dep }">{{dep}}</button>
       </a>
     </div>
 
     <!---------------------------- SUD + DEPS ----------------------------->
-    <div v-if='collection=="sud_deps"'>
+    <div v-if='collection=="sud_deps"' style="margin-bottom: 10px;">
       <a href='?data=sud_deps/DEPS'>
-        <button type="button" class="btn btn-warning btn-sm">DEPS</button>
+        <button type="button" class="btn btn-sm" :class="{ 'btn-warning': table=='DEPS', 'btn-secondary' : table!='DEPS' }">DEPS</button>
       </a>
       •••
       <a href='?data=sud_deps/UDEPS'>
-        <button type="button" class="btn btn-warning btn-sm">UDEPS</button>
+        <button type="button" class="btn btn-sm" :class="{ 'btn-warning': table=='UDEPS', 'btn-secondary' : table!='UDEPS' }">UDEPS</button>
       </a>
       •••
       <a v-for="dep in sud_deps" v-bind:href='"?data=" + collection + "/" + dep'>
-        <button type="button" class="btn btn-warning btn-sm">{{dep}}</button>
+        <button type="button" class="btn btn-sm" :class="{ 'btn-warning': table==dep, 'btn-secondary' : table!=dep }">{{dep}}</button>
       </a>
     </div>
 
-    <button type="button" class="btn btn-success btn-sm" onclick="javascript:open_modal()">Collections</button>
-      
-      &nbsp;&nbsp;•••&nbsp;&nbsp;
-      Display:
+    <div style="margin-bottom: 10px;">
+    Display:
       <div class="btn-group" role="group">
         <button type="button" class="btn btn-sm"
           v-bind:class="{ 'btn-success': display_mode==0, 'btn-secondary': display_mode!=0 }"
@@ -197,8 +198,11 @@
       : <input type="text" v-model="filter_value" />
       <i v-on:click="filter_value = ''" class="fa fa-times-circle fa-lg"></i>
     </div>
+    </div>
+
     <div id="myGrid" class="ag-theme-alpine">
     </div>
+  
   </div>
   <script>
     var __basePath = './';
