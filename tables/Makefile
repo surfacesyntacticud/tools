@@ -13,7 +13,11 @@ selfdoc:
 	@echo "make build_ud_deps"
 	@echo "make build_ud_feats"
 
-all: build_sud_deps build_ud_deps build_ud_feats
+all: build_sud_deps build_ud_deps build_ud_feats build_meta
+
+build_meta:
+	mkdir -p meta
+	python build_table.py -c "UD 2.10" -f "${FILTER}" -o meta/META.json ${UD} META
 
 build_sud_deps:
 	mkdir -p sud_deps
