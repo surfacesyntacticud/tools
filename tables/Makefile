@@ -13,7 +13,10 @@ selfdoc:
 	@echo "make build_ud_deps"
 	@echo "make build_ud_feats"
 
-all: build_sud_deps build_ud_deps build_ud_feats build_meta
+all: build_sud_deps build_ud_deps build_ud_feats build_meta count
+
+count:
+	python count.py
 
 build_meta:
 	mkdir -p meta
@@ -46,6 +49,13 @@ build_ud_feats:
 		echo "================= Building table for feature: $$feat =================" ; \
 		python build_table.py -c "UD 2.10" -f "${FILTER}" -o ud_feats/$$feat.json ${UD} FEAT:$$feat ; \
 	done
+
+purge:
+	rm -rf ud_feats
+	rm -rf ud_deps
+	rm -rf sud_deps
+	rm -rf meta
+	rm -f count.json
 
 start:
 	python -m http.server &

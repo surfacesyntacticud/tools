@@ -88,7 +88,7 @@
               <div class="col-sm-6">
                 <a href="?data=ud_deps/DEPS">
                   <div class="card">
-                    <div class="card-header">Dependencies in UD</code></div>
+                    <div class="card-header">Dependencies in UD ({{count["ud_deps"]}} tables)</div>
                     <div class="card-body" style="text-align: center;">
                       <img src="https://universaldependencies.org/logos/logo-ud.png" style="height: 50px;" alt="UD">
                     </div>
@@ -98,7 +98,7 @@
               <div class="col-sm-6">
                 <a href="?data=sud_deps/DEPS">
                   <div class="card">
-                    <div class="card-header">Dependencies in SUD</code></div>
+                    <div class="card-header">Dependencies in SUD ({{count["sud_deps"]}} tables)</div>
                     <div class="card-body" style="text-align: center;">
                       <img src="https://surfacesyntacticud.github.io/images/sud.svg" style="height: 50px;" alt="SUD">
                     </div>
@@ -112,7 +112,7 @@
               <div class="col-sm-6">
                 <a href="?data=ud_feats/FEATS">
                   <div class="card">
-                    <div class="card-header">Features in UD</code></div>
+                    <div class="card-header">Features in UD  ({{count["ud_feats"]}} tables)</div>
                     <div class="card-body" style="text-align: center;">
                       <img src="https://universaldependencies.org/logos/logo-ud.png" style="height: 50px;" alt="UD">
                     </div>
@@ -122,7 +122,7 @@
               <div class="col-sm-6">
                 <a href="?data=meta/META">
                   <div class="card">
-                    <div class="card-header">Metadata in UD</code></div>
+                    <div class="card-header">Metadata in UD ({{count["meta"]}} table)</div>
                     <div class="card-body" style="text-align: center;">
                       <img src="https://universaldependencies.org/logos/logo-ud.png" style="height: 50px;" alt="UD">
                     </div>
@@ -159,7 +159,8 @@
           data-toggle="tooltip"
           title="All feature names used in the column 6 in CoNLL"
           :class="{ 'btn-warning': table=='FEATS', 'btn-secondary' : table!='FEATS' }">
-          FEATS <span class="badge badge-light">4</span>
+          FEATS
+          <span class="badge badge-light">{{ count["ud_feats/FEATS"] }}</span>
         </button>
       </a>
       •••
@@ -171,6 +172,7 @@
           title="All feature names used in the column 10 in CoNLL" 
           :class="{ 'btn-warning': table=='MISC', 'btn-secondary' : table!='MISC' }">
           MISC
+          <span class="badge badge-light">{{ count["ud_feats/MISC"] }}</span>
         </button>
       </a>
       •••
@@ -181,6 +183,7 @@
           class="btn btn-sm" 
           :class="{ 'btn-warning': table==feat, 'btn-secondary' : table!=feat }">
           {{feat}}
+          <span class="badge badge-light">{{ count["ud_feats/"+feat] }}</span>
         </button>
       </a>
     </div>
@@ -195,6 +198,7 @@
           class="btn btn-sm"
           :class="{ 'btn-warning': table=='DEPS', 'btn-secondary' : table!='DEPS' }">
           DEPS
+          <span class="badge badge-light">{{ count["ud_deps/DEPS"] }}</span>
         </button>
       </a>
       •••
@@ -206,6 +210,7 @@
           class="btn btn-sm"
           :class="{ 'btn-warning': table=='UDEPS', 'btn-secondary' : table!='UDEPS' }">
           UDEPS
+          <span class="badge badge-light">{{ count["ud_deps/UDEPS"] }}</span>
         </button>
       </a>
       •••
@@ -215,6 +220,7 @@
           class="btn btn-sm"
           :class="{ 'btn-warning': table==dep, 'btn-secondary' : table!=dep }">
           {{dep}}
+          <span class="badge badge-light">{{ count["ud_deps/"+dep] }}</span>
         </button>
       </a>
     </div>
@@ -229,6 +235,7 @@
           class="btn btn-sm" 
           :class="{ 'btn-warning': table=='DEPS', 'btn-secondary' : table!='DEPS' }">
           DEPS
+          <span class="badge badge-light">{{ count["sud_deps/DEPS"] }}</span>
         </button>
       </a>
       •••
@@ -240,6 +247,7 @@
           class="btn btn-sm" 
           :class="{ 'btn-warning': table=='UDEPS', 'btn-secondary' : table!='UDEPS' }">
           UDEPS
+          <span class="badge badge-light">{{ count["sud_deps/UDEPS"] }}</span>
         </button>
       </a>
       •••
@@ -251,6 +259,7 @@
           class="btn btn-sm" 
           :class="{ 'btn-warning': table=='DEEP', 'btn-secondary' : table!='DEEP' }">
           DEEP
+          <span class="badge badge-light">{{ count["sud_deps/DEEP"] }}</span>
         </button>
       </a>
       •••
@@ -260,6 +269,7 @@
           class="btn btn-sm" 
           :class="{ 'btn-warning': table==dep, 'btn-secondary' : table!=dep }">
           {{dep}}
+          <span class="badge badge-light">{{ count["sud_deps/"+dep] }}</span>
         </button>
       </a>
     </div>
@@ -276,6 +286,7 @@
           Occurrences
         </button>
         <button
+          v-show='collection != "meta"'
           type="button" 
           class="btn btn-sm"
           style="margin-right: 0;"

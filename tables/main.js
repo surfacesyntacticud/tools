@@ -6,6 +6,7 @@ var md = new Remarkable();
 var app = new Vue({
   el: '#app',
   data: {
+    count: {},
     table: "",
     portal: true,
     title: "",
@@ -147,6 +148,16 @@ function open_modal() {
 // setup the grid after the page has finished loading
 document.addEventListener('DOMContentLoaded', () => {
   $('[data-toggle="tooltip"]').tooltip()
+
+  fetch("count.json")
+    .then((response) => response.json())
+    .then((data) => {
+      app.count = data;
+    })
+    .catch((error) => {
+      console.log("no file count.json");
+    });
+
   let file = urlParams.get('data');
   if (file != null) {
     fetch(file + '.json')
