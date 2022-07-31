@@ -19,6 +19,7 @@ build_sud_deps:
 	mkdir -p sud_deps
 	python build_table.py -c "SUD 2.10" -f "${FILTER}" -o sud_deps/DEPS.json ${SUD} DEPS
 	python build_table.py -c "SUD 2.10" -f "${FILTER}" -o sud_deps/UDEPS.json ${SUD} UDEPS
+	python build_table.py -c "SUD 2.10" -f "${FILTER}" -o sud_deps/DEEP.json ${SUD} DEEP
 	@for udep in ${SUD_LIST} ; do \
 		echo "================= Building table for udep: $$udep =================" ; \
 		python build_table.py -c "SUD 2.10" -f "${FILTER}" -o sud_deps/$$udep.json ${SUD} SUBREL:$$udep ; \

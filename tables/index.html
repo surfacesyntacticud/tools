@@ -144,7 +144,7 @@
           data-toggle="tooltip"
           title="All feature names used in the column 6 in CoNLL"
           :class="{ 'btn-warning': table=='FEATS', 'btn-secondary' : table!='FEATS' }">
-          FEATS
+          FEATS <span class="badge badge-light">4</span>
         </button>
       </a>
       •••
@@ -225,6 +225,17 @@
           class="btn btn-sm" 
           :class="{ 'btn-warning': table=='UDEPS', 'btn-secondary' : table!='UDEPS' }">
           UDEPS
+        </button>
+      </a>
+      •••
+      <a href='?data=sud_deps/DEEP'>
+        <button
+          type="button" 
+          data-toggle="tooltip"
+          title="Usage of deep extensions (like @agent)" 
+          class="btn btn-sm" 
+          :class="{ 'btn-warning': table=='DEEP', 'btn-secondary' : table!='DEEP' }">
+          DEEP
         </button>
       </a>
       •••

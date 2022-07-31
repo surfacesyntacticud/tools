@@ -33,7 +33,7 @@ ud_feats_2_10 = [
 
 parser = argparse.ArgumentParser()
 parser.add_argument("basedir", help = "The main folder where all corpora are stored as subdirs")
-parser.add_argument("columns", help = "Must be one either of the values 'DEPS', 'UDEPS', 'SUBREL:xxx (where xxx is a udep), 'FEATS', 'MISC', 'FEAT:xxx' (where xxx is a feature name)")
+parser.add_argument("columns", help = "Must be one either of the values 'DEPS', 'UDEPS', 'DEEP', 'SUBREL:xxx (where xxx is a udep), 'FEATS', 'MISC', 'FEAT:xxx' (where xxx is a feature name)")
 parser.add_argument("-f", "--filter", help = "The template for selecting treebanks", default="*")
 parser.add_argument("-o", "--out_file", help = "The name of the output json file")
 parser.add_argument("-s", "--suffix", default="@2.10", help = "The suffix used in Grew-match naming of the corpus")
@@ -68,6 +68,8 @@ def add_corpus (corpus):
         command = 'cat %s/%s/*.conllu | egrep "^[.0-9]+\t" | cut -f 8 | sort | uniq -c' % (args.basedir, corpus)
     elif args.columns == "UDEPS":
         command = 'cat %s/%s/*.conllu | egrep "^[.0-9]+\t" | cut -f 8 | cut -f 1 -d ":" | cut -f 1 -d "@" | sort | uniq -c' % (args.basedir, corpus)
+    elif args.columns == "DEEP":
+        command = 'cat %s/%s/*.conllu | egrep "^[.0-9]+\t" | cut -f 8 | grep "@" | cut -f 2 -d "@" | sort | uniq -c' % (args.basedir, corpus)
     elif args.columns[0:7] == "SUBREL:":
         dep = args.columns[7:]
         command = 'cat %s/%s/*.conllu | egrep "^[.0-9]+\t" | cut -f 8 | cut -f 1 -d "@" | egrep "^%s(:|$)" | sort | uniq -c' % (args.basedir, corpus, dep)
@@ -136,6 +138,8 @@ def pattern (x):
         return (['pattern {M -[%s]-> N}' % x], None)
     elif args.columns == "UDEPS":
         return (['pattern {M -[1=%s]-> N}' % x], None)
+    elif args.columns == "DEEP":
+        return (['pattern {M -[deep=%s]-> N}' % x], None)
     elif args.columns == "FEATS":
         grew_feature = grew_feat_name(x)
         return (['pattern { N [%s] }' % grew_feature], "N.%s" % grew_feature)
@@ -154,6 +158,8 @@ def title (x):
         return "## Usage of dependency relations (with subtypes)"
     elif args.columns == "UDEPS":
         return "## Usage of dependency relations (without subtypes)"
+    elif args.columns == "DEEP":
+        return "## Usage of deep extension"
     elif args.columns[0:7] == "SUBREL:":
         dep = args.columns[7:]
         return "## Usage of subtypes of relation `%s`" % dep
