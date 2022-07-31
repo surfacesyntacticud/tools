@@ -76,7 +76,11 @@ var app = new Vue({
           } else if (this.display_mode == 2) {
             v = data.value[2].toFixed(6)
           }
-          return (`<a class="btn btn-success btn-sm" onclick='grew_match("${data.data.treebank}","${data.colDef.field}")'>${v}</a>`)
+          if (global_grew_match[data.colDef.field]["code"] == "__NO_GREW_SYNTAX__") {
+            return (`<a class="disabled btn btn-danger btn-sm" onclick='grew_match("${data.data.treebank}","${data.colDef.field}")'>${v}</a>`)
+          } else {
+            return (`<a class="btn btn-success btn-sm" onclick='grew_match("${data.data.treebank}","${data.colDef.field}")'>${v}</a>`)
+          }
         }
       }
     }

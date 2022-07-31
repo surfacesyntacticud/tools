@@ -33,7 +33,7 @@ ud_feats_2_10 = [
 
 parser = argparse.ArgumentParser()
 parser.add_argument("basedir", help = "The main folder where all corpora are stored as subdirs")
-parser.add_argument("columns", help = "Must be one either of the values 'DEPS', 'UDEPS', 'DEEP', 'SUBREL:xxx (where xxx is a udep), 'FEATS', 'MISC', 'FEAT:xxx' (where xxx is a feature name)")
+parser.add_argument("columns", help = "Must be one either of the values 'DEPS', 'UDEPS', 'DEEP', 'SUBREL:xxx (where xxx is a udep), 'META', 'FEATS', 'MISC', 'FEAT:xxx' (where xxx is a feature name)")
 parser.add_argument("-f", "--filter", help = "The template for selecting treebanks", default="*")
 parser.add_argument("-o", "--out_file", help = "The name of the output json file")
 parser.add_argument("-s", "--suffix", default="@2.10", help = "The suffix used in Grew-match naming of the corpus")
@@ -73,6 +73,8 @@ def add_corpus (corpus):
     elif args.columns[0:7] == "SUBREL:":
         dep = args.columns[7:]
         command = 'cat %s/%s/*.conllu | egrep "^[.0-9]+\t" | cut -f 8 | cut -f 1 -d "@" | egrep "^%s(:|$)" | sort | uniq -c' % (args.basedir, corpus, dep)
+    elif args.columns == "META":
+        command = 'cat %s/%s/*.conllu | grep "^# " | grep " = " | cut -f 1 -d "=" | sed "s/# *//" | sed "s/ $//" | grep -v "^text$" | grep -v "^sent_id$" | grep -v "^global.columns$" | sort | uniq -c' % (args.basedir, corpus)
     elif args.columns == "FEATS":
         command = 'cat %s/%s/*.conllu | egrep "^[.0-9]+\t" | cut -f 6 | grep -v "_" | tr "|" "\n" | cut -f 1 -d "=" | sort | uniq -c' % (args.basedir, corpus)
     elif args.columns == "MISC":
@@ -86,10 +88,11 @@ def add_corpus (corpus):
     column_cpt = 0 
     for line in raw.stdout.split("\n"):
         fields = line.strip().split(" ")
-        if len(fields) == 2:
+        if len(fields) >= 2:
             occ = int(fields[0])
+            value = " ".join(fields[1:])
             column_cpt += 1
-            sub_dict[fields[1]] = (occ, occ/nb_sent, occ/nb_token)
+            sub_dict[value] = (occ, occ/nb_sent, occ/nb_token)
     nb_column[corpus] = column_cpt
     dict[corpus] = sub_dict
 
@@ -140,6 +143,12 @@ def pattern (x):
         return (['pattern {M -[1=%s]-> N}' % x], None)
     elif args.columns == "DEEP":
         return (['pattern {M -[deep=%s]-> N}' % x], None)
+    elif args.columns == "META":
+        ident = re.fullmatch ("[A-Za-z_-]+", x)
+        if (ident is not None):
+            return (['global { %s = * }' % x], None)
+        else:
+            return ["__NO_GREW_SYNTAX__", None]
     elif args.columns == "FEATS":
         grew_feature = grew_feat_name(x)
         return (['pattern { N [%s] }' % grew_feature], "N.%s" % grew_feature)
@@ -163,6 +172,8 @@ def title (x):
     elif args.columns[0:7] == "SUBREL:":
         dep = args.columns[7:]
         return "## Usage of subtypes of relation `%s`" % dep
+    elif args.columns == "META":
+        return "## Usage of meta data (≠ text and sent_id)"
     elif args.columns == "FEATS":
         return "## Usage of features in `FEATS` CoNLL column"
     elif args.columns == "MISC":
