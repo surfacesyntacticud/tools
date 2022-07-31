@@ -5,13 +5,16 @@ FEAT_LIST=PronType Gender VerbForm NumType Animacy Mood Poss NounClass Tense Ref
 UD_LIST=acl advcl advmod amod appos aux case cc ccomp clf compound conj cop csubj dep det discourse dislocated expl fixed flat goeswith iobj list mark nmod nsubj nummod obj obl orphan parataxis punct reparandum root vocative xcomp
 SUD_LIST=unk subj udep mod comp vocative dislocated discourse appos det clf conj cc flat compound list parataxis orphan goeswith reparandum punct
 
-FILTER=*UD_Y*
+FILTER=*UD_*
 
 selfdoc:
 	@echo "make all"
 	@echo "make build_sud_deps"
 	@echo "make build_ud_deps"
 	@echo "make build_ud_feats"
+	@echo "make build_meta"
+	@echo "make count"
+
 
 all: build_sud_deps build_ud_deps build_ud_feats build_meta count
 
