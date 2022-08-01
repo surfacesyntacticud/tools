@@ -67,12 +67,12 @@ def add_corpus (corpus):
     if args.columns == "DEPS":
         command = 'cat %s/%s/*.conllu | egrep "^[.0-9]+\t" | cut -f 8 | sort | uniq -c' % (args.basedir, corpus)
     elif args.columns == "UDEPS":
-        command = 'cat %s/%s/*.conllu | egrep "^[.0-9]+\t" | cut -f 8 | cut -f 1 -d ":" | cut -f 1 -d "@" | sort | uniq -c' % (args.basedir, corpus)
+        command = 'cat %s/%s/*.conllu | egrep "^[.0-9]+\t" | cut -f 8 | cut -f 1 -d ":" | cut -f 1 -d "@" | cut -f 1 -d "$" | sort | uniq -c' % (args.basedir, corpus)
     elif args.columns == "DEEP":
         command = 'cat %s/%s/*.conllu | egrep "^[.0-9]+\t" | cut -f 8 | grep "@" | cut -f 2 -d "@" | sort | uniq -c' % (args.basedir, corpus)
     elif args.columns[0:7] == "SUBREL:":
         dep = args.columns[7:]
-        command = 'cat %s/%s/*.conllu | egrep "^[.0-9]+\t" | cut -f 8 | cut -f 1 -d "@" | egrep "^%s(:|$)" | sort | uniq -c' % (args.basedir, corpus, dep)
+        command = 'cat %s/%s/*.conllu | egrep "^[.0-9]+\t" | cut -f 8 | cut -f 1 -d "@" | cut -f 1 -d "$" | egrep "^%s(:|$)" | sort | uniq -c' % (args.basedir, corpus, dep)
     elif args.columns == "META":
         command = 'cat %s/%s/*.conllu | grep "^# " | grep " = " | cut -f 1 -d "=" | sed "s/# *//" | sed "s/ $//" | grep -v "^text$" | grep -v "^sent_id$" | grep -v "^global.columns$" | sort | uniq -c' % (args.basedir, corpus)
     elif args.columns == "FEATS":
@@ -137,8 +137,14 @@ def grew_feat_name(f):
 
 # build the Grew pattern
 def pattern (x):
-    if args.columns == "DEPS" or args.columns[0:7] == "SUBREL:":
+    if args.columns == "DEPS":
         return (['pattern {M -[%s]-> N}' % x], None)
+    elif args.columns[0:7] == "SUBREL:":
+        rel = x.split(":")
+        if len(rel) == 1:
+            return (['pattern {M -[1=%s,!2]-> N}' % x], None)
+        else:
+            return (['pattern {M -[1=%s,2=%s]-> N}' % (rel[0],rel[1])], None)
     elif args.columns == "UDEPS":
         return (['pattern {M -[1=%s]-> N}' % x], None)
     elif args.columns == "DEEP":

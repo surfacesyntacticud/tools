@@ -1,13 +1,6 @@
 {
   "title": "## Usage of dependency relations (with subtypes) \u2022\u2022\u2022 SUD 2.10",
   "grew_match": {
-    "mod": {
-      "code": [
-        "pattern {M -[mod]-> N}"
-      ],
-      "key": null,
-      "users": 227
-    },
     "comp:obj": {
       "code": [
         "pattern {M -[comp:obj]-> N}"
@@ -18,6 +11,13 @@
     "root": {
       "code": [
         "pattern {M -[root]-> N}"
+      ],
+      "key": null,
+      "users": 227
+    },
+    "mod": {
+      "code": [
+        "pattern {M -[mod]-> N}"
       ],
       "key": null,
       "users": 227
@@ -64,16 +64,16 @@
       "key": null,
       "users": 214
     },
-    "punct": {
+    "comp:pred": {
       "code": [
-        "pattern {M -[punct]-> N}"
+        "pattern {M -[comp:pred]-> N}"
       ],
       "key": null,
       "users": 213
     },
-    "comp:pred": {
+    "punct": {
       "code": [
-        "pattern {M -[comp:pred]-> N}"
+        "pattern {M -[punct]-> N}"
       ],
       "key": null,
       "users": 213
@@ -239,16 +239,16 @@
       "key": null,
       "users": 61
     },
-    "goeswith": {
+    "list": {
       "code": [
-        "pattern {M -[goeswith]-> N}"
+        "pattern {M -[list]-> N}"
       ],
       "key": null,
       "users": 60
     },
-    "list": {
+    "goeswith": {
       "code": [
-        "pattern {M -[list]-> N}"
+        "pattern {M -[goeswith]-> N}"
       ],
       "key": null,
       "users": 60
@@ -351,16 +351,16 @@
       "key": null,
       "users": 20
     },
-    "det@predet": {
+    "udep@lmod": {
       "code": [
-        "pattern {M -[det@predet]-> N}"
+        "pattern {M -[udep@lmod]-> N}"
       ],
       "key": null,
       "users": 16
     },
-    "udep@lmod": {
+    "det@predet": {
       "code": [
-        "pattern {M -[udep@lmod]-> N}"
+        "pattern {M -[det@predet]-> N}"
       ],
       "key": null,
       "users": 16
@@ -400,16 +400,9 @@
       "key": null,
       "users": 11
     },
-    "comp:obj@agent": {
+    "comp:aux@neg": {
       "code": [
-        "pattern {M -[comp:obj@agent]-> N}"
-      ],
-      "key": null,
-      "users": 10
-    },
-    "comp:aux@caus": {
-      "code": [
-        "pattern {M -[comp:aux@caus]-> N}"
+        "pattern {M -[comp:aux@neg]-> N}"
       ],
       "key": null,
       "users": 10
@@ -421,6 +414,13 @@
       "key": null,
       "users": 10
     },
+    "mod@neg": {
+      "code": [
+        "pattern {M -[mod@neg]-> N}"
+      ],
+      "key": null,
+      "users": 10
+    },
     "mod@tcl": {
       "code": [
         "pattern {M -[mod@tcl]-> N}"
@@ -428,16 +428,16 @@
       "key": null,
       "users": 10
     },
-    "comp:aux@neg": {
+    "comp:aux@caus": {
       "code": [
-        "pattern {M -[comp:aux@neg]-> N}"
+        "pattern {M -[comp:aux@caus]-> N}"
       ],
       "key": null,
       "users": 10
     },
-    "mod@neg": {
+    "comp:obj@agent": {
       "code": [
-        "pattern {M -[mod@neg]-> N}"
+        "pattern {M -[comp:obj@agent]-> N}"
       ],
       "key": null,
       "users": 10
@@ -449,13 +449,6 @@
       "key": null,
       "users": 9
     },
-    "det@nummod": {
-      "code": [
-        "pattern {M -[det@nummod]-> N}"
-      ],
-      "key": null,
-      "users": 8
-    },
     "comp:aux@tense": {
       "code": [
         "pattern {M -[comp:aux@tense]-> N}"
@@ -463,12 +456,12 @@
       "key": null,
       "users": 8
     },
-    "comp:aux@q": {
+    "det@nummod": {
       "code": [
-        "pattern {M -[comp:aux@q]-> N}"
+        "pattern {M -[det@nummod]-> N}"
       ],
       "key": null,
-      "users": 7
+      "users": 8
     },
     "discourse@sp": {
       "code": [
@@ -505,6 +498,13 @@
       "key": null,
       "users": 7
     },
+    "comp:aux@q": {
+      "code": [
+        "pattern {M -[comp:aux@q]-> N}"
+      ],
+      "key": null,
+      "users": 7
+    },
     "mod@gsubj": {
       "code": [
         "pattern {M -[mod@gsubj]-> N}"
@@ -515,6 +515,13 @@
     "mod@cleft": {
       "code": [
         "pattern {M -[mod@cleft]-> N}"
+      ],
+      "key": null,
+      "users": 6
+    },
+    "comp:cleft": {
+      "code": [
+        "pattern {M -[comp:cleft]-> N}"
       ],
       "key": null,
       "users": 6
@@ -540,13 +547,6 @@
       "key": null,
       "users": 6
     },
-    "comp:pred@own": {
-      "code": [
-        "pattern {M -[comp:pred@own]-> N}"
-      ],
-      "key": null,
-      "users": 6
-    },
     "mod@mmod": {
       "code": [
         "pattern {M -[mod@mmod]-> N}"
@@ -554,19 +554,12 @@
       "key": null,
       "users": 6
     },
-    "comp:cleft": {
+    "comp:pred@own": {
       "code": [
-        "pattern {M -[comp:cleft]-> N}"
+        "pattern {M -[comp:pred@own]-> N}"
       ],
       "key": null,
       "users": 6
-    },
-    "udep@pmod": {
-      "code": [
-        "pattern {M -[udep@pmod]-> N}"
-      ],
-      "key": null,
-      "users": 5
     },
     "compound@ext": {
       "code": [
@@ -575,51 +568,9 @@
       "key": null,
       "users": 5
     },
-    "parataxis@obj": {
+    "udep@pmod": {
       "code": [
-        "pattern {M -[parataxis@obj]-> N}"
-      ],
-      "key": null,
-      "users": 5
-    },
-    "udep@cau": {
-      "code": [
-        "pattern {M -[udep@cau]-> N}"
-      ],
-      "key": null,
-      "users": 5
-    },
-    "comp:obj@lvc": {
-      "code": [
-        "pattern {M -[comp:obj@lvc]-> N}"
-      ],
-      "key": null,
-      "users": 5
-    },
-    "mod@appos": {
-      "code": [
-        "pattern {M -[mod@appos]-> N}"
-      ],
-      "key": null,
-      "users": 5
-    },
-    "parataxis@discourse": {
-      "code": [
-        "pattern {M -[parataxis@discourse]-> N}"
-      ],
-      "key": null,
-      "users": 5
-    },
-    "subj@cleft": {
-      "code": [
-        "pattern {M -[subj@cleft]-> N}"
-      ],
-      "key": null,
-      "users": 5
-    },
-    "parataxis@rep": {
-      "code": [
-        "pattern {M -[parataxis@rep]-> N}"
+        "pattern {M -[udep@pmod]-> N}"
       ],
       "key": null,
       "users": 5
@@ -631,6 +582,34 @@
       "key": null,
       "users": 5
     },
+    "mod@appos": {
+      "code": [
+        "pattern {M -[mod@appos]-> N}"
+      ],
+      "key": null,
+      "users": 5
+    },
+    "parataxis@rep": {
+      "code": [
+        "pattern {M -[parataxis@rep]-> N}"
+      ],
+      "key": null,
+      "users": 5
+    },
+    "udep@cau": {
+      "code": [
+        "pattern {M -[udep@cau]-> N}"
+      ],
+      "key": null,
+      "users": 5
+    },
+    "parataxis@discourse": {
+      "code": [
+        "pattern {M -[parataxis@discourse]-> N}"
+      ],
+      "key": null,
+      "users": 5
+    },
     "mod@eval": {
       "code": [
         "pattern {M -[mod@eval]-> N}"
@@ -638,114 +617,30 @@
       "key": null,
       "users": 5
     },
-    "mod@cmpr": {
+    "subj@cleft": {
       "code": [
-        "pattern {M -[mod@cmpr]-> N}"
+        "pattern {M -[subj@cleft]-> N}"
       ],
       "key": null,
-      "users": 4
+      "users": 5
     },
-    "udep@lto": {
+    "parataxis@obj": {
       "code": [
-        "pattern {M -[udep@lto]-> N}"
+        "pattern {M -[parataxis@obj]-> N}"
       ],
       "key": null,
-      "users": 4
+      "users": 5
     },
-    "parataxis@insert": {
+    "comp:obj@lvc": {
       "code": [
-        "pattern {M -[parataxis@insert]-> N}"
+        "pattern {M -[comp:obj@lvc]-> N}"
       ],
       "key": null,
-      "users": 4
-    },
-    "mod@pred": {
-      "code": [
-        "pattern {M -[mod@pred]-> N}"
-      ],
-      "key": null,
-      "users": 4
-    },
-    "comp:obj@pmod": {
-      "code": [
-        "pattern {M -[comp:obj@pmod]-> N}"
-      ],
-      "key": null,
-      "users": 4
-    },
-    "comp:aux@nec": {
-      "code": [
-        "pattern {M -[comp:aux@nec]-> N}"
-      ],
-      "key": null,
-      "users": 4
-    },
-    "mod@entity": {
-      "code": [
-        "pattern {M -[mod@entity]-> N}"
-      ],
-      "key": null,
-      "users": 4
-    },
-    "udep@lmp": {
-      "code": [
-        "pattern {M -[udep@lmp]-> N}"
-      ],
-      "key": null,
-      "users": 4
+      "users": 5
     },
     "conj:coord": {
       "code": [
         "pattern {M -[conj:coord]-> N}"
-      ],
-      "key": null,
-      "users": 4
-    },
-    "mod@lfrom": {
-      "code": [
-        "pattern {M -[mod@lfrom]-> N}"
-      ],
-      "key": null,
-      "users": 4
-    },
-    "discourse@emo": {
-      "code": [
-        "pattern {M -[discourse@emo]-> N}"
-      ],
-      "key": null,
-      "users": 4
-    },
-    "udep@cmpr": {
-      "code": [
-        "pattern {M -[udep@cmpr]-> N}"
-      ],
-      "key": null,
-      "users": 4
-    },
-    "comp:obj@pass": {
-      "code": [
-        "pattern {M -[comp:obj@pass]-> N}"
-      ],
-      "key": null,
-      "users": 4
-    },
-    "conj:dicto": {
-      "code": [
-        "pattern {M -[conj:dicto]-> N}"
-      ],
-      "key": null,
-      "users": 4
-    },
-    "mod@cau": {
-      "code": [
-        "pattern {M -[mod@cau]-> N}"
-      ],
-      "key": null,
-      "users": 4
-    },
-    "conj:appos": {
-      "code": [
-        "pattern {M -[conj:appos]-> N}"
       ],
       "key": null,
       "users": 4
@@ -757,6 +652,48 @@
       "key": null,
       "users": 4
     },
+    "mod@pred": {
+      "code": [
+        "pattern {M -[mod@pred]-> N}"
+      ],
+      "key": null,
+      "users": 4
+    },
+    "udep@cmpr": {
+      "code": [
+        "pattern {M -[udep@cmpr]-> N}"
+      ],
+      "key": null,
+      "users": 4
+    },
+    "mod@entity": {
+      "code": [
+        "pattern {M -[mod@entity]-> N}"
+      ],
+      "key": null,
+      "users": 4
+    },
+    "mod@lfrom": {
+      "code": [
+        "pattern {M -[mod@lfrom]-> N}"
+      ],
+      "key": null,
+      "users": 4
+    },
+    "mod@cmpr": {
+      "code": [
+        "pattern {M -[mod@cmpr]-> N}"
+      ],
+      "key": null,
+      "users": 4
+    },
+    "conj:appos": {
+      "code": [
+        "pattern {M -[conj:appos]-> N}"
+      ],
+      "key": null,
+      "users": 4
+    },
     "mod@lto": {
       "code": [
         "pattern {M -[mod@lto]-> N}"
@@ -764,9 +701,37 @@
       "key": null,
       "users": 4
     },
-    "mod@foc": {
+    "conj:dicto": {
       "code": [
-        "pattern {M -[mod@foc]-> N}"
+        "pattern {M -[conj:dicto]-> N}"
+      ],
+      "key": null,
+      "users": 4
+    },
+    "comp:aux@nec": {
+      "code": [
+        "pattern {M -[comp:aux@nec]-> N}"
+      ],
+      "key": null,
+      "users": 4
+    },
+    "parataxis@insert": {
+      "code": [
+        "pattern {M -[parataxis@insert]-> N}"
+      ],
+      "key": null,
+      "users": 4
+    },
+    "discourse@emo": {
+      "code": [
+        "pattern {M -[discourse@emo]-> N}"
+      ],
+      "key": null,
+      "users": 4
+    },
+    "udep@lmp": {
+      "code": [
+        "pattern {M -[udep@lmp]-> N}"
       ],
       "key": null,
       "users": 4
@@ -778,30 +743,44 @@
       "key": null,
       "users": 4
     },
-    "parataxis@hashtag": {
+    "mod@cau": {
       "code": [
-        "pattern {M -[parataxis@hashtag]-> N}"
+        "pattern {M -[mod@cau]-> N}"
       ],
       "key": null,
-      "users": 3
+      "users": 4
     },
-    "comp:aux@aspect": {
+    "comp:obj@pass": {
       "code": [
-        "pattern {M -[comp:aux@aspect]-> N}"
+        "pattern {M -[comp:obj@pass]-> N}"
       ],
       "key": null,
-      "users": 3
+      "users": 4
     },
-    "conj@expl": {
+    "udep@lto": {
       "code": [
-        "pattern {M -[conj@expl]-> N}"
+        "pattern {M -[udep@lto]-> N}"
       ],
       "key": null,
-      "users": 3
+      "users": 4
     },
-    "comp:aux@clitic": {
+    "mod@foc": {
       "code": [
-        "pattern {M -[comp:aux@clitic]-> N}"
+        "pattern {M -[mod@foc]-> N}"
+      ],
+      "key": null,
+      "users": 4
+    },
+    "comp:obj@pmod": {
+      "code": [
+        "pattern {M -[comp:obj@pmod]-> N}"
+      ],
+      "key": null,
+      "users": 4
+    },
+    "mod@comp": {
+      "code": [
+        "pattern {M -[mod@comp]-> N}"
       ],
       "key": null,
       "users": 3
@@ -813,114 +792,9 @@
       "key": null,
       "users": 3
     },
-    "udep@cleft": {
-      "code": [
-        "pattern {M -[udep@cleft]-> N}"
-      ],
-      "key": null,
-      "users": 3
-    },
-    "udep@lfrom": {
-      "code": [
-        "pattern {M -[udep@lfrom]-> N}"
-      ],
-      "key": null,
-      "users": 3
-    },
-    "comp:aux@imp": {
-      "code": [
-        "pattern {M -[comp:aux@imp]-> N}"
-      ],
-      "key": null,
-      "users": 3
-    },
-    "parataxis:parenth": {
-      "code": [
-        "pattern {M -[parataxis:parenth]-> N}"
-      ],
-      "key": null,
-      "users": 3
-    },
-    "comp:obl@scrap": {
-      "code": [
-        "pattern {M -[comp:obl@scrap]-> N}"
-      ],
-      "key": null,
-      "users": 3
-    },
-    "unk@scrap": {
-      "code": [
-        "pattern {M -[unk@scrap]-> N}"
-      ],
-      "key": null,
-      "users": 3
-    },
-    "comp:aux@ex": {
-      "code": [
-        "pattern {M -[comp:aux@ex]-> N}"
-      ],
-      "key": null,
-      "users": 3
-    },
-    "comp:obj@voc": {
-      "code": [
-        "pattern {M -[comp:obj@voc]-> N}"
-      ],
-      "key": null,
-      "users": 3
-    },
-    "vocative@mention": {
-      "code": [
-        "pattern {M -[vocative@mention]-> N}"
-      ],
-      "key": null,
-      "users": 3
-    },
-    "mod@df": {
-      "code": [
-        "pattern {M -[mod@df]-> N}"
-      ],
-      "key": null,
-      "users": 3
-    },
-    "comp:pred@scrap": {
-      "code": [
-        "pattern {M -[comp:pred@scrap]-> N}"
-      ],
-      "key": null,
-      "users": 3
-    },
     "compound@dir": {
       "code": [
         "pattern {M -[compound@dir]-> N}"
-      ],
-      "key": null,
-      "users": 3
-    },
-    "compound@vo": {
-      "code": [
-        "pattern {M -[compound@vo]-> N}"
-      ],
-      "key": null,
-      "users": 3
-    },
-    "mod@scrap": {
-      "code": [
-        "pattern {M -[mod@scrap]-> N}"
-      ],
-      "key": null,
-      "users": 3
-    },
-    "mod@arg": {
-      "code": [
-        "pattern {M -[mod@arg]-> N}"
-      ],
-      "key": null,
-      "users": 3
-    },
-    "mod@cond": {
-      "code": [
-        "pattern {M -[mod@cond]-> N}"
       ],
       "key": null,
       "users": 3
@@ -932,9 +806,37 @@
       "key": null,
       "users": 3
     },
-    "udep@subj": {
+    "parataxis:parenth": {
       "code": [
-        "pattern {M -[udep@subj]-> N}"
+        "pattern {M -[parataxis:parenth]-> N}"
+      ],
+      "key": null,
+      "users": 3
+    },
+    "mod@df": {
+      "code": [
+        "pattern {M -[mod@df]-> N}"
+      ],
+      "key": null,
+      "users": 3
+    },
+    "comp:aux@imp": {
+      "code": [
+        "pattern {M -[comp:aux@imp]-> N}"
+      ],
+      "key": null,
+      "users": 3
+    },
+    "subj@nc": {
+      "code": [
+        "pattern {M -[subj@nc]-> N}"
+      ],
+      "key": null,
+      "users": 3
+    },
+    "comp:pred@scrap": {
+      "code": [
+        "pattern {M -[comp:pred@scrap]-> N}"
       ],
       "key": null,
       "users": 3
@@ -953,34 +855,6 @@
       "key": null,
       "users": 3
     },
-    "subj@nc": {
-      "code": [
-        "pattern {M -[subj@nc]-> N}"
-      ],
-      "key": null,
-      "users": 3
-    },
-    "mod@comp": {
-      "code": [
-        "pattern {M -[mod@comp]-> N}"
-      ],
-      "key": null,
-      "users": 3
-    },
-    "udep@inst": {
-      "code": [
-        "pattern {M -[udep@inst]-> N}"
-      ],
-      "key": null,
-      "users": 3
-    },
-    "comp:obl@pmod": {
-      "code": [
-        "pattern {M -[comp:obl@pmod]-> N}"
-      ],
-      "key": null,
-      "users": 3
-    },
     "compound@vv": {
       "code": [
         "pattern {M -[compound@vv]-> N}"
@@ -988,16 +862,30 @@
       "key": null,
       "users": 3
     },
-    "compound@a": {
+    "udep@cleft": {
       "code": [
-        "pattern {M -[compound@a]-> N}"
+        "pattern {M -[udep@cleft]-> N}"
       ],
       "key": null,
       "users": 3
     },
-    "subj@scrap": {
+    "comp:aux@aspect": {
       "code": [
-        "pattern {M -[subj@scrap]-> N}"
+        "pattern {M -[comp:aux@aspect]-> N}"
+      ],
+      "key": null,
+      "users": 3
+    },
+    "udep@lfrom": {
+      "code": [
+        "pattern {M -[udep@lfrom]-> N}"
+      ],
+      "key": null,
+      "users": 3
+    },
+    "mod@cond": {
+      "code": [
+        "pattern {M -[mod@cond]-> N}"
       ],
       "key": null,
       "users": 3
@@ -1009,23 +897,170 @@
       "key": null,
       "users": 3
     },
-    "mod@det": {
+    "vocative@mention": {
       "code": [
-        "pattern {M -[mod@det]-> N}"
+        "pattern {M -[vocative@mention]-> N}"
+      ],
+      "key": null,
+      "users": 3
+    },
+    "comp:obj@voc": {
+      "code": [
+        "pattern {M -[comp:obj@voc]-> N}"
+      ],
+      "key": null,
+      "users": 3
+    },
+    "parataxis@hashtag": {
+      "code": [
+        "pattern {M -[parataxis@hashtag]-> N}"
+      ],
+      "key": null,
+      "users": 3
+    },
+    "compound@vo": {
+      "code": [
+        "pattern {M -[compound@vo]-> N}"
+      ],
+      "key": null,
+      "users": 3
+    },
+    "subj@scrap": {
+      "code": [
+        "pattern {M -[subj@scrap]-> N}"
+      ],
+      "key": null,
+      "users": 3
+    },
+    "comp:obl@pmod": {
+      "code": [
+        "pattern {M -[comp:obl@pmod]-> N}"
+      ],
+      "key": null,
+      "users": 3
+    },
+    "mod@scrap": {
+      "code": [
+        "pattern {M -[mod@scrap]-> N}"
+      ],
+      "key": null,
+      "users": 3
+    },
+    "comp:obl@scrap": {
+      "code": [
+        "pattern {M -[comp:obl@scrap]-> N}"
+      ],
+      "key": null,
+      "users": 3
+    },
+    "compound@a": {
+      "code": [
+        "pattern {M -[compound@a]-> N}"
+      ],
+      "key": null,
+      "users": 3
+    },
+    "comp:aux@clitic": {
+      "code": [
+        "pattern {M -[comp:aux@clitic]-> N}"
+      ],
+      "key": null,
+      "users": 3
+    },
+    "udep@inst": {
+      "code": [
+        "pattern {M -[udep@inst]-> N}"
+      ],
+      "key": null,
+      "users": 3
+    },
+    "mod@arg": {
+      "code": [
+        "pattern {M -[mod@arg]-> N}"
+      ],
+      "key": null,
+      "users": 3
+    },
+    "comp:aux@ex": {
+      "code": [
+        "pattern {M -[comp:aux@ex]-> N}"
+      ],
+      "key": null,
+      "users": 3
+    },
+    "conj@expl": {
+      "code": [
+        "pattern {M -[conj@expl]-> N}"
+      ],
+      "key": null,
+      "users": 3
+    },
+    "udep@subj": {
+      "code": [
+        "pattern {M -[udep@subj]-> N}"
+      ],
+      "key": null,
+      "users": 3
+    },
+    "unk@scrap": {
+      "code": [
+        "pattern {M -[unk@scrap]-> N}"
+      ],
+      "key": null,
+      "users": 3
+    },
+    "mod:poss": {
+      "code": [
+        "pattern {M -[mod:poss]-> N}"
       ],
       "key": null,
       "users": 2
     },
-    "discourse@filler": {
+    "comp:obl@cleft": {
       "code": [
-        "pattern {M -[discourse@filler]-> N}"
+        "pattern {M -[comp:obl@cleft]-> N}"
       ],
       "key": null,
       "users": 2
     },
-    "flat:foreign": {
+    "udep@prep": {
       "code": [
-        "pattern {M -[flat:foreign]-> N}"
+        "pattern {M -[udep@prep]-> N}"
+      ],
+      "key": null,
+      "users": 2
+    },
+    "parataxis:obj": {
+      "code": [
+        "pattern {M -[parataxis:obj]-> N}"
+      ],
+      "key": null,
+      "users": 2
+    },
+    "mod@freq": {
+      "code": [
+        "pattern {M -[mod@freq]-> N}"
+      ],
+      "key": null,
+      "users": 2
+    },
+    "unk@mod": {
+      "code": [
+        "pattern {M -[unk@mod]-> N}"
+      ],
+      "key": null,
+      "users": 2
+    },
+    "conj:obj": {
+      "code": [
+        "pattern {M -[conj:obj]-> N}"
+      ],
+      "key": null,
+      "users": 2
+    },
+    "compound@affix": {
+      "code": [
+        "pattern {M -[compound@affix]-> N}"
       ],
       "key": null,
       "users": 2
@@ -1037,9 +1072,86 @@
       "key": null,
       "users": 2
     },
-    "mod:poss": {
+    "udep@arg": {
       "code": [
-        "pattern {M -[mod:poss]-> N}"
+        "pattern {M -[udep@arg]-> N}"
+      ],
+      "key": null,
+      "users": 2
+    },
+    "parataxis@nsubj": {
+      "code": [
+        "pattern {M -[parataxis@nsubj]-> N}"
+      ],
+      "key": null,
+      "users": 2
+    },
+    "comp@scrap": {
+      "code": [
+        "pattern {M -[comp@scrap]-> N}"
+      ],
+      "key": null,
+      "users": 2
+    },
+    "det:num": {
+      "code": [
+        "pattern {M -[det:num]-> N}"
+      ],
+      "key": null,
+      "users": 2
+    },
+    "discourse@filler": {
+      "code": [
+        "pattern {M -[discourse@filler]-> N}"
+      ],
+      "key": null,
+      "users": 2
+    },
+    "comp:aux@scrap": {
+      "code": [
+        "pattern {M -[comp:aux@scrap]-> N}"
+      ],
+      "key": null,
+      "users": 2
+    },
+    "compound:svc": {
+      "code": [
+        "pattern {M -[compound:svc]-> N}"
+      ],
+      "key": null,
+      "users": 2
+    },
+    "mod@lmp": {
+      "code": [
+        "pattern {M -[mod@lmp]-> N}"
+      ],
+      "key": null,
+      "users": 2
+    },
+    "parataxis@appos": {
+      "code": [
+        "pattern {M -[parataxis@appos]-> N}"
+      ],
+      "key": null,
+      "users": 2
+    },
+    "root@scrap": {
+      "code": [
+        "pattern {M -[root@scrap]-> N}"
+      ],
+      "key": null,
+      "users": 2
+    },
+    "udep@obj": {
+      "code": [
+        "pattern {M -[udep@obj]-> N}"
+      ],
+      "key": null,
+      "users": 2
+    },
+    "dislocated@csubj": {
+      "code": [
+        "pattern {M -[dislocated@csubj]-> N}"
       ],
       "key": null,
       "users": 2
@@ -1058,58 +1170,9 @@
       "key": null,
       "users": 2
     },
-    "udep@arg": {
+    "flat@num": {
       "code": [
-        "pattern {M -[udep@arg]-> N}"
-      ],
-      "key": null,
-      "users": 2
-    },
-    "conj:obj": {
-      "code": [
-        "pattern {M -[conj:obj]-> N}"
-      ],
-      "key": null,
-      "users": 2
-    },
-    "parataxis:obj": {
-      "code": [
-        "pattern {M -[parataxis:obj]-> N}"
-      ],
-      "key": null,
-      "users": 2
-    },
-    "mod@lmp": {
-      "code": [
-        "pattern {M -[mod@lmp]-> N}"
-      ],
-      "key": null,
-      "users": 2
-    },
-    "comp:aux@scrap": {
-      "code": [
-        "pattern {M -[comp:aux@scrap]-> N}"
-      ],
-      "key": null,
-      "users": 2
-    },
-    "unk@mod": {
-      "code": [
-        "pattern {M -[unk@mod]-> N}"
-      ],
-      "key": null,
-      "users": 2
-    },
-    "parataxis@appos": {
-      "code": [
-        "pattern {M -[parataxis@appos]-> N}"
-      ],
-      "key": null,
-      "users": 2
-    },
-    "dislocated@obj": {
-      "code": [
-        "pattern {M -[dislocated@obj]-> N}"
+        "pattern {M -[flat@num]-> N}"
       ],
       "key": null,
       "users": 2
@@ -1121,121 +1184,9 @@
       "key": null,
       "users": 2
     },
-    "comp:obj@periph": {
+    "mod@det": {
       "code": [
-        "pattern {M -[comp:obj@periph]-> N}"
-      ],
-      "key": null,
-      "users": 2
-    },
-    "comp:aux@opt": {
-      "code": [
-        "pattern {M -[comp:aux@opt]-> N}"
-      ],
-      "key": null,
-      "users": 2
-    },
-    "det:num": {
-      "code": [
-        "pattern {M -[det:num]-> N}"
-      ],
-      "key": null,
-      "users": 2
-    },
-    "udep@obj": {
-      "code": [
-        "pattern {M -[udep@obj]-> N}"
-      ],
-      "key": null,
-      "users": 2
-    },
-    "mod@part": {
-      "code": [
-        "pattern {M -[mod@part]-> N}"
-      ],
-      "key": null,
-      "users": 2
-    },
-    "compound@affix": {
-      "code": [
-        "pattern {M -[compound@affix]-> N}"
-      ],
-      "key": null,
-      "users": 2
-    },
-    "compound@smixut": {
-      "code": [
-        "pattern {M -[compound@smixut]-> N}"
-      ],
-      "key": null,
-      "users": 2
-    },
-    "comp:obj@det": {
-      "code": [
-        "pattern {M -[comp:obj@det]-> N}"
-      ],
-      "key": null,
-      "users": 2
-    },
-    "flat@num": {
-      "code": [
-        "pattern {M -[flat@num]-> N}"
-      ],
-      "key": null,
-      "users": 2
-    },
-    "parataxis@nsubj": {
-      "code": [
-        "pattern {M -[parataxis@nsubj]-> N}"
-      ],
-      "key": null,
-      "users": 2
-    },
-    "root@scrap": {
-      "code": [
-        "pattern {M -[root@scrap]-> N}"
-      ],
-      "key": null,
-      "users": 2
-    },
-    "udep@prep": {
-      "code": [
-        "pattern {M -[udep@prep]-> N}"
-      ],
-      "key": null,
-      "users": 2
-    },
-    "comp:obl@cleft": {
-      "code": [
-        "pattern {M -[comp:obl@cleft]-> N}"
-      ],
-      "key": null,
-      "users": 2
-    },
-    "dislocated@csubj": {
-      "code": [
-        "pattern {M -[dislocated@csubj]-> N}"
-      ],
-      "key": null,
-      "users": 2
-    },
-    "comp@scrap": {
-      "code": [
-        "pattern {M -[comp@scrap]-> N}"
-      ],
-      "key": null,
-      "users": 2
-    },
-    "mod@freq": {
-      "code": [
-        "pattern {M -[mod@freq]-> N}"
-      ],
-      "key": null,
-      "users": 2
-    },
-    "compound:svc": {
-      "code": [
-        "pattern {M -[compound:svc]-> N}"
+        "pattern {M -[mod@det]-> N}"
       ],
       "key": null,
       "users": 2
@@ -1247,131 +1198,54 @@
       "key": null,
       "users": 2
     },
-    "mod@prp": {
+    "compound@smixut": {
       "code": [
-        "pattern {M -[mod@prp]-> N}"
+        "pattern {M -[compound@smixut]-> N}"
       ],
       "key": null,
-      "users": 1
+      "users": 2
     },
-    "comp:obj$attitude": {
+    "mod@part": {
       "code": [
-        "pattern {M -[comp:obj$attitude]-> N}"
+        "pattern {M -[mod@part]-> N}"
       ],
       "key": null,
-      "users": 1
+      "users": 2
     },
-    "parataxis@newsent": {
+    "flat:foreign": {
       "code": [
-        "pattern {M -[parataxis@newsent]-> N}"
+        "pattern {M -[flat:foreign]-> N}"
       ],
       "key": null,
-      "users": 1
+      "users": 2
     },
-    "comp:obj@advmod": {
+    "comp:aux@opt": {
       "code": [
-        "pattern {M -[comp:obj@advmod]-> N}"
+        "pattern {M -[comp:aux@opt]-> N}"
       ],
       "key": null,
-      "users": 1
+      "users": 2
     },
-    "vocative@cl": {
+    "comp:obj@det": {
       "code": [
-        "pattern {M -[vocative@cl]-> N}"
+        "pattern {M -[comp:obj@det]-> N}"
       ],
       "key": null,
-      "users": 1
+      "users": 2
     },
-    "dislocated@cleft": {
+    "dislocated@obj": {
       "code": [
-        "pattern {M -[dislocated@cleft]-> N}"
+        "pattern {M -[dislocated@obj]-> N}"
       ],
       "key": null,
-      "users": 1
+      "users": 2
     },
-    "mod:periph$tempo": {
+    "comp:obj@periph": {
       "code": [
-        "pattern {M -[mod:periph$tempo]-> N}"
+        "pattern {M -[comp:obj@periph]-> N}"
       ],
       "key": null,
-      "users": 1
-    },
-    "mod:periph$manner": {
-      "code": [
-        "pattern {M -[mod:periph$manner]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "comp:obl$attitude": {
-      "code": [
-        "pattern {M -[comp:obl$attitude]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "mod:obj@relcl": {
-      "code": [
-        "pattern {M -[mod:obj@relcl]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "mod:periph@scrap": {
-      "code": [
-        "pattern {M -[mod:periph@scrap]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "unk@cop": {
-      "code": [
-        "pattern {M -[unk@cop]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "mod@locy": {
-      "code": [
-        "pattern {M -[mod@locy]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "mod:num": {
-      "code": [
-        "pattern {M -[mod:num]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "subj@bfoc": {
-      "code": [
-        "pattern {M -[subj@bfoc]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "udep@freq": {
-      "code": [
-        "pattern {M -[udep@freq]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "mod@que": {
-      "code": [
-        "pattern {M -[mod@que]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "comp:obl$cause": {
-      "code": [
-        "pattern {M -[comp:obl$cause]-> N}"
-      ],
-      "key": null,
-      "users": 1
+      "users": 2
     },
     "comp:obj@q": {
       "code": [
@@ -1380,128 +1254,44 @@
       "key": null,
       "users": 1
     },
-    "parataxis:obj$cause": {
+    "compound:svc@scrap": {
       "code": [
-        "pattern {M -[parataxis:obj$cause]-> N}"
+        "pattern {M -[compound:svc@scrap]-> N}"
       ],
       "key": null,
       "users": 1
     },
-    "subj:aff": {
+    "mod@tto": {
       "code": [
-        "pattern {M -[subj:aff]-> N}"
+        "pattern {M -[mod@tto]-> N}"
       ],
       "key": null,
       "users": 1
     },
-    "comp:pred@pred": {
+    "subj@advmod": {
       "code": [
-        "pattern {M -[comp:pred@pred]-> N}"
+        "pattern {M -[subj@advmod]-> N}"
       ],
       "key": null,
       "users": 1
     },
-    "comp:obj@pred": {
+    "udep@dat": {
       "code": [
-        "pattern {M -[comp:obj@pred]-> N}"
+        "pattern {M -[udep@dat]-> N}"
       ],
       "key": null,
       "users": 1
     },
-    "mod:periph$tempb": {
+    "comp:obj@plur": {
       "code": [
-        "pattern {M -[mod:periph$tempb]-> N}"
+        "pattern {M -[comp:obj@plur]-> N}"
       ],
       "key": null,
       "users": 1
     },
-    "udep@cmp": {
+    "parataxis:conj@scrap": {
       "code": [
-        "pattern {M -[udep@cmp]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "flat@vv": {
-      "code": [
-        "pattern {M -[flat@vv]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "parataxis@rt": {
-      "code": [
-        "pattern {M -[parataxis@rt]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "udep@inf": {
-      "code": [
-        "pattern {M -[udep@inf]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "unk@mark": {
-      "code": [
-        "pattern {M -[unk@mark]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "comp:obj$percep": {
-      "code": [
-        "pattern {M -[comp:obj$percep]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "parataxis:obl": {
-      "code": [
-        "pattern {M -[parataxis:obl]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "comp:pred@locat": {
-      "code": [
-        "pattern {M -[comp:pred@locat]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "conj:dicto@scrap": {
-      "code": [
-        "pattern {M -[conj:dicto@scrap]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "mod@attr": {
-      "code": [
-        "pattern {M -[mod@attr]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "parataxis:coord": {
-      "code": [
-        "pattern {M -[parataxis:coord]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "cc@nc": {
-      "code": [
-        "pattern {M -[cc@nc]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "mod@lcl": {
-      "code": [
-        "pattern {M -[mod@lcl]-> N}"
+        "pattern {M -[parataxis:conj@scrap]-> N}"
       ],
       "key": null,
       "users": 1
@@ -1513,72 +1303,9 @@
       "key": null,
       "users": 1
     },
-    "flat@abs": {
+    "comp:obj@gen": {
       "code": [
-        "pattern {M -[flat@abs]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "flat@gov": {
-      "code": [
-        "pattern {M -[flat@gov]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "flat@sibl": {
-      "code": [
-        "pattern {M -[flat@sibl]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "mod$tempb": {
-      "code": [
-        "pattern {M -[mod$tempb]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "mod:periph$purp": {
-      "code": [
-        "pattern {M -[mod:periph$purp]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "compound:redup@scrap": {
-      "code": [
-        "pattern {M -[compound:redup@scrap]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "udep@orphan": {
-      "code": [
-        "pattern {M -[udep@orphan]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "parataxis:obj$request": {
-      "code": [
-        "pattern {M -[parataxis:obj$request]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "comp:pred@sp": {
-      "code": [
-        "pattern {M -[comp:pred@sp]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "parataxis:obj$know": {
-      "code": [
-        "pattern {M -[parataxis:obj$know]-> N}"
+        "pattern {M -[comp:obj@gen]-> N}"
       ],
       "key": null,
       "users": 1
@@ -1590,23 +1317,44 @@
       "key": null,
       "users": 1
     },
-    "unk@emo": {
+    "comp:obj$concess": {
       "code": [
-        "pattern {M -[unk@emo]-> N}"
+        "pattern {M -[comp:obj$concess]-> N}"
       ],
       "key": null,
       "users": 1
     },
-    "comp:obl@appl": {
+    "udep@cmp": {
       "code": [
-        "pattern {M -[comp:obl@appl]-> N}"
+        "pattern {M -[udep@cmp]-> N}"
       ],
       "key": null,
       "users": 1
     },
-    "mod@loc": {
+    "udep@att": {
       "code": [
-        "pattern {M -[mod@loc]-> N}"
+        "pattern {M -[udep@att]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "parataxis:dislocated$tempa": {
+      "code": [
+        "pattern {M -[parataxis:dislocated$tempa]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "comp:obj$percep": {
+      "code": [
+        "pattern {M -[comp:obj$percep]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "mod:periph$tempb": {
+      "code": [
+        "pattern {M -[mod:periph$tempb]-> N}"
       ],
       "key": null,
       "users": 1
@@ -1618,23 +1366,345 @@
       "key": null,
       "users": 1
     },
-    "comp:obl$utter": {
+    "mod$purp": {
       "code": [
-        "pattern {M -[comp:obl$utter]-> N}"
+        "pattern {M -[mod$purp]-> N}"
       ],
       "key": null,
       "users": 1
     },
-    "mod@sp": {
+    "comp:obl$know@x": {
       "code": [
-        "pattern {M -[mod@sp]-> N}"
+        "pattern {M -[comp:obl$know@x]-> N}"
       ],
       "key": null,
       "users": 1
     },
-    "unk@aux": {
+    "comp:obl$request@x": {
       "code": [
-        "pattern {M -[unk@aux]-> N}"
+        "pattern {M -[comp:obl$request@x]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "comp:obl$attitude@x": {
+      "code": [
+        "pattern {M -[comp:obl$attitude@x]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "mod@prp": {
+      "code": [
+        "pattern {M -[mod@prp]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "comp:pred$manner@agent": {
+      "code": [
+        "pattern {M -[comp:pred$manner@agent]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "comp:aux@pot": {
+      "code": [
+        "pattern {M -[comp:aux@pot]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "comp:cleft@scrap": {
+      "code": [
+        "pattern {M -[comp:cleft@scrap]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "comp:obl$attitude": {
+      "code": [
+        "pattern {M -[comp:obl$attitude]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "mod@loc": {
+      "code": [
+        "pattern {M -[mod@loc]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "comp:obj@advneg": {
+      "code": [
+        "pattern {M -[comp:obj@advneg]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "comp:obj$know@x": {
+      "code": [
+        "pattern {M -[comp:obj$know@x]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "mod@adv": {
+      "code": [
+        "pattern {M -[mod@adv]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "subj@lvc": {
+      "code": [
+        "pattern {M -[subj@lvc]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "comp:obl@appl": {
+      "code": [
+        "pattern {M -[comp:obl@appl]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "udep@inf": {
+      "code": [
+        "pattern {M -[udep@inf]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "mod:periph$purp": {
+      "code": [
+        "pattern {M -[mod:periph$purp]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "mod@svc": {
+      "code": [
+        "pattern {M -[mod@svc]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "comp:pred@expl": {
+      "code": [
+        "pattern {M -[comp:pred@expl]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "comp:pred@locat": {
+      "code": [
+        "pattern {M -[comp:pred@locat]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "parataxis:coord": {
+      "code": [
+        "pattern {M -[parataxis:coord]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "comp:aff": {
+      "code": [
+        "pattern {M -[comp:aff]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "unk@ss": {
+      "code": [
+        "pattern {M -[unk@ss]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "mod$tempa": {
+      "code": [
+        "pattern {M -[mod$tempa]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "mod@att": {
+      "code": [
+        "pattern {M -[mod@att]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "comp:arg": {
+      "code": [
+        "pattern {M -[comp:arg]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "comp:obl$know": {
+      "code": [
+        "pattern {M -[comp:obl$know]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "comp:aux@part": {
+      "code": [
+        "pattern {M -[comp:aux@part]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "udep@gen": {
+      "code": [
+        "pattern {M -[udep@gen]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "mod@to": {
+      "code": [
+        "pattern {M -[mod@to]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "unk@cop": {
+      "code": [
+        "pattern {M -[unk@cop]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "flat@gov": {
+      "code": [
+        "pattern {M -[flat@gov]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "mod$manner": {
+      "code": [
+        "pattern {M -[mod$manner]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "comp:obl$cause": {
+      "code": [
+        "pattern {M -[comp:obl$cause]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "parataxis:obj$request": {
+      "code": [
+        "pattern {M -[parataxis:obj$request]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "udep@scrap": {
+      "code": [
+        "pattern {M -[udep@scrap]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "mod$tempb": {
+      "code": [
+        "pattern {M -[mod$tempb]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "parataxis:dislocated$tempo": {
+      "code": [
+        "pattern {M -[parataxis:dislocated$tempo]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "mod:periph$concess": {
+      "code": [
+        "pattern {M -[mod:periph$concess]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "mod@subj": {
+      "code": [
+        "pattern {M -[mod@subj]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "vocative@cl": {
+      "code": [
+        "pattern {M -[vocative@cl]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "parataxis:obj$utter": {
+      "code": [
+        "pattern {M -[parataxis:obj$utter]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "det@pron": {
+      "code": [
+        "pattern {M -[det@pron]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "discourse@intj": {
+      "code": [
+        "pattern {M -[discourse@intj]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "conj@extend": {
+      "code": [
+        "pattern {M -[conj@extend]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "comp:obl$modal@x": {
+      "code": [
+        "pattern {M -[comp:obl$modal@x]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "mod$tempo": {
+      "code": [
+        "pattern {M -[mod$tempo]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "flat@frac": {
+      "code": [
+        "pattern {M -[flat@frac]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "udep@agent": {
+      "code": [
+        "pattern {M -[udep@agent]-> N}"
       ],
       "key": null,
       "users": 1
@@ -1646,9 +1716,562 @@
       "key": null,
       "users": 1
     },
-    "mod@relat": {
+    "unk@aux": {
       "code": [
-        "pattern {M -[mod@relat]-> N}"
+        "pattern {M -[unk@aux]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "comp:pred$attitude@x": {
+      "code": [
+        "pattern {M -[comp:pred$attitude@x]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "parataxis@sentence": {
+      "code": [
+        "pattern {M -[parataxis@sentence]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "flat@vv": {
+      "code": [
+        "pattern {M -[flat@vv]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "mod@coverb": {
+      "code": [
+        "pattern {M -[mod@coverb]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "comp:obl$modal": {
+      "code": [
+        "pattern {M -[comp:obl$modal]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "unk@ana": {
+      "code": [
+        "pattern {M -[unk@ana]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "dislocated:obj": {
+      "code": [
+        "pattern {M -[dislocated:obj]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "comp:pred@sp": {
+      "code": [
+        "pattern {M -[comp:pred@sp]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "mod$concess": {
+      "code": [
+        "pattern {M -[mod$concess]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "compound:redup": {
+      "code": [
+        "pattern {M -[compound:redup]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "parataxis@deletion": {
+      "code": [
+        "pattern {M -[parataxis@deletion]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "comp:obj$phase@x": {
+      "code": [
+        "pattern {M -[comp:obj$phase@x]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "mod$cond": {
+      "code": [
+        "pattern {M -[mod$cond]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "mod@attlvc": {
+      "code": [
+        "pattern {M -[mod@attlvc]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "parataxis:insert": {
+      "code": [
+        "pattern {M -[parataxis:insert]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "conj:redup": {
+      "code": [
+        "pattern {M -[conj:redup]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "comp:obj$desire": {
+      "code": [
+        "pattern {M -[comp:obj$desire]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "udep@comp": {
+      "code": [
+        "pattern {M -[udep@comp]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "mod:periph$tempa": {
+      "code": [
+        "pattern {M -[mod:periph$tempa]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "comp:obl$desire@x": {
+      "code": [
+        "pattern {M -[comp:obl$desire@x]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "mod@bahuv": {
+      "code": [
+        "pattern {M -[mod@bahuv]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "compound:prt": {
+      "code": [
+        "pattern {M -[compound:prt]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "mod@attr": {
+      "code": [
+        "pattern {M -[mod@attr]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "mod:periph@scrap": {
+      "code": [
+        "pattern {M -[mod:periph@scrap]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "comp:obl$phase@x": {
+      "code": [
+        "pattern {M -[comp:obl$phase@x]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "udep@smod": {
+      "code": [
+        "pattern {M -[udep@smod]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "comp:obj$know": {
+      "code": [
+        "pattern {M -[comp:obj$know]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "det@rel": {
+      "code": [
+        "pattern {M -[det@rel]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "udep@orphan": {
+      "code": [
+        "pattern {M -[udep@orphan]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "parataxis:conj": {
+      "code": [
+        "pattern {M -[parataxis:conj]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "det@scrap": {
+      "code": [
+        "pattern {M -[det@scrap]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "unk@agr": {
+      "code": [
+        "pattern {M -[unk@agr]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "comp:obl$utter": {
+      "code": [
+        "pattern {M -[comp:obl$utter]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "parataxis:obl": {
+      "code": [
+        "pattern {M -[parataxis:obl]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "mod@sp": {
+      "code": [
+        "pattern {M -[mod@sp]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "mod:periph$tempo": {
+      "code": [
+        "pattern {M -[mod:periph$tempo]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "unk@pos": {
+      "code": [
+        "pattern {M -[unk@pos]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "compound:svc$tempo": {
+      "code": [
+        "pattern {M -[compound:svc$tempo]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "det@noun": {
+      "code": [
+        "pattern {M -[det@noun]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "flat@repeat": {
+      "code": [
+        "pattern {M -[flat@repeat]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "udep@advmod": {
+      "code": [
+        "pattern {M -[udep@advmod]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "comp:pred@pred": {
+      "code": [
+        "pattern {M -[comp:pred@pred]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "mod:emph": {
+      "code": [
+        "pattern {M -[mod:emph]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "flat:name": {
+      "code": [
+        "pattern {M -[flat:name]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "mod@mode": {
+      "code": [
+        "pattern {M -[mod@mode]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "comp:pred@subj": {
+      "code": [
+        "pattern {M -[comp:pred@subj]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "comp:obj@obl": {
+      "code": [
+        "pattern {M -[comp:obj@obl]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "flat@sibl": {
+      "code": [
+        "pattern {M -[flat@sibl]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "parataxis@restart": {
+      "code": [
+        "pattern {M -[parataxis@restart]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "comp:obj@appl": {
+      "code": [
+        "pattern {M -[comp:obj@appl]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "mod@mcl": {
+      "code": [
+        "pattern {M -[mod@mcl]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "comp:obj$attitude@x": {
+      "code": [
+        "pattern {M -[comp:obj$attitude@x]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "mod:appos": {
+      "code": [
+        "pattern {M -[mod:appos]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "comp:obj@advmod": {
+      "code": [
+        "pattern {M -[comp:obj@advmod]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "unk:aff": {
+      "code": [
+        "pattern {M -[unk:aff]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "comp:obj$desire@x": {
+      "code": [
+        "pattern {M -[comp:obj$desire@x]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "udep@det": {
+      "code": [
+        "pattern {M -[udep@det]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "mod@lcl": {
+      "code": [
+        "pattern {M -[mod@lcl]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "subj@bfoc": {
+      "code": [
+        "pattern {M -[subj@bfoc]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "mod@gen": {
+      "code": [
+        "pattern {M -[mod@gen]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "parataxis@rt": {
+      "code": [
+        "pattern {M -[parataxis@rt]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "parataxis:obj$cause": {
+      "code": [
+        "pattern {M -[parataxis:obj$cause]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "parataxis@newsent": {
+      "code": [
+        "pattern {M -[parataxis@newsent]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "comp:obl$percep": {
+      "code": [
+        "pattern {M -[comp:obl$percep]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "compound:redup@scrap": {
+      "code": [
+        "pattern {M -[compound:redup@scrap]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "mod:periph$manner": {
+      "code": [
+        "pattern {M -[mod:periph$manner]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "comp:obj@caus": {
+      "code": [
+        "pattern {M -[comp:obj@caus]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "comp:obl$percep@x": {
+      "code": [
+        "pattern {M -[comp:obl$percep@x]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "parataxis@url": {
+      "code": [
+        "pattern {M -[parataxis@url]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "compound@preverb": {
+      "code": [
+        "pattern {M -[compound@preverb]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "udep@freq": {
+      "code": [
+        "pattern {M -[udep@freq]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "dislocated@cleft": {
+      "code": [
+        "pattern {M -[dislocated@cleft]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "unk@emo": {
+      "code": [
+        "pattern {M -[unk@emo]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "comp:obl@patient": {
+      "code": [
+        "pattern {M -[comp:obl@patient]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "dislocated:subj": {
+      "code": [
+        "pattern {M -[dislocated:subj]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "subj@lfoc": {
+      "code": [
+        "pattern {M -[subj@lfoc]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "discourse@conn": {
+      "code": [
+        "pattern {M -[discourse@conn]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "mod:periph$reason": {
+      "code": [
+        "pattern {M -[mod:periph$reason]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "comp:obj$utter": {
+      "code": [
+        "pattern {M -[comp:obj$utter]-> N}"
       ],
       "key": null,
       "users": 1
@@ -1656,6 +2279,146 @@
     "udep@appl": {
       "code": [
         "pattern {M -[udep@appl]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "udep@obl": {
+      "code": [
+        "pattern {M -[udep@obl]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "mod:periph$cond": {
+      "code": [
+        "pattern {M -[mod:periph$cond]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "mod:periph": {
+      "code": [
+        "pattern {M -[mod:periph]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "conj:dicto@scrap": {
+      "code": [
+        "pattern {M -[conj:dicto@scrap]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "parataxis:obj$know": {
+      "code": [
+        "pattern {M -[parataxis:obj$know]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "parataxis@trans": {
+      "code": [
+        "pattern {M -[parataxis@trans]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "compound@quant": {
+      "code": [
+        "pattern {M -[compound@quant]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "subj@ifoc": {
+      "code": [
+        "pattern {M -[subj@ifoc]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "mod@tfrom": {
+      "code": [
+        "pattern {M -[mod@tfrom]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "flat@title": {
+      "code": [
+        "pattern {M -[flat@title]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "mod@redup": {
+      "code": [
+        "pattern {M -[mod@redup]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "subj@obj": {
+      "code": [
+        "pattern {M -[subj@obj]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "mod:aux": {
+      "code": [
+        "pattern {M -[mod:aux]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "mod@que": {
+      "code": [
+        "pattern {M -[mod@que]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "comp:obj$attitude": {
+      "code": [
+        "pattern {M -[comp:obj$attitude]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "mod@locy": {
+      "code": [
+        "pattern {M -[mod@locy]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "udep@own": {
+      "code": [
+        "pattern {M -[udep@own]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "flat@abs": {
+      "code": [
+        "pattern {M -[flat@abs]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "conj@svc": {
+      "code": [
+        "pattern {M -[conj@svc]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "udep@mcl": {
+      "code": [
+        "pattern {M -[udep@mcl]-> N}"
       ],
       "key": null,
       "users": 1
@@ -1674,198 +2437,9 @@
       "key": null,
       "users": 1
     },
-    "mod$tempo": {
-      "code": [
-        "pattern {M -[mod$tempo]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "mod:aux": {
-      "code": [
-        "pattern {M -[mod:aux]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "parataxis@trans": {
-      "code": [
-        "pattern {M -[parataxis@trans]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "flat@title": {
-      "code": [
-        "pattern {M -[flat@title]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "mod@inf": {
-      "code": [
-        "pattern {M -[mod@inf]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "flat@frac": {
-      "code": [
-        "pattern {M -[flat@frac]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "discourse@conn": {
-      "code": [
-        "pattern {M -[discourse@conn]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "det@scrap": {
-      "code": [
-        "pattern {M -[det@scrap]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "subj@obj": {
-      "code": [
-        "pattern {M -[subj@obj]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "parataxis@restart": {
-      "code": [
-        "pattern {M -[parataxis@restart]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "compound:svc$phase": {
-      "code": [
-        "pattern {M -[compound:svc$phase]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "comp:obj$desire@x": {
-      "code": [
-        "pattern {M -[comp:obj$desire@x]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "conj:redup": {
-      "code": [
-        "pattern {M -[conj:redup]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "parataxis:dislocated$tempo": {
-      "code": [
-        "pattern {M -[parataxis:dislocated$tempo]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "parataxis@url": {
-      "code": [
-        "pattern {M -[parataxis@url]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "parataxis:mod$cond": {
-      "code": [
-        "pattern {M -[parataxis:mod$cond]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "udep@gen": {
-      "code": [
-        "pattern {M -[udep@gen]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "mod@mode": {
-      "code": [
-        "pattern {M -[mod@mode]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "compound:prt": {
-      "code": [
-        "pattern {M -[compound:prt]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "comp:obl$modal": {
-      "code": [
-        "pattern {M -[comp:obl$modal]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
     "comp:caus": {
       "code": [
         "pattern {M -[comp:caus]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "comp:obj@caus": {
-      "code": [
-        "pattern {M -[comp:obj@caus]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "mod$manner": {
-      "code": [
-        "pattern {M -[mod$manner]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "mod:periph$cond": {
-      "code": [
-        "pattern {M -[mod:periph$cond]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "subj@periph": {
-      "code": [
-        "pattern {M -[subj@periph]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "compound:svc@scrap": {
-      "code": [
-        "pattern {M -[compound:svc@scrap]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "dislocated:subj": {
-      "code": [
-        "pattern {M -[dislocated:subj]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "comp:obj$utter": {
-      "code": [
-        "pattern {M -[comp:obj$utter]-> N}"
       ],
       "key": null,
       "users": 1
@@ -1877,296 +2451,9 @@
       "key": null,
       "users": 1
     },
-    "det@noun": {
+    "comp:obl$cause@x": {
       "code": [
-        "pattern {M -[det@noun]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "comp:pred@expl": {
-      "code": [
-        "pattern {M -[comp:pred@expl]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "mod$cond": {
-      "code": [
-        "pattern {M -[mod$cond]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "parataxis:mod": {
-      "code": [
-        "pattern {M -[parataxis:mod]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "comp:obl@patient": {
-      "code": [
-        "pattern {M -[comp:obl@patient]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "parataxis:dislocated": {
-      "code": [
-        "pattern {M -[parataxis:dislocated]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "comp:cleft@scrap": {
-      "code": [
-        "pattern {M -[comp:cleft@scrap]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "subj@lfoc": {
-      "code": [
-        "pattern {M -[subj@lfoc]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "comp:obl$percep": {
-      "code": [
-        "pattern {M -[comp:obl$percep]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "udep@att": {
-      "code": [
-        "pattern {M -[udep@att]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "dislocated:obj": {
-      "code": [
-        "pattern {M -[dislocated:obj]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "comp:obl$desire@x": {
-      "code": [
-        "pattern {M -[comp:obl$desire@x]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "comp:obl$know@x": {
-      "code": [
-        "pattern {M -[comp:obl$know@x]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "comp:obl$phase@x": {
-      "code": [
-        "pattern {M -[comp:obl$phase@x]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "parataxis:insert": {
-      "code": [
-        "pattern {M -[parataxis:insert]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "unk@alt": {
-      "code": [
-        "pattern {M -[unk@alt]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "udep@comp": {
-      "code": [
-        "pattern {M -[udep@comp]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "det@adj": {
-      "code": [
-        "pattern {M -[det@adj]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "parataxis:conj@scrap": {
-      "code": [
-        "pattern {M -[parataxis:conj@scrap]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "mod$tempa": {
-      "code": [
-        "pattern {M -[mod$tempa]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "flat@repeat": {
-      "code": [
-        "pattern {M -[flat@repeat]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "mod@to": {
-      "code": [
-        "pattern {M -[mod@to]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "comp:aux@pot": {
-      "code": [
-        "pattern {M -[comp:aux@pot]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "comp:obj@appl": {
-      "code": [
-        "pattern {M -[comp:obj@appl]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "parataxis@sentence": {
-      "code": [
-        "pattern {M -[parataxis@sentence]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "discourse@intj": {
-      "code": [
-        "pattern {M -[discourse@intj]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "comp:arg": {
-      "code": [
-        "pattern {M -[comp:arg]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "mod@adv": {
-      "code": [
-        "pattern {M -[mod@adv]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "udep@redup": {
-      "code": [
-        "pattern {M -[udep@redup]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "udep@agent": {
-      "code": [
-        "pattern {M -[udep@agent]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "mod:periph$reason": {
-      "code": [
-        "pattern {M -[mod:periph$reason]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "parataxis:dislocated$tempa": {
-      "code": [
-        "pattern {M -[parataxis:dislocated$tempa]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "mod@abs": {
-      "code": [
-        "pattern {M -[mod@abs]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "compound:svc$tempo": {
-      "code": [
-        "pattern {M -[compound:svc$tempo]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "comp:obl$know": {
-      "code": [
-        "pattern {M -[comp:obl$know]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "mod@mcl": {
-      "code": [
-        "pattern {M -[mod@mcl]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "conj@extend": {
-      "code": [
-        "pattern {M -[conj@extend]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "unk@pos": {
-      "code": [
-        "pattern {M -[unk@pos]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "flat:name": {
-      "code": [
-        "pattern {M -[flat:name]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "subj@advmod": {
-      "code": [
-        "pattern {M -[subj@advmod]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "comp:obl$attitude@x": {
-      "code": [
-        "pattern {M -[comp:obl$attitude@x]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "comp:aux@part": {
-      "code": [
-        "pattern {M -[comp:aux@part]-> N}"
+        "pattern {M -[comp:obl$cause@x]-> N}"
       ],
       "key": null,
       "users": 1
@@ -2178,111 +2465,6 @@
       "key": null,
       "users": 1
     },
-    "comp:obj@advneg": {
-      "code": [
-        "pattern {M -[comp:obj@advneg]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "compound:redup": {
-      "code": [
-        "pattern {M -[compound:redup]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "mod@att": {
-      "code": [
-        "pattern {M -[mod@att]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "mod@gen": {
-      "code": [
-        "pattern {M -[mod@gen]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "mod:emph": {
-      "code": [
-        "pattern {M -[mod:emph]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "mod$concess": {
-      "code": [
-        "pattern {M -[mod$concess]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "comp:pred$attitude@x": {
-      "code": [
-        "pattern {M -[comp:pred$attitude@x]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "mod@attlvc": {
-      "code": [
-        "pattern {M -[mod@attlvc]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "mod@redup": {
-      "code": [
-        "pattern {M -[mod@redup]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "conj@svc": {
-      "code": [
-        "pattern {M -[conj@svc]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "mod@subj": {
-      "code": [
-        "pattern {M -[mod@subj]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "udep@obl": {
-      "code": [
-        "pattern {M -[udep@obl]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "subj@ifoc": {
-      "code": [
-        "pattern {M -[subj@ifoc]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "udep@det": {
-      "code": [
-        "pattern {M -[udep@det]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "parataxis:conj": {
-      "code": [
-        "pattern {M -[parataxis:conj]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
     "appos@trans": {
       "code": [
         "pattern {M -[appos@trans]-> N}"
@@ -2290,37 +2472,9 @@
       "key": null,
       "users": 1
     },
-    "parataxis:obj$utter": {
+    "unk@alt": {
       "code": [
-        "pattern {M -[parataxis:obj$utter]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "comp:obj@gen": {
-      "code": [
-        "pattern {M -[comp:obj@gen]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "unk@ss": {
-      "code": [
-        "pattern {M -[unk@ss]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "mod@svc": {
-      "code": [
-        "pattern {M -[mod@svc]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "mod:periph$tempa": {
-      "code": [
-        "pattern {M -[mod:periph$tempa]-> N}"
+        "pattern {M -[unk@alt]-> N}"
       ],
       "key": null,
       "users": 1
@@ -2332,6 +2486,34 @@
       "key": null,
       "users": 1
     },
+    "subj:aff": {
+      "code": [
+        "pattern {M -[subj:aff]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "unk@mark": {
+      "code": [
+        "pattern {M -[unk@mark]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "subj@periph": {
+      "code": [
+        "pattern {M -[subj@periph]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "compound:svc$phase": {
+      "code": [
+        "pattern {M -[compound:svc$phase]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
     "unk@infl": {
       "code": [
         "pattern {M -[unk@infl]-> N}"
@@ -2339,163 +2521,23 @@
       "key": null,
       "users": 1
     },
-    "mod@coverb": {
+    "comp:obj@pred": {
       "code": [
-        "pattern {M -[mod@coverb]-> N}"
+        "pattern {M -[comp:obj@pred]-> N}"
       ],
       "key": null,
       "users": 1
     },
-    "udep@advmod": {
+    "parataxis:mod$cond": {
       "code": [
-        "pattern {M -[udep@advmod]-> N}"
+        "pattern {M -[parataxis:mod$cond]-> N}"
       ],
       "key": null,
       "users": 1
     },
-    "udep@own": {
+    "mod@inf": {
       "code": [
-        "pattern {M -[udep@own]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "mod@tto": {
-      "code": [
-        "pattern {M -[mod@tto]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "comp:obl$cause@x": {
-      "code": [
-        "pattern {M -[comp:obl$cause@x]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "comp:pred@subj": {
-      "code": [
-        "pattern {M -[comp:pred@subj]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "comp:obl$request@x": {
-      "code": [
-        "pattern {M -[comp:obl$request@x]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "udep@dat": {
-      "code": [
-        "pattern {M -[udep@dat]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "udep@scrap": {
-      "code": [
-        "pattern {M -[udep@scrap]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "mod$reason": {
-      "code": [
-        "pattern {M -[mod$reason]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "comp:obj@obl": {
-      "code": [
-        "pattern {M -[comp:obj@obl]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "comp:pred$manner@agent": {
-      "code": [
-        "pattern {M -[comp:pred$manner@agent]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "comp:obj$attitude@x": {
-      "code": [
-        "pattern {M -[comp:obj$attitude@x]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "parataxis:discourse": {
-      "code": [
-        "pattern {M -[parataxis:discourse]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "comp:obj$know@x": {
-      "code": [
-        "pattern {M -[comp:obj$know@x]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "mod:periph": {
-      "code": [
-        "pattern {M -[mod:periph]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "orphan@missing": {
-      "code": [
-        "pattern {M -[orphan@missing]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "mod:appos": {
-      "code": [
-        "pattern {M -[mod:appos]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "comp:obl$percep@x": {
-      "code": [
-        "pattern {M -[comp:obl$percep@x]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "comp:obj$phase@x": {
-      "code": [
-        "pattern {M -[comp:obj$phase@x]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "unk:aff": {
-      "code": [
-        "pattern {M -[unk:aff]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "unk@ana": {
-      "code": [
-        "pattern {M -[unk@ana]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "mod:periph$concess": {
-      "code": [
-        "pattern {M -[mod:periph$concess]-> N}"
+        "pattern {M -[mod@inf]-> N}"
       ],
       "key": null,
       "users": 1
@@ -2507,65 +2549,37 @@
       "key": null,
       "users": 1
     },
-    "comp:obj$know": {
+    "mod:num": {
       "code": [
-        "pattern {M -[comp:obj$know]-> N}"
+        "pattern {M -[mod:num]-> N}"
       ],
       "key": null,
       "users": 1
     },
-    "comp:obj$desire": {
+    "cc@nc": {
       "code": [
-        "pattern {M -[comp:obj$desire]-> N}"
+        "pattern {M -[cc@nc]-> N}"
       ],
       "key": null,
       "users": 1
     },
-    "compound@quant": {
+    "mod@abs": {
       "code": [
-        "pattern {M -[compound@quant]-> N}"
+        "pattern {M -[mod@abs]-> N}"
       ],
       "key": null,
       "users": 1
     },
-    "compound@preverb": {
+    "mod:obj@relcl": {
       "code": [
-        "pattern {M -[compound@preverb]-> N}"
+        "pattern {M -[mod:obj@relcl]-> N}"
       ],
       "key": null,
       "users": 1
     },
-    "udep@mcl": {
+    "orphan@missing": {
       "code": [
-        "pattern {M -[udep@mcl]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "udep@smod": {
-      "code": [
-        "pattern {M -[udep@smod]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "mod@tfrom": {
-      "code": [
-        "pattern {M -[mod@tfrom]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "comp:aff": {
-      "code": [
-        "pattern {M -[comp:aff]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "subj@lvc": {
-      "code": [
-        "pattern {M -[subj@lvc]-> N}"
+        "pattern {M -[orphan@missing]-> N}"
       ],
       "key": null,
       "users": 1
@@ -2577,65 +2591,51 @@
       "key": null,
       "users": 1
     },
-    "parataxis@deletion": {
+    "parataxis:mod": {
       "code": [
-        "pattern {M -[parataxis@deletion]-> N}"
+        "pattern {M -[parataxis:mod]-> N}"
       ],
       "key": null,
       "users": 1
     },
-    "mod$purp": {
+    "parataxis:discourse": {
       "code": [
-        "pattern {M -[mod$purp]-> N}"
+        "pattern {M -[parataxis:discourse]-> N}"
       ],
       "key": null,
       "users": 1
     },
-    "comp:obj$concess": {
+    "parataxis:dislocated": {
       "code": [
-        "pattern {M -[comp:obj$concess]-> N}"
+        "pattern {M -[parataxis:dislocated]-> N}"
       ],
       "key": null,
       "users": 1
     },
-    "comp:obj@plur": {
+    "mod$reason": {
       "code": [
-        "pattern {M -[comp:obj@plur]-> N}"
+        "pattern {M -[mod$reason]-> N}"
       ],
       "key": null,
       "users": 1
     },
-    "det@rel": {
+    "det@adj": {
       "code": [
-        "pattern {M -[det@rel]-> N}"
+        "pattern {M -[det@adj]-> N}"
       ],
       "key": null,
       "users": 1
     },
-    "mod@bahuv": {
+    "mod@relat": {
       "code": [
-        "pattern {M -[mod@bahuv]-> N}"
+        "pattern {M -[mod@relat]-> N}"
       ],
       "key": null,
       "users": 1
     },
-    "comp:obl$modal@x": {
+    "udep@redup": {
       "code": [
-        "pattern {M -[comp:obl$modal@x]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "det@pron": {
-      "code": [
-        "pattern {M -[det@pron]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "unk@agr": {
-      "code": [
-        "pattern {M -[unk@agr]-> N}"
+        "pattern {M -[udep@redup]-> N}"
       ],
       "key": null,
       "users": 1
@@ -2643,16 +2643,16 @@
   },
   "columns": [
     {
-      "field": "mod",
-      "headerName": "mod"
-    },
-    {
       "field": "comp:obj",
       "headerName": "comp:obj"
     },
     {
       "field": "root",
       "headerName": "root"
+    },
+    {
+      "field": "mod",
+      "headerName": "mod"
     },
     {
       "field": "subj",
@@ -2679,12 +2679,12 @@
       "headerName": "comp:obl"
     },
     {
-      "field": "punct",
-      "headerName": "punct"
-    },
-    {
       "field": "comp:pred",
       "headerName": "comp:pred"
+    },
+    {
+      "field": "punct",
+      "headerName": "punct"
     },
     {
       "field": "conj",
@@ -2779,12 +2779,12 @@
       "headerName": "flat@foreign"
     },
     {
-      "field": "goeswith",
-      "headerName": "goeswith"
-    },
-    {
       "field": "list",
       "headerName": "list"
+    },
+    {
+      "field": "goeswith",
+      "headerName": "goeswith"
     },
     {
       "field": "reparandum",
@@ -2843,12 +2843,12 @@
       "headerName": "mod@gov"
     },
     {
-      "field": "det@predet",
-      "headerName": "det@predet"
-    },
-    {
       "field": "udep@lmod",
       "headerName": "udep@lmod"
+    },
+    {
+      "field": "det@predet",
+      "headerName": "det@predet"
     },
     {
       "field": "mod@lmod",
@@ -2871,44 +2871,40 @@
       "headerName": "comp:obj@adv"
     },
     {
-      "field": "comp:obj@agent",
-      "headerName": "comp:obj@agent"
-    },
-    {
-      "field": "comp:aux@caus",
-      "headerName": "comp:aux@caus"
+      "field": "comp:aux@neg",
+      "headerName": "comp:aux@neg"
     },
     {
       "field": "udep@npmod",
       "headerName": "udep@npmod"
     },
     {
+      "field": "mod@neg",
+      "headerName": "mod@neg"
+    },
+    {
       "field": "mod@tcl",
       "headerName": "mod@tcl"
     },
     {
-      "field": "comp:aux@neg",
-      "headerName": "comp:aux@neg"
+      "field": "comp:aux@caus",
+      "headerName": "comp:aux@caus"
     },
     {
-      "field": "mod@neg",
-      "headerName": "mod@neg"
+      "field": "comp:obj@agent",
+      "headerName": "comp:obj@agent"
     },
     {
       "field": "mod@npmod",
       "headerName": "mod@npmod"
     },
     {
-      "field": "det@nummod",
-      "headerName": "det@nummod"
-    },
-    {
       "field": "comp:aux@tense",
       "headerName": "comp:aux@tense"
     },
     {
-      "field": "comp:aux@q",
-      "headerName": "comp:aux@q"
+      "field": "det@nummod",
+      "headerName": "det@nummod"
     },
     {
       "field": "discourse@sp",
@@ -2931,12 +2927,20 @@
       "headerName": "comp:aux@cnd"
     },
     {
+      "field": "comp:aux@q",
+      "headerName": "comp:aux@q"
+    },
+    {
       "field": "mod@gsubj",
       "headerName": "mod@gsubj"
     },
     {
       "field": "mod@cleft",
       "headerName": "mod@cleft"
+    },
+    {
+      "field": "comp:cleft",
+      "headerName": "comp:cleft"
     },
     {
       "field": "udep@patient",
@@ -2951,232 +2955,172 @@
       "headerName": "mod@deg"
     },
     {
-      "field": "comp:pred@own",
-      "headerName": "comp:pred@own"
-    },
-    {
       "field": "mod@mmod",
       "headerName": "mod@mmod"
     },
     {
-      "field": "comp:cleft",
-      "headerName": "comp:cleft"
-    },
-    {
-      "field": "udep@pmod",
-      "headerName": "udep@pmod"
+      "field": "comp:pred@own",
+      "headerName": "comp:pred@own"
     },
     {
       "field": "compound@ext",
       "headerName": "compound@ext"
     },
     {
-      "field": "parataxis@obj",
-      "headerName": "parataxis@obj"
-    },
-    {
-      "field": "udep@cau",
-      "headerName": "udep@cau"
-    },
-    {
-      "field": "comp:obj@lvc",
-      "headerName": "comp:obj@lvc"
-    },
-    {
-      "field": "mod@appos",
-      "headerName": "mod@appos"
-    },
-    {
-      "field": "parataxis@discourse",
-      "headerName": "parataxis@discourse"
-    },
-    {
-      "field": "subj@cleft",
-      "headerName": "subj@cleft"
-    },
-    {
-      "field": "parataxis@rep",
-      "headerName": "parataxis@rep"
+      "field": "udep@pmod",
+      "headerName": "udep@pmod"
     },
     {
       "field": "mod@gobj",
       "headerName": "mod@gobj"
     },
     {
+      "field": "mod@appos",
+      "headerName": "mod@appos"
+    },
+    {
+      "field": "parataxis@rep",
+      "headerName": "parataxis@rep"
+    },
+    {
+      "field": "udep@cau",
+      "headerName": "udep@cau"
+    },
+    {
+      "field": "parataxis@discourse",
+      "headerName": "parataxis@discourse"
+    },
+    {
       "field": "mod@eval",
       "headerName": "mod@eval"
     },
     {
-      "field": "mod@cmpr",
-      "headerName": "mod@cmpr"
+      "field": "subj@cleft",
+      "headerName": "subj@cleft"
     },
     {
-      "field": "udep@lto",
-      "headerName": "udep@lto"
+      "field": "parataxis@obj",
+      "headerName": "parataxis@obj"
     },
     {
-      "field": "parataxis@insert",
-      "headerName": "parataxis@insert"
-    },
-    {
-      "field": "mod@pred",
-      "headerName": "mod@pred"
-    },
-    {
-      "field": "comp:obj@pmod",
-      "headerName": "comp:obj@pmod"
-    },
-    {
-      "field": "comp:aux@nec",
-      "headerName": "comp:aux@nec"
-    },
-    {
-      "field": "mod@entity",
-      "headerName": "mod@entity"
-    },
-    {
-      "field": "udep@lmp",
-      "headerName": "udep@lmp"
+      "field": "comp:obj@lvc",
+      "headerName": "comp:obj@lvc"
     },
     {
       "field": "conj:coord",
       "headerName": "conj:coord"
     },
     {
-      "field": "mod@lfrom",
-      "headerName": "mod@lfrom"
+      "field": "comp:pred@ds",
+      "headerName": "comp:pred@ds"
     },
     {
-      "field": "discourse@emo",
-      "headerName": "discourse@emo"
+      "field": "mod@pred",
+      "headerName": "mod@pred"
     },
     {
       "field": "udep@cmpr",
       "headerName": "udep@cmpr"
     },
     {
-      "field": "comp:obj@pass",
-      "headerName": "comp:obj@pass"
+      "field": "mod@entity",
+      "headerName": "mod@entity"
     },
     {
-      "field": "conj:dicto",
-      "headerName": "conj:dicto"
+      "field": "mod@lfrom",
+      "headerName": "mod@lfrom"
     },
     {
-      "field": "mod@cau",
-      "headerName": "mod@cau"
+      "field": "mod@cmpr",
+      "headerName": "mod@cmpr"
     },
     {
       "field": "conj:appos",
       "headerName": "conj:appos"
     },
     {
-      "field": "comp:pred@ds",
-      "headerName": "comp:pred@ds"
-    },
-    {
       "field": "mod@lto",
       "headerName": "mod@lto"
     },
     {
-      "field": "mod@foc",
-      "headerName": "mod@foc"
+      "field": "conj:dicto",
+      "headerName": "conj:dicto"
+    },
+    {
+      "field": "comp:aux@nec",
+      "headerName": "comp:aux@nec"
+    },
+    {
+      "field": "parataxis@insert",
+      "headerName": "parataxis@insert"
+    },
+    {
+      "field": "discourse@emo",
+      "headerName": "discourse@emo"
+    },
+    {
+      "field": "udep@lmp",
+      "headerName": "udep@lmp"
     },
     {
       "field": "comp:obj@prt",
       "headerName": "comp:obj@prt"
     },
     {
-      "field": "parataxis@hashtag",
-      "headerName": "parataxis@hashtag"
+      "field": "mod@cau",
+      "headerName": "mod@cau"
     },
     {
-      "field": "comp:aux@aspect",
-      "headerName": "comp:aux@aspect"
+      "field": "comp:obj@pass",
+      "headerName": "comp:obj@pass"
     },
     {
-      "field": "conj@expl",
-      "headerName": "conj@expl"
+      "field": "udep@lto",
+      "headerName": "udep@lto"
     },
     {
-      "field": "comp:aux@clitic",
-      "headerName": "comp:aux@clitic"
+      "field": "mod@foc",
+      "headerName": "mod@foc"
+    },
+    {
+      "field": "comp:obj@pmod",
+      "headerName": "comp:obj@pmod"
+    },
+    {
+      "field": "mod@comp",
+      "headerName": "mod@comp"
     },
     {
       "field": "comp:obj@scrap",
       "headerName": "comp:obj@scrap"
     },
     {
-      "field": "udep@cleft",
-      "headerName": "udep@cleft"
-    },
-    {
-      "field": "udep@lfrom",
-      "headerName": "udep@lfrom"
-    },
-    {
-      "field": "comp:aux@imp",
-      "headerName": "comp:aux@imp"
-    },
-    {
-      "field": "parataxis:parenth",
-      "headerName": "parataxis:parenth"
-    },
-    {
-      "field": "comp:obl@scrap",
-      "headerName": "comp:obl@scrap"
-    },
-    {
-      "field": "unk@scrap",
-      "headerName": "unk@scrap"
-    },
-    {
-      "field": "comp:aux@ex",
-      "headerName": "comp:aux@ex"
-    },
-    {
-      "field": "comp:obj@voc",
-      "headerName": "comp:obj@voc"
-    },
-    {
-      "field": "vocative@mention",
-      "headerName": "vocative@mention"
-    },
-    {
-      "field": "mod@df",
-      "headerName": "mod@df"
-    },
-    {
-      "field": "comp:pred@scrap",
-      "headerName": "comp:pred@scrap"
-    },
-    {
       "field": "compound@dir",
       "headerName": "compound@dir"
-    },
-    {
-      "field": "compound@vo",
-      "headerName": "compound@vo"
-    },
-    {
-      "field": "mod@scrap",
-      "headerName": "mod@scrap"
-    },
-    {
-      "field": "mod@arg",
-      "headerName": "mod@arg"
-    },
-    {
-      "field": "mod@cond",
-      "headerName": "mod@cond"
     },
     {
       "field": "conj:coord@scrap",
       "headerName": "conj:coord@scrap"
     },
     {
-      "field": "udep@subj",
-      "headerName": "udep@subj"
+      "field": "parataxis:parenth",
+      "headerName": "parataxis:parenth"
+    },
+    {
+      "field": "mod@df",
+      "headerName": "mod@df"
+    },
+    {
+      "field": "comp:aux@imp",
+      "headerName": "comp:aux@imp"
+    },
+    {
+      "field": "subj@nc",
+      "headerName": "subj@nc"
+    },
+    {
+      "field": "comp:pred@scrap",
+      "headerName": "comp:pred@scrap"
     },
     {
       "field": "flat@range",
@@ -3187,56 +3131,176 @@
       "headerName": "comp"
     },
     {
-      "field": "subj@nc",
-      "headerName": "subj@nc"
-    },
-    {
-      "field": "mod@comp",
-      "headerName": "mod@comp"
-    },
-    {
-      "field": "udep@inst",
-      "headerName": "udep@inst"
-    },
-    {
-      "field": "comp:obl@pmod",
-      "headerName": "comp:obl@pmod"
-    },
-    {
       "field": "compound@vv",
       "headerName": "compound@vv"
     },
     {
-      "field": "compound@a",
-      "headerName": "compound@a"
+      "field": "udep@cleft",
+      "headerName": "udep@cleft"
     },
     {
-      "field": "subj@scrap",
-      "headerName": "subj@scrap"
+      "field": "comp:aux@aspect",
+      "headerName": "comp:aux@aspect"
+    },
+    {
+      "field": "udep@lfrom",
+      "headerName": "udep@lfrom"
+    },
+    {
+      "field": "mod@cond",
+      "headerName": "mod@cond"
     },
     {
       "field": "dislocated@nsubj",
       "headerName": "dislocated@nsubj"
     },
     {
-      "field": "mod@det",
-      "headerName": "mod@det"
+      "field": "vocative@mention",
+      "headerName": "vocative@mention"
     },
     {
-      "field": "discourse@filler",
-      "headerName": "discourse@filler"
+      "field": "comp:obj@voc",
+      "headerName": "comp:obj@voc"
     },
     {
-      "field": "flat:foreign",
-      "headerName": "flat:foreign"
+      "field": "parataxis@hashtag",
+      "headerName": "parataxis@hashtag"
+    },
+    {
+      "field": "compound@vo",
+      "headerName": "compound@vo"
+    },
+    {
+      "field": "subj@scrap",
+      "headerName": "subj@scrap"
+    },
+    {
+      "field": "comp:obl@pmod",
+      "headerName": "comp:obl@pmod"
+    },
+    {
+      "field": "mod@scrap",
+      "headerName": "mod@scrap"
+    },
+    {
+      "field": "comp:obl@scrap",
+      "headerName": "comp:obl@scrap"
+    },
+    {
+      "field": "compound@a",
+      "headerName": "compound@a"
+    },
+    {
+      "field": "comp:aux@clitic",
+      "headerName": "comp:aux@clitic"
+    },
+    {
+      "field": "udep@inst",
+      "headerName": "udep@inst"
+    },
+    {
+      "field": "mod@arg",
+      "headerName": "mod@arg"
+    },
+    {
+      "field": "comp:aux@ex",
+      "headerName": "comp:aux@ex"
+    },
+    {
+      "field": "conj@expl",
+      "headerName": "conj@expl"
+    },
+    {
+      "field": "udep@subj",
+      "headerName": "udep@subj"
+    },
+    {
+      "field": "unk@scrap",
+      "headerName": "unk@scrap"
+    },
+    {
+      "field": "mod:poss",
+      "headerName": "mod:poss"
+    },
+    {
+      "field": "comp:obl@cleft",
+      "headerName": "comp:obl@cleft"
+    },
+    {
+      "field": "udep@prep",
+      "headerName": "udep@prep"
+    },
+    {
+      "field": "parataxis:obj",
+      "headerName": "parataxis:obj"
+    },
+    {
+      "field": "mod@freq",
+      "headerName": "mod@freq"
+    },
+    {
+      "field": "unk@mod",
+      "headerName": "unk@mod"
+    },
+    {
+      "field": "conj:obj",
+      "headerName": "conj:obj"
+    },
+    {
+      "field": "compound@affix",
+      "headerName": "compound@affix"
     },
     {
       "field": "mod@x",
       "headerName": "mod@x"
     },
     {
-      "field": "mod:poss",
-      "headerName": "mod:poss"
+      "field": "udep@arg",
+      "headerName": "udep@arg"
+    },
+    {
+      "field": "parataxis@nsubj",
+      "headerName": "parataxis@nsubj"
+    },
+    {
+      "field": "comp@scrap",
+      "headerName": "comp@scrap"
+    },
+    {
+      "field": "det:num",
+      "headerName": "det:num"
+    },
+    {
+      "field": "discourse@filler",
+      "headerName": "discourse@filler"
+    },
+    {
+      "field": "comp:aux@scrap",
+      "headerName": "comp:aux@scrap"
+    },
+    {
+      "field": "compound:svc",
+      "headerName": "compound:svc"
+    },
+    {
+      "field": "mod@lmp",
+      "headerName": "mod@lmp"
+    },
+    {
+      "field": "parataxis@appos",
+      "headerName": "parataxis@appos"
+    },
+    {
+      "field": "root@scrap",
+      "headerName": "root@scrap"
+    },
+    {
+      "field": "udep@obj",
+      "headerName": "udep@obj"
+    },
+    {
+      "field": "dislocated@csubj",
+      "headerName": "dislocated@csubj"
     },
     {
       "field": "mod@obl",
@@ -3247,348 +3311,720 @@
       "headerName": "flat@dist"
     },
     {
-      "field": "udep@arg",
-      "headerName": "udep@arg"
-    },
-    {
-      "field": "conj:obj",
-      "headerName": "conj:obj"
-    },
-    {
-      "field": "parataxis:obj",
-      "headerName": "parataxis:obj"
-    },
-    {
-      "field": "mod@lmp",
-      "headerName": "mod@lmp"
-    },
-    {
-      "field": "comp:aux@scrap",
-      "headerName": "comp:aux@scrap"
-    },
-    {
-      "field": "unk@mod",
-      "headerName": "unk@mod"
-    },
-    {
-      "field": "parataxis@appos",
-      "headerName": "parataxis@appos"
-    },
-    {
-      "field": "dislocated@obj",
-      "headerName": "dislocated@obj"
+      "field": "flat@num",
+      "headerName": "flat@num"
     },
     {
       "field": "mod@flat",
       "headerName": "mod@flat"
     },
     {
-      "field": "comp:obj@periph",
-      "headerName": "comp:obj@periph"
-    },
-    {
-      "field": "comp:aux@opt",
-      "headerName": "comp:aux@opt"
-    },
-    {
-      "field": "det:num",
-      "headerName": "det:num"
-    },
-    {
-      "field": "udep@obj",
-      "headerName": "udep@obj"
-    },
-    {
-      "field": "mod@part",
-      "headerName": "mod@part"
-    },
-    {
-      "field": "compound@affix",
-      "headerName": "compound@affix"
-    },
-    {
-      "field": "compound@smixut",
-      "headerName": "compound@smixut"
-    },
-    {
-      "field": "comp:obj@det",
-      "headerName": "comp:obj@det"
-    },
-    {
-      "field": "flat@num",
-      "headerName": "flat@num"
-    },
-    {
-      "field": "parataxis@nsubj",
-      "headerName": "parataxis@nsubj"
-    },
-    {
-      "field": "root@scrap",
-      "headerName": "root@scrap"
-    },
-    {
-      "field": "udep@prep",
-      "headerName": "udep@prep"
-    },
-    {
-      "field": "comp:obl@cleft",
-      "headerName": "comp:obl@cleft"
-    },
-    {
-      "field": "dislocated@csubj",
-      "headerName": "dislocated@csubj"
-    },
-    {
-      "field": "comp@scrap",
-      "headerName": "comp@scrap"
-    },
-    {
-      "field": "mod@freq",
-      "headerName": "mod@freq"
-    },
-    {
-      "field": "compound:svc",
-      "headerName": "compound:svc"
+      "field": "mod@det",
+      "headerName": "mod@det"
     },
     {
       "field": "udep@sentcon",
       "headerName": "udep@sentcon"
     },
     {
-      "field": "mod@prp",
-      "headerName": "mod@prp"
+      "field": "compound@smixut",
+      "headerName": "compound@smixut"
     },
     {
-      "field": "comp:obj$attitude",
-      "headerName": "comp:obj$attitude"
+      "field": "mod@part",
+      "headerName": "mod@part"
     },
     {
-      "field": "parataxis@newsent",
-      "headerName": "parataxis@newsent"
+      "field": "flat:foreign",
+      "headerName": "flat:foreign"
     },
     {
-      "field": "comp:obj@advmod",
-      "headerName": "comp:obj@advmod"
+      "field": "comp:aux@opt",
+      "headerName": "comp:aux@opt"
     },
     {
-      "field": "vocative@cl",
-      "headerName": "vocative@cl"
+      "field": "comp:obj@det",
+      "headerName": "comp:obj@det"
     },
     {
-      "field": "dislocated@cleft",
-      "headerName": "dislocated@cleft"
+      "field": "dislocated@obj",
+      "headerName": "dislocated@obj"
     },
     {
-      "field": "mod:periph$tempo",
-      "headerName": "mod:periph$tempo"
-    },
-    {
-      "field": "mod:periph$manner",
-      "headerName": "mod:periph$manner"
-    },
-    {
-      "field": "comp:obl$attitude",
-      "headerName": "comp:obl$attitude"
-    },
-    {
-      "field": "mod:obj@relcl",
-      "headerName": "mod:obj@relcl"
-    },
-    {
-      "field": "mod:periph@scrap",
-      "headerName": "mod:periph@scrap"
-    },
-    {
-      "field": "unk@cop",
-      "headerName": "unk@cop"
-    },
-    {
-      "field": "mod@locy",
-      "headerName": "mod@locy"
-    },
-    {
-      "field": "mod:num",
-      "headerName": "mod:num"
-    },
-    {
-      "field": "subj@bfoc",
-      "headerName": "subj@bfoc"
-    },
-    {
-      "field": "udep@freq",
-      "headerName": "udep@freq"
-    },
-    {
-      "field": "mod@que",
-      "headerName": "mod@que"
-    },
-    {
-      "field": "comp:obl$cause",
-      "headerName": "comp:obl$cause"
+      "field": "comp:obj@periph",
+      "headerName": "comp:obj@periph"
     },
     {
       "field": "comp:obj@q",
       "headerName": "comp:obj@q"
     },
     {
-      "field": "parataxis:obj$cause",
-      "headerName": "parataxis:obj$cause"
+      "field": "compound:svc@scrap",
+      "headerName": "compound:svc@scrap"
     },
     {
-      "field": "subj:aff",
-      "headerName": "subj:aff"
+      "field": "mod@tto",
+      "headerName": "mod@tto"
     },
     {
-      "field": "comp:pred@pred",
-      "headerName": "comp:pred@pred"
+      "field": "subj@advmod",
+      "headerName": "subj@advmod"
     },
     {
-      "field": "comp:obj@pred",
-      "headerName": "comp:obj@pred"
+      "field": "udep@dat",
+      "headerName": "udep@dat"
     },
     {
-      "field": "mod:periph$tempb",
-      "headerName": "mod:periph$tempb"
+      "field": "comp:obj@plur",
+      "headerName": "comp:obj@plur"
     },
     {
-      "field": "udep@cmp",
-      "headerName": "udep@cmp"
-    },
-    {
-      "field": "flat@vv",
-      "headerName": "flat@vv"
-    },
-    {
-      "field": "parataxis@rt",
-      "headerName": "parataxis@rt"
-    },
-    {
-      "field": "udep@inf",
-      "headerName": "udep@inf"
-    },
-    {
-      "field": "unk@mark",
-      "headerName": "unk@mark"
-    },
-    {
-      "field": "comp:obj$percep",
-      "headerName": "comp:obj$percep"
-    },
-    {
-      "field": "parataxis:obl",
-      "headerName": "parataxis:obl"
-    },
-    {
-      "field": "comp:pred@locat",
-      "headerName": "comp:pred@locat"
-    },
-    {
-      "field": "conj:dicto@scrap",
-      "headerName": "conj:dicto@scrap"
-    },
-    {
-      "field": "mod@attr",
-      "headerName": "mod@attr"
-    },
-    {
-      "field": "parataxis:coord",
-      "headerName": "parataxis:coord"
-    },
-    {
-      "field": "cc@nc",
-      "headerName": "cc@nc"
-    },
-    {
-      "field": "mod@lcl",
-      "headerName": "mod@lcl"
+      "field": "parataxis:conj@scrap",
+      "headerName": "parataxis:conj@scrap"
     },
     {
       "field": "comp:obj@acc",
       "headerName": "comp:obj@acc"
     },
     {
-      "field": "flat@abs",
-      "headerName": "flat@abs"
-    },
-    {
-      "field": "flat@gov",
-      "headerName": "flat@gov"
-    },
-    {
-      "field": "flat@sibl",
-      "headerName": "flat@sibl"
-    },
-    {
-      "field": "mod$tempb",
-      "headerName": "mod$tempb"
-    },
-    {
-      "field": "mod:periph$purp",
-      "headerName": "mod:periph$purp"
-    },
-    {
-      "field": "compound:redup@scrap",
-      "headerName": "compound:redup@scrap"
-    },
-    {
-      "field": "udep@orphan",
-      "headerName": "udep@orphan"
-    },
-    {
-      "field": "parataxis:obj$request",
-      "headerName": "parataxis:obj$request"
-    },
-    {
-      "field": "comp:pred@sp",
-      "headerName": "comp:pred@sp"
-    },
-    {
-      "field": "parataxis:obj$know",
-      "headerName": "parataxis:obj$know"
+      "field": "comp:obj@gen",
+      "headerName": "comp:obj@gen"
     },
     {
       "field": "udep@adv",
       "headerName": "udep@adv"
     },
     {
-      "field": "unk@emo",
-      "headerName": "unk@emo"
+      "field": "comp:obj$concess",
+      "headerName": "comp:obj$concess"
     },
     {
-      "field": "comp:obl@appl",
-      "headerName": "comp:obl@appl"
+      "field": "udep@cmp",
+      "headerName": "udep@cmp"
     },
     {
-      "field": "mod@loc",
-      "headerName": "mod@loc"
+      "field": "udep@att",
+      "headerName": "udep@att"
+    },
+    {
+      "field": "parataxis:dislocated$tempa",
+      "headerName": "parataxis:dislocated$tempa"
+    },
+    {
+      "field": "comp:obj$percep",
+      "headerName": "comp:obj$percep"
+    },
+    {
+      "field": "mod:periph$tempb",
+      "headerName": "mod:periph$tempb"
     },
     {
       "field": "mod:periph$cond@scrap",
       "headerName": "mod:periph$cond@scrap"
     },
     {
-      "field": "comp:obl$utter",
-      "headerName": "comp:obl$utter"
+      "field": "mod$purp",
+      "headerName": "mod$purp"
     },
     {
-      "field": "mod@sp",
-      "headerName": "mod@sp"
+      "field": "comp:obl$know@x",
+      "headerName": "comp:obl$know@x"
     },
     {
-      "field": "unk@aux",
-      "headerName": "unk@aux"
+      "field": "comp:obl$request@x",
+      "headerName": "comp:obl$request@x"
+    },
+    {
+      "field": "comp:obl$attitude@x",
+      "headerName": "comp:obl$attitude@x"
+    },
+    {
+      "field": "mod@prp",
+      "headerName": "mod@prp"
+    },
+    {
+      "field": "comp:pred$manner@agent",
+      "headerName": "comp:pred$manner@agent"
+    },
+    {
+      "field": "comp:aux@pot",
+      "headerName": "comp:aux@pot"
+    },
+    {
+      "field": "comp:cleft@scrap",
+      "headerName": "comp:cleft@scrap"
+    },
+    {
+      "field": "comp:obl$attitude",
+      "headerName": "comp:obl$attitude"
+    },
+    {
+      "field": "mod@loc",
+      "headerName": "mod@loc"
+    },
+    {
+      "field": "comp:obj@advneg",
+      "headerName": "comp:obj@advneg"
+    },
+    {
+      "field": "comp:obj$know@x",
+      "headerName": "comp:obj$know@x"
+    },
+    {
+      "field": "mod@adv",
+      "headerName": "mod@adv"
+    },
+    {
+      "field": "subj@lvc",
+      "headerName": "subj@lvc"
+    },
+    {
+      "field": "comp:obl@appl",
+      "headerName": "comp:obl@appl"
+    },
+    {
+      "field": "udep@inf",
+      "headerName": "udep@inf"
+    },
+    {
+      "field": "mod:periph$purp",
+      "headerName": "mod:periph$purp"
+    },
+    {
+      "field": "mod@svc",
+      "headerName": "mod@svc"
+    },
+    {
+      "field": "comp:pred@expl",
+      "headerName": "comp:pred@expl"
+    },
+    {
+      "field": "comp:pred@locat",
+      "headerName": "comp:pred@locat"
+    },
+    {
+      "field": "parataxis:coord",
+      "headerName": "parataxis:coord"
+    },
+    {
+      "field": "comp:aff",
+      "headerName": "comp:aff"
+    },
+    {
+      "field": "unk@ss",
+      "headerName": "unk@ss"
+    },
+    {
+      "field": "mod$tempa",
+      "headerName": "mod$tempa"
+    },
+    {
+      "field": "mod@att",
+      "headerName": "mod@att"
+    },
+    {
+      "field": "comp:arg",
+      "headerName": "comp:arg"
+    },
+    {
+      "field": "comp:obl$know",
+      "headerName": "comp:obl$know"
+    },
+    {
+      "field": "comp:aux@part",
+      "headerName": "comp:aux@part"
+    },
+    {
+      "field": "udep@gen",
+      "headerName": "udep@gen"
+    },
+    {
+      "field": "mod@to",
+      "headerName": "mod@to"
+    },
+    {
+      "field": "unk@cop",
+      "headerName": "unk@cop"
+    },
+    {
+      "field": "flat@gov",
+      "headerName": "flat@gov"
+    },
+    {
+      "field": "mod$manner",
+      "headerName": "mod$manner"
+    },
+    {
+      "field": "comp:obl$cause",
+      "headerName": "comp:obl$cause"
+    },
+    {
+      "field": "parataxis:obj$request",
+      "headerName": "parataxis:obj$request"
+    },
+    {
+      "field": "udep@scrap",
+      "headerName": "udep@scrap"
+    },
+    {
+      "field": "mod$tempb",
+      "headerName": "mod$tempb"
+    },
+    {
+      "field": "parataxis:dislocated$tempo",
+      "headerName": "parataxis:dislocated$tempo"
+    },
+    {
+      "field": "mod:periph$concess",
+      "headerName": "mod:periph$concess"
+    },
+    {
+      "field": "mod@subj",
+      "headerName": "mod@subj"
+    },
+    {
+      "field": "vocative@cl",
+      "headerName": "vocative@cl"
+    },
+    {
+      "field": "parataxis:obj$utter",
+      "headerName": "parataxis:obj$utter"
+    },
+    {
+      "field": "det@pron",
+      "headerName": "det@pron"
+    },
+    {
+      "field": "discourse@intj",
+      "headerName": "discourse@intj"
+    },
+    {
+      "field": "conj@extend",
+      "headerName": "conj@extend"
+    },
+    {
+      "field": "comp:obl$modal@x",
+      "headerName": "comp:obl$modal@x"
+    },
+    {
+      "field": "mod$tempo",
+      "headerName": "mod$tempo"
+    },
+    {
+      "field": "flat@frac",
+      "headerName": "flat@frac"
+    },
+    {
+      "field": "udep@agent",
+      "headerName": "udep@agent"
     },
     {
       "field": "compound:svc$purp",
       "headerName": "compound:svc$purp"
     },
     {
-      "field": "mod@relat",
-      "headerName": "mod@relat"
+      "field": "unk@aux",
+      "headerName": "unk@aux"
+    },
+    {
+      "field": "comp:pred$attitude@x",
+      "headerName": "comp:pred$attitude@x"
+    },
+    {
+      "field": "parataxis@sentence",
+      "headerName": "parataxis@sentence"
+    },
+    {
+      "field": "flat@vv",
+      "headerName": "flat@vv"
+    },
+    {
+      "field": "mod@coverb",
+      "headerName": "mod@coverb"
+    },
+    {
+      "field": "comp:obl$modal",
+      "headerName": "comp:obl$modal"
+    },
+    {
+      "field": "unk@ana",
+      "headerName": "unk@ana"
+    },
+    {
+      "field": "dislocated:obj",
+      "headerName": "dislocated:obj"
+    },
+    {
+      "field": "comp:pred@sp",
+      "headerName": "comp:pred@sp"
+    },
+    {
+      "field": "mod$concess",
+      "headerName": "mod$concess"
+    },
+    {
+      "field": "compound:redup",
+      "headerName": "compound:redup"
+    },
+    {
+      "field": "parataxis@deletion",
+      "headerName": "parataxis@deletion"
+    },
+    {
+      "field": "comp:obj$phase@x",
+      "headerName": "comp:obj$phase@x"
+    },
+    {
+      "field": "mod$cond",
+      "headerName": "mod$cond"
+    },
+    {
+      "field": "mod@attlvc",
+      "headerName": "mod@attlvc"
+    },
+    {
+      "field": "parataxis:insert",
+      "headerName": "parataxis:insert"
+    },
+    {
+      "field": "conj:redup",
+      "headerName": "conj:redup"
+    },
+    {
+      "field": "comp:obj$desire",
+      "headerName": "comp:obj$desire"
+    },
+    {
+      "field": "udep@comp",
+      "headerName": "udep@comp"
+    },
+    {
+      "field": "mod:periph$tempa",
+      "headerName": "mod:periph$tempa"
+    },
+    {
+      "field": "comp:obl$desire@x",
+      "headerName": "comp:obl$desire@x"
+    },
+    {
+      "field": "mod@bahuv",
+      "headerName": "mod@bahuv"
+    },
+    {
+      "field": "compound:prt",
+      "headerName": "compound:prt"
+    },
+    {
+      "field": "mod@attr",
+      "headerName": "mod@attr"
+    },
+    {
+      "field": "mod:periph@scrap",
+      "headerName": "mod:periph@scrap"
+    },
+    {
+      "field": "comp:obl$phase@x",
+      "headerName": "comp:obl$phase@x"
+    },
+    {
+      "field": "udep@smod",
+      "headerName": "udep@smod"
+    },
+    {
+      "field": "comp:obj$know",
+      "headerName": "comp:obj$know"
+    },
+    {
+      "field": "det@rel",
+      "headerName": "det@rel"
+    },
+    {
+      "field": "udep@orphan",
+      "headerName": "udep@orphan"
+    },
+    {
+      "field": "parataxis:conj",
+      "headerName": "parataxis:conj"
+    },
+    {
+      "field": "det@scrap",
+      "headerName": "det@scrap"
+    },
+    {
+      "field": "unk@agr",
+      "headerName": "unk@agr"
+    },
+    {
+      "field": "comp:obl$utter",
+      "headerName": "comp:obl$utter"
+    },
+    {
+      "field": "parataxis:obl",
+      "headerName": "parataxis:obl"
+    },
+    {
+      "field": "mod@sp",
+      "headerName": "mod@sp"
+    },
+    {
+      "field": "mod:periph$tempo",
+      "headerName": "mod:periph$tempo"
+    },
+    {
+      "field": "unk@pos",
+      "headerName": "unk@pos"
+    },
+    {
+      "field": "compound:svc$tempo",
+      "headerName": "compound:svc$tempo"
+    },
+    {
+      "field": "det@noun",
+      "headerName": "det@noun"
+    },
+    {
+      "field": "flat@repeat",
+      "headerName": "flat@repeat"
+    },
+    {
+      "field": "udep@advmod",
+      "headerName": "udep@advmod"
+    },
+    {
+      "field": "comp:pred@pred",
+      "headerName": "comp:pred@pred"
+    },
+    {
+      "field": "mod:emph",
+      "headerName": "mod:emph"
+    },
+    {
+      "field": "flat:name",
+      "headerName": "flat:name"
+    },
+    {
+      "field": "mod@mode",
+      "headerName": "mod@mode"
+    },
+    {
+      "field": "comp:pred@subj",
+      "headerName": "comp:pred@subj"
+    },
+    {
+      "field": "comp:obj@obl",
+      "headerName": "comp:obj@obl"
+    },
+    {
+      "field": "flat@sibl",
+      "headerName": "flat@sibl"
+    },
+    {
+      "field": "parataxis@restart",
+      "headerName": "parataxis@restart"
+    },
+    {
+      "field": "comp:obj@appl",
+      "headerName": "comp:obj@appl"
+    },
+    {
+      "field": "mod@mcl",
+      "headerName": "mod@mcl"
+    },
+    {
+      "field": "comp:obj$attitude@x",
+      "headerName": "comp:obj$attitude@x"
+    },
+    {
+      "field": "mod:appos",
+      "headerName": "mod:appos"
+    },
+    {
+      "field": "comp:obj@advmod",
+      "headerName": "comp:obj@advmod"
+    },
+    {
+      "field": "unk:aff",
+      "headerName": "unk:aff"
+    },
+    {
+      "field": "comp:obj$desire@x",
+      "headerName": "comp:obj$desire@x"
+    },
+    {
+      "field": "udep@det",
+      "headerName": "udep@det"
+    },
+    {
+      "field": "mod@lcl",
+      "headerName": "mod@lcl"
+    },
+    {
+      "field": "subj@bfoc",
+      "headerName": "subj@bfoc"
+    },
+    {
+      "field": "mod@gen",
+      "headerName": "mod@gen"
+    },
+    {
+      "field": "parataxis@rt",
+      "headerName": "parataxis@rt"
+    },
+    {
+      "field": "parataxis:obj$cause",
+      "headerName": "parataxis:obj$cause"
+    },
+    {
+      "field": "parataxis@newsent",
+      "headerName": "parataxis@newsent"
+    },
+    {
+      "field": "comp:obl$percep",
+      "headerName": "comp:obl$percep"
+    },
+    {
+      "field": "compound:redup@scrap",
+      "headerName": "compound:redup@scrap"
+    },
+    {
+      "field": "mod:periph$manner",
+      "headerName": "mod:periph$manner"
+    },
+    {
+      "field": "comp:obj@caus",
+      "headerName": "comp:obj@caus"
+    },
+    {
+      "field": "comp:obl$percep@x",
+      "headerName": "comp:obl$percep@x"
+    },
+    {
+      "field": "parataxis@url",
+      "headerName": "parataxis@url"
+    },
+    {
+      "field": "compound@preverb",
+      "headerName": "compound@preverb"
+    },
+    {
+      "field": "udep@freq",
+      "headerName": "udep@freq"
+    },
+    {
+      "field": "dislocated@cleft",
+      "headerName": "dislocated@cleft"
+    },
+    {
+      "field": "unk@emo",
+      "headerName": "unk@emo"
+    },
+    {
+      "field": "comp:obl@patient",
+      "headerName": "comp:obl@patient"
+    },
+    {
+      "field": "dislocated:subj",
+      "headerName": "dislocated:subj"
+    },
+    {
+      "field": "subj@lfoc",
+      "headerName": "subj@lfoc"
+    },
+    {
+      "field": "discourse@conn",
+      "headerName": "discourse@conn"
+    },
+    {
+      "field": "mod:periph$reason",
+      "headerName": "mod:periph$reason"
+    },
+    {
+      "field": "comp:obj$utter",
+      "headerName": "comp:obj$utter"
     },
     {
       "field": "udep@appl",
       "headerName": "udep@appl"
+    },
+    {
+      "field": "udep@obl",
+      "headerName": "udep@obl"
+    },
+    {
+      "field": "mod:periph$cond",
+      "headerName": "mod:periph$cond"
+    },
+    {
+      "field": "mod:periph",
+      "headerName": "mod:periph"
+    },
+    {
+      "field": "conj:dicto@scrap",
+      "headerName": "conj:dicto@scrap"
+    },
+    {
+      "field": "parataxis:obj$know",
+      "headerName": "parataxis:obj$know"
+    },
+    {
+      "field": "parataxis@trans",
+      "headerName": "parataxis@trans"
+    },
+    {
+      "field": "compound@quant",
+      "headerName": "compound@quant"
+    },
+    {
+      "field": "subj@ifoc",
+      "headerName": "subj@ifoc"
+    },
+    {
+      "field": "mod@tfrom",
+      "headerName": "mod@tfrom"
+    },
+    {
+      "field": "flat@title",
+      "headerName": "flat@title"
+    },
+    {
+      "field": "mod@redup",
+      "headerName": "mod@redup"
+    },
+    {
+      "field": "subj@obj",
+      "headerName": "subj@obj"
+    },
+    {
+      "field": "mod:aux",
+      "headerName": "mod:aux"
+    },
+    {
+      "field": "mod@que",
+      "headerName": "mod@que"
+    },
+    {
+      "field": "comp:obj$attitude",
+      "headerName": "comp:obj$attitude"
+    },
+    {
+      "field": "mod@locy",
+      "headerName": "mod@locy"
+    },
+    {
+      "field": "udep@own",
+      "headerName": "udep@own"
+    },
+    {
+      "field": "flat@abs",
+      "headerName": "flat@abs"
+    },
+    {
+      "field": "conj@svc",
+      "headerName": "conj@svc"
+    },
+    {
+      "field": "udep@mcl",
+      "headerName": "udep@mcl"
     },
     {
       "field": "mod@tlocy",
@@ -3599,556 +4035,120 @@
       "headerName": "parataxis:obj@scrap"
     },
     {
-      "field": "mod$tempo",
-      "headerName": "mod$tempo"
-    },
-    {
-      "field": "mod:aux",
-      "headerName": "mod:aux"
-    },
-    {
-      "field": "parataxis@trans",
-      "headerName": "parataxis@trans"
-    },
-    {
-      "field": "flat@title",
-      "headerName": "flat@title"
-    },
-    {
-      "field": "mod@inf",
-      "headerName": "mod@inf"
-    },
-    {
-      "field": "flat@frac",
-      "headerName": "flat@frac"
-    },
-    {
-      "field": "discourse@conn",
-      "headerName": "discourse@conn"
-    },
-    {
-      "field": "det@scrap",
-      "headerName": "det@scrap"
-    },
-    {
-      "field": "subj@obj",
-      "headerName": "subj@obj"
-    },
-    {
-      "field": "parataxis@restart",
-      "headerName": "parataxis@restart"
-    },
-    {
-      "field": "compound:svc$phase",
-      "headerName": "compound:svc$phase"
-    },
-    {
-      "field": "comp:obj$desire@x",
-      "headerName": "comp:obj$desire@x"
-    },
-    {
-      "field": "conj:redup",
-      "headerName": "conj:redup"
-    },
-    {
-      "field": "parataxis:dislocated$tempo",
-      "headerName": "parataxis:dislocated$tempo"
-    },
-    {
-      "field": "parataxis@url",
-      "headerName": "parataxis@url"
-    },
-    {
-      "field": "parataxis:mod$cond",
-      "headerName": "parataxis:mod$cond"
-    },
-    {
-      "field": "udep@gen",
-      "headerName": "udep@gen"
-    },
-    {
-      "field": "mod@mode",
-      "headerName": "mod@mode"
-    },
-    {
-      "field": "compound:prt",
-      "headerName": "compound:prt"
-    },
-    {
-      "field": "comp:obl$modal",
-      "headerName": "comp:obl$modal"
-    },
-    {
       "field": "comp:caus",
       "headerName": "comp:caus"
-    },
-    {
-      "field": "comp:obj@caus",
-      "headerName": "comp:obj@caus"
-    },
-    {
-      "field": "mod$manner",
-      "headerName": "mod$manner"
-    },
-    {
-      "field": "mod:periph$cond",
-      "headerName": "mod:periph$cond"
-    },
-    {
-      "field": "subj@periph",
-      "headerName": "subj@periph"
-    },
-    {
-      "field": "compound:svc@scrap",
-      "headerName": "compound:svc@scrap"
-    },
-    {
-      "field": "dislocated:subj",
-      "headerName": "dislocated:subj"
-    },
-    {
-      "field": "comp:obj$utter",
-      "headerName": "comp:obj$utter"
     },
     {
       "field": "mod@obj",
       "headerName": "mod@obj"
     },
     {
-      "field": "det@noun",
-      "headerName": "det@noun"
-    },
-    {
-      "field": "comp:pred@expl",
-      "headerName": "comp:pred@expl"
-    },
-    {
-      "field": "mod$cond",
-      "headerName": "mod$cond"
-    },
-    {
-      "field": "parataxis:mod",
-      "headerName": "parataxis:mod"
-    },
-    {
-      "field": "comp:obl@patient",
-      "headerName": "comp:obl@patient"
-    },
-    {
-      "field": "parataxis:dislocated",
-      "headerName": "parataxis:dislocated"
-    },
-    {
-      "field": "comp:cleft@scrap",
-      "headerName": "comp:cleft@scrap"
-    },
-    {
-      "field": "subj@lfoc",
-      "headerName": "subj@lfoc"
-    },
-    {
-      "field": "comp:obl$percep",
-      "headerName": "comp:obl$percep"
-    },
-    {
-      "field": "udep@att",
-      "headerName": "udep@att"
-    },
-    {
-      "field": "dislocated:obj",
-      "headerName": "dislocated:obj"
-    },
-    {
-      "field": "comp:obl$desire@x",
-      "headerName": "comp:obl$desire@x"
-    },
-    {
-      "field": "comp:obl$know@x",
-      "headerName": "comp:obl$know@x"
-    },
-    {
-      "field": "comp:obl$phase@x",
-      "headerName": "comp:obl$phase@x"
-    },
-    {
-      "field": "parataxis:insert",
-      "headerName": "parataxis:insert"
-    },
-    {
-      "field": "unk@alt",
-      "headerName": "unk@alt"
-    },
-    {
-      "field": "udep@comp",
-      "headerName": "udep@comp"
-    },
-    {
-      "field": "det@adj",
-      "headerName": "det@adj"
-    },
-    {
-      "field": "parataxis:conj@scrap",
-      "headerName": "parataxis:conj@scrap"
-    },
-    {
-      "field": "mod$tempa",
-      "headerName": "mod$tempa"
-    },
-    {
-      "field": "flat@repeat",
-      "headerName": "flat@repeat"
-    },
-    {
-      "field": "mod@to",
-      "headerName": "mod@to"
-    },
-    {
-      "field": "comp:aux@pot",
-      "headerName": "comp:aux@pot"
-    },
-    {
-      "field": "comp:obj@appl",
-      "headerName": "comp:obj@appl"
-    },
-    {
-      "field": "parataxis@sentence",
-      "headerName": "parataxis@sentence"
-    },
-    {
-      "field": "discourse@intj",
-      "headerName": "discourse@intj"
-    },
-    {
-      "field": "comp:arg",
-      "headerName": "comp:arg"
-    },
-    {
-      "field": "mod@adv",
-      "headerName": "mod@adv"
-    },
-    {
-      "field": "udep@redup",
-      "headerName": "udep@redup"
-    },
-    {
-      "field": "udep@agent",
-      "headerName": "udep@agent"
-    },
-    {
-      "field": "mod:periph$reason",
-      "headerName": "mod:periph$reason"
-    },
-    {
-      "field": "parataxis:dislocated$tempa",
-      "headerName": "parataxis:dislocated$tempa"
-    },
-    {
-      "field": "mod@abs",
-      "headerName": "mod@abs"
-    },
-    {
-      "field": "compound:svc$tempo",
-      "headerName": "compound:svc$tempo"
-    },
-    {
-      "field": "comp:obl$know",
-      "headerName": "comp:obl$know"
-    },
-    {
-      "field": "mod@mcl",
-      "headerName": "mod@mcl"
-    },
-    {
-      "field": "conj@extend",
-      "headerName": "conj@extend"
-    },
-    {
-      "field": "unk@pos",
-      "headerName": "unk@pos"
-    },
-    {
-      "field": "flat:name",
-      "headerName": "flat:name"
-    },
-    {
-      "field": "subj@advmod",
-      "headerName": "subj@advmod"
-    },
-    {
-      "field": "comp:obl$attitude@x",
-      "headerName": "comp:obl$attitude@x"
-    },
-    {
-      "field": "comp:aux@part",
-      "headerName": "comp:aux@part"
+      "field": "comp:obl$cause@x",
+      "headerName": "comp:obl$cause@x"
     },
     {
       "field": "udep@lvc",
       "headerName": "udep@lvc"
     },
     {
-      "field": "comp:obj@advneg",
-      "headerName": "comp:obj@advneg"
-    },
-    {
-      "field": "compound:redup",
-      "headerName": "compound:redup"
-    },
-    {
-      "field": "mod@att",
-      "headerName": "mod@att"
-    },
-    {
-      "field": "mod@gen",
-      "headerName": "mod@gen"
-    },
-    {
-      "field": "mod:emph",
-      "headerName": "mod:emph"
-    },
-    {
-      "field": "mod$concess",
-      "headerName": "mod$concess"
-    },
-    {
-      "field": "comp:pred$attitude@x",
-      "headerName": "comp:pred$attitude@x"
-    },
-    {
-      "field": "mod@attlvc",
-      "headerName": "mod@attlvc"
-    },
-    {
-      "field": "mod@redup",
-      "headerName": "mod@redup"
-    },
-    {
-      "field": "conj@svc",
-      "headerName": "conj@svc"
-    },
-    {
-      "field": "mod@subj",
-      "headerName": "mod@subj"
-    },
-    {
-      "field": "udep@obl",
-      "headerName": "udep@obl"
-    },
-    {
-      "field": "subj@ifoc",
-      "headerName": "subj@ifoc"
-    },
-    {
-      "field": "udep@det",
-      "headerName": "udep@det"
-    },
-    {
-      "field": "parataxis:conj",
-      "headerName": "parataxis:conj"
-    },
-    {
       "field": "appos@trans",
       "headerName": "appos@trans"
     },
     {
-      "field": "parataxis:obj$utter",
-      "headerName": "parataxis:obj$utter"
-    },
-    {
-      "field": "comp:obj@gen",
-      "headerName": "comp:obj@gen"
-    },
-    {
-      "field": "unk@ss",
-      "headerName": "unk@ss"
-    },
-    {
-      "field": "mod@svc",
-      "headerName": "mod@svc"
-    },
-    {
-      "field": "mod:periph$tempa",
-      "headerName": "mod:periph$tempa"
+      "field": "unk@alt",
+      "headerName": "unk@alt"
     },
     {
       "field": "discourse@scrap",
       "headerName": "discourse@scrap"
     },
     {
+      "field": "subj:aff",
+      "headerName": "subj:aff"
+    },
+    {
+      "field": "unk@mark",
+      "headerName": "unk@mark"
+    },
+    {
+      "field": "subj@periph",
+      "headerName": "subj@periph"
+    },
+    {
+      "field": "compound:svc$phase",
+      "headerName": "compound:svc$phase"
+    },
+    {
       "field": "unk@infl",
       "headerName": "unk@infl"
     },
     {
-      "field": "mod@coverb",
-      "headerName": "mod@coverb"
+      "field": "comp:obj@pred",
+      "headerName": "comp:obj@pred"
     },
     {
-      "field": "udep@advmod",
-      "headerName": "udep@advmod"
+      "field": "parataxis:mod$cond",
+      "headerName": "parataxis:mod$cond"
     },
     {
-      "field": "udep@own",
-      "headerName": "udep@own"
-    },
-    {
-      "field": "mod@tto",
-      "headerName": "mod@tto"
-    },
-    {
-      "field": "comp:obl$cause@x",
-      "headerName": "comp:obl$cause@x"
-    },
-    {
-      "field": "comp:pred@subj",
-      "headerName": "comp:pred@subj"
-    },
-    {
-      "field": "comp:obl$request@x",
-      "headerName": "comp:obl$request@x"
-    },
-    {
-      "field": "udep@dat",
-      "headerName": "udep@dat"
-    },
-    {
-      "field": "udep@scrap",
-      "headerName": "udep@scrap"
-    },
-    {
-      "field": "mod$reason",
-      "headerName": "mod$reason"
-    },
-    {
-      "field": "comp:obj@obl",
-      "headerName": "comp:obj@obl"
-    },
-    {
-      "field": "comp:pred$manner@agent",
-      "headerName": "comp:pred$manner@agent"
-    },
-    {
-      "field": "comp:obj$attitude@x",
-      "headerName": "comp:obj$attitude@x"
-    },
-    {
-      "field": "parataxis:discourse",
-      "headerName": "parataxis:discourse"
-    },
-    {
-      "field": "comp:obj$know@x",
-      "headerName": "comp:obj$know@x"
-    },
-    {
-      "field": "mod:periph",
-      "headerName": "mod:periph"
-    },
-    {
-      "field": "orphan@missing",
-      "headerName": "orphan@missing"
-    },
-    {
-      "field": "mod:appos",
-      "headerName": "mod:appos"
-    },
-    {
-      "field": "comp:obl$percep@x",
-      "headerName": "comp:obl$percep@x"
-    },
-    {
-      "field": "comp:obj$phase@x",
-      "headerName": "comp:obj$phase@x"
-    },
-    {
-      "field": "unk:aff",
-      "headerName": "unk:aff"
-    },
-    {
-      "field": "unk@ana",
-      "headerName": "unk@ana"
-    },
-    {
-      "field": "mod:periph$concess",
-      "headerName": "mod:periph$concess"
+      "field": "mod@inf",
+      "headerName": "mod@inf"
     },
     {
       "field": "comp:aux@exhort",
       "headerName": "comp:aux@exhort"
     },
     {
-      "field": "comp:obj$know",
-      "headerName": "comp:obj$know"
+      "field": "mod:num",
+      "headerName": "mod:num"
     },
     {
-      "field": "comp:obj$desire",
-      "headerName": "comp:obj$desire"
+      "field": "cc@nc",
+      "headerName": "cc@nc"
     },
     {
-      "field": "compound@quant",
-      "headerName": "compound@quant"
+      "field": "mod@abs",
+      "headerName": "mod@abs"
     },
     {
-      "field": "compound@preverb",
-      "headerName": "compound@preverb"
+      "field": "mod:obj@relcl",
+      "headerName": "mod:obj@relcl"
     },
     {
-      "field": "udep@mcl",
-      "headerName": "udep@mcl"
-    },
-    {
-      "field": "udep@smod",
-      "headerName": "udep@smod"
-    },
-    {
-      "field": "mod@tfrom",
-      "headerName": "mod@tfrom"
-    },
-    {
-      "field": "comp:aff",
-      "headerName": "comp:aff"
-    },
-    {
-      "field": "subj@lvc",
-      "headerName": "subj@lvc"
+      "field": "orphan@missing",
+      "headerName": "orphan@missing"
     },
     {
       "field": "parataxis@rel",
       "headerName": "parataxis@rel"
     },
     {
-      "field": "parataxis@deletion",
-      "headerName": "parataxis@deletion"
+      "field": "parataxis:mod",
+      "headerName": "parataxis:mod"
     },
     {
-      "field": "mod$purp",
-      "headerName": "mod$purp"
+      "field": "parataxis:discourse",
+      "headerName": "parataxis:discourse"
     },
     {
-      "field": "comp:obj$concess",
-      "headerName": "comp:obj$concess"
+      "field": "parataxis:dislocated",
+      "headerName": "parataxis:dislocated"
     },
     {
-      "field": "comp:obj@plur",
-      "headerName": "comp:obj@plur"
+      "field": "mod$reason",
+      "headerName": "mod$reason"
     },
     {
-      "field": "det@rel",
-      "headerName": "det@rel"
+      "field": "det@adj",
+      "headerName": "det@adj"
     },
     {
-      "field": "mod@bahuv",
-      "headerName": "mod@bahuv"
+      "field": "mod@relat",
+      "headerName": "mod@relat"
     },
     {
-      "field": "comp:obl$modal@x",
-      "headerName": "comp:obl$modal@x"
-    },
-    {
-      "field": "det@pron",
-      "headerName": "det@pron"
-    },
-    {
-      "field": "unk@agr",
-      "headerName": "unk@agr"
+      "field": "udep@redup",
+      "headerName": "udep@redup"
     }
   ],
   "cells": [
