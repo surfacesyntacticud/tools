@@ -5,11 +5,12 @@ The rendering of the tables is done with [ag-grid JS library](https://www.ag-gri
 
 ## Available tables
 
-The tables are available through the URL http://tables.grew.fr with direct links to the three collections of tables:
+The tables are available through the URL http://tables.grew.fr with direct links to the four collections of tables:
 
-* [`http://tables.grew.fr?data=ud_feats/FEATS`](http://tables.grew.fr?data=ud_feats/FEATS): on features usage (only given on UD, on SUD the tables would gives the same observations as SUD does not differ from UD at the feature level)
-* [`http://tables.grew.fr?data=ud_deps/DEPS`](http://tables.grew.fr?data=ud_deps/DEPS): on dependency labels usage in the UD project
-* [`http://tables.grew.fr?data=sud_deps/DEPS`](http://tables.grew.fr?data=sud_deps/DEPS): on dependency labels usage in the SUD project
+* [`http://tables.grew.fr?data=ud_feats/FEATS`](http://tables.grew.fr?data=ud_feats/FEATS): on features usage (only given on UD, on SUD the tables would gives the same observations as SUD does not differ from UD at the feature level);
+* [`http://tables.grew.fr?data=ud_deps/DEPS`](http://tables.grew.fr?data=ud_deps/DEPS): on dependency labels usage in the UD project;
+* [`http://tables.grew.fr?data=sud_deps/DEPS`](http://tables.grew.fr?data=sud_deps/DEPS): on dependency labels usage in the SUD project;
+* [`http://tables.grew.fr?data=meta/META`](http://tables.grew.fr?data=meta/META): on sentences metadata.
 
 ## Web interface 
  * Filtering is available on `Rows` (*i.e.* on Treebanks names) or on `Columns` (*i.e.* dependency relation, feature name or feature value).
