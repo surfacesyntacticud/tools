@@ -40,6 +40,35 @@ package idioms{
 package sub_relations {
 % comp
 %=====
+% All sub-relations of COMP, for which the extension does not change from UD to SUD.
+  rule comp {
+    pattern { e:H -[advcl:cleft|ccomp:obj|ccomp:obl|ccomp:pred]-> D; }
+    commands {e.1=comp}
+  }
+
+% XCOMP:OBJ, XCOMP:OBL, XCOMP:PRED UD relations with a verb as dependent become COMP with the same extension if this extension exists. By default, if the governor has no direct object, the subject of the dependent is the subject of the governor.
+  rule comp_xcomp{
+    pattern{d: H -[xcomp:obj|xcomp:obl|xcomp:pred]-> D; D[upos=VERB]}
+    without{H -[obj]-> OBJ; OBJ[upos=NOUN|PRON|PROPN|X]}
+    commands{d.1=comp; D.Subject2=SubjRaising}
+  }
+
+% XCOMP:OBJ, XCOMP:OBL, XCOMP:PRED UD relations with a verb as dependent become COMP with the same extension if this extension exists. By default, if the governor has a direct object, the subject of the dependent is the object of the governor.
+  rule comp_xcomp_obj{
+    pattern{
+      d: H -[xcomp:obl|xcomp:pred]-> D; D[upos=VERB];
+      H -[obj]-> OBJ; OBJ[upos=NOUN|PRON|PROPN|X]}
+    commands{d.1=comp; D.Subject2=ObjRaising}
+  }
+
+% XCOMP:OBJ, XCOMP:OBL, XCOMP:PRED UD relations with a non verbal dependent D, and D has a copula dependent. The relations become COMP with the same extension if this extension exists. By default, if the governor has no direct object, the subject of the dependent is the subject of the governor.
+  rule comp_xcomp_cop{
+    pattern{
+      d: H -[xcomp:obj|xcomp:obl|xcomp:pred]-> D;
+      D[upos<>VERB]; D -[cop]-> AUX}
+    commands{d.1=comp; AUX.Subject2=SubjRaising}
+  }
+
 % Sub-relations DEP:COMP are renamed COMP in SUD if they do not start from nominals.
   rule comp_dep {
     pattern { H[upos <> NOUN|PRON]; e:H -[dep:comp]-> D; }
@@ -58,18 +87,6 @@ package sub_relations {
   rule comp-pass_expl-pass{
     pattern{e: H -[expl:pass]-> D}
     commands{del_edge e; add_edge H -[comp@pass]-> D}
-  }
-
-% Clausal direct objects or oblique arguments with their subject controlled by their governor.
-  rule comp-obj-obl_xcomp {
-    pattern { e:H -[xcomp:obj|xcomp:obl]-> D; }
-    commands {e.1=comp;e.deep=x}
-  }
-
-% All sub-relations of COMP, for which the extension does not change from UD to SUD.
-  rule comp {
-    pattern { e:H -[advcl:cleft|ccomp:obj|ccomp:obl|ccomp:pred]-> D; }
-    commands {e.1=comp}
   }
 
 % In the impersonal diathesis, the deep subject, which is a NSUBJ or CSUBJ dependent in UD, becomes a direct object in SUD with the deep extension AGENT.
@@ -119,18 +136,6 @@ package sub_relations {
   rule comp-pred_ccomp {
     pattern { e:H -[ccomp:pred]-> D; }
     commands {e.1=comp; e.2=pred}
-  }
-
-% Predicative clausal argument with control of the subject by the main verb.
-  rule comp-pred-x_xcomp {
-    pattern { e:H -[xcomp:pred]-> D;D[upos=VERB] }
-    commands {del_edge e; add_edge H -[comp:pred@x]-> D}
-  }
-
-% Predicative clausal argument with a copula; the copula subject is controlled by the main verb.
-  rule comp-pred-x_xcomp-cop {
-    pattern { e:H -[xcomp:pred]-> D;D -[cop]-> D1 }
-    commands {del_edge e; add_edge H -[comp:pred@x]-> D}
   }
 
 
@@ -202,7 +207,13 @@ package relations {
 %=========
   rule comp-obj_obj {
     pattern { e:H -[1=obj]-> D; }
+    without{e.deep=agent; H -[aux:caus]-> AUX}
     commands { e.1=comp;e.2=obj }
+  }
+
+  rule comp-obj_obj-agent {
+    pattern { e:H -[obj@agent]-> D; H -[aux:caus]-> AUX}
+    commands { e.1=comp;e.2=obj ; H.Subject=ObjRaising}
   }
 
 % Direct clausal argument of a verb without control of its subject. We make the assumption that a clausal argument that is not introduced with an adposition is a direct object.
@@ -224,7 +235,7 @@ package relations {
     without{H -[obj|comp:obj]-> *}% There is no other direct object.
     without{ D -[mark]-> ADP; ADP[upos=ADP]}
     without{H -[comp:aux@pass|aux@pass]-> *}% A passive verb has no direct object.
-    commands {e.1=comp;e.2=obj;e.deep=x}
+    commands {e.1=comp;e.2=obj;D.Subject2=SubjRaising}
   }
 
 % Direct clausal argument of a verb with a copula: the coupla subject is controlled by the main verb. We make the assumption that a clausal argument that is not introduced with an adposition is a direct object.
@@ -234,7 +245,7 @@ package relations {
     without{H -[obj|comp:obj]-> *}% There is no other direct object.
     without{ D -[mark]-> ADP; ADP[upos=ADP]}
     without{H -[comp:aux@pass|aux@pass]-> *}% A passive verb has no direct object.
-    commands {e.1=comp;e.2=obj;e.deep=x}
+    commands {e.1=comp;e.2=obj;D.Subject2=SubjRaising}
   }
 
 
@@ -293,14 +304,14 @@ package relations {
   rule comp-obl_xcomp {
     pattern { e:H -[1=xcomp]-> D; D[upos=VERB]; D -[mark]-> *}
     without{D[VerbFom=Part]}% Participles are considered as predicative arguments
-    commands {e.1=comp;e.2=obl;e.deep=x}
+    commands {e.1=comp;e.2=obl;D.Subject2=SubjRaising}
   }
 
 % Clausal arguments with a copula and marked with an adposition; the copula subject is controlled   by the main verb.
 % Ex: Il songe à être soldat.
   rule comp-obl_xcomp-cop {
-    pattern { e:H -[1=xcomp]-> D; D -[cop]-> D1; D1[upos=VERB]; D -[mark]-> *}
-    commands {e.1=comp;e.2=obl;e.deep=x}
+    pattern { e:H -[1=xcomp]-> D; D -[cop]-> D1; D1[upos=AUX]; D -[mark]-> *}
+    commands {e.1=comp;e.2=obl;D1.Subject2=SubjRaising}
   }
 % Direct clausal arguments with control of their subject in presence of a direct object are considered as oblique arguments.
   rule comp-obl_xcomp-obj {
@@ -309,17 +320,9 @@ package relations {
        H -[obj|comp:obj]-> D1}
     without{D -[mark]-> *}
     without{D[VerbFom=Part]}% Participles are considered as predicative arguments
-    commands {e.1=comp;e.2=obl;e.deep=x}
+    commands {e.1=comp;e.2=obl;D.Subject2=ObjRaising}
   }
 
-% Direct clausal arguments of passive verbs with control of their subject are considered as oblique arguments.
-  rule comp-obl_xcomp-pass {
-    pattern {
-      e:H -[1=xcomp]-> D;D[upos=AUX|VERB,VerbForm=Inf];
-       AUX -[aux@pass|comp:aux@pass]-> H}
-    without{D -[mark]-> *}
-    commands {e.1=comp;e.2=obl;e.deep=x}
-  }
 
 % comp:pred
 %==========
@@ -336,7 +339,7 @@ package relations {
 % Ex: Il paraît accablé par la mort de sa femme.
   rule comp_pred_part {
     pattern { e:H -[1=xcomp]-> D; D[upos=VERB,VerbForm=Part]}
-    commands {add_edge H -[comp:pred@x]-> D; del_edge e}
+    commands {add_edge H -[comp:pred]-> D; D.Subject2=SubjRaising; del_edge e}
   }
 
 
@@ -424,6 +427,7 @@ package reverse_relations {
       Onf (set_level),
       Onf (reverse_edges),
       Onf (shift_out_edges),
+      Onf(shift_out_features),
       Onf (cleaning),
       Onf (rename_rel),
     )
@@ -518,6 +522,15 @@ package reverse_relations {
       commands { add_edge f: H -> N; f.label = e.label; del_edge e }
     }
 
+    % COMP dependencies from nominals are raised to their governor, when it is a preposition.
+    rule prep_nom_comp{
+      pattern{
+        H[upos=ADP]; D[upos=NOUN|NUM|PROPN|X];
+	H -[1=case, REV=Yes]-> D;
+	d1:D -[1=comp]-> N}
+      commands{add_edge d2: H -> N; d2.label=d1.label; del_edge d1}
+    }
+    
     % Relations with their source D after the head of a subordinated clause and their dependent N before.
     rule all_mark_outside_left{
       pattern {
@@ -549,8 +562,7 @@ package reverse_relations {
       without { D -> X; N << X } % rising must not entail non projectivity
       without { H -[1=case]-> D; N[upos<>ADP|SCONJ] }
       without { H -[1=cop]-> D; N[upos<>ADP|ADV|AUX|SCONJ|VERB] }
-      without { H -[1=cop]-> D; N[upos=AUX|VERB]; D -[!deep]-> N} % the only dependencies that can rise with verbs are MOD@X
-      without { H -[1=cop]-> D; N[upos=AUX|VERB]; D -[deep <> x]-> N}% the only dependencies that can rise with verbs are MOD@X
+      without { H -[1=cop]-> D; N[upos=AUX|VERB]}
       without { N[InTitle=Yes]; H[!InTitle] } % A vérifier
       without {H -[1=case|mark]-> D; H1 -[IDIOM]-> N; H1 -[HEAD]-> H }
       commands { add_edge f: H -> N; f.label = e.label; del_edge e }
@@ -659,6 +671,16 @@ package reverse_relations {
     }
   }
 
+ % ---------------------------------------------------------------------------------------------
+% shfit some features from a node to its governor.
+  package shift_out_features{
+    rule subject{
+      pattern{d:AUX -[1=aux|cop]-> V; V[Subject2]}
+      commands{AUX.Subject2=V.Subject2; del_feat V.Subject2}
+    }
+    
+  }
+  
   % ---------------------------------------------------------------------------------------------
   package cleaning {
     % Removing the mark REV for reversed relations.
@@ -816,10 +838,11 @@ package shared_left_conj-dep {
   rule gen {
     pattern {
       d1:C1 -[1=conj]-> C2;
-      d:C1 -[1=mod|parataxis|udep|subj]-> D1; D1[!InIdiom, !Shared]; D1 << C1}
+      d:C1 -[1=cc|mod|parataxis|udep|subj]-> D1; D1[!InIdiom, !Shared]; D1 << C1}
     without{d2: C -> C1; d2.label=d1.label}% C1 is the first conjunct of the coordination.
     without{d2: C -> C1; d2.label="conj@emb"; d1.label=conj}% C1 is the first conjunct of the coordination. Ex: SUD_French-GSD fr-ud-dev_01028 - l'opposition des cultes monothéistes et polythéistes, l'art sacré et le profane, ou l'absence de progrès chez les romains...
     without{d.1=subj; C2 -[1=subj]-> D2}
+    without{d.1=cc; d1.label=conj} % Coordinating conjunctions are shared only at the beginning of embedded cooridnations.
     without{d.1=mod; D1[upos <> ADP|SCONJ]}
     without{d.1=udep; D1[upos <> ADP|SCONJ]}
     without{d.1=mod; D1[upos=ADP|SCONJ]; C2 -[1=mod|udep]-> D2; D2[upos=ADP|SCONJ]; D2 << C2}
@@ -981,12 +1004,34 @@ package unshared_right_conj-dep{
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Normalization of features and relations to comply with guidelines.
+package normalize{
 % All remaining UD relations are renamed UNK in SUD
-rule unk_rel{
-  pattern{e:H -[1<>appos|cc|clf|comp|compound|conj|det|discourse|dislocated|flat|goeswith|list|mod|orphan|parataxis|punct|reparandum|root|subj|udep|unk|vocative|CONV|HEAD|IDIOM|TITLE]-> D}
-  commands{del_edge e; add_edge H -[unk]-> D}
-}
+  rule unk_rel{
+    pattern{e:H -[1<>appos|cc|clf|comp|compound|conj|det|discourse|dislocated|flat|goeswith|list|mod|orphan|parataxis|punct|reparandum|root|subj|udep|unk|vocative|CONV|HEAD|IDIOM|TITLE]-> D}
+    commands{del_edge e; add_edge H -[unk]-> D}
+  }
+% All Subject2 features that are introduced for verbs the subject of which is controlled by their governor are replaced with Subject features.
+  rule del_feat_subject2{
+    pattern{V[Subject2]}
+    commands{V.Subject= V.Subject2; del_feat V.Subject2}
+  }
+    rule subject-objraising_caus{
+      pattern{AUX -[aux:caus]-> V; V-[comp:obj@agent]-> OBJ}
+      without{AUX[VerbForm=Inf]}
+      without{V[Subject=ObjRaising]}
+      commands{V.Subject=ObjRaising}
+    }
 
+    rule subject-generic_caus{
+      pattern{AUX -[aux:caus]-> V}
+      without{V-[comp:obj@agent]-> OBJ}
+      without{AUX[VerbForm=Inf]}
+      without{V[Subject=Generic]}
+      commands{V.Subject=Generic}
+    }
+
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 strat main {
@@ -1006,6 +1051,6 @@ strat main {
     Onf(unshared_left_conj-dep),
    Onf(unshared_right_conj-dep),
     Onf(extpos),
-    Onf (unk_rel),
+    Onf(normalize),
   )
 }

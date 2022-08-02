@@ -30,6 +30,30 @@ package FR_relations {
     pattern{ e:H -[nmod]-> D; D[upos=PRON, lemma=dont|en]}
     commands{del_edge e; add_edge H -[udep]-> D}
   }
+
+
+% Control verbs with an infintive as an oblique argument and the subject of the infinitive is the object of the control verb.
+  rule verb_obj-noun_obl-inf(lex from "lexicons/verb_obj-noun_obl-inf-objraising.lp"){
+    pattern{
+      V -[obj]-> N; V[upos=VERB,lemma=lex.verb];
+      N[upos=NOUN|PRON|PROPN|X];
+      d:V -[xcomp:obl]-> COMP}
+    commands{
+      COMP.Subject2=ObjRaising;
+      add_edge V -[comp:obl]-> COMP; del_edge d}
+  }
+
+% Control verbs with an infinitive as a direct object and the subject of the infinitive is the oblique argument of the control verb.
+  rule verb_obl-noun_obj-inf(lex from "lexicons/verb_obl-noun_obj-de-inf-oblraising.lp"){
+    pattern{
+      V -[iobj|obl:arg]-> N; V[upos=VERB,lemma=lex.verb];
+      N[upos=NOUN|PRON|PROPN|X];
+      d:V -[xcomp:obj]-> COMP}
+    commands{
+      COMP.Subject2=OblRaising;
+      add_edge V -[comp:obj]-> COMP; del_edge d}
+  }
+
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -253,6 +277,16 @@ package FR_shift_out_back_edges{
     commands{add_edge D -[mod]-> D1;del_edge e}
   }
 
+% Neagtion adverbs that are modifiers must move from the auxiliaries to their argument.
+  rule adv-neg_aux{
+    pattern{
+      H[upos=AUX];H -[1=comp,2=aux|pred]-> D;
+      D1[upos=ADV,lemma=que];
+      e: H -[mod]-> D1;
+      H << D1}
+    commands{add_edge D -[mod]-> D1;del_edge e}
+  }
+
 % Adverb "aussi used as a quantity adverb must move from the auxiliaries to their argument.
   rule aux_aussi_comp{
     pattern{
@@ -463,6 +497,6 @@ strat fr_main {
     Onf(unshared_right_conj-dep),
     Onf(extpos),
     Onf(FR_noun_adv), % Package FR_noun_adv must follow rule extpos because it acts on idioms in their definitive form.
-    Onf (unk_rel),
+    Onf(normalize),
   )
 }

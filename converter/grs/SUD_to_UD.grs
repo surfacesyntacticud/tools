@@ -444,10 +444,11 @@ package sub_relations {
 
 % Clausal argument without control of its subject.
   rule ccomp {
-    pattern {e:H -[1=comp, 2=obj|obl|pred]-> D; D[upos = AUX|VERB,!nom]}
-    without{ H -[comp:obj@x|comp:obl@x|comp:pred@x]-> D} % The argument is a verb, whose subject is controlled by the main verb.
-    without {H -[comp:obj@pass|comp:obj@agent]-> D } % Impersonal diathesis
-    commands {e.1=ccomp}
+    pattern {d:H -[1=comp, 2=obj|obl|pred]-> D; D[upos = AUX|VERB,!nom]}
+    without{D[Subject=ObjRaising|OblRaising|SubjRaising]}
+    without {d.deep=pass } % Impersonal diathesis
+    without {d.deep=agent} % Impersonal diathesis
+    commands {d.1=ccomp}
   }
 
   % Clausal argument with a non-verbal head.
@@ -466,8 +467,8 @@ package sub_relations {
   }
 
   rule cop{
-    pattern{ e:H -[1=comp,2=pred]-> D; H[upos=AUX]}
-    commands {e.1=cop}
+    pattern{ d:H -[1=comp,2=pred]-> D; H[upos=AUX]}
+    commands {d.1=cop}
   }
 
 % In the impersonal diathesis, the deep clausal subject, which is a COMP:OBJ dependent in SUD, becomes a CSUBJ dependent in UD.
@@ -590,11 +591,16 @@ package sub_relations {
     commands {e.1=obl; e.2=arg}
   }
 
-  rule xcomp {
-    pattern { e:H -[comp:obj@x|comp:obl@x|comp:pred@x|comp:pred]-> D }
-    without{ H[upos=AUX]}
-    without{ D[upos=AUX|VERB]; H -[comp:pred]-> D}
-    commands {e.1=xcomp; del_feat e.deep}
+  rule xcomp{
+    pattern{
+      e:H -[comp:obj|comp:obl|comp:pred]-> D;
+      D[Subject=ObjRaising|OblRaising|SubjRaising] }
+    commands {e.1=xcomp}
+  }
+
+  rule xcomp_comp-pred{
+    pattern{d:H -[comp:pred]-> D; H[upos <> AUX]; D[upos <> AUX|VERB]}
+    commands {d.1=xcomp}
   }
 
 }
@@ -827,6 +833,10 @@ strat main_UDplus {
     Onf(extpos),
   )
 }
+rule remove_feat_subject{
+  pattern{V[Subject]}
+  commands{del_feat V.Subject}
+}
 
 rule remove_UDplus_subtypes {
   pattern { e: M -[ccomp:agent|ccomp:obj|ccomp:obl|ccomp:pred|xcomp:obj|xcomp:obl|xcomp:pred|advcl:x]-> N }
@@ -848,6 +858,7 @@ strat u_main{
   Seq (
     main_UDplus,
     flatten_idioms,
+    Onf(remove_feat_subject),
     Onf(remove_UDplus_subtypes),
     Onf(non_projective_punct),
   )
