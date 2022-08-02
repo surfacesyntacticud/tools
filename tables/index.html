@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Universal table</title>
+  <meta charSet="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- JQuery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"></script>
+
+  <!-- Bootstrap 4 and Cie -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
+
+  <!-- Remarkable -->
+  <script src="https://cdn.jsdelivr.net/remarkable/1.7.1/remarkable.min.js"></script>
+
+  <!-- Vue.js -->
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+  <!-- Font awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <style media="only screen">
+    html,
+    body {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      box-sizing: border-box;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    html {
+      position: absolute;
+      top: 0;
+      left: 0;
+      padding: 0;
+      overflow: auto;
+    }
+
+    body {
+      padding: 10px;
+      overflow: auto;
+    }
+  </style>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div id="app" class="example-wrapper">
+
+    <!-- The Modal NB: should be at the top to be started from JS (stackoverflow.com/questions/18553726) -->
+    <div class="modal fade" id="myModal">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+        
+          <!-- Modal Header -->
+          <div class="modal-header">
+            <h1 class="modal-title">Universal tables</h1>
+            <button v-if="!portal" type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+          
+          <!-- Modal body -->
+          <div class="modal-body">
+            <div class="alert alert-danger" role="alert" v-if='alert != ""' v-html="alert"></div>
+
+            <p>This page proposes a set of tables which describe the global usage of dependency relations, features and
+              feature values in the treebanks from the <a href="http://universaldependencies.org/">UD</a> and <a href="https://surfacesyntacticud.github.io/">SUD</a> projects (version 2.10).</p>
+      
+            <p>See the 
+              <a href="https://github.com/surfacesyntacticud/tools/blob/master/tables/README.md">README</a>
+              for more info or for
+              <a href="https://github.com/surfacesyntacticud/tools/issues">issue reporting or suggestions</a>
+              in the 
+              <a href="https://github.com/surfacesyntacticud/tools/tree/master/tables">Github project</a>.
+             </p>
+
+            <p>Pick one of the four collections below:</p>
+
+             <div class="row" style="margin-bottom: 20px;">
+              <div class="col-sm-6">
+                <a href="?data=ud_deps/DEPS">
+                  <div class="card">
+                    <div class="card-header">Dependencies in UD ({{count["ud_deps"]}} tables)</div>
+                    <div class="card-body" style="text-align: center;">
+                      <img src="https://universaldependencies.org/logos/logo-ud.png" style="height: 50px;" alt="UD">
+                    </div>
+                  </div>
+                </a>
+              </div>
+              <div class="col-sm-6">
+                <a href="?data=sud_deps/DEPS">
+                  <div class="card">
+                    <div class="card-header">Dependencies in SUD ({{count["sud_deps"]}} tables)</div>
+                    <div class="card-body" style="text-align: center;">
+                      <img src="https://surfacesyntacticud.github.io/images/sud.svg" style="height: 50px;" alt="SUD">
+                    </div>
+                  </div>
+                </a>
+              </div>
+            </div>
+
+
+            <div class="row" style="margin-bottom: 20px;">
+              <div class="col-sm-6">
+                <a href="?data=ud_feats/FEATS">
+                  <div class="card">
+                    <div class="card-header">Features in UD  ({{count["ud_feats"]}} tables)</div>
+                    <div class="card-body" style="text-align: center;">
+                      <img src="https://universaldependencies.org/logos/logo-ud.png" style="height: 50px;" alt="UD">
+                    </div>
+                  </div>
+                </a>
+              </div>
+              <div class="col-sm-6">
+                <a href="?data=meta/META">
+                  <div class="card">
+                    <div class="card-header">Metadata in UD ({{count["meta"]}} table)</div>
+                    <div class="card-body" style="text-align: center;">
+                      <img src="https://universaldependencies.org/logos/logo-ud.png" style="height: 50px;" alt="UD">
+                    </div>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Modal footer -->
+          <div v-if="!portal" class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  
+    <div class="row" style="width: 100%; margin: auto">
+      <div class="col-sm-1" style="padding-left: 0;">
+        <button v-show='!portal' type="button" class="btn btn-success btn-sm" onclick="javascript:open_modal()">Collections</button>
+      </div>
+      <div class="col-sm-10" v-html="title" style="text-align: center;"></div>
+    </div> 
+
+    <div v-show='!portal && alert==""'>
+
+    <!---------------------------- UD + FEATS ----------------------------->
+    <div v-show='collection=="ud_feats"' style="margin-bottom: 10px;">
+      <a href='?data=ud_feats/FEATS'>
+        <button
+          type="button"
+          class="btn btn-sm"
+          data-toggle="tooltip"
+          title="All feature names used in the column 6 in CoNLL"
+          :class="{ 'btn-warning': table=='FEATS', 'btn-secondary' : table!='FEATS' }">
+          FEATS
+          <span class="badge badge-light">{{ count["ud_feats/FEATS"] }}</span>
+        </button>
+      </a>
+      •••
+      <a href='?data=ud_feats/MISC'>
+        <button 
+          type="button" 
+          class="btn btn-sm" 
+          data-toggle="tooltip" 
+          title="All feature names used in the column 10 in CoNLL" 
+          :class="{ 'btn-warning': table=='MISC', 'btn-secondary' : table!='MISC' }">
+          MISC
+          <span class="badge badge-light">{{ count["ud_feats/MISC"] }}</span>
+        </button>
+      </a>
+      •••
+      <a href='?data=ud/UDEPS'>
+        <a v-for="feat in features" v-bind:href='"?data=" + collection + "/" + feat'>
+        <button 
+          type="button"
+          class="btn btn-sm" 
+          :class="{ 'btn-warning': table==feat, 'btn-secondary' : table!=feat }">
+          {{feat}}
+          <span class="badge badge-light">{{ count["ud_feats/"+feat] }}</span>
+        </button>
+      </a>
+    </div>
+
+    <!---------------------------- UD + DEPS ----------------------------->
+    <div v-show='collection=="ud_deps"' style="margin-bottom: 10px;">
+      <a href='?data=ud_deps/DEPS'>
+        <button
+          type="button"
+          data-toggle="tooltip"
+          title="All deps with their subtytpe (nsubj and nsubj:pass are two different columns)." 
+          class="btn btn-sm"
+          :class="{ 'btn-warning': table=='DEPS', 'btn-secondary' : table!='DEPS' }">
+          DEPS
+          <span class="badge badge-light">{{ count["ud_deps/DEPS"] }}</span>
+        </button>
+      </a>
+      •••
+      <a href='?data=ud_deps/UDEPS'>
+        <button 
+          type="button"
+          data-toggle="tooltip"
+          title="Universal deps: without taking subtypes into account (nsubj and nsubj:pass are in the same columns)" 
+          class="btn btn-sm"
+          :class="{ 'btn-warning': table=='UDEPS', 'btn-secondary' : table!='UDEPS' }">
+          UDEPS
+          <span class="badge badge-light">{{ count["ud_deps/UDEPS"] }}</span>
+        </button>
+      </a>
+      •••
+      <a v-for="dep in ud_deps" v-bind:href='"?data=" + collection + "/" + dep'>
+        <button
+          type="button"
+          class="btn btn-sm"
+          :class="{ 'btn-warning': table==dep, 'btn-secondary' : table!=dep }">
+          {{dep}}
+          <span class="badge badge-light">{{ count["ud_deps/"+dep] }}</span>
+        </button>
+      </a>
+    </div>
+
+    <!---------------------------- SUD + DEPS ----------------------------->
+    <div v-show='collection=="sud_deps"' style="margin-bottom: 10px;">
+      <a href='?data=sud_deps/DEPS'>
+        <button
+          type="button" 
+          data-toggle="tooltip"
+          title="All deps with their subtytpe (nsubj and nsubj:pass are two different columns)" 
+          class="btn btn-sm" 
+          :class="{ 'btn-warning': table=='DEPS', 'btn-secondary' : table!='DEPS' }">
+          DEPS
+          <span class="badge badge-light">{{ count["sud_deps/DEPS"] }}</span>
+        </button>
+      </a>
+      •••
+      <a href='?data=sud_deps/UDEPS'>
+        <button
+          type="button" 
+          data-toggle="tooltip"
+          title="Universal deps: without taking subtypes into account (nsubj and nsubj:pass are in the same columns)" 
+          class="btn btn-sm" 
+          :class="{ 'btn-warning': table=='UDEPS', 'btn-secondary' : table!='UDEPS' }">
+          UDEPS
+          <span class="badge badge-light">{{ count["sud_deps/UDEPS"] }}</span>
+        </button>
+      </a>
+      •••
+      <a href='?data=sud_deps/DEEP'>
+        <button
+          type="button" 
+          data-toggle="tooltip"
+          title="Usage of deep extensions (like @agent)" 
+          class="btn btn-sm" 
+          :class="{ 'btn-warning': table=='DEEP', 'btn-secondary' : table!='DEEP' }">
+          DEEP
+          <span class="badge badge-light">{{ count["sud_deps/DEEP"] }}</span>
+        </button>
+      </a>
+      •••
+      <a v-for="dep in sud_deps" v-bind:href='"?data=" + collection + "/" + dep'>
+        <button
+          type="button" 
+          class="btn btn-sm" 
+          :class="{ 'btn-warning': table==dep, 'btn-secondary' : table!=dep }">
+          {{dep}}
+          <span class="badge badge-light">{{ count["sud_deps/"+dep] }}</span>
+        </button>
+      </a>
+    </div>
+
+    <div style="margin-bottom: 10px;">
+    Display:
+      <div class="btn-group" role="group">
+        <button 
+          type="button" 
+          class="btn btn-sm"
+          style="margin-right: 0;"
+          v-bind:class="{ 'btn-success': display_mode==0, 'btn-secondary': display_mode!=0 }"
+          v-on:click="display_mode=0">
+          Occurrences
+        </button>
+        <button
+          v-show='collection != "meta"'
+          type="button" 
+          class="btn btn-sm"
+          style="margin-right: 0;"
+          v-bind:class="{ 'btn-success': display_mode==2, 'btn-secondary': display_mode!=2 }"
+          v-on:click="display_mode=2">
+          Ratio / tokens
+        </button>
+          <button
+            type="button"
+            class="btn btn-sm"
+            style="margin-right: 0;"
+            v-bind:class="{ 'btn-success': display_mode==1, 'btn-secondary': display_mode!=1 }"
+            v-on:click="display_mode=1">
+            Ratio / sents
+          </button>
+      </div>
+
+      &nbsp;&nbsp;•••&nbsp;&nbsp;
+      Filter on
+       <input id="toggle-state" type="checkbox" checked data-toggle="toggle" data-on="Rows" data-off="Columns" data-onstyle="success" data-offstyle="success" data-size="sm" style="width: 100px;">
+      : <input type="text" v-model="filter_value" />
+      <i v-on:click="filter_value = ''" class="fa fa-times-circle fa-lg"></i>
+    </div>
+    </div>
+
+    <div id="myGrid" class="ag-theme-alpine">
+    </div>
+  
+  </div>
+  <script>
+    var __basePath = './';
+  </script>
+  <script src="https://unpkg.com/ag-grid-community@28.0.0/dist/ag-grid-community.min.js">
+  </script>
+  <script src="main.js">
+  </script>
+</body>
+<link rel="stylesheet" href="style.css" />
+
+</html>
