@@ -32,20 +32,22 @@ package spoken {
   }
 
 
-  rule conjdicto {
-    pattern { e: N -[conj:dicto]-> M; }
-    commands { del_edge e; add_edge N -[reparandum]-> M; }
-  }
+%  rule conjdicto {
+%    pattern { e: N -[conj:dicto]-> M; }
+%    commands { del_edge e; add_edge N -[reparandum]-> M; }
+%  }
 
   % TODO: conj:dicto should be reverserd when change into reparandum: the rule below builds non projective punct, it should be refined!
-  %  rule conjdicto {
-  %    pattern { e: N -[conj:dicto]-> M; }
-  %    commands { 
-  %      del_edge e; 
-  %      shift_in N ==> M;   % reparandum should be reversed (see: https://surfacesyntacticud.github.io/guidelines/u/oral_language/conj_dicto/)
-  %      shift_out N =[punct]=> M;
-  %      add_edge M -[reparandum]-> N; }
-  %  }
+  rule conjdicto {
+    pattern { 
+      e: N -[conj:dicto]-> M; 
+    }
+    commands { 
+      del_edge e; 
+      shift_in N ==> M;   % reparandum should be reversed (see: https://surfacesyntacticud.github.io/guidelines/u/oral_language/conj_dicto/)
+      shift_out N =[punct]=> M;
+      add_edge M -[reparandum]-> N; }
+  }
   
   rule no_dep_on_cc {
     pattern { H -[cc]-> C; e:  C -[^reparandum|conj:dicto|conj]-> N }
@@ -212,6 +214,8 @@ package reverse_case_mark {
   rule rev_head {
     pattern {e:H -[comp:obj|comp:aff]-> D; H[upos= ADP|CCONJ|PART|SCONJ]}
     without{D[upos= ADP|CCONJ|PART|SCONJ]; D -[1=comp,2=obj|aff]-> D1}
+    % the following without was added for the conversion of LAG_11_Adeniyi-Lifestory_MG__131 in SUD_Naija-NSC
+    without {H -[comp:obj|comp:aff]-> D2; H[upos= ADP|CCONJ|PART|SCONJ]; D << D2} 
     commands {
       e.rev=y;
       add_edge f:D -> H; f.label = e.label;
@@ -230,7 +234,7 @@ package shift_out_edges{
     pattern{
       H -[rev=y]-> D;
       e: D -> D1}
-    without{ D -[1=comp|conj|expr|flat|goeswith|reparandum|HEAD|IDIOM|TITLE|CONV]-> D1}
+    without{ D -[1=comp|conj|expr|flat|goeswith|HEAD|IDIOM|TITLE|CONV]-> D1}
     without{ D -[1=appos]-> D1; D1 << H; }
     without{D -[punct]-> D2; D -[punct]-> D1; D1.lemma = D2.lemma; D >> D1; D << D2}
     without{
@@ -445,7 +449,7 @@ package sub_relations {
 % Clausal argument without control of its subject.
   rule ccomp {
     pattern {d:H -[1=comp, 2=obj|obl|pred]-> D; D[upos = AUX|VERB,!nom]}
-    without{D[Subject=ObjRaising|OblRaising|SubjRaising]}
+    without{D[Subject=ObjRaising|OblRaising|SubjRaising|Raising]}
     without {d.deep=pass } % Impersonal diathesis
     without {d.deep=agent} % Impersonal diathesis
     commands {d.1=ccomp}
@@ -594,7 +598,7 @@ package sub_relations {
   rule xcomp{
     pattern{
       e:H -[comp:obj|comp:obl|comp:pred]-> D;
-      D[Subject=ObjRaising|OblRaising|SubjRaising] }
+      D[Subject=ObjRaising|OblRaising|SubjRaising|Raising] }
     commands {e.1=xcomp}
   }
 
@@ -843,13 +847,24 @@ rule remove_UDplus_subtypes {
   commands { del_feat e.2 }
 }
 
-rule non_projective_punct {
+package non_projective_punct {
+rule r1 {
   % track invalid UD structure "Punctuation must not cause non-projectivity"
   pattern { e: A -[punct]-> B; f: C -> D; e >< f; B << f }
   commands { 
     del_edge e; 
     add_edge C -[punct]-> B; 
   }
+}
+
+rule r2 {
+  % track invalid UD structure "Punctuation must not cause non-projectivity"
+  pattern { e: A -[punct]-> B; f: C -> D; e >< f; D << e }
+  commands { 
+    del_edge e; 
+    add_edge D -[punct]-> B; 
+  }
+}
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
