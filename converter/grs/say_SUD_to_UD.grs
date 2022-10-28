@@ -64,5 +64,11 @@ package say_post {
     pattern { e: N -[advcl:cleft|compound:svc|dep:comp|flat:num|iobj:agent|nmod:top|obj:lvc|obl:mod]-> M }
     commands { del_feat e.2 }
   }
-} 
+
+  rule case {
+    pattern { N[Case] }
+    commands { del_feat N.Case }
+  }
+}
+
 
