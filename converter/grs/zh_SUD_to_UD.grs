@@ -25,6 +25,7 @@ package fusion {
     without { M -> X}         % M is a leaf (force application order)
     commands { 
       N.form = N.form + M.form;  % concatenate the surface form
+      N.wordform = N.wordform + M.wordform;  % concatenate the surface form
       del_node M;                % concatenate the surface form
     }
   }
@@ -37,6 +38,7 @@ package fusion {
     without { M -> X}         % M is a leaf (force application order)
     commands { 
       N.form = M.form + N.form;  % concatenate the surface form
+      N.wordform = M.wordform + N.wordform;  % concatenate the surface form
       del_node M;                % concatenate the surface form
     }
   }
