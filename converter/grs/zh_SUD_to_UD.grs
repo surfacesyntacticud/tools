@@ -1,0 +1,62 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+include "SUD_to_UD.grs"
+
+strat zh_main { 
+  Seq (
+    Onf (fusion),
+    Onf (comp),
+    u_main
+  )
+}
+
+strat sud_word {
+  Seq (
+    Onf (fusion),
+    Onf (comp),
+  )
+}
+
+package fusion {
+  rule suff_merge {
+    pattern { 
+      N -[2=m]-> M;  % M is attached with the :m extension
+      N < M          % M is a suffix
+    }  
+    without { M -> X}         % M is a leaf (force application order)
+    commands { 
+      N.form = N.form + M.form;  % concatenate the surface form
+      del_node M;                % concatenate the surface form
+    }
+  }
+  
+  rule pref_merge {
+    pattern { 
+      N -[2=m]-> M;  % M is attached with the :m extension
+      M < N          % M is a prefix
+    }  
+    without { M -> X}         % M is a leaf (force application order)
+    commands { 
+      N.form = M.form + N.form;  % concatenate the surface form
+      del_node M;                % concatenate the surface form
+    }
+  }
+}
+
+package comp {
+  rule obl {
+    pattern { 
+      e: N -[comp]-> M;
+      M [upos=ADP];
+    }
+    commands { e.2 = obl }
+  }
+
+  rule obj {
+    pattern { 
+      e: N -[comp]-> M;
+      M [upos=NOUN|PROPN|PRON|VERB|AUX];
+    }
+    commands { e.2 = obj }
+  }
+}
+
