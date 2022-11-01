@@ -42,6 +42,8 @@ package spoken {
     pattern { 
       e: N -[conj:dicto]-> M; 
     }
+    without { M -[conj:dicto]-> * }
+    without { N -[conj:dicto]-> M2; M << M2 }
     commands { 
       del_edge e; 
       shift_in N ==> M;   % reparandum should be reversed (see: https://surfacesyntacticud.github.io/guidelines/u/oral_language/conj_dicto/)
