@@ -6,7 +6,8 @@ strat zh_main {
     Onf (move_on_word_head),
     Onf (fusion),
     Onf (comp),
-    u_main
+    u_main,
+    Onf (zh_post)
   )
 }
 
@@ -94,18 +95,46 @@ package fusion {
 package comp {
   rule obl {
     pattern { 
-      e: N -[comp]-> M;
-      M [upos=ADP];
+      e: N -[comp]-> M; N[form <> "的"];
+      M [upos=ADP|PART];
     }
     commands { e.2 = obl }
   }
 
   rule obj {
     pattern { 
-      e: N -[comp]-> M;
+      e: N -[comp]-> M; N[form <> "的"];
       M [upos=NOUN|PROPN|PRON|VERB|AUX];
     }
     commands { e.2 = obj }
   }
+
+  rule obj2 {
+    pattern { 
+      e: N -[comp]-> M; N[form = "的"];
+    }
+    commands { e.2 = obj }
+  }
 }
+
+package zh_post {
+  rule obl_mod {
+    pattern {
+      e: N -[obl:mod]-> M;
+    }
+    commands {
+      del_feat e.2;
+    }
+  }
+
+  rule dep_comp {
+    pattern {
+      e: N -[dep:comp]-> M;
+    }
+    commands {
+      del_feat e.2;
+    }
+  }
+}
+
 
