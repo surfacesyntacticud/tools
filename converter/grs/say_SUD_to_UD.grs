@@ -1,0 +1,74 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+include "SUD_to_UD.grs"
+
+strat say_main {
+  Seq (
+    Onf (say_pre),
+    Onf (hausa),
+    Onf (foreign_X),
+    u_main,
+    Onf(say_post),
+  )
+}
+
+
+package say_pre {
+  rule IDEO_with_extpos {
+    pattern { N[upos=IDEO, ExtPos] }
+    commands { N.upos=N.ExtPos; N.Ideophon=Yes; del_feat N.ExtPos }
+  }
+
+  rule IDEO_without_extpos {
+    pattern { N[upos=IDEO, !ExtPos] }
+    commands { N.upos=X; N.Ideophon=Yes; }
+  }
+
+  rule raising {
+    pattern { e: N -[deep=x]-> M }
+    commands {
+      M.Subject=Raising;
+      del_feat e.deep
+    }
+  }
+}
+
+% The Hausa language is not in UD, hence all morph related to it should be removed.
+package hausa {
+  rule Aspect { pattern { N [Lang=hau, Aspect]} commands {del_feat N.Aspect} }
+  rule Case { pattern { N [Lang=hau, Case]} commands {del_feat N.Case} }
+  rule Definite { pattern { N [Lang=hau, Definite]} commands {del_feat N.Definite} }
+  rule Deixis { pattern { N [Lang=hau, Deixis]} commands {del_feat N.Deixis} }
+  rule Mood { pattern { N [Lang=hau, Mood]} commands {del_feat N.Mood} }
+  rule Number { pattern { N [Lang=hau, Number]} commands {del_feat N.Number} }
+  rule Person { pattern { N [Lang=hau, Person]} commands {del_feat N.Person} }
+  rule Polarity { pattern { N [Lang=hau, Polarity]} commands {del_feat N.Polarity} }
+  rule PronType { pattern { N [Lang=hau, PronType]} commands {del_feat N.PronType} }
+  rule Tense { pattern { N [Lang=hau, Tense]} commands {del_feat N.Tense} }
+  rule VerbForm { pattern { N [Lang=hau, VerbForm]} commands {del_feat N.VerbForm} }
+}
+
+rule foreign_X { pattern { N [Foreign=Yes, upos <> X]} commands {N.upos=X} }
+
+
+% TMP rule for 2.11 --> remove non documented extension
+package say_post {
+  rule parataxis {
+    pattern { e: N -[1=parataxis, 2=*]-> M }
+    commands { del_feat e.2 }
+  }
+  rule dislocated {
+    pattern { e: N -[1=dislocated, 2=*]-> M }
+    commands { del_feat e.2 }
+  }
+  rule missing_extension {
+    pattern { e: N -[advcl:cleft|compound:svc|dep:comp|flat:num|iobj:agent|nmod:top|obj:lvc|obl:mod]-> M }
+    commands { del_feat e.2 }
+  }
+
+  rule case {
+    pattern { N[Case] }
+    commands { del_feat N.Case }
+  }
+}
+
+

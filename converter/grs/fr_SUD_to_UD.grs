@@ -184,10 +184,16 @@ rule FR_discontinuous_MWE {
   }
 }
 
+rule x {
+  pattern { N [upos="X", ExtPos, !Foreign] }
+  commands { N.upos= N.ExtPos; del_feat N.ExtPos }
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Main strategy for converting any SUD French annotation into a UD annotation.
 strat fr_main{
   Seq (
+    Onf (x),
     FR_main_UDplus,
     flatten_idioms,
     Onf(remove_UDplus_subtypes),

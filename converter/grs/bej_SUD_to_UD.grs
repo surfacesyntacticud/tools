@@ -75,4 +75,9 @@ package bej_valid {
     pattern { N [upos=ADJ, Number] }
     commands { del_feat N.Number }
   }
+
+  rule x {
+    pattern { e:N -[det]-> X; X[upos=X] }
+    commands { e.1 = dep }
+  }
 }
