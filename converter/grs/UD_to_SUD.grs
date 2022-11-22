@@ -633,6 +633,8 @@ package reverse_relations {
         e: D -[1=mod|punct]-> N;
         N << D; D << H
       }
+      without { D -> X; X << N} % rising must not entail non projectivity
+      without{D -[1=mod]-> N; N[upos <> ADP|ADV]}
       commands { add_edge f: H -> N; f.label = e.label; del_edge e }
     }
 
