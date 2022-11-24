@@ -1,7 +1,7 @@
 {
   "title": "Idioms",
   "items": [{
-      "pattern": [
+      "request": [
         "pattern { N [Idiom=Yes] }",
         "without { N -> M; M [InIdiom=Yes]}"
       ],
@@ -9,7 +9,7 @@
       "level": "error"
     },
     {
-      "pattern": [
+      "request": [
         "pattern { M -> N; N[InIdiom=Yes]; }",
         "without { M[InIdiom=Yes]; }",
         "without { M[Idiom=Yes]; }"
@@ -18,17 +18,17 @@
       "level": "error"
     },
     {
-      "pattern": "pattern { N[Idiom=Yes, !ExtPos]; }",
+      "request": "pattern { N[Idiom=Yes, !ExtPos]; }",
       "description": "There is no `ExtPos` feature on the head of an idiom",
       "level": "warning"
     },
     {
-      "pattern": "pattern { M -> N; M [InIdiom]; N [Idiom]; }",
+      "request": "pattern { M -> N; M [InIdiom]; N [Idiom]; }",
       "description": "An `Idiom` depends of an `InIdiom` (nested idiom are not allowed)",
       "level": "error"
     },
     {
-      "pattern": "pattern { e: M -> N; N [InIdiom]; X[!InIdiom, !Idiom]; X << e }",
+      "request": "pattern { e: M -> N; N [InIdiom]; X[!InIdiom, !Idiom]; X << e }",
       "description": "Discontinuous idiom (node `X` is in the span but is not included)",
       "level": "error"
     }

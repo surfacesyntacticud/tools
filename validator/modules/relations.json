@@ -1,12 +1,12 @@
 {
   "title": "Check consistency of relations",
   "items": [{
-      "pattern": "pattern { N -[1<>aff|appos|cc|clf|comp|compound|conj|det|discourse|dislocated|flat|goeswith|list|mod|orphan|parataxis|punct|reparandum|root|subj|udep|unk|vocative]-> M }",
+      "request": "pattern { N -[1<>aff|appos|cc|clf|comp|compound|conj|det|discourse|dislocated|flat|goeswith|list|mod|orphan|parataxis|punct|reparandum|root|subj|udep|unk|vocative]-> M }",
       "description": "Non valid SUD relations (see [guidelines](https://surfacesyntacticud.github.io/guidelines/u/))",
       "level": "error"
     },
     {
-      "pattern": [
+      "request": [
         "pattern { N -[1=subj]-> N1; N -[1=subj]-> N2; N1 << N2; }",
         "without { N -[subj@expl]-> N1}",
         "without { N -[subj@expl]-> N2}"
@@ -15,7 +15,7 @@
       "level": "warning"
     },
     {
-      "pattern": [
+      "request": [
         "pattern { GOV -[subj]-> DEP; GOV[upos <> VERB|AUX] }",
         "without { GOV.ExtPos=VERB }",
         "without { GOV.ExtPos=AUX }"
@@ -24,7 +24,7 @@
       "level": "warning"
     },
     {
-      "pattern": [
+      "request": [
         "pattern { N -[comp:obj]-> N1; N -[comp:obj]-> N2; N1 << N2; }",
         "without { N[Idiom=Yes]}"
       ],
@@ -32,22 +32,22 @@
       "level": "warning"
     },
     {
-      "pattern": "pattern { N -[1=flat]-> N1; N -[1=flat]-> N2; N1 << N2; }",
+      "request": "pattern { N -[1=flat]-> N1; N -[1=flat]-> N2; N1 << N2; }",
       "description": "Two `flat` relations with the same governor",
       "level": "error"
     },
     {
-      "pattern": "pattern { GOV -[punct]-> DEP; DEP [upos <> PUNCT] }",
+      "request": "pattern { GOV -[punct]-> DEP; DEP [upos <> PUNCT] }",
       "description": "`punct` relation without `PUNCT` upos",
       "level": "error"
     },
     {
-      "pattern": "pattern { GOV -[1=comp,2=aux]-> DEP; GOV [upos <> AUX] }",
+      "request": "pattern { GOV -[1=comp,2=aux]-> DEP; GOV [upos <> AUX] }",
       "description": "`comp:aux` relation without `AUX` upos on the governor",
       "level": "error"
     },
     {
-      "pattern": [
+      "request": [
         "pattern { GOV -[1=det]-> DEP; DEP [upos <> DET|NUM] }",
         "without { DEP [ExtPos=DET|NUM] }"
       ],
@@ -55,7 +55,7 @@
       "level": "error"
     },
     {
-      "pattern": "pattern { M -[mod:relcl]-> N }",
+      "request": "pattern { M -[mod:relcl]-> N }",
       "description": "In SUD, relcl is a deep edge feature, `mod@relcl` should be used instead of `mod:relcl`",
       "level": "error"
     }

@@ -5,7 +5,7 @@
 
     {
       "description": "Adjectifs ou participes passés épithètes d'un nom avec lequel ils s'accordent en nombre",
-      "pattern": [
+      "request": [
         "pattern {",
         "  A -[mod]-> B;",
         "  A[upos=NOUN|PRON|PROPN];",
@@ -27,7 +27,7 @@
 
     {
       "description": "Adjectifs ou participes passés épithètes d'un nom avec lequel ils s'accordent en genre",
-      "pattern": [
+      "request": [
         "pattern {",
         "  A -[mod]-> B;",
         "  B[upos=ADJ|VERB];",
@@ -48,7 +48,7 @@
 
     {
       "description": "Adjectifs ou participes passés attributs du sujet avec lequel ils s'accordent en nombre",
-      "pattern": [
+      "request": [
         "pattern {",
         "  A -[comp:pred]-> B; ",
         "  A -[1=subj]-> C;",
@@ -68,7 +68,7 @@
 
     {
       "description": "Adjectifs ou participes passés attributs du sujet avec lequel ils s'accordent en genre",
-      "pattern": [
+      "request": [
         "pattern {",
         "  A -[comp:pred]-> B; ",
         "  A -[1=subj]-> C;",
@@ -88,7 +88,7 @@
 
     {
       "description": "Adjectifs ou participes passés attributs de l'objet avec lequel ils s'accordent en nombre",
-      "pattern": [
+      "request": [
         "pattern {",
         "  A -[comp:pred]-> B; ",
         "  A -[comp:obj]-> C;",
@@ -107,7 +107,7 @@
 
     {
       "description": "Adjectifs et participes passés attributs de l'objet avec lequel ils s'accordent en genre",
-      "pattern": [
+      "request": [
         "pattern {",
         "  A -[comp:pred]-> B; ",
         "  A -[comp:obj]-> C;",
@@ -126,7 +126,7 @@
 
     {
       "description": "Déterminants qui s'accordent en nombre avec le mot déterminé",
-      "pattern": [
+      "request": [
         "pattern {",
         "  A -[det]-> B;",
         "  A.Number <> B.Number",
@@ -142,7 +142,7 @@
 
     {
       "description": "Déterminants qui s'accordent en genre avec le mot déterminé",
-      "pattern": [
+      "request": [
         "pattern {",
         "  A -[det]-> B;",
         "  A.Gender <> B.Gender",
@@ -158,7 +158,7 @@
 
     {
       "description": "Accord sujet - verbe en nombre",
-      "pattern": [
+      "request": [
         "pattern {",
         "  A[upos=AUX|VERB];",
         "  A -[1=subj]-> B;",
@@ -174,7 +174,7 @@
 
     {
       "description": "Accord sujet - verbe en personne",
-      "pattern": [
+      "request": [
         "pattern {",
         "  A[upos=AUX|VERB];",
         "  A -[1=subj]-> B;",
@@ -190,7 +190,7 @@
 
     {
       "description": "Accord en nombre sujet – participe passé avec l'auxiliaire « être » (les verbes pronominaux ne sont pas pris en compte)",
-      "pattern": [
+      "request": [
         "pattern {",
         "  A[upos=AUX, lemma =\"être\"];",
         "  A -[1=subj]-> B;",
@@ -208,7 +208,7 @@
 
     {
       "description": "Accord en genre sujet – participe passé avec l'auxiliaire « être » (les verbes pronominaux ne sont pas pris en compte)",
-      "pattern": [
+      "request": [
         "pattern {",
         "  A[upos=AUX, lemma = \"être\"];",
         "  A -[1=subj]-> B;",
@@ -226,7 +226,7 @@
 
     {
       "description": "Accord en nombre du participe passé avec l'objet direct placé avant",
-      "pattern": [
+      "request": [
         "pattern {",
         "  A[upos=VERB, VerbForm=Part, Tense=Past];",
         "  A -[1=comp,2=obj]-> B;",
@@ -243,7 +243,7 @@
 
     {
       "description": "Accord en genre du participe passé avec l'objet direct placé avant",
-      "pattern": [
+      "request": [
         "pattern {",
         "  A[upos=VERB, VerbForm=Part, Tense=Past];",
         "  A -[1=comp,2=obj]-> B;",
