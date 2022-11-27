@@ -94,8 +94,10 @@ package sub_relations {
 % The UD relation that is renamed as a SUD relation is not a sub-relation but it must be processed before the general processing of relations.
 % Ex: Il arrive deux personnes.  - Il m'arrive de faire des erreurs.
   rule comp-obj-agent_subj {
-    pattern{e:H -[nsubj|csubj]-> D; H -[expl:subj]-> *}
-    commands{del_edge e; add_edge H -[comp:obj@agent]-> D }
+    pattern{d:H -[nsubj|csubj]-> D; H -[expl:subj]-> S}
+    without{H -[mark]-> C; D << C; C << S}%Ex:  UD_French-GSD  fr-ud-dev_01470 - une autre façon[SUBJ1] de le voir est qu'[C]il n'existe[V] pas de foncteur
+   without{H -[mark]-> C; S << C; C << D} %Ex:  UD_French-GSD fr-ud-train_01049 - Est ce[S] que[C] vous[D] envisagez un retour définitif en Tunisie ?
+    commands{del_edge d; add_edge H -[comp:obj@agent]-> D }
   }
 
 % In the impersonal passive diathesis, the deep subject, which is a NSUBJ:PASS or CSUBJ:PASS dependent in UD, becomes an OBJ:PASS dependent in SUD.
@@ -157,13 +159,39 @@ package sub_relations {
 % subj
 %=========
 % In an impersonal construction, the impersonal subject, which is an EXPL dependent in UD, becomes an  explicit subject in SUD with the deep extension expl.
+% In the general case, there is no potential direct object of the impersonal verb
 % Ex: Il arrive deux personnes. - Il faut un bilan. - Il s'agit d'une erreur. - Il a été vendu une grande maison. - il se dit que tu viendras.
   rule subj_expl {
     pattern { e:H -[expl:subj]-> D; }
-    without{H -[csubj|nsubj|csubj:pass|nsubj:pass]-> *}
+    without{H -[csubj|nsubj|csubj:pass|nsubj:pass]-> S} 
     commands {e.1=subj;e.deep=expl; del_feat e.2}
   }
 
+% In an impersonal construction, the impersonal subject, which is an EXPL dependent in UD, becomes an  explicit subject in SUD with the deep extension expl.
+% The impersonal subject is in a complement clause, whose head has a subject outside the clause.
+%Ex:  UD_French-GSD  fr-ud-dev_01470 - une autre façon[S] de le voir est qu'[C]il[D] n'existe[V] pas de foncteur
+  rule subj_expl_comp-clause1 {
+    pattern {
+      d:H -[expl:subj]-> D;
+      H -[mark]-> C;
+      H -[csubj|nsubj]-> S;
+      S << C; C << D}
+    without{H -[csubj|nsubj|csubj:pass|nsubj:pass]-> S1; C << S1} 
+    commands {d.1=subj;d.deep=expl; del_feat d.2}
+  }
+
+% In an impersonal construction, the impersonal subject, which is an EXPL dependent in UD, becomes an  explicit subject in SUD with the deep extension expl.
+% There is predicative clause complement of the impersonal verb with a personal subject.
+%Ex:  UD_French-GSD fr-ud-train_01049 - Est ce[S] que[C] vous[D] envisagez un retour définitif en Tunisie ?
+  rule subj_expl_comp-clause2 {
+    pattern {
+      d:H -[expl:subj]-> D;
+      H -[mark]-> C;
+      H -[csubj|nsubj]-> S;
+      D << C; C << S}
+    without{H -[csubj|nsubj|csubj:pass|nsubj:pass]-> S1; S1 << C} 
+    commands {d.1=subj;d.deep=expl; del_feat d.2}
+  }
 
 % unk
 %=========
@@ -182,6 +210,7 @@ package rel_extensions {
   rule change_ext{
     pattern{e: H -[1=*,2=*]-> D}
     without{ H -[1=aux|comp|subj]-> D}
+    without{ e.2=outer}
     commands{ add_edge H -[1=e.1,deep=e.2]-> D; del_edge e}
   }
 
@@ -215,6 +244,7 @@ package relations {
     pattern { e:H -[obj@agent]-> D; H -[aux:caus]-> AUX}
     commands { e.1=comp;e.2=obj ; H.Subject=ObjRaising}
   }
+
 
 % Direct clausal argument of a verb without control of its subject. We make the assumption that a clausal argument that is not introduced with an adposition is a direct object.
   rule comp-obj_ccomp {
@@ -362,9 +392,9 @@ package relations {
 
 % subj
 %=====
+%Ex: UD_French-GSD fr-ud-dev_00269 - ...Maria[D] se suicide[H]-t-elle ...
   rule subj {
     pattern { e:H -[1=nsubj|csubj]-> D}
-    %without{ H1 -[comp:pred]-> H; H1 -[subj@expl]-> *}
     commands {e.1=subj}
   }
 
@@ -505,13 +535,14 @@ package reverse_relations {
       commands { add_edge f: H -> N; f.label = e.label; del_edge e }
     }
 
+% Counterex: French-GSD fr-ud-dev_00863 - La question suivante est : Peut[H]-on[D] y prendre épouse ?
     rule all_mark_embedded{
       pattern {
         H -[1=cop|aux|case,REV=Yes]-> D;
-        e: D -[1=dislocated|parataxis|subj|vocative]-> N;}
+        d: D -[1=dislocated|parataxis|subj|vocative]-> N;}
       without { D -[parataxis]-> N; H1 -[1 <> cop]-> H; H -[1=case]-> D }
-      without { N[InTitle=Yes] } % French-GSD fr-ud-train_13022 - ...très connu dans les rôles de Bo Duke de Shérif, fais-moi peur !
-      commands { add_edge f: H -> N; f.label = e.label; del_edge e }
+      without { N[InTitle=Yes] } %Ex: French-GSD fr-ud-train_13022 - ...très connu dans les rôles de Bo Duke de Shérif, fais-moi peur !
+      commands { add_edge f: H -> N; f.label = d.label; del_edge d }
     }
 
     rule comp_cleft{
@@ -519,6 +550,7 @@ package reverse_relations {
         H -[1=cop|aux|case,REV=Yes]-> D;
         e: D -[comp:cleft]-> N;}
       without { N[InTitle=Yes] } % French-GSD fr-ud-train_13022 - ...très connu dans les rôles de Bo Duke de Shérif, fais-moi peur !
+      without{H -[1=mark, REV=Yes]-> D; D -[subj@expl]-> *; D -[1=cop]-> *}
       commands { add_edge f: H -> N; f.label = e.label; del_edge e }
     }
 
@@ -1033,6 +1065,10 @@ package normalize{
       commands{V.Subject=Generic}
     }
 
+    rule outer_subj{
+      pattern{d: G -[1=subj,2=outer]-> D}
+      commands{del_feat d.2}
+    }
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

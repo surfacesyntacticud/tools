@@ -16,13 +16,15 @@ package FR_relations {
 % The subject SUBJ1 of a verb is repeated in the form of a personal pronoun SUBJ2.
 % Ex: Jean vient-il ?
 % Ex : Jean a-t-il été payé ?
+%Ex: UD_French-GSD fr-ud-dev_00269 - ...Maria se suicide-t-elle ...
   rule repeat_subj{
     pattern{
      V -[1=csubj|nsubj]->  SUBJ1;
-     e:V -[expl:subj]-> SUBJ2; SUBJ2[upos=PRON, lemma=il];
+     d:V -[expl:subj]-> SUBJ2; SUBJ2[upos=PRON, lemma=il];
      SUBJ1 << V; SUBJ1 << SUBJ2}
     without{SUBJ1[PronType=Int|Rel,lemma=que]} % Ex: Qu'arrive-t-il ? - la mésaventure qu'il m'est arrivée
-    commands{del_edge e; add_edge V -[subj@expl]-> SUBJ2;}
+    without{ V -[mark]-> C; SUBJ1 << C}%Ex:  UD_French-GSD  fr-ud-dev_01470 - une autre façon[SUBJ1] de le voir est qu'[C]il n'existe[V] pas de foncteur
+    commands{del_edge d; add_edge V -[subj@expl]-> SUBJ2;}
   }
 
 % Pronouns "dont and "en" dependent on nominals are processes as all noun complements.
@@ -63,13 +65,21 @@ package FR_relations {
 % Ex: fr-ud-train_00086- ... quelle que soit la nature de ses pratiques, ...
 % The default order between relation is case < cop < (aux:caus // aux:pass) < aux < mark
 % ---------------------------------------------------------------------------------------------
+% Ex: UD_French-GSD fr-ud-test_00057 - Dans les sixties, ce n'était[D] pas comme[D1] aujourd'hui[H].
 package FR_set_level {
-  rule case { pattern { e:H -[1=case, !level]-> D } commands { e.level=10 } }
-  rule cop  { pattern { e:H -[1=cop, !level]-> D }  commands { e.level=20 } }
-  rule aux_caus { pattern { e:H -[1=aux, 2=caus, !level]-> D } commands { e.level=30 } }
-  rule aux_pass { pattern { e:H -[1=aux, 2=pass, !level]-> D } commands { e.level=30 } }
-  rule aux  { pattern { e:H -[1=aux, !level]-> D }  commands { e.level=40 } }
-  rule mark { pattern { e:H -[1=mark, !level]-> D } commands { e.level=50 } }
+  rule gen{
+    pattern{d:H -[1=aux|case|cop|mark, !level]-> D }
+    without{d.1=cop; H -[1=aux|mark]-> D1; H << D1; D1 << D}
+    commands{d.level=20}
+  }
+  
+  rule cop{
+    pattern{
+      d:H -[1=cop, !level]-> D;
+      H -[1=aux|mark]-> D1; H << D1; D1 << D}
+    commands {d.level= 10 }
+  }
+     
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -211,6 +221,17 @@ package FR_shift_out_edges{
     without{V0 -[comp:pred]-> PRED; V0 -[subj@expl]-> *}
     commands{del_edge e; add_edge PRED -[comp:obj@agent]-> V}
   }
+
+%Ex: French-GSD fr-ud-train_01439 - Mais ce n'est que quand il est[D] bien trop tard[H] et que son œuvre détruit tout ce qui avait de l'importance pour lui qu'[N]il commence confusément à réaliser
+    rule comp_cleft{
+      pattern {
+        H -[1=cop|aux|case|mark,REV=Yes]-> D;
+        e: D -[comp:cleft]-> N;}
+      without { N[InTitle=Yes] } % French-GSD fr-ud-train_13022 - ...très connu dans les rôles de Bo Duke de Shérif, fais-moi peur !
+      without{H -[1=mark, REV=Yes]-> D; D -[subj@expl]-> S; S[upos=PRON, lemma=ce];D -[1=cop]-> *}
+      commands { add_edge f: H -> N; f.label = e.label; del_edge e }
+    }
+
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
