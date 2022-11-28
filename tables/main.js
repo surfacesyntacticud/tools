@@ -45,7 +45,8 @@ var app = new Vue({
     // method called both atfer filering changes and display mode change (sorting should be changed)
     refresh_columns(){
       if (app.filter_kind == "rows") {
-        let filtered_rows = this.cells.filter(l => l.treebank.indexOf(this.filter_value) >= 0);
+        const re = new RegExp(this.filter_value, 'i');
+        let filtered_rows = this.cells.filter(l => l.treebank.match(re));
         this.gridApi.setRowData(filtered_rows);
         const cols = new Set()
         filtered_rows.forEach((item, i) => {
@@ -55,7 +56,8 @@ var app = new Vue({
         let filtered_cols = this.columns.filter(l => cols.has(l.field));
         this.gridApi.setColumnDefs([col0].concat(filtered_cols));
       } else {
-        let filtered_cols = this.columns.filter(l => l.field.indexOf(this.filter_value) >= 0);
+        const re = new RegExp(this.filter_value, 'i');
+        let filtered_cols = this.columns.filter(function (l) { console.log (l); return l.field.match(re)});
         this.gridApi.setColumnDefs([col0].concat(filtered_cols));
         const fields = new Set()
         filtered_cols.forEach((item, i) => {
