@@ -29,7 +29,8 @@ var app = new Vue({
       this.refresh_columns();
       this.gridApi.redrawRows();
     },
-    filter_value: function() { this.refresh_columns() } 
+    filter_value: function() { this.refresh_columns() },
+    filter_kind: function() { this.refresh_columns() } 
   },
   methods: {
     update_sorting() {
@@ -166,6 +167,18 @@ document.addEventListener('DOMContentLoaded', () => {
         app.collection = file.split("/")[0];
         app.table = file.split("/")[1];
         build_grid(data);
+        let col_filter = urlParams.get('cols');
+        if (col_filter != null) {
+          app.filter_kind = "cols";
+          $('#toggle-state').bootstrapToggle('off');
+          app.filter_value = col_filter;
+        }
+        let row_filter = urlParams.get('rows');
+        if (row_filter != null) {
+          app.filter_kind = "rows";
+          $('#toggle-state').bootstrapToggle('on');
+          app.filter_value = row_filter;
+        }
       })
       .catch((error) => {
         open_modal()
@@ -180,6 +193,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
   $('#toggle-state').change(function() {
     app.filter_kind = $(this).prop('checked') ? "rows" : "cols";
-    app.filter_value = "";
   })
 });
