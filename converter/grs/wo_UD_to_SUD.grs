@@ -10,6 +10,7 @@ strat wo_main {
     Onf (rel_extensions),
     Onf (relations),
 
+    Onf (wo_labels),
     Onf (wo_levels),
 
     reverse_relations.main,
@@ -23,6 +24,17 @@ strat wo_main {
   )
 }
 
+package wo_labels {
+  rule woon {
+    pattern { e: V -[1=aux]-> A; A[lemma="woon"] }
+    commands { A.upos=PART; del_edge e; add_edge V-[mod@tense]->A }
+    }	     
+    rule dina {
+    pattern { A[lemma="di", form=re"din.*"] }
+    commands { A.lemma="dina" }
+    }
+  }
+  
 package wo_levels {
   rule na {
     pattern { e: V -[1=aux, !level]-> A; A[lemma="na"] }
