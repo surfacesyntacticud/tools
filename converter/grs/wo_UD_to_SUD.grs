@@ -20,7 +20,7 @@ strat wo_main {
     Onf (add_conj_emb),
     Onf (chained_relations),
     specific_expr_close,
-    Onf (unk_rel),
+    Onf (normalize),
   )
 }
 
@@ -28,21 +28,29 @@ package wo_labels {
   rule woon {
     pattern { e: V -[1=aux]-> A; A[lemma="woon"] }
     commands { A.upos=PART; del_edge e; add_edge V-[mod@tense]->A }
-    }	     
-    rule dina {
+    }
+
+  rule dina {
     pattern { A[lemma="di", form=re"din.*"] }
     commands { A.lemma="dina" }
     }
   }
-  
+
 package wo_levels {
   rule na {
     pattern { e: V -[1=aux, !level]-> A; A[lemma="na"] }
-    commands { e.level = 8 }
-  }
-  rule aux {
-    pattern { e: V -[1=aux|cop, !level]-> A; A[lemma<>"na"] }
-    commands { e.level = 6 }
+    commands { e.level = 20 }
   }
 }
+
+%package wo_levels {
+%  rule na {
+%    pattern { e: V -[1=aux, !level]-> A; A[lemma="na"] }
+%    commands { e.level = 8 }
+%  }
+%  rule aux {
+%    pattern { e: V -[1=aux|cop, !level]-> A; A[lemma<>"na"] }
+%    commands { e.level = 6 }
+%  }
+%}
 
