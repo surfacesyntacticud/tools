@@ -10,7 +10,8 @@ strat wo_main {
     Onf (rel_extensions),
     Onf (relations),
 
-    Onf (wo_labels),
+    Onf (wo_pos_labels),
+    Onf (wo_dep_labels),
     Onf (wo_levels_1),
     Onf (wo_levels_2),
 
@@ -25,15 +26,42 @@ strat wo_main {
   )
 }
 
-package wo_labels {
-  rule woon {
-    pattern { e: V -[1=aux]-> A; A[lemma="woon"] }
-    commands { A.upos=PART; del_edge e; add_edge V-[mod@tense]->A }
+package wo_pos_labels {
+  rule woon_pos {
+    pattern { A[lemma="woon"] }
+    commands { A.upos=PART; }
+    }
+    
+    rule daldi {
+    pattern { A[lemma="daldi"] }
+    commands { A.upos=AUX; }
+    }
+    
+    rule daldil {
+    pattern { A[form="daldil"] }
+    commands { A.lemma="daldi"; }
     }
 
   rule dina {
     pattern { A[lemma="di", form=re"din.*"] }
     commands { A.lemma="dina" }
+    }
+  }
+  
+  package wo_dep_labels {
+  rule woon {
+    pattern { e: V -[1=aux]-> A; A[lemma="woon"] }
+    commands { del_edge e; add_edge V-[mod@tense]->A }
+    }
+
+  rule daldi {
+    pattern { e: V -> A; A[form="daldi"|"dal", upos=ADV] }
+    commands { A.upos=AUX ; del_edge e; add_edge V-[aux]->A }
+    }
+    
+    rule bu {
+    pattern { e: V -[aux]-> A; A[form="bu", upos=AUX] }
+    commands { A.upos=SCONJ ; del_edge e; add_edge V-[mark]->A }
     }
   }
 
