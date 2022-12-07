@@ -11,7 +11,8 @@ strat wo_main {
     Onf (relations),
 
     Onf (wo_labels),
-    Onf (wo_levels),
+    Onf (wo_levels_1),
+    Onf (wo_levels_2),
 
     reverse_relations.main,
     Onf (shared_left_conj-dep),
@@ -36,12 +37,45 @@ package wo_labels {
     }
   }
 
-package wo_levels {
+package wo_levels_1 {
+  rule mark_case_under_cop_left {
+    pattern { e: V -[1=mark|case, !level]-> A; V -[1=cop]-> C; C << A; A << V }
+    commands { e.level = 5 }
+  }
+  rule mark_case_under_cop_right {
+    pattern { e: V -[1=mark|case, !level]-> A; V -[1=cop]-> C; V << A; A << C }
+    commands { e.level = 5 }
+  }
+
+  % Specitif to wolof
   rule na {
     pattern { e: V -[1=aux, !level]-> A; A[lemma="na"] }
-    commands { e.level = 20 }
+    commands { e.level = 22 }  % 22 = more than other aux but less that case/mark
   }
 }
+
+package wo_levels_2 { % after discussion 22/12/07 with SK
+  rule mark_case {
+    pattern { e: V -[1=mark|case, !level]-> A;  }
+    commands { e.level = 30 }
+  }
+  rule aux {
+    pattern { e: V -[1=aux, !level]-> A;  }
+    commands { e.level = 20 }
+  }
+  rule cop {
+    pattern { e: V -[1=cop, !level]-> A;  }
+    commands { e.level = 10 }
+  }
+
+}
+
+% package wo_levels {
+%   rule na {
+%     pattern { e: V -[1=aux, !level]-> A; A[lemma="na"] }
+%     commands { e.level = 20 }
+%   }
+% }
 
 %package wo_levels {
 %  rule na {
