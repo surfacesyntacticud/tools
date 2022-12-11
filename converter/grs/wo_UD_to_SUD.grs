@@ -32,9 +32,19 @@ package wo_pos_labels {
     commands { A.upos=PART; }
     }
     
+    rule daldi_pos {
+    pattern { e: V -> A; A[form="daldi" }
+    commands { A.upos=AUX ; }
+    }
+    
     rule daldil {
     pattern { A[form="daldil"] }
     commands { A.lemma="daldi"; }
+    }
+    
+    rule dal {
+    pattern { A[form="dal", upos=ADV] }
+    commands { A.lemma="daldi"; A.upos=AUX ; }
     }
 
   rule dina {
@@ -49,9 +59,9 @@ package wo_pos_labels {
     commands { del_edge e; add_edge V-[mod@tense]->A }
     }
 
-  rule daldi {
-    pattern { e: V -> A; A[form="daldi"|"dal", upos=ADV] }
-    commands { A.upos=AUX ; del_edge e; add_edge V-[aux]->A }
+  rule mod2aux {
+    pattern { e: V -[mod]-> A; A[upos=AUX] }
+    commands { del_edge e; add_edge V-[aux]->A }
     }
     
     rule bu {
