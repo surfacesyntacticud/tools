@@ -32,11 +32,6 @@ package wo_pos_labels {
     commands { A.upos=PART; }
     }
     
-    rule daldi {
-    pattern { A[lemma="daldi"] }
-    commands { A.upos=AUX; }
-    }
-    
     rule daldil {
     pattern { A[form="daldil"] }
     commands { A.lemma="daldi"; }
@@ -60,7 +55,7 @@ package wo_pos_labels {
     }
     
     rule bu {
-    pattern { e: V -[aux]-> A; A[form="bu", upos=AUX] }
+    pattern { e: V -[aux]-> A; A[lemma="bu", upos=AUX] }
     commands { A.upos=SCONJ ; del_edge e; add_edge V-[mark]->A }
     }
   }
