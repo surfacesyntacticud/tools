@@ -1,0 +1,104 @@
+rule rm_goeswih {
+  pattern { M -[goeswith]-> N; }
+  commands {del_node N; }
+}
+
+package correction {
+  rule VerbForm {
+    pattern { N[CorrectVerbForm] }
+    commands {
+      N.VerbForm = N.CorrectVerbForm;
+      del_feat N.CorrectVerbForm;
+    }
+  }
+
+  rule Number {
+    pattern { N[CorrectNumber] }
+    commands {
+      N.Number = N.CorrectNumber;
+      del_feat N.CorrectNumber;
+    }
+  }
+
+  rule Gender {
+    pattern { N[CorrectGender] }
+    commands {
+      N.Gender = N.CorrectGender;
+      del_feat N.CorrectGender;
+    }
+  }
+
+  rule fix_Person {
+    pattern { N[CorrectPerson<>none] }
+    commands {
+      N.Person = N.CorrectPerson;
+      del_feat N.CorrectPerson;
+    }
+  }
+
+  rule rm_Person {
+    pattern { N[CorrectPerson=none] }
+    commands {
+      del_feat N.Person;
+      del_feat N.CorrectPerson;
+    }
+  }
+
+  rule Tense {
+    pattern { N[CorrectTense] }
+    commands {
+      N.Tense = N.CorrectTense;
+      del_feat N.CorrectTense;
+    }
+  }
+
+  rule fixMood {
+    pattern { N[CorrectMood<>none] }
+    commands {
+      N.Mood = N.CorrectMood;
+      del_feat N.CorrectMood;
+    }
+  }
+  rule rmMood {
+    pattern { N[CorrectMood=none] }
+    commands {
+      del_feat N.Mood;
+      del_feat N.CorrectMood;
+    }
+  }
+
+  rule CorrectSpaceAfter_no {
+    pattern { N[CorrectSpaceAfter=No] }
+    commands {
+      N.SpaceAfter=No;
+      del_feat N.CorrectSpaceAfter;
+    }
+  }
+  rule CorrectSpaceAfter_yes {
+    pattern { N[CorrectSpaceAfter=Yes] }
+    commands {
+      del_feat N.SpaceAfter;
+      del_feat N.CorrectSpaceAfter;
+    }
+  }
+
+
+
+  rule Typo {
+    pattern { N[Typo=Yes, CorrectForm]; }
+    commands {
+      N.WrongForm = N.form;
+      N.form = N.CorrectForm;
+      N.wordform= N.form;
+      del_feat N.Typo;
+      del_feat N.CorrectForm;
+    }
+  }
+}
+
+strat main {
+  Seq (
+    Onf (rm_goeswih),
+    Onf (correction)
+  )
+}

@@ -1,0 +1,97 @@
+rule mwt {
+  pattern { N1 [textform]; N2 [textform="_"]; N1 < N2 }
+  commands {
+    N1.form = N1.textform;
+    N2.form = "";
+    del_feat N1.textform; 
+    del_feat N2.textform;
+  }
+}
+
+%Conversion of a SUD annotation into a SUD-parse annotation suitable for learning by parsers.
+% When two consecutive tokens result from the dissociation of an amalgam, the first token takes the form and the lemma of the amalgam as its "form" and "lemma" features and the second has its "form" feature empty.
+rule reconstr_amalgam{
+pattern {
+N1[form=lex1.form1];
+N2[form=lex1.form2]; 
+N1 < N2}
+without{N2.form =""}
+without{N2[upos=PRON]; G[upos=VERB]; G -[comp:obj]-> N2}
+commands{
+N1.form=lex1.amalgam;
+N1.lemma=lex1.lemma;
+N2.form=""}
+}
+#BEGIN lex1
+form1	form2	amalgam	lemma
+%----------------------
+à	le	au	au
+à	lequel	auquel	auquel
+à	les	aux	au
+à	lesquels	auxquels	auquel
+à	lesquelles	auxquelles	auquel
+de	le	du	du
+de	lequel	duquel	duquel
+de	les	des	du
+de	lesquels	desquels	duquel
+de	lesquelles	desquelles	duquel
+A	le	au	au
+A	lequel	auquel	auquel
+A	les	aux	au
+A	lesquels	auxquels	auquel
+A	lesquelles	auxquelles	auquel
+À	le	au	au
+À	lequel	auquel	auquel
+À	les	aux	au
+À	lesquels	auxquels	auquel
+À	lesquelles	auxquelles	auquel
+De	le	du	du
+De	lequel	duquel	duquel
+De	les	des	du
+De	lesquels	desquels	duquel
+De	lesquelles	desquelles	duquel
+#END
+
+% The "form" feature of a sentence start is its "wordform" feature.
+rule init_sent{
+pattern{N1[wordform]}
+without{N0[upos]; N0 < N1}
+without{N2[form=""]; N1 < N2}
+without{N1.form=N1.wordform}
+commands{N1.form=N1.wordform}
+}
+
+% When the second token N2 of a dissociated amalgam has a dependent N3,which is not a punctuation sign, N2 is deleted and its incoming dependency is shifted to N3.
+rule shunt_form-null{
+pattern{
+e:N1 -> N2;N2[form=""];
+f: N2 -[^punct]-> N3}
+commands{add_edge g: N1 -> N3; g.label=e.label;
+del_edge e; del_edge f}
+}
+
+% When the second token N2 of a dissociated amalgam has a dependent N3,which is a punctuation sign, N2 is deleted and N3 is attached to the first element of the amalgam with a PUNCT dependency.
+rule rise_punct{
+pattern{
+e:N1 -> N2; N2[form=""];
+f: N2 -[punct]-> N3}
+commands{add_edge N1 -[punct]-> N3;
+del_edge e; del_edge f}
+}
+
+% All tokens with their feature "form" empty are the second element of a dissociated amalgam, and they are deleted.
+rule del_node_form-null{
+pattern{N[form=""]}
+commands{del_node N}
+}
+
+strat main {
+Seq(
+%  Onf(reconstr_amalgam),   % disabled: see line above
+  Onf(mwt),                 % replace "reconstr_amalgam": Use info given by textform for a more correct form prédiction (for instance "Au")
+%  Onf(init_sent),          % disabled: we loose initial capital letter with it
+  Onf(shunt_form-null),
+  Onf(rise_punct),
+  Onf(del_node_form-null),
+)
+}
