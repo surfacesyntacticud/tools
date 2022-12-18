@@ -4,7 +4,7 @@ This folder contains a few GRS (Graph Rewriting System) to be used with [Grew](h
 These GRS are used to make automatic conversions of some treebanks.
 The converted treebanks are are named: *original_treebank_name* + *grs_name* and they are available in the `SUD Auto` menu in http://universal.grew.fr.
 
-The available GRS (add associated converted treebansk) are:
+The available GRS (add associated converted treebanks) are:
  * [`fix_typo.grs`](fix_typo.grs): use all `Correct*` feature to recover the "corrected" sentence where `Typo` are identified
    * [SUD_French-GSD+fix_typo](http://universal.grew.fr/?corpus=SUD_French-GSD%2Bfix_typo)
  * [`rm_mwt.grs`](rm_mwt.grs): ⚠️ developped for French: replace all MWT (multi-word tokens) by regular tokens (in order to be more adapted for parsing)
