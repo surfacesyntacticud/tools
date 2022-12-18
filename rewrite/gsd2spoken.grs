@@ -1,0 +1,80 @@
+package gsd2spoken {
+
+  rule reparandum {
+    pattern { e:GOV -[reparandum]-> DEP}
+    commands { del_edge e ; add_edge DEP-[conj:dicto]->GOV ; shift_in GOV ==> DEP}
+}
+
+  rule compobjpass {
+    pattern { e:GOV -[comp:obj@pass]-> DEP}
+    commands { del_edge e ; add_edge GOV-[comp:obj]->DEP }
+}
+
+  rule emb {
+    pattern { e:GOV -[conj@emb]-> DEP}
+    commands { del_edge e ; add_edge GOV-[conj:coord@emb]->DEP }
+}
+  rule conj2conjcoord {
+    pattern { e:GOV -[conj]-> DEP}
+    commands { del_edge e ; add_edge GOV-[conj:coord]->DEP }
+}
+
+  rule cutparataxis_1 {
+	pattern { e:GOV -[parataxis]-> DEP ; P[upos="PUNCT"]; P<<DEP; P>> GOV; P[lemma="..."|"...."|".."|"....."|"......"|"........"|"?"];R[form="__0__"]}
+	without {S[form="S"]}
+    commands { del_edge e ;  add_edge R -[root]-> DEP ; shift_out GOV =[1=parataxis]=> DEP }
+}
+
+  rule cutparataxis_2 {
+	pattern { e:GOV -[parataxis]-> DEP ; GOV[upos="VERB"|"AUX"]; DEP[upos="VERB"|"AUX"]; P[form=":"]; P<<DEP; P>>GOV; DEP-[1=subj]->S; R[form="__0__"]}
+	without {S>>DEP}
+	commands { del_edge e ;  add_edge R -[root]-> DEP ; shift_out GOV =[1=parataxis]=> DEP }
+	
+}
+  rule cequi2cut {
+	pattern {e: GOV -[parataxis]-> DEP; DEP>>GOV; DEP[lemma="ce"]; DEP-[mod@relcl]->DEP2 ; R[form="__0__"]}
+	commands { del_edge e ; add_edge R -[root]->DEP ; shift_out GOV =[1=parataxis]=> DEP }
+}
+
+  rule parataxis2insert {
+  	pattern { e: GOV -[parataxis]-> DEP ; DEP-[subj]->S; S>>DEP; DEP[upos="VERB"|"AUX"]; S[lemma <> "ce"]}
+  	without {DEP-[1=comp]->C}
+  	commands { del_edge e ; add_edge GOV -[parataxis:insert]->DEP}
+}
+  rule parataxis2insert_2 {
+	pattern { e:GOV -[parataxis]-> DEP ; DEP<<GOV; DEP-[subj]-> S; S>>DEP}
+    commands { del_edge e ; add_edge GOV -[parataxis:insert]->DEP}
+}
+
+  rule parataxis2parenth {
+  pattern { e:GOV -[parataxis]-> DEP ; P1[form="("|"-"|"--"]; P2[form=")"|"-"|"--"]; P1<<DEP; P2>>DEP; DEP[upos="VERB"|"AUX"]; DEP[VerbForm=Fin]}
+  commands { e.2="parenth" ; add_edge GOV -[parataxis:parenth]->DEP}
+}
+  rule parataxis2conjappos_1 {
+    pattern { e:GOV -[parataxis]-> DEP ; P[form=":"]; P>>GOV; P<<DEP; GOV[upos="NOUN"]}
+    commands { del_edge e ; add_edge GOV -[conj:appos]->DEP}
+}
+  rule parataxis2conjappos_2 {
+    pattern { e:GOV -[parataxis]-> DEP ; DEP[upos="NOUN"]; DEP>>GOV; P<DEP; P[lemma=","]; DEP[lemma<>"dommage"|"service"|"appel"]}
+    commands { del_edge e ; add_edge GOV -[conj:appos]->DEP}
+}
+
+  rule appos2conjappos {
+    pattern { e:GOV -[appos]-> DEP }
+    commands { del_edge e ; add_edge GOV -[conj:appos]->DEP}
+}
+
+  rule comparg {
+    pattern { e:GOV -[comp:arg]-> DEP}
+    commands { del_edge e ; add_edge GOV -[mod]->DEP}
+}
+
+  rule monsieur {
+    pattern { e:GOV -[flat@name|appos]-> DEP; GOV[lemma="monsieur"|"Monseigneur"|"madame"|"M."]}
+    commands { del_edge e ; add_edge GOV -[mod@appos]->DEP}
+}
+
+}
+
+
+strat main {Seq (Onf (gsd2spoken))}
