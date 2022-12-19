@@ -1,5 +1,10 @@
 package gsd2spoken {
 
+rule wordform {
+  pattern { N []; N.form <> N.wordform }
+  commands { N.form = N.wordform }
+}
+
   rule reparandum {
     pattern { e:GOV -[reparandum]-> DEP}
     commands { del_edge e ; add_edge DEP-[conj:dicto]->GOV ; shift_in GOV ==> DEP}
