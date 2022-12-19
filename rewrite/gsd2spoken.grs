@@ -5,6 +5,11 @@ package gsd2spoken {
     commands { del_edge e ; add_edge DEP-[conj:dicto]->GOV ; shift_in GOV ==> DEP}
 }
 
+rule raising {
+pattern { N[Subject=Generic|Instantiated] }
+commands { N.Subject= NoRaising } 
+}
+
   rule compobjpass {
     pattern { e:GOV -[comp:obj@pass]-> DEP}
     commands { del_edge e ; add_edge GOV-[comp:obj]->DEP }
