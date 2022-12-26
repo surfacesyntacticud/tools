@@ -1,3 +1,122 @@
+rule prepare {
+  pattern {
+    N2 [upos=DET, textform="_"];
+    N1 -> N2; e:N2 -[^unk]-> N3;
+  }
+  commands {
+    add_edge f: N1 -> N3; f.label = e.label; del_edge e;
+  }
+}
+
+package mwt {
+  rule N2_pron {
+    pattern { 
+      N1 [textform]; N2 [textform="_"]; N1 < N2;
+      N2 [upos=PRON]
+    }
+    commands {
+      N2.form = N1.textform;
+      del_feat N2.textform;
+      shift N1 ==> N2;
+      del_node N1;
+      N2.mwt=yes;
+    }
+  }
+
+  rule N1_N2 {
+    pattern { 
+      N1 [textform]; N2 [textform="_"]; N1 < N2;
+      N2 [upos<>PRON];
+      N1 -[flat@name|unk|goeswith]-> N2; 
+    }
+    commands {
+      N1.form = N1.textform;
+      del_feat N1.textform; 
+      shift N2 ==> N1;
+      del_node N2;
+      N1.mwt=yes;
+    }
+  }
+
+  rule N2_det {
+    pattern { 
+      N1 [textform]; N2 [textform="_"]; N1 < N2;
+      N2 [upos<>PRON];
+      X -[det|reparandum]-> N2; 
+    }
+    commands {
+      N1.form = N1.textform;
+      del_feat N1.textform; 
+      del_node N2;
+      N1.mwt=yes;
+    }
+  }
+}
+
+package back_off {
+  rule au_plus_ADV {
+    pattern { 
+      N1 [textform]; N2 [textform="_"]; N1 < N2;
+      N1 -[comp:obj]-> X;
+      e: X -> N2
+    }
+    commands {
+      N2.form = N1.textform;
+      del_feat N2.textform;
+      del_edge e;
+      shift N1 ==> N2;
+      del_node N1;
+      add_edge N2 -[comp:obj]-> X;
+      N2.mwt=yes;
+    }
+  }
+}
+
+package lemma {
+  rule au {
+    pattern { N[form=Au|au|Aux|aux, mwt=yes]}
+    without { N.lemma = au }
+    commands { N.lemma = au }
+  }
+  rule du {
+    pattern { N[form=Du|du, mwt=yes]}
+    without { N.lemma = du }
+    commands { N.lemma = du }
+  }
+}
+
+rule wordform {
+  pattern { N[form=lex.form, mwt=yes]}
+  without { N.wordform = lex.wordform }
+  commands { N.wordform = lex.wordform }
+}
+#BEGIN lex
+form	wordform
+%----------------------
+au	au
+Au	au
+aux	aux
+Aux	aux
+Du	du
+du	du
+duquel	duquel
+Duquel	duquel
+desquels	desquels
+Desquels	desquels
+desquelles	desquelles
+Desquelles	desquelles
+auquel	auquel
+Auquel	auquel
+auxquels	auxquels
+Auxquels	auxquels
+auxquelles	auxquelles
+Auxquelles	auxquelles
+#END
+
+rule clean {
+  pattern { N [mwt] }
+  commands { del_feat N.mwt; } 
+}
 
 rule rm_goeswih {
   pattern { M -[goeswith]-> N; }
@@ -193,6 +312,12 @@ commands { N.Subject= NoRaising }
   
 strat main {
   Seq (
+      Onf(prepare),
+      Onf(mwt),
+      Onf(back_off),
+      Onf(lemma),
+      Onf(wordform),
+      Onf(clean),
       Onf (rm_goeswih),
       Onf (correction),
       Onf (gsd2spoken)
