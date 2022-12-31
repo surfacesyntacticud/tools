@@ -1,6 +1,9 @@
 rule rm_goeswih {
   pattern { M -[goeswith]-> N; }
-  commands {del_node N; }
+  commands {
+    M.form = M.form + " " + N.form;
+    del_node N;
+  }
 }
 
 package correction {
