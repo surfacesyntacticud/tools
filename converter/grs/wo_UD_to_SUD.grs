@@ -33,7 +33,7 @@ package wo_pos_labels {
     }
     
     rule daldi_pos {
-    pattern { e: V -> A; A[form="daldi" }
+    pattern { A[form="daldi"] }
     commands { A.upos=AUX ; }
     }
     
@@ -60,7 +60,7 @@ package wo_pos_labels {
     }
 
   rule mod2aux {
-    pattern { e: V -[mod]-> A; A[upos=AUX] }
+    pattern { e: V -[advmod]-> A; A[upos=AUX] }
     commands { del_edge e; add_edge V-[aux]->A }
     }
     
