@@ -76,15 +76,21 @@ package wo_levels_1 {
     commands { e.level = 5 }
   }
   rule mark_case_under_cop_right {
-    pattern { e: V -[1=mark|case, !level]-> A; V -[1=cop]-> C; V << A; A << C }
+    pattern { e: N -[1=mark|case, !level]-> A; N -[1=cop]-> C; N << A; A << C }
     commands { e.level = 5 }
   }
 
-  % Specitif to wolof
+  % Specific to wolof
   rule na {
     pattern { e: V -[1=aux, !level]-> A; A[lemma="na"] }
     commands { e.level = 22 }  % 22 = more than other aux but less that case/mark
   }
+  
+  rule case_under_cop_right {%SK 16/1/2003 errors with la
+    pattern { e: N -[1=case, !level]-> P; N -[1=cop]-> C; P << N ; N << C }
+    commands { e.level = 5 }
+  }
+
 }
 
 package wo_levels_2 { % after discussion 22/12/07 with SK
