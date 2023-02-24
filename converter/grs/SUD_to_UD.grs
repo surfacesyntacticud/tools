@@ -522,9 +522,8 @@ package sub_relations {
     commands {e.1=expl;e.2=subj; del_feat e.deep}
   }
 
-% IOBJ is used for any indirect object of a non-nominal word, which is  not introduced by a preposition or a subordination conjunction.
   rule iobj {
-    pattern {H[!nom]; e:H -[1=comp,2=obl]-> D}
+    pattern {H[!nom]; e:H -[1=comp,2=obl]-> D; D[upos=PRON]}
     without{D -[1=case|mark]-> *}
     commands {e.1=iobj}
   }
@@ -595,6 +594,13 @@ package sub_relations {
     without{ D -[1=mark]-> *}
     without{e.deep=agent}
     commands {e.1=obl; e.2=arg}
+  }
+
+  rule obl_mod {
+    pattern { e:H -[1=comp,2=obl]-> D; D[upos <> PRON]}
+    without{ D -[1=case|mark]-> *}
+    without{e.deep=agent}
+    commands {e.1=obl; e.2=mod}
   }
 
   rule xcomp{
