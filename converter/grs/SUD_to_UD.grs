@@ -804,25 +804,7 @@ package reverse_aux {
 %Copulas that are external to a complement clause but depend on the clause head.
 package outer_copula{
 
-% A token has two dependent copulas on its left.
-  rule left_outer_cop{
-    pattern{
-      d:G -[1=cop]-> C1; G -[1=cop]-> C2;
-      C1 << C2; C2 << G}
-    without{d.2=outer}
-    commands{d.2=outer}
-  }
-
-% A token has two dependent copulas on its rigth.
-  rule right_outer_cop{
-    pattern{
-      d:G -[1=cop]-> C1; G -[1=cop]-> C2;
-      C1 >> C2; C2 >> G}
-    without{d.2=outer}
-    commands{d.2=outer}
-  }
-
-% A token has two subject on its left.
+% A token has two subjects on its left.
   rule left_outer_subj{
     pattern{
       d:G -[1=nsubj|csubj]-> C1; G -[1=nsubj|csubj]-> C2;
@@ -831,11 +813,21 @@ package outer_copula{
     commands{d.2=outer}
   }
 
-% A token has two subject on its left.
+% A token has two subjects on its left.
   rule right_outer_subj{
     pattern{
       d:G -[1=nsubj|csubj]-> C1; G -[1=nsubj|csubj]-> C2;
       C1 >> C2; C2 >> G}
+    without{d.2=outer}
+    commands{d.2=outer}
+  }
+
+% A token has two subjects on both sides. --> the one before its head is outer.
+% OK for French, TODO: check for other languages
+  rule both_outer_subj{
+    pattern{
+      d:G -[1=nsubj|csubj]-> C1; G -[1=nsubj|csubj]-> C2;
+      C1 << G; G << C2}
     without{d.2=outer}
     commands{d.2=outer}
   }
