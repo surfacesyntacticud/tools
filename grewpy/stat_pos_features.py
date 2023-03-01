@@ -1,31 +1,31 @@
 import sys
 from grewpy import CorpusDraft, Request, Corpus, set_config
-set_config("sud")
+set_config('sud')
 
 ud_tagset = [
-    "ADJ", "ADP", "ADV", "AUX", "CCONJ", "DET", 
-    "INTJ", "NOUN", "NUM", "PART", "PRON", "PROPN", 
-    "PUNCT", "SCONJ", "SYM", "VERB", "X"
+    'ADJ', 'ADP', 'ADV', 'AUX', 'CCONJ', 'DET', 
+    'INTJ', 'NOUN', 'NUM', 'PART', 'PRON', 'PROPN', 
+    'PUNCT', 'SCONJ', 'SYM', 'VERB', 'X'
     ]
 
 def keep (f):
-  """
+  '''
   decide which features should be kept in the final table
-  """
-  if f.startswith("Correct") or f.startswith("Align"):
-    # Remove features related errors
+  '''
+  if f.startswith('Correct') or f.startswith('Align'):
+    # Remove features related to errors of sound alignment
     return False
   elif f.lower() == f:
-    # Remove "special" features form, lemma, upos, xpos, wordform and textform
+    # Remove 'special' features form, lemma, upos, xpos, wordform and textform
     return False
-  elif f in ["SpaceAfter", "Title", "InTitle", "Idiom", "InIdiom", "__RAW_MISC__"]:
+  elif f in ['SpaceAfter', 'Title', 'InTitle', 'Idiom', 'InIdiom', '__RAW_MISC__']:
     # Feature not related to POS of the token
     return False
   else:
     # Keep everthing else
     return True
 
-if __name__ == "__main__":
+if __name__ == '__main__':
   corpus_files = sys.argv[1:]
   corpus = Corpus(corpus_files)
 
@@ -42,18 +42,19 @@ if __name__ == "__main__":
 
   # keep only interesting ones
   features = [f for f in list(all_features) if keep (f)]
+  features.sort()
 
   # print the table in Markdown syntax
-  print (" |  | "+ " | ".join(features))
-  print ("|---|"+ "---|" * len(features))
+  print (' |  | '+ ' | '.join(features))
+  print ('|---|'+ '---|' * len(features))
   for upos in ud_tagset:
-    print (f' | {upos} ', end="")
+    print (f' | {upos} ', end='')
     total = corpus.count(Request(f'N[upos={upos}]'))
     for feat in features:
       yes = corpus.count(Request(f'N[upos={upos}, {feat}]'))
       if yes == 0:
-        print (' | ', end="")
+        print (' | ', end='')
       else: 
-        print (' | %.2f%%' % (yes/total*100), end="")
+        print (' | %.2f%%' % (yes/total*100), end='')
     print()
 
