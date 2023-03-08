@@ -81,6 +81,7 @@ if __name__ == '__main__':
   table.update ({
     "title": "## Usage of features by UPOS in `SUD_French-GSD` (master)",
     "timestamp": datetime.datetime.now().isoformat(),
+    "display_modes": [["occ", "NUM"], ["% of row", "PERCENT"], ["% of col", "PERCENT"]],
     "grew_match": {
       "cell" :"http://universal.grew.fr?corpus=SUD_French-GSD@latest&request=pattern{N [upos=$$ROW$$, $$COL$$]}",
       "row" :"http://universal.grew.fr?corpus=SUD_French-GSD@latest&request=pattern{N [upos=$$ROW$$]}",
