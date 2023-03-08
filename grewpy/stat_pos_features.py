@@ -1,4 +1,6 @@
+import datetime
 import sys
+import json
 from grewpy import CorpusDraft, Request, Corpus, set_config
 set_config('sud')
 
@@ -25,6 +27,31 @@ def keep (f):
     # Keep everthing else
     return True
 
+def escape_feat_name (s):
+  sp = s.split("__")
+  if len(sp) == 2:
+    return f"{sp[0]}[{sp[1]}]"
+  else:
+    return s
+
+def build_table (rows, columns, cell_fct, row_fct, col_fct):
+  columns_dict = [ {"field": column, "headerName": escape_feat_name(column) } for column in columns ]
+  columns_total_dict =  {"row_header": "TOTAL"} | { column: col_fct (column) for column in columns }
+  def line(row):
+    row_total = row_fct (row)
+    d = {"row_header": row, "row_total": row_total }
+    for column in columns:
+      occ = cell_fct(row, column)
+      if occ > 0:
+        d.update({column: [occ, occ / row_total, occ / columns_total_dict[column]]})
+    return d
+  cells_dict = [ line(row) for row in rows ]
+  return { 
+    "columns": columns_dict, 
+    "columns_total": columns_total_dict, 
+    "cells": cells_dict 
+  }
+
 if __name__ == '__main__':
   corpus_files = sys.argv[1:]
   corpus = Corpus(corpus_files)
@@ -44,17 +71,21 @@ if __name__ == '__main__':
   features = [f for f in list(all_features) if keep (f)]
   features.sort()
 
-  # print the table in Markdown syntax
-  print (' |  | '+ ' | '.join(features))
-  print ('|---|'+ '---|' * len(features))
-  for upos in ud_tagset:
-    print (f' | {upos} ', end='')
-    total = corpus.count(Request(f'N[upos={upos}]'))
-    for feat in features:
-      yes = corpus.count(Request(f'N[upos={upos}, {feat}]'))
-      if yes == 0:
-        print (' | ', end='')
-      else: 
-        print (' | %.2f%%' % (yes/total*100), end='')
-    print()
+  def cell_fct(upos,feat): 
+    return corpus.count(Request(f'N[upos={upos}, {feat}]'))
+  def row_fct(upos):
+    return corpus.count(Request(f'N[upos={upos}]'))
+  def col_fct(feat):
+    return corpus.count(Request(f'N[{feat}]'))
+  table = build_table(ud_tagset, features, cell_fct, row_fct, col_fct)
+  table.update ({
+    "title": "## Usage of features by UPOS in `SUD_French-GSD` (master)",
+    "timestamp": datetime.datetime.now().isoformat(),
+    "grew_match": {
+      "cell" :"http://universal.grew.fr?corpus=SUD_French-GSD@latest&request=pattern{N [upos=$$ROW$$, $$COL$$]}",
+      "row" :"http://universal.grew.fr?corpus=SUD_French-GSD@latest&request=pattern{N [upos=$$ROW$$]}",
+      "col": "http://universal.grew.fr?corpus=SUD_French-GSD@latest&request=pattern{N [$$COL$$]}"
+    }
+  })
 
+  print (json.dumps(table, indent=2))
