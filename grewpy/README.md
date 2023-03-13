@@ -8,7 +8,7 @@ We suppose that `grewpy` version 0.2.0 and `grewpy_backend` version 0.2.0 are in
 
 This [script](./stat_pos_features.py) produces a table showing for each UPOS and for each feature name, the ratio of tokens with this UPOS who have the given feature name. 
 
-With `$GSD` set on a folder containing **UD_French-GSD** data, this [table](stat_pos_features/SUD_French-GSD.md) is produced by the command:
+With `$GSD` set on a folder containing **SUD_French-GSD** data, this [table](stat_pos_features/SUD_French-GSD.md) is produced by the command:
 
 ```
 python3 stat_pos_features.py $GSD/*.conllu > stat_pos_features/UD_French-GSD.md

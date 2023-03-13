@@ -53,7 +53,8 @@ def build_table (rows, columns, cell_fct, row_fct, col_fct):
   }
 
 if __name__ == '__main__':
-  corpus_files = sys.argv[1:]
+  corpus_name = sys.argv[1]
+  corpus_files = sys.argv[2:]
   corpus = Corpus(corpus_files)
 
   # NB: we have to iterate on all graph -> CorpusDraft is much more efficient for this
@@ -79,13 +80,13 @@ if __name__ == '__main__':
     return corpus.count(Request(f'N[{feat}]'))
   table = build_table(ud_tagset, features, cell_fct, row_fct, col_fct)
   table.update ({
-    "title": "## Usage of features by UPOS in `SUD_French-GSD` (master)",
+    "title": f"## Usage of features by UPOS in `{corpus_name}` (master)",
     "timestamp": datetime.datetime.now().isoformat(),
     "display_modes": [["occ", "NUM"], ["% of row", "PERCENT"], ["% of col", "PERCENT"]],
     "grew_match": {
-      "cell" :"http://universal.grew.fr?corpus=SUD_French-GSD@latest&request=pattern{N [upos=$$ROW$$, $$COL$$]}",
-      "row" :"http://universal.grew.fr?corpus=SUD_French-GSD@latest&request=pattern{N [upos=$$ROW$$]}",
-      "col": "http://universal.grew.fr?corpus=SUD_French-GSD@latest&request=pattern{N [$$COL$$]}"
+      "cell" : "http://universal.grew.fr?corpus=%s@latest&request=pattern{N [upos=$$ROW$$, $$COL$$]}" % corpus_name,
+      "row" : "http://universal.grew.fr?corpus=%s@latest&request=pattern{N [upos=$$ROW$$]}" % corpus_name,
+      "col": "http://universal.grew.fr?corpus=%s@latest&request=pattern{N [$$COL$$]}" % corpus_name
     }
   })
 
