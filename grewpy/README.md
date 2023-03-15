@@ -1,5 +1,35 @@
 # Some Python scripts on SUD data
 
+ - SUD_French-GSD:
+   - http://localhost:8000/?data=SUD_French-GSD/label_upos
+   - http://localhost:8000/?data=SUD_French-GSD/amb_lemma
+   - http://localhost:8000/?data=SUD_French-GSD/adj_lemma_pos
+   - http://localhost:8000/?data=SUD_French-GSD/stat_pos_features
+
+ - SUD_French-Rhapsodie:
+   - http://localhost:8000/?data=SUD_French-Rhapsodie/label_upos
+   - http://localhost:8000/?data=SUD_French-Rhapsodie/amb_lemma
+   - http://localhost:8000/?data=SUD_French-Rhapsodie/adj_lemma_pos
+   - http://localhost:8000/?data=SUD_French-Rhapsodie/stat_pos_features
+
+ - SUD_French-ParisStories:
+   - http://localhost:8000/?data=SUD_French-ParisStories/label_upos
+   - http://localhost:8000/?data=SUD_French-ParisStories/amb_lemma
+   - http://localhost:8000/?data=SUD_French-ParisStories/adj_lemma_pos
+   - http://localhost:8000/?data=SUD_French-ParisStories/stat_pos_features
+
+ - SUD_Beja-NSC:
+   - http://localhost:8000/?data=SUD_Beja-NSC/stat_pos_features
+
+ - SUD_Naija-NSC:
+   - http://localhost:8000/?data=SUD_Naija-NSC/stat_pos_features
+
+ - SUD_Zaar-Autogramm:
+   - http://localhost:8000/?data=SUD_Zaar-Autogramm/stat_pos_features
+
+
+
+
 This folder gather some scripts (currently only one!) using the [`grewpy`](https://grew.fr/usage/python) Python lib.
 
 We suppose that `grewpy` version 0.2.0 and `grewpy_backend` version 0.2.0 are installed ([Install doc](https://grew.fr/usage/python)).

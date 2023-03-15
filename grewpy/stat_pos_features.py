@@ -36,7 +36,7 @@ def escape_feat_name (s):
 
 def build_table (rows, columns, cell_fct, row_fct, col_fct):
   columns_dict = [ {"field": column, "headerName": escape_feat_name(column) } for column in columns ]
-  columns_total_dict =  {"row_header": "TOTAL"} | { column: col_fct (column) for column in columns }
+  columns_total_dict =  {"row_header": "upos", "row_type": "TOTAL_SEARCH"}  | { column: col_fct (column) for column in columns }
   def line(row):
     row_total = row_fct (row)
     d = {"row_header": row, "row_total": row_total }
@@ -82,6 +82,7 @@ if __name__ == '__main__':
   table.update ({
     "title": f"## Usage of features by UPOS in `{corpus_name}` (master)",
     "timestamp": datetime.datetime.now().isoformat(),
+    "col_key": "feature",
     "display_modes": [["occ", "NUM"], ["% of row", "PERCENT"], ["% of col", "PERCENT"]],
     "grew_match": {
       "cell" : "http://universal.grew.fr?corpus=%s@latest&request=pattern{N [upos=$$ROW$$, $$COL$$]}" % corpus_name,
