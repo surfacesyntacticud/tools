@@ -181,6 +181,7 @@ def title (x):
         return "## Usage of deep extension"
     elif args.columns[0:7] == "SUBREL:":
         dep = args.columns[7:]
+        dep = dep if dep != "_aux" else "aux"
         return "## Usage of subtypes of relation `%s`" % dep
     elif args.columns == "META":
         return "## Usage of meta data (≠ text and sent_id)"
