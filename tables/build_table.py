@@ -75,6 +75,7 @@ def add_corpus (corpus):
         command = 'cat %s/%s/*.conllu | egrep "^[.0-9]+\t" | cut -f 8 | grep "@" | cut -f 2 -d "@" | sort | uniq -c' % (args.basedir, corpus)
     elif args.columns[0:7] == "SUBREL:":
         dep = args.columns[7:]
+        dep = dep if dep != "_aux" else "aux"
         command = 'cat %s/%s/*.conllu | egrep "^[.0-9]+\t" | cut -f 8 | cut -f 1 -d "@" | cut -f 1 -d "$" | egrep "^%s(:|$)" | sort | uniq -c' % (args.basedir, corpus, dep)
     elif args.columns == "META":
         command = 'cat %s/%s/*.conllu | grep "^# " | grep " = " | cut -f 1 -d "=" | sed "s/# *//" | sed "s/ $//" | grep -v "^text$" | grep -v "^sent_id$" | grep -v "^global.columns$" | sort | uniq -c' % (args.basedir, corpus)

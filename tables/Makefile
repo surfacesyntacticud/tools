@@ -2,7 +2,7 @@ UD=/users/guillaum/resources/ud-treebanks-v2.11
 SUD=/users/guillaum/resources/sud-treebanks-v2.11
 
 FEAT_LIST=PronType Gender VerbForm NumType Animacy Mood Poss NounClass Tense Reflex Number Aspect Foreign Case Voice Abbr Definite Evident Typo Degree Polarity Person Polite Clusivity
-UD_LIST=acl advcl advmod amod appos aux case cc ccomp clf compound conj cop csubj dep det discourse dislocated expl fixed flat goeswith iobj list mark nmod nsubj nummod obj obl orphan parataxis punct reparandum root vocative xcomp
+UD_LIST=acl advcl advmod amod appos _aux case cc ccomp clf compound conj cop csubj dep det discourse dislocated expl fixed flat goeswith iobj list mark nmod nsubj nummod obj obl orphan parataxis punct reparandum root vocative xcomp
 SUD_LIST=unk subj udep mod comp vocative dislocated discourse appos det clf conj cc flat compound list parataxis orphan goeswith reparandum punct
 
 FILTER=*UD_*

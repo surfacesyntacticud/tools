@@ -219,7 +219,7 @@
           type="button"
           class="btn btn-sm"
           :class="{ 'btn-warning': table==dep, 'btn-secondary' : table!=dep }">
-          {{dep}}
+          {{ (dep == "_aux" ? "aux" : dep) }}
           <span class="badge badge-light">{{ count["ud_deps/"+dep] }}</span>
         </button>
       </a>
