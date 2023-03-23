@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
       error ('Loading error!', `Cannot find file \`${file}.json\`.`)
     });
   } else {
-    error ('usage error!', 'This page can be used only with a `data` GET arrgument')
+    window.location = "list.html";
   }
 });
 
