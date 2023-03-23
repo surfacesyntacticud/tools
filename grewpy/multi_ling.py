@@ -44,8 +44,8 @@ if __name__ == '__main__':
     # "display_modes": [["occ", "NUM"], ["% of row", "PERCENT"], ["% of col", "PERCENT"]],
     "display_modes": [["occ", "NUM"]],
     "grew_match": {
-      "cell" : "http://parseme.grew.fr?corpus=PARSEME-$$ROW$$@master&request=pattern{N [label=\"$$COL$$\"]}",
-      "row" : "http://parseme.grew.fr?corpus=PARSEME-$$ROW$$@master&request=pattern{N [label]}",
+      "cell" : "http://parseme.grew.fr?corpus=PARSEME-__ROW__@master&request=pattern{N [label=\"__COL__\"]}",
+      "row" : "http://parseme.grew.fr?corpus=PARSEME-__ROW__@master&request=pattern{N [label]}",
       "col": "",
     }
   }

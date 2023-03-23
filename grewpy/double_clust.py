@@ -7,9 +7,11 @@ set_config('sud')
 
 def req_of_key(key, dir):
   if "#" in key:
-    return "with {$$%s$$}" % dir
+    return "with {__%s__}" % dir
+  if key == "N.ExtPos/upos":
+    return "with {N[ExtPos=\"__%s__\"/upos=\"__%s__\"]}" % (dir,dir)
   else:
-    return "with {%s = \"$$%s$$\"}" % (key,dir)
+    return "with {%s=\"__%s__\"}" % (key,dir)
 
 if __name__ == '__main__':
   requests = sys.argv[1]

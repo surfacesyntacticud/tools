@@ -85,9 +85,9 @@ if __name__ == '__main__':
     "col_key": "feature",
     "display_modes": [["occ", "NUM"], ["% of row", "PERCENT"], ["% of col", "PERCENT"]],
     "grew_match": {
-      "cell" : "http://universal.grew.fr?corpus=%s@latest&request=pattern{N [upos=$$ROW$$, $$COL$$]}" % corpus_name,
-      "row" : "http://universal.grew.fr?corpus=%s@latest&request=pattern{N [upos=$$ROW$$]}" % corpus_name,
-      "col": "http://universal.grew.fr?corpus=%s@latest&request=pattern{N [$$COL$$]}" % corpus_name
+      "cell" : "http://universal.grew.fr?corpus=%s@latest&request=pattern{N [upos=__ROW__, __COL__]}" % corpus_name,
+      "row" : "http://universal.grew.fr?corpus=%s@latest&request=pattern{N [upos=__ROW__]}" % corpus_name,
+      "col": "http://universal.grew.fr?corpus=%s@latest&request=pattern{N [__COL__]}" % corpus_name
     }
   })
 

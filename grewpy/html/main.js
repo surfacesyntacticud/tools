@@ -139,7 +139,8 @@ function esc(s) {
 
 function grew_match(kind, row_header, col_header) {
   // kind can be "cell", "row" or "col"
-  let request = app.json.grew_match[kind].replace("$$ROW$$", esc(row_header)).replace("$$COL$$", esc(col_header));
+  let request = app.json.grew_match[kind].replace(/__ROW__/g, esc(row_header)).replace(/__COL__/g, esc(col_header));
+  console.log(request);
   window.open(request, '_blank');
 }
 
