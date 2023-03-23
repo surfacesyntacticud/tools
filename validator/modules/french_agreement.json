@@ -18,9 +18,9 @@
         "without { B[VerbForm <> Part, Tense <> Past] }",
         "without { B[VerbForm = Inf] }",
         "without { B[ExtPos <> ADJ] }",
-        "without { B -[conj]-> * }",
-        "without { A -[conj]-> * }",
-        "without { * -[conj]-> A }"
+        "without { B -[1=conj]-> * }",
+        "without { A -[1=conj]-> * }",
+        "without { * -[1=conj]-> A }"
       ],
       "level": "warning"
     },
@@ -39,9 +39,9 @@
         "without { B[VerbForm <> Part, Tense <> Past] }",
         "without { B[VerbForm = Inf] }",
         "without { B[ExtPos <> ADJ] }",
-        "without { B -[conj]-> * }",
-        "without { A -[conj]-> * }",
-        "without { * -[conj]-> A}"
+        "without { B -[1=conj]-> * }",
+        "without { A -[1=conj]-> * }",
+        "without { * -[1=conj]-> A}"
       ],
       "level": "warning"
     },
@@ -61,7 +61,7 @@
         "without { B[VerbForm = Inf] }",
         "without { A -[1=comp, 2=obj]-> * }",
         "without { B -[det]-> * }",
-        "without { C -[conj]-> * }"
+        "without { C -[1=conj]-> * }"
       ],
       "level": "warning"
     },
@@ -81,7 +81,7 @@
         "without { B[VerbForm = Inf] }",
         "without { A -[1=comp, 2=obj]-> * }",
         "without { B -[det]-> * }",
-        "without { C -[conj]-> * }"
+        "without { C -[1=conj]-> * }"
       ],
       "level": "warning"
     },
@@ -100,7 +100,7 @@
         "without { B[VerbForm <> Part, Tense <> Past] }",
         "without { B[VerbForm = Inf] }",
         "without { B -[det]-> * }",
-        "without { C -[conj]-> * }"
+        "without { C -[1=conj]-> * }"
       ],
       "level": "warning"
     },
@@ -119,7 +119,7 @@
         "without { B[VerbForm <> Part, Tense <> Past] }",
         "without { B[VerbForm = Inf] }",
         "without { B -[det]-> * }",
-        "without { C -[conj]-> * }"
+        "without { C -[1=conj]-> * }"
       ],
       "level": "warning"
     },
@@ -134,8 +134,8 @@
         "without{A[Title=Yes]}",
         "without { A.Number = B.CorrectNumber }",
         "without { A.CorrectNumber = B.Number }",
-        "without { B -[conj]-> * }",
-        "without { A -[conj]-> * }"
+        "without { B -[1=conj]-> * }",
+        "without { A -[1=conj]-> * }"
       ],
       "level": "warning"
     },
@@ -150,8 +150,8 @@
         "without{A[Title=Yes]}",
         "without { A.Gender = B.CorrectGender }",
         "without { A.CorrectGender = B.Gender }",
-        "without { B -[conj]-> * }",
-        "without { A -[conj]-> * }"
+        "without { B -[1=conj]-> * }",
+        "without { A -[1=conj]-> * }"
       ],
       "level": "warning"
     },
@@ -166,7 +166,7 @@
         "}",
         "without { A.Number = B.CorrectNumber }",
         "without { A.CorrectNumber = B.Number }",
-        "without { B -[conj]-> * }",
+        "without { B -[1=conj]-> * }",
         "without { B[Title=Yes] }",
         "without { B[lemma = \"majorité\"|\"nombre\"|\"plupart\"|\"ensemble\"|\"éventail\"|\"%\"|\"pourcentage\"|\"tiers\"|\"moitié\"] }"
       ],
@@ -183,7 +183,7 @@
         "}",
         "without { A.Person = B.CorrectPerson }",
         "without { A.CorrectPerson = B.Person }",
-        "without { B -[conj]-> * }",
+        "without { B -[1=conj]-> * }",
         "without { B[Title=Yes] }"
       ],
       "level": "warning"
@@ -201,7 +201,7 @@
         "}",
         "without { B.Number = C.CorrectNumber }",
         "without { B.CorrectNumber = C.Number }",
-        "without { B -[conj]-> * }",
+        "without { B -[1=conj]-> * }",
         "without { B[Title=Yes] }"
       ],
       "level": "warning"
@@ -219,7 +219,7 @@
         "}",
         "without { B.Gender = C.CorrectGender }",
         "without { B.CorrectGender = C.Gender }",
-        "without { B -[conj]-> * }",
+        "without { B -[1=conj]-> * }",
         "without { B[Title=Yes] }"
       ],
       "level": "warning"
@@ -236,7 +236,7 @@
         "}",
         "without { A.Number = B.CorrectNumber }",
         "without { A.CorrectNumber = B.Number }",
-        "without { B -[conj]-> * }",
+        "without { B -[1=conj]-> * }",
         "without { B[Title=Yes] }"
       ],
       "level": "warning"
@@ -253,7 +253,7 @@
         "}",
         "without { A.Gender = B.CorrectGender }",
         "without { A.CorrectGender = B.Gender }",
-        "without { B -[conj]-> * }",
+        "without { B -[1=conj]-> * }",
         "without { B[Title=Yes] }"
       ],
       "level": "warning"
