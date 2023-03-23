@@ -30,7 +30,7 @@ if __name__ == '__main__':
     title = f"## edge label and dependant UPOS ({corpus_name})"
     base_request = "e: M -> N"
     row_key = "e.label"
-    col_key = "N.upos"
+    col_key = "N.ExtPos/upos"
     filter_uniline = False
 
   elif requests == "amb_lemma":
@@ -67,7 +67,7 @@ if __name__ == '__main__':
   column_list = [(c, columns_dict[c]) for c in columns_dict]
   column_list.sort(key = lambda x: x[1], reverse=True)
   columns = [ {"field": k, "headerName": k} for (k,_) in column_list]
-  columns_total = {"row_header": "TOTAL_ROW"} | { p[0]: p[1] for p in column_list }
+  columns_total = {"row_header": row_key, "row_type": "TOTAL_SEARCH"} | { p[0]: p[1] for p in column_list }
 
   cells = [ {"row_header": k1, "row_total": sum(dc[k1].values())} | { k2: [dc[k1][k2]] for k2 in dc[k1]} for k1 in dc]
 

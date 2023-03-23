@@ -1,5 +1,12 @@
 SUD=/Users/guillaum/github/surfacesyntacticud
 
+self_doc:
+	@echo " • make stat_pos_features"
+	@echo " • make label_upos"
+	@echo " • make amb_lemma"
+	@echo " • make adj_lemma_pos"
+	@echo " • make parseme"
+
 stat_pos_features:
 	python3 stat_pos_features.py SUD_Beja-NSC ${SUD}/SUD_Beja-NSC/*.conllu > tables/SUD_Beja-NSC/stat_pos_features.json
 	python3 stat_pos_features.py SUD_French-GSD ${SUD}/SUD_French-GSD/*.conllu > tables/SUD_French-GSD/stat_pos_features.json
@@ -23,3 +30,5 @@ adj_lemma_pos:
 	python3 double_clust.py adj_lemma_pos SUD_French-Rhapsodie@latest ${SUD}/SUD_French-Rhapsodie/*.conllu > tables/SUD_French-Rhapsodie/adj_lemma_pos.json
 	python3 double_clust.py adj_lemma_pos SUD_French-ParisStories@latest ${SUD}/SUD_French-ParisStories/*.conllu > tables/SUD_French-ParisStories/adj_lemma_pos.json
 
+parseme:
+	python3 multi_ling.py > tables/parseme/lang_tags.json
