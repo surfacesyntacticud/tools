@@ -1,0 +1,184 @@
+var urlParams = new URLSearchParams(window.location.search);
+var md = new Remarkable();
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    json: {
+      display_modes: [],  // need to be initialized for proper html starting
+    },
+    gridApi: null,
+    filter_kind: "rows", // can be "rows" or "cols"
+    filter_value: "",
+    display_mode: 0,
+    title: "",
+  },
+  watch: {
+    display_mode: function () {
+      this.update_sorting();
+      this.refresh_columns();
+      this.gridApi.redrawRows();
+    },
+    filter_value: function() { this.refresh_columns() },
+    filter_kind: function() { this.refresh_columns() }
+  },
+  methods: {
+    set_display_mode (x) {
+      this.display_mode = x;
+    },
+    update_sorting() {
+      this.json.columns.forEach(c => {
+        c.comparator= (function (v1,v2) {
+          let n1 = v1 == undefined ? 0 : v1[app.display_mode];
+          let n2 = v2 == undefined ? 0 : v2[app.display_mode];
+          return n1 - n2
+        });
+      });
+    },
+    // method called both atfer filering changes and display mode change (sorting should be changed)
+    refresh_columns(){
+      if (app.filter_value == "") {
+        this.gridApi.setRowData(this.json.cells) // all rows
+        this.gridApi.setColumnDefs([col0,col1].concat(this.json.columns)) // all cols
+      } else {
+        if (app.filter_kind == "rows") {
+          const re = new RegExp(this.filter_value, 'i');
+          let filtered_rows = this.json.cells.filter(l => l.row_header.match(re));
+          this.gridApi.setRowData(filtered_rows);
+          const cols = new Set()
+          filtered_rows.forEach((item, i) => {
+            var keys = Object.keys(item);
+            keys.forEach(cols.add, cols);
+          });
+          let filtered_cols = this.json.columns.filter(l => cols.has(l.field));
+          this.gridApi.setColumnDefs([col0,col1].concat(filtered_cols));
+        } else {
+          const re = new RegExp(this.filter_value, 'i');
+          let filtered_cols = this.json.columns.filter(function (l) { console.log (l); return l.field.match(re)});
+          this.gridApi.setColumnDefs([col0,col1].concat(filtered_cols));
+          const fields = new Set()
+          filtered_cols.forEach((item, i) => {
+            fields.add(item.field)
+          });
+          let filtered_rows = this.json.cells.filter(l => Object.keys(l).some(k => fields.has(k)));
+          this.gridApi.setRowData(filtered_rows);
+        }
+      }
+    },
+
+    cell(data) {
+      if (data.value != undefined) {
+        if (data.colDef.field == "row_header") {
+          return `<b>${data.value}</b>`;
+        } else if (data.colDef.field == "row_total" && data.data.row_total != undefined) {
+          return `<a class="btn btn-primary btn-sm" onclick='grew_match("row","${data.data.row_header}","")'>${data.data.row_total}</a>`;
+        } else if (data.data.row_type == "TOTAL_ROW") {
+          return `<a class="btn btn-secondary disabled btn-sm">${data.value}</a>`;
+        } else if (data.data.row_type == "TOTAL_SEARCH") {
+          return `<a class="btn btn-primary btn-sm" onclick='grew_match("col", "", "${data.colDef.field}")'>${data.value}</a>`;
+        } else {
+          let style = this.json.display_modes[this.display_mode][1]
+          
+          if (style=="PERCENT") {
+            v = (data.value[this.display_mode]* 100).toFixed(2) + "%"
+          } else {
+            v = data.value[this.display_mode]
+          }
+          return (`<a class="btn btn-success btn-sm" onclick='grew_match("cell", "${data.data.row_header}","${data.colDef.headerName}")'>${v}</a>`)
+        }
+      }
+    }
+  }
+})
+
+const col0 = {
+  field: "row_header",
+  headerName: "",
+  sortingOrder: ['asc', 'desc', null],
+  pinned: "left",
+  lockPinned: true,
+}
+
+function build_grid(data) {
+  app.json = data;
+  app.title = md.render(app.json.title);
+  $('#update_ago').html('<time class="timeago" datetime="' + app.json.timestamp + '">update time</time>');
+  $('#update_ago > time').timeago(); // make it dynamic
+
+  app.update_sorting(); // ensure that sorting is done on the right component
+  const col1 = {
+    field: "row_total",
+    headerName: app.json.col_key,
+    sortingOrder: ['asc', 'desc', null],
+    pinned: "left",
+    lockPinned: true,
+  }
+  
+  const gridOptions = {  
+    columnDefs: [col0, col1].concat(app.json.columns),
+    defaultColDef: {
+      width: 150,
+      sortable: true,
+      sortingOrder: ['desc', 'asc'],
+      resizable: true,
+      cellRenderer: app.cell,
+    },
+    pinnedTopRowData: [app.json.columns_total],
+  };
+  
+  const gridDiv = document.querySelector('#main_grid');
+  new agGrid.Grid(gridDiv, gridOptions);
+  
+  gridOptions.api.setRowData(app.json.cells);
+  app.gridApi = gridOptions.api;
+}
+
+function esc(s) {
+  return (encodeURIComponent(s.replace(/["]/g, '\\\"')))
+}
+
+function grew_match(kind, row_header, col_header) {
+  // kind can be "cell", "row" or "col"
+  let request = app.json.grew_match[kind].replace("$$ROW$$", esc(row_header)).replace("$$COL$$", esc(col_header));
+  window.open(request, '_blank');
+}
+
+// setup the grid after the page has finished loading
+document.addEventListener('DOMContentLoaded', () => {
+  $('[data-toggle="tooltip"]').tooltip()
+  
+  let file = urlParams.get('data');
+  if (file != null) {
+    fetch(file + '.json')
+    .then((response) => response.json())
+    .then((data) => {
+      build_grid(data);
+      let col_filter = urlParams.get('cols');
+      if (col_filter != null) {
+        app.filter_kind = "cols";
+        app.filter_value = col_filter;
+      }
+      let row_filter = urlParams.get('rows');
+      if (row_filter != null) {
+        app.filter_kind = "rows";
+        app.filter_value = row_filter;
+      }
+    })
+    .catch((_) => {
+      error ('Loading error!', `Cannot find file \`${file}.json\`.`)
+    });
+  } else {
+    error ('usage error!', 'This page can be used only with a `data` GET arrgument')
+  }
+});
+
+function error(title, md_msg) {
+  swal({  // See https://github.com/t4t5/sweetalert/issues/801
+    title: title,
+    content: {
+      element: "div",
+      attributes: { innerHTML: md.render(md_msg) },
+    },
+    icon: "error",
+  })
+}
