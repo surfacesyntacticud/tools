@@ -4,6 +4,9 @@ title: Grew tables
 
 # Grew tables
 
+## multi request / multi treebanks
+ - [subj_french](index.html?data=_tables/sud/subj_french)
+
 ## Relating UPOS (or ExtPos) to the dependency relation with the head
  - [SUD_French-GSD](index.html?data=_tables/SUD_French-GSD/label_upos)
  - [SUD_French-Rhapsodie](index.html?data=_tables/SUD_French-Rhapsodie/label_upos)

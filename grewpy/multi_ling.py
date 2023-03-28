@@ -1,7 +1,6 @@
 import datetime
-import sys
 import json
-from grewpy import CorpusDraft, Request, Corpus, set_config
+from grewpy import Request, Corpus, set_config
 set_config('sud')
 
 parseme_languages = [ "AR", "BG" ]
@@ -29,8 +28,8 @@ if __name__ == '__main__':
       columns_dict[k2] = main_dict[lang][k2] + columns_dict.get(k2, 0)
   column_list = [(c, columns_dict[c]) for c in columns_dict]
   column_list.sort(key = lambda x: x[1], reverse=True)
-  columns = [ {"field": esc(k), "headerName": k} for (k,_) in column_list]
-  columns_total = {"row_header": "Language", "row_type": "TOTAL_ROW"} | { esc(p[0]): p[1] for p in column_list }
+  columns = [ {"field": esc(k), "headerName": k, "grew": k} for (k,_) in column_list]
+  columns_total = {"row_header": "Language", "row_type": "TOTAL"} | { esc(p[0]): p[1] for p in column_list }
 
   cells = [ {"row_header": k1, "row_total": sum(main_dict[k1].values())} | { esc(k2): [main_dict[k1][k2]] for k2 in main_dict[k1]} for k1 in main_dict]
 
@@ -46,7 +45,6 @@ if __name__ == '__main__':
     "grew_match": {
       "cell" : "http://parseme.grew.fr?corpus=PARSEME-__ROW__@master&request=pattern{N [label=\"__COL__\"]}",
       "row" : "http://parseme.grew.fr?corpus=PARSEME-__ROW__@master&request=pattern{N [label]}",
-      "col": "",
     }
   }
 

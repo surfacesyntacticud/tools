@@ -35,8 +35,8 @@ def escape_feat_name (s):
     return s
 
 def build_table (rows, columns, cell_fct, row_fct, col_fct):
-  columns_dict = [ {"field": column, "headerName": escape_feat_name(column) } for column in columns ]
-  columns_total_dict =  {"row_header": "upos", "row_type": "TOTAL_SEARCH"}  | { column: col_fct (column) for column in columns }
+  columns_dict = [ {"field": column, "headerName": escape_feat_name(column), "grew": column} for column in columns ]
+  columns_total_dict =  {"row_header": "upos", "row_type": "TOTAL"}  | { column: col_fct (column) for column in columns }
   def line(row):
     row_total = row_fct (row)
     d = {"row_header": row, "row_total": row_total }
