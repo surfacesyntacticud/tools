@@ -11,13 +11,11 @@ title: Grew tables
  - [SUD_French-GSD](index.html?data=_tables/SUD_French-GSD/label_upos)
  - [SUD_French-Rhapsodie](index.html?data=_tables/SUD_French-Rhapsodie/label_upos)
  - [SUD_French-ParisStories](index.html?data=_tables/SUD_French-ParisStories/label_upos)
- - [SUD_French-Rhapsodie](index.html?data=_tables/SUD_French-Rhapsodie/label_upos)
 
-## Lemmas which appears with more than one UPOS
+## Lemmas which appear with more than one UPOS
  - [SUD_French-GSD](index.html?data=_tables/SUD_French-GSD/amb_lemma)
  - [SUD_French-Rhapsodie](index.html?data=_tables/SUD_French-Rhapsodie/amb_lemma)
  - [SUD_French-ParisStories](index.html?data=_tables/SUD_French-ParisStories/amb_lemma)
- - [SUD_French-Rhapsodie](index.html?data=_tables/SUD_French-Rhapsodie/amb_lemma)
 
 ## What feature is used on which UPOS
  - [SUD_French-GSD](index.html?data=_tables/SUD_French-GSD/stat_pos_features)
