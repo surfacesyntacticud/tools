@@ -1,0 +1,79 @@
+{
+  "columns": [
+    {
+      "field": "nom_subj",
+      "headerName": "nom_subj",
+      "grew": "V -[subj]-> N; N[upos=NOUN|PROPN]"
+    },
+    {
+      "field": "pron_subj",
+      "headerName": "pron_subj",
+      "grew": "V -[subj]-> N; N[upos=PRON]"
+    },
+    {
+      "field": "other_subj",
+      "headerName": "other_subj",
+      "grew": "V -[subj]-> N; N[upos<>NOUN|PROPN|PRON]"
+    }
+  ],
+  "columns_total": {
+    "row_header": "Treebank",
+    "row_type": "TOTAL",
+    "nom_subj": 371,
+    "pron_subj": 1157,
+    "other_subj": 14
+  },
+  "cells": [
+    {
+      "row_header": "SUD_French-GSD@latest",
+      "row_total": 522,
+      "nom_subj": [
+        253
+      ],
+      "pron_subj": [
+        265
+      ],
+      "other_subj": [
+        4
+      ]
+    },
+    {
+      "row_header": "SUD_French-ParisStories@latest",
+      "row_total": 56,
+      "nom_subj": [
+        0
+      ],
+      "pron_subj": [
+        55
+      ],
+      "other_subj": [
+        1
+      ]
+    },
+    {
+      "row_header": "SUD_French-Rhapsodie@latest",
+      "row_total": 964,
+      "nom_subj": [
+        118
+      ],
+      "pron_subj": [
+        837
+      ],
+      "other_subj": [
+        9
+      ]
+    }
+  ],
+  "col_key": "Request",
+  "title": "## `subj` in French SUD",
+  "timestamp": "2023-03-28T13:00:30.163854",
+  "display_modes": [
+    [
+      "occ",
+      "NUM"
+    ]
+  ],
+  "grew_match": {
+    "cell": "http://universal.grew.fr?corpus=__ROW__&request=pattern{__COL__}"
+  }
+}
