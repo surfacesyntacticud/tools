@@ -4,9 +4,6 @@ title: Grew tables
 
 # Grew tables
 
-## multi request / multi treebanks
- - [subj_french](index.html?data=_tables/sud/subj_french)
-
 ## Relating UPOS (or ExtPos) to the dependency relation with the head
  - [SUD_French-GSD](index.html?data=_tables/SUD_French-GSD/label_upos)
  - [SUD_French-Rhapsodie](index.html?data=_tables/SUD_French-Rhapsodie/label_upos)
@@ -25,6 +22,14 @@ title: Grew tables
  - [SUD_Zaar-Autogramm](index.html?data=_tables/SUD_Zaar-Autogramm/stat_pos_features)
  - [SUD_Naija-NSC](index.html?data=_tables/SUD_Naija-NSC/stat_pos_features)
 
-## Parseme: tag per leanguages
+# Work in progress
+
+These tables are not complete, it is just WIP to build tables which concern more than one treebank.
+The data does not correspond to the full treebanks.
+
+## multi request / multi treebanks
+ - [subj_french](index.html?data=_tables/sud/subj_french)
+
+## Parseme: tag per languages
  - [Parseme 1.3](index.html?data=_tables/parseme/lang_tags)
 
