@@ -40,7 +40,7 @@ if __name__ == '__main__':
     title = f"## ambiguous lemmas UPOS ({corpus_name})"
     base_request = "N[lemma]"
     row_key = "N.lemma"
-    col_key = "N.upos"
+    col_key = "N.ExtPos/upos"
     filter_uniline = True
 
   elif requests == "aux_lemma_label":

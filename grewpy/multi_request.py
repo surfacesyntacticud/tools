@@ -4,10 +4,13 @@ import json
 from grewpy import Request, Corpus, set_config
 set_config('sud')
 
+sud = "/Users/guillaum/github/surfacesyntacticud"
+
 corpora = {
-  "SUD_French-GSD@latest": ["SUD_French-GSD/fr_gsd-sud-test.conllu"],
-  "SUD_French-ParisStories@latest": ["SUD_French-ParisStories/ParisStories_2022_lesParentsInconnus.conllu"],
-  "SUD_French-Rhapsodie@latest": ["SUD_French-Rhapsodie/fr_rhapsodie.sud.test.conllu"],
+  "SUD_French-GSD@latest": f"{sud}/SUD_French-GSD",
+  "SUD_French-ParisStories@latest": f"{sud}/SUD_French-ParisStories",
+  "SUD_French-Rhapsodie@latest": f"{sud}/SUD_French-Rhapsodie",
+  "PS_2023@latest": f"{sud}/PS_2023",
 }
 
 requests = {
