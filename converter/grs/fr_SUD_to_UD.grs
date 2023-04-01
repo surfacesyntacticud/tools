@@ -60,7 +60,7 @@ package FR_mod {
 % Ex: fr-ud-dev_00407 - Spécialiste des six jours, il a remporté 38 compétitions entre 1931 et 1942.
   rule left_extraposition(lex from "lexicons/noun_adv.lp") {
     pattern{
-      APP[upos=ADJ|NOUN|PRON|PROPN|VERB];
+      APP[upos=ADJ|NOUN|PROPN|VERB];
       V -[1=subj]-> SUBJ; APP << SUBJ; SUBJ << V;
       e: V -[mod]-> APP}
     without{ APP -[1=case]-> *}
