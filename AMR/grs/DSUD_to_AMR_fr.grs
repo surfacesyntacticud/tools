@@ -1003,6 +1003,7 @@ package FR_add_concepts{
 % Other concepts.
   rule other(lex from "lexicons/english_concepts.lp"){
     pattern{W[upos=lex.upos,lemma=lex.lemma, !concept]}
+    without{W.concept=lex.concept}
     commands{W.concept=lex.concept}
   }
 }
