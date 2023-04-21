@@ -49,6 +49,7 @@ package coord{
 % If there is no coordinating conjunction in a coordination, conjunction "and" is added by default.
     rule add_coord_conj{
       pattern{d1:C1 -[conj@emb]-> C2}
+      without{C2[upos=CCONJ]}
       without{C2 -[conj@emb]-> *}
       without{C2 -[cc]-> *}
       commands{
@@ -60,10 +61,10 @@ package coord{
 % Ex: SUD_French-GSD fr-ud-test_00012 - ... vous observerez que l'on peut être traditionaliste ET intégriste, mais que les intégristes n'ont[C1] pas le monopole du traditionalisme, et[CONJ] réciproquement[C2]
     rule init{
       pattern{d1:C1 -[conj@emb]-> C2; d2:C2 -[cc]-> CONJ}
+      without{C2[upos=CCONJ]}
       without{C2 -[conj@emb]-> *}
       commands{
         del_edge d1; del_edge d2;
-	CONJ.Emb=Yes;
         add_edge CONJ -[op]-> C1; add_edge CONJ -[op]-> C2;
         shift_in C1 =[1=conj]=> CONJ; shift_out C1 =[cc]=> CONJ;
   	shift_out C2 =[conj]=> CONJ}
@@ -71,9 +72,11 @@ package coord{
 
 % If there is more than two conjuncts in the coordination, the process is propagated to the first conjuncts.
     rule propag{
-      pattern{d: C1 -[conj@emb]-> CONJ; CONJ -[op]-> C2}
+      pattern{d: C1 -[conj@emb]-> CONJ; CONJ[upos=CCONJ]; CONJ -[op]-> C2}
       without{CONJ -[cc]-> *}
-      commands{del_edge d; add_edge CONJ -[op]-> C1; shift_in C1 =[1=conj]=> CONJ}
+      commands{
+        del_edge d; add_edge CONJ -[op]-> C1;
+	shift_in C1 =[1=conj]=> CONJ; shift_out C1 =[cc]=> CONJ}
     }
 
   }
@@ -84,6 +87,7 @@ package coord{
 % If there is no coordinating conjunction in a coordination, conjunction "and" is added by default.
     rule add_coord_conj{
       pattern{d1:C1 -[conj]-> C2}
+      without{C2[upos=CCONJ]}
       without{C2 -[conj]-> *}
       without{C2 -[cc]-> *}
       commands{
@@ -97,17 +101,17 @@ package coord{
       without{C2 -[conj]-> *}
       commands{
         del_edge d1; del_edge d2;
-	CONJ.Emb=Yes;
         add_edge CONJ -[op]-> C1; add_edge CONJ -[op]-> C2;
-        shift_in C1 =[1=conj]=> CONJ; shift_out C1 =[cc]=> CONJ;
-  	shift_out C2 =[conj]=> CONJ}
+        shift_in C1 =[1=conj]=> CONJ; shift_out C1 =[cc]=> CONJ}
     }
 
 % If there is more than two conjuncts in the coordination, the process is propagated to the first conjuncts.
     rule propag{
-      pattern{d: C1 -[conj]-> CONJ; CONJ -[op]-> C2}
+      pattern{d: C1 -[conj]-> CONJ; CONJ[upos=CCONJ]; CONJ -[op]-> C2}
       without{CONJ -[cc]-> *}
-      commands{del_edge d; add_edge CONJ -[op]-> C1; shift_in C1 =[1=conj]=> CONJ}
+      commands{
+        del_edge d; add_edge CONJ -[op]-> C1;
+	shift_in C1 =[1=conj]=> CONJ;shift_out C1 =[cc]=> CONJ}
     }
   }
 
@@ -225,19 +229,18 @@ package coord{
       commands{del_edge d; add_edge C5 -[E:op5-of]-> CONJ}
     }
 
-    rule del_emb_mark{
-      pattern{CONJ[upos=CCONJ, Emb]}
-      commands{del_feat CONJ.Emb}
-    }
+    % rule del_emb_mark{
+    %   pattern{CONJ[upos=CCONJ, Emb]}
+    %   commands{del_feat CONJ.Emb}
+    % }
    }
    
 % =============================================
 strat main{
   Seq(
-    Onf(emb.add_coord_conj), Iter(Seq(emb.init, Onf(emb.propag),Onf(shared_gov),Onf(shared_dep),
-    Onf(nohead_coord), Onf(mark))),
-    Onf(non-emb.add_coord_conj), Iter(Seq(non-emb.init, Onf(non-emb.propag), Onf(shared_gov),
-    Onf(shared_dep),Onf(nohead_coord), Onf(mark))))}
+    Onf(emb), Onf(non-emb),
+    Onf(shared_gov),Onf(shared_dep),Onf(nohead_coord), Onf(mark)
+  )}
 }
 
 % =============================================================================================
