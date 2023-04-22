@@ -114,6 +114,14 @@ const col0 = {
   lockPinned: true,
 }
 
+let col1 = {
+  field: "row_total",
+  headerName: "", // Value is set in build_data
+  sortingOrder: ['asc', 'desc', null],
+  pinned: "left",
+  lockPinned: true,
+}
+
 function build_grid(data) {
   app.json = data;
   app.title = md.render(app.json.title);
@@ -121,14 +129,9 @@ function build_grid(data) {
   $('#update_ago > time').timeago(); // make it dynamic
 
   app.update_sorting(); // ensure that sorting is done on the right component
-  const col1 = {
-    field: "row_total",
-    headerName: app.json.col_key,
-    sortingOrder: ['asc', 'desc', null],
-    pinned: "left",
-    lockPinned: true,
-  }
-  
+
+  col1.headerName = app.json.col_key;
+
   const gridOptions = {  
     columnDefs: [col0, col1].concat(app.json.columns),
     defaultColDef: {
