@@ -511,7 +511,7 @@ package sub_relations {
   rule expl_comp{
     pattern{e: H -[comp@expl]-> D;}
     without{ D[Reflex=Yes]}
-    commands{del_edge e; add_edge H -[expl]-> D}
+    commands{del_edge e; add_edge H -[expl:comp]-> D}
   }
 
 
@@ -588,19 +588,18 @@ package sub_relations {
     commands {del_edge e; add_edge H -[obl:agent]-> D }
   }
 
-% We make the hypothesis that all noun complements depend on their gouvernor with a UDEP remation.
+% We make the hypothesis that all noun complements depend on their gouvernor with a UDEP relation.
   rule obl_arg {
-    pattern { e:H -[1=comp,2=obl]-> D; D -[1=case]-> * }
+    pattern { e:H -[1=comp,2=obl]-> D; D[upos <> AUX|PRON|VERB] }
     without{ D -[1=mark]-> *}
     without{e.deep=agent}
     commands {e.1=obl; e.2=arg}
   }
 
-  rule obl_mod {
-    pattern { e:H -[1=comp,2=obl]-> D; D[upos <> PRON]}
-    without{ D -[1=case|mark]-> *}
+  rule obl_arg_pron {
+    pattern { e:H -[1=comp,2=obl]-> D; D[upos = PRON]; D -[1=case]-> * }
     without{e.deep=agent}
-    commands {e.1=obl; e.2=mod}
+    commands {e.1=obl; e.2=arg}
   }
 
   rule xcomp{
@@ -841,10 +840,9 @@ package outer_copula{
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 package final {
-  rule del_nom{
-    pattern {W[nom=y]}
-    commands {del_feat W.nom}
-  }
+  rule del_nom{pattern {W[nom=y]}commands {del_feat W.nom}}
+  %rule del_idiom{pattern {W[Idiom=Yes]}commands {del_feat W.Idiom}}
+ % rule del_inidiom{pattern {W[InIdiom=Yes]}commands {del_feat W.InIdiom}}
 
 }
 
