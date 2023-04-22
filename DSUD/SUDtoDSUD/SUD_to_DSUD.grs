@@ -340,44 +340,30 @@ package control_pred{
 %Ex: SUD_French-GSD fr-ud-train_00259 - le tireur doit prendre[PRENDRE] garde à ne pas toucher[CPRED] la veste
   rule subj{
     pattern{
-      PRED -[1=comp,deep=x]-> CPRED;
+      PRED -[1=comp]-> CPRED; CPRED[Subject=SubjRaising];
       PRED -[1=subj]-> SUBJ}
     without{CPRED -[1=subj]-> *}
-    without{PRED -[1=subj,deep=expl]-> SUBJ}
-    without{PRED -[comp:obj]-> OBJ; OBJ[upos=NOUN|NUM|PRON|PROPN|X]}
     commands{add_edge CPRED -[1=subj,enhanced=yes]-> SUBJ}
   }
 
-% The subject of the controlled predicate CPRED, which is an adjective or adverb, is the subject of the control predicate PRED.
-  rule subj_adj-adv{
-    pattern{
-      PRED -[1=comp,2=pred]-> CPRED; CPRED[upos=ADJ|ADV];
-      PRED -[1=subj]-> SUBJ}
-    without{CPRED -[1=subj]-> *}
-    without{PRED -[1=subj,deep=expl]-> SUBJ}
-    without{PRED -[comp:obj]-> OBJ; OBJ[upos=NOUN|NUM|PRON|PROPN|X]}
-    commands{add_edge CPRED -[1=subj,enhanced=yes]-> SUBJ}
-  }
-
-% The subject of the controlled predicate CPRED, which is a past participle, is the passive subject of the control predicate PRED.
-  rule subj_past-part{
-    pattern{
-      PRED -[1=comp,2=pred]-> CPRED; CPRED[upos=VERB,Tense=Past,VerbForm=Part];
-      PRED -[1=subj]-> SUBJ}
-    without{CPRED -[1=subj]-> *}
-    without{PRED -[1=subj,deep=expl]-> SUBJ}
-    without{PRED -[comp:obj]-> OBJ; OBJ[upos=NOUN|NUM|PRON|PROPN|X]}
-    commands{add_edge CPRED -[1=subj,deep=pass, enhanced=yes]-> SUBJ}
-  }
 % The subject of the controlled predicate is the direct object of the control predicate.
 %Ex: SUD_French-GSD fr-ud-train_12228 - Je trouve[PRED] cette attitude[OBJ] totalement inadmissible[CPRED] !
 %Ex: SUD_French-GSD fr-ud-train_00581 - Pour autant les différents partis composant la majorité de gauche voient[PRED] leur poids[OBJ] modifié[CPRED].
   rule obj{
     pattern{
-      PRED -[1=comp, deep=x]-> CPRED;
-      PRED -[comp:obj]-> OBJ; OBJ[upos=NOUN|NUM|PRON|PROPN|X]}
+      PRED -[1=comp]-> CPRED; CPRED[Subject=ObjRaising];
+      PRED -[comp:obj]-> OBJ}
     without{CPRED -[1=subj]-> *}
     commands{add_edge CPRED -[1=subj,enhanced=yes]-> OBJ}
+  }
+
+% The subject of the controlled predicate is the indirect object of the control predicate.
+  rule obl{
+    pattern{
+      PRED -[1=comp]-> CPRED; CPRED[Subject=OblRaising];
+      PRED -[comp:obl]-> OBL}
+    without{CPRED -[1=subj]-> *}
+    commands{add_edge CPRED -[1=subj,enhanced=yes]-> OBL}
   }
 
 % The subject of the controlled predicate, which is an adjective, is the direct object of the control predicate.
@@ -387,6 +373,17 @@ package control_pred{
       PRED -[comp:obj]-> OBJ; OBJ[upos=NOUN|NUM|PRON|PROPN|X]}
     without{CPRED -[1=subj]-> *}
     commands{add_edge CPRED -[1=subj,enhanced=yes]-> OBJ}
+  }
+
+% The subject of the controlled predicate, which is an adjective, is the subject of the control predicate.
+% Ex: SUD_French-GSD fr-ud-test_00290 - Vous[SUBJ] repartirez[PRED] très déçu[CPRED]...
+  rule subj_adj{
+    pattern{
+      PRED -[1=comp, 2=pred]-> CPRED; CPRED[upos=ADJ];
+      PRED -[subj]-> SUBJ}
+    without{ PRED -[comp:obj]-> *}
+    without{CPRED -[1=subj]-> *}
+    commands{add_edge CPRED -[1=subj,enhanced=yes]-> SUBJ}
   }
 
 }
