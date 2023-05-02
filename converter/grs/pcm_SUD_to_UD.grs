@@ -75,7 +75,7 @@ package pcm_pre {
 }
 
 package pcm_post {
-  
+
   package post {
     rule cc_with_children {
       pattern { N1 -[cc]-> N2; e: N2 -[^fixed]-> N3; }
@@ -199,6 +199,19 @@ package pcm_post {
     commands { e1.2 = "outer" }
   }
 
+  package remove_ext_final {
+    rule dep {
+      pattern { e:N1 -[1=dep, 2=*]-> N2; }
+      commands { del_feat e.2 }
+    }
+
+    rule oblx {
+      pattern { e:N1 -[obl:x|ccomp:x]-> N2; }
+      commands { del_feat e.2 }
+    }
+  }
+
+
   strat main {
     Seq (
       Onf (post),
@@ -209,9 +222,7 @@ package pcm_post {
       Onf (lang_not_ud),
       Onf (dep_comp),
       Onf (double_subj),
+      Onf (remove_ext_final),
     )
   }
-
-  
-  
 }
