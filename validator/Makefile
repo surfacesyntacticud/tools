@@ -15,10 +15,12 @@ valid:
 clean:
 	grew_dev clean -i sud_fr.json
 	grew_dev clean -i sud_pcm.json
+	grew_dev clean -i sud_zh.json
 
 compile:
 	grew_dev compile -i sud_fr.json
 	grew_dev compile -i sud_pcm.json
+	grew_dev compile -i sud_zh.json
 
 url:
 	@echo "http://localhost:8888/validator/?corpus=SUD_French-GSD@latest"
