@@ -6,6 +6,7 @@ strat zh_mSUD_to_UD_main {
   Seq (
     zh_mSUD_to_SUD_main,
     Onf (comp),
+    Onf (clf),
     u_main,
     Onf (zh_post)
   )
@@ -33,6 +34,122 @@ package comp {
       e: N -[comp]-> M; N[form = "的"];
     }
     commands { e.2 = obj }
+  }
+
+  rule dir {
+    pattern { 
+      e: N -[comp:dir]-> M;
+    }
+    commands { e.label = "compound:dir"; }
+  }
+
+  rule res {
+    pattern { 
+      e: N -[comp:res]-> M;
+    }
+    commands { e.label = "compound:vv"; }
+  }
+}
+
+
+package clf {
+  rule det {
+    % case DET CLF NOUN
+    pattern { 
+      e1: HEAD_NOUN -[clf]-> CLF;
+      e2: CLF -[det]-> DET;
+    }
+    commands {
+      add_edge HEAD_NOUN -[det]->DET;
+      add_edge DET -[clf]->CLF;
+      del_edge e1;
+      del_edge e2;
+    }
+  }
+
+  rule adj {
+    % case ADJ CLF NOUN (without DET)
+    pattern { 
+      e1: HEAD_NOUN -[clf]-> CLF;
+      e2: CLF -[mod]-> ADJ;
+      ADJ.upos = ADJ;
+    }
+    without {
+      ADJ -[det]-> DET;
+    }
+    commands {
+      add_edge HEAD_NOUN -[amod]->ADJ;
+      add_edge ADJ -[clf]->CLF;
+      del_edge e1;
+      del_edge e2;
+    }
+  }
+
+  rule num {
+    % case NUM CLF NOUN (without DET)
+    pattern { 
+      e1: HEAD_NOUN -[clf]-> CLF;
+      e2: CLF -[mod]-> NUM;
+      NUM.upos = NUM;
+    }
+    without {
+      NUM -[det]-> DET;
+    }
+    commands {
+      add_edge HEAD_NOUN -[nummod]->NUM;
+      add_edge NUM -[clf]->CLF;
+      del_edge e1;
+      del_edge e2;
+    }
+  }
+
+  rule det_and_num {
+    % case : DET NUM CLF NOUN
+    pattern { 
+      e1: HEAD_NOUN -[clf]-> CLF;
+      e2: CLF -[mod]-> NUM;
+      NUM.upos = NUM;
+      e3: NUM -[det]-> DET;
+    }
+
+    commands {
+        add_edge HEAD_NOUN -[nummod]->NUM;
+        add_edge HEAD_NOUN -[det]->DET;
+        add_edge NUM -[clf]->CLF;
+        del_edge e1;
+        del_edge e2;
+        del_edge e3;
+    }
+  }
+
+  rule det_num_without_noun_phrase {
+    % case : DET NUM CLF
+    pattern { 
+      e1: CLF -[clf]-> NUM;
+      e2: NUM -[det]-> DET;
+    }
+    commands {
+      add_edge CLF -[clf]->DET;
+      add_edge CLF -[nummod]->NUM;
+      del_edge e1;
+      del_edge e2;
+    }
+  }
+
+  rule num_without_noun_phrase {
+    pattern { 
+      e1: CLF -[mod]-> NUM;
+      NUM.upos = NUM;
+    }
+    without {
+        HEAD_NOUN -[clf]-> CLF;
+      }
+    commands {
+     shift_in CLF ==> NUM;
+      add_edge NUM -[nummod]->CLF;
+      del_edge e1;
+      shift_out CLF ==> NUM;
+    }
   }
 }
 
