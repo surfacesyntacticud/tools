@@ -1,0 +1,19 @@
+{
+    "title": "Détection des erreurs d'annotation du chinois mandarin (mSUD)",
+    "languages": ["zh"],
+    "items": [
+  
+      {
+        "description": "Seul la tête d'une unité de mot peut gouverner d'autres unités syntaxiques",
+        "request": [
+          "pattern {",
+          "  e: N1 -> N2;",
+          "  e2: N2 -> N3;",
+          "  e.deep = m;",
+          "}",
+          "without { e2.deep=m }"
+        ],
+        "level": "error"
+      }
+    ]
+  }
