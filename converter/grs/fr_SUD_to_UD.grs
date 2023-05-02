@@ -185,6 +185,15 @@ rule FR_discontinuous_MWE {
   }
 }
 
+rule FR_spoken_tilde {
+  pattern { N [form=re".*~", ExtPos] }
+  commands {
+    N.upos = N.ExtPos;
+    del_feat N.ExtPos
+  }
+}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Main strategy for converting any SUD French annotation into a UD annotation.
 strat fr_main{
@@ -194,6 +203,7 @@ strat fr_main{
     Onf(remove_UDplus_subtypes),
     Onf(non_projective_punct),
     Onf(FR_discontinuous_MWE),
+    Onf(FR_spoken_tilde),
   )
 }
 
