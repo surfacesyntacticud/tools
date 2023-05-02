@@ -32,8 +32,8 @@
             table.append('<colgroup><col style="width: 10%;"><col style="width: 90%;"></colgroup>');
 
             module.items.forEach((item) => {
-              let pattern_uri = encodeURIComponent(item.pattern.join('\n'));
-              let link = 'http://match.grew.fr/?corpus=' + data.corpus + '&pattern=' + pattern_uri;
+              let request_uri = encodeURIComponent(item.request.join('\n'));
+              let link = 'http://match.grew.fr/?corpus=' + data.corpus + '&request=' + request_uri;
               let row = "";
               if (item.count > 0) {
                 if (item.level == "error") {

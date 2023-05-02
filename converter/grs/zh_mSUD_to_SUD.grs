@@ -1,0 +1,72 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+strat zh_mSUD_to_SUD_main { 
+  Seq (
+    Onf (fusion)
+  )
+}
+
+
+package fusion {
+  rule suff_fusion_extpos {
+    pattern {
+      N [ExtPos];
+      N -[deep=m]-> M;  % M is attached with the :m extension
+      N < M             % M is a suffix
+    }  
+    without { M -> X}         % M is a leaf (force application order)
+    commands { 
+      N.form = N.form + M.form;             % concatenate the surface form
+      N.wordform = N.wordform + M.wordform; % concatenate the surface form
+      N.lemma = N.lemma + M.lemma;          % concatenate the surface lemma
+      del_node M;
+      N.upos = N.ExtPos; del_feat N.ExtPos;
+    }
+  }
+
+  rule suff_fusion {
+    pattern {
+      N[!ExtPos];
+      N -[deep=m]-> M;  % M is attached with the :m extension
+      N < M          % M is a suffix
+    }  
+    without { M -> X}         % M is a leaf (force application order)
+    commands { 
+      N.form = N.form + M.form;              % concatenate the surface form
+      N.wordform = N.wordform + M.wordform;  % concatenate the surface form
+      N.lemma = N.lemma + M.lemma;           % concatenate the surface lemma
+      del_node M;                % concatenate the surface form
+    }
+  }
+  
+  rule pref_fusion_extpos {
+    pattern {
+      N [ExtPos];
+      N -[deep=m]-> M;  % M is attached with the :m extension
+      M < N          % M is a prefix
+    }  
+    without { M -> X}         % M is a leaf (force application order)
+    commands { 
+      N.form = M.form + N.form;              % concatenate the surface form
+      N.wordform = M.wordform + N.wordform;  % concatenate the surface form
+      N.lemma = M.lemma + N.lemma;           % concatenate the surface lemma
+      del_node M;
+      N.upos = N.ExtPos; del_feat N.ExtPos;
+    }
+  }
+
+  rule pref_fusion {
+    pattern { 
+      N [!ExtPos];
+      N -[deep=m]-> M;  % M is attached with the :m extension
+      M < N          % M is a prefix
+    }  
+    without { M -> X}         % M is a leaf (force application order)
+    commands { 
+      N.form = M.form + N.form;  % concatenate the surface form
+      N.wordform = M.wordform + N.wordform;  % concatenate the surface form
+      N.lemma = M.lemma + N.lemma;           % concatenate the surface lemma
+      del_node M;                % concatenate the surface form
+    }
+  }
+}
+
