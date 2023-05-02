@@ -25,3 +25,4 @@ url:
 	@echo "http://localhost:8888/validator/?corpus=SUD_French-Rhapsodie@latest"
 	@echo "http://localhost:8888/validator/?corpus=SUD_French-ParisStories@latest"
 	@echo "http://localhost:8888/validator/?corpus=SUD_Naija-NSC@latest"
+	@echo "http://localhost:8888/validator/?corpus=SUD_Chinese-Beginner@latest"
