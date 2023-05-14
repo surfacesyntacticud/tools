@@ -76,19 +76,19 @@ var app = new Vue({
         // column 2
         } else if (params.colDef.field == "row_total" && params.data.row_total != undefined) {
           // test if the full row is searchable
-          if (app.json.grew_match.row != undefined) {
-            return `<a class="btn btn-primary btn-sm" onclick='grew_match("row","${params.data.row_header}","")'>${params.data.row_total}</a>`;
-          } else {
+          if (app.json.kind == "TBR") {
             return `<a class="btn btn-secondary disabled btn-sm">${params.value}</a>`;
+          } else {
+            return `<a class="btn btn-primary btn-sm" onclick='grew_match("row","${params.data.row_header}","")'>${params.data.row_total}</a>`;
           }
 
         // row 2
         } else if (params.data.row_type == "TOTAL") {
           // test if full column is searchable
-          if (app.json.grew_match.col != undefined) {
-            return `<a class="btn btn-primary btn-sm" onclick='grew_match("col", "", "${params.colDef.field}")'>${params.value}</a>`;
-          } else {
+          if (app.json.kind == "TBR") {
             return `<a class="btn btn-secondary disabled btn-sm">${params.value}</a>`;
+          } else {
+            return `<a class="btn btn-primary btn-sm" onclick='grew_match("col", "", "${params.colDef.field}")'>${params.value}</a>`;
           }
 
         // regular cell: row > 2 && col > 2
@@ -99,7 +99,7 @@ var app = new Vue({
           } else {
             v = params.value[this.display_mode]
           }
-          return (`<a class="btn btn-success btn-sm" onclick='grew_match("cell", "${params.data.row_header}","${params.colDef.grew}")'>${v}</a>`)
+          return (`<a class="btn btn-success btn-sm" onclick='grew_match("cell", "${params.data.row_header}","${params.colDef.field}")'>${v}</a>`)
         }
       }
     }
@@ -112,6 +112,7 @@ const col0 = {
   sortingOrder: ['asc', 'desc', null],
   pinned: "left",
   lockPinned: true,
+  width: 200,
 }
 
 let col1 = {
@@ -155,12 +156,27 @@ function esc(s) {
   return (encodeURIComponent(s.replace(/["]/g, '\\\"')))
 }
 
+// function xxx_grew_match(kind, row_header, col_header) {
+//   console.log ("============================");
+//   console.log (col_header);
+//   // kind can be "cell", "row" or "col"
+//   let request = app.json.grew_match[kind].replace(/__ROW__/g, esc(row_header)).replace(/__COL__/g, esc(col_header));
+
+//   console.log(request);
+//   window.open(request, '_blank');
+// }
+
 function grew_match(kind, row_header, col_header) {
-  // kind can be "cell", "row" or "col"
-  let request = app.json.grew_match[kind].replace(/__ROW__/g, esc(row_header)).replace(/__COL__/g, esc(col_header));
-  console.log(request);
-  window.open(request, '_blank');
+  if (kind != "cell") {
+    error ("grew_match", "only cell can be queried in *TBR* mode")
+  } else {
+    let request = app.json.requests[col_header];
+    let treebank = row_header;
+    let url = app.json.grew_match_instance + "?corpus=" + treebank + "&request=" + request
+    window.open(url, '_blank');
+  }
 }
+
 
 // setup the grid after the page has finished loading
 document.addEventListener('DOMContentLoaded', () => {

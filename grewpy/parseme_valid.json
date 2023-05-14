@@ -1,0 +1,94 @@
+{
+  "one_token": {
+    "comment": "% a VMWE must contain at least 2 tokens",
+    "request": [
+      {"pattern": ["MWE [label <> NotMWE];", "MWE -> N"] },
+      {"without": ["MWE -> X"] }
+    ]
+  },
+  "no_verb": {
+    "comment": "% a VMWE must contain a VERB",
+    "request": [
+      {"pattern": ["MWE [label <> NotMWE]"] },
+      {"without": ["MWE -> V", "V[upos=VERB|AUX]"] }
+    ] 
+  },
+   "LVC": {
+    "comment": "% an LVC must contain a VERB and a NOUN",
+    "request": [
+      {"pattern": ["MWE [label= \"LVC.full\" | \"LVC.cause\" ]"] },
+      {"without": ["MWE -> V", "V[upos=VERB|AUX]", "MWE -> N", "V[upos=NOUN]"] }
+    ]
+  },
+
+   "IRV": {
+    "comment": "",
+    "request": [
+      {"pattern": ["MWE [label = IRV];"] },
+      {"without": [  "MWE -> V", "V[upos=AUX|VERB]", "MWE -> P", "P[upos=PRON]" ] }
+    ]
+  },
+
+  "IRV_reflex": {
+    "comment": "% an IRV must contain a VERB and a reflexive PRON",
+    "request": [
+      {"pattern": ["MWE [label = IRV];"] },
+      {"without": [  "MWE -> V", "V[upos=AUX|VERB]", "MWE -> P", "P[upos=PRON, Reflex=Yes]" ] }
+    ]
+  },
+
+   "IRV_3": {
+    "comment": "% an IRV must contain at most 2 tokens",
+    "request": [
+      {"pattern": ["MWE [label = IRV]"] },
+      {"with": ["MWE -> X1", "MWE -> X2", "MWE -> X3"] }
+    ]
+  },
+
+   "VPC": {
+    "comment": "% a VPC  must contain a VERB and a PART, ADV or ADP",
+    "request": [
+      {"pattern": ["MWE [label = \"VPC.full\" | \"VPC.semi\"]"] },
+      {"without": [  "MWE -> V", "V[upos=AUX|VERB]", "MWE -> P", "P[upos=PART|ADV|ADP]" ] }
+    ]
+  },
+
+   "VPC_3": {
+    "comment": "% an VPC must contain at most 2 tokens",
+    "request": [
+      {"pattern": ["MWE [label = VPC]"] },
+      {"with": ["MWE -> X1", "MWE -> X2", "MWE -> X3"] }
+    ]
+  },
+
+   "MVC": {
+    "comment": "% an MVC must contain two or more VERBs",
+    "request": [
+      {"pattern": ["MWE [label = MVC]"] },
+      {"without": ["MWE -> V1", "V1[upos=AUX|VERB]", "MWE -> V2", "V2[upos=AUX|VERB]" ] }
+    ]
+  },
+
+   "MVC_not_verb": {
+    "comment": "% an MVC must contain only VERBs",
+    "request": [
+      {"pattern": ["MWE [label = MVC]", "MWE -> X", "X[upos <> AUX|VERB]"] }
+    ]
+  },
+
+   "IAV": {
+    "comment": "% an IAV must contain a VERB and an ADP",
+    "request": [
+      {"pattern": ["MWE [label = IAV]"] },
+      {"without": [  "MWE -> V", "V[upos=AUX|VERB]", "MWE -> A", "A[upos=ADP]" ] }
+    ]
+  },
+
+   "IAV_3": {
+    "comment": "% an IAV must contain at most 2 tokens",
+    "request": [
+      {"pattern": ["MWE [label = IAV]"] },
+      {"with": ["MWE -> X1", "MWE -> X2", "MWE -> X3"] }
+    ]
+  }
+}
