@@ -7,11 +7,11 @@ from grewpy import Request, Corpus, set_config
 parser = argparse.ArgumentParser(description="Build a Grew table from a list of treebanks and a list of requests")
 parser.add_argument("kind", help="the kind of table to build: TBR (treebanks/requests) or TBC (treebanks/clustering)")
 parser.add_argument("--treebanks", help="a JSON file with the list of treebanks")
-parser.add_argument("--requests", help="[TBR only ] a JSON file with the list of requests")
-parser.add_argument("--request", help="[TBC only ] a JSON file with the main request")
-parser.add_argument("--clustering_key", help="[TBC only ] the key used for clustering")
+parser.add_argument("--requests", help="[TBR only] a JSON file with the list of requests")
+parser.add_argument("--request", help="[TBC only] a JSON file with the main request")
+parser.add_argument("--clustering_key", help="[TBC only] the key used for clustering")
 parser.add_argument("-i", "--instance", help="grew-match instance", default="https://universal.grew.fr")
-parser.add_argument("-t", "--title", help="title of the table")
+parser.add_argument("-t", "--title", help="title of the table (markdown)")
 parser.add_argument("-c", "--config", help="grew config")
 args = parser.parse_args()
 
@@ -52,13 +52,14 @@ if __name__ == '__main__' and args.kind == "TBR":
   main_dict = {}
   for corpus_id in corpora:
     corpus = Corpus(corpora[corpus_id])
-    main_dict[corpus_id] = { id: corpus.count(grew_requests[id]) for id in grew_requests }
+    full_dict = { id: corpus.count(grew_requests[id]) for id in grew_requests }
+    main_dict[corpus_id] = { id: full_dict[id] for id in full_dict if full_dict[id]>0 }
     corpus.clean()
 
   columns = [ {"field": id, "headerName": id} for id in grew_requests]
-  columns_total = {"row_header": "Treebank", "row_type": "TOTAL"} | { id: sum([main_dict[corpus_id][id] for corpus_id in corpora]) for id in grew_requests }
+  columns_total = {"row_header": "Treebank", "row_type": "TOTAL"} | { id: sum([main_dict[corpus_id].get(id,0) for corpus_id in corpora]) for id in grew_requests }
 
-  cells = [ {"row_header": k1, "row_total": sum(main_dict[k1].values())} | { k2: [main_dict[k1][k2]] for k2 in main_dict[k1]} for k1 in main_dict]
+  cells = [ {"row_header": k1, "row_total": sum(main_dict[k1].values())} | { k2: [main_dict[k1].get(k2,0)] for k2 in main_dict[k1]} for k1 in main_dict]
 
   output = {
     "kind": "TBR",
