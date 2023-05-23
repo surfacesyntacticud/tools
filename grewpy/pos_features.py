@@ -1,8 +1,17 @@
 import datetime
+import argparse
 import sys
 import json
 from grewpy import CorpusDraft, Request, Corpus, set_config
-set_config('sud')
+
+parser = argparse.ArgumentParser(description="Build a Grew table listing features by UPOS")
+parser.add_argument("--treebank", help="a JSON string: dict from id to treebank")
+parser.add_argument("-i", "--instance", help="grew-match instance", default="https://universal.grew.fr")
+parser.add_argument("-c", "--config", help="grew config")
+args = parser.parse_args()
+
+if args.config:
+  set_config(args.config)
 
 ud_tagset = [
     'ADJ', 'ADP', 'ADV', 'AUX', 'CCONJ', 'DET', 
@@ -35,7 +44,7 @@ def escape_feat_name (s):
     return s
 
 def build_table (rows, columns, cell_fct, row_fct, col_fct):
-  columns_dict = [ {"field": column, "headerName": escape_feat_name(column), "grew": column} for column in columns ]
+  columns_dict = [ {"field": column, "headerName": escape_feat_name(column)} for column in columns ]
   columns_total_dict =  {"row_header": "upos", "row_type": "TOTAL"}  | { column: col_fct (column) for column in columns }
   def line(row):
     row_total = row_fct (row)
@@ -53,9 +62,13 @@ def build_table (rows, columns, cell_fct, row_fct, col_fct):
   }
 
 if __name__ == '__main__':
-  corpus_name = sys.argv[1]
-  corpus_files = sys.argv[2:]
-  corpus = Corpus(corpus_files)
+  if args.treebank:
+    data = json.loads(args.treebank)
+    (treebank_id, treebank_loc) = data.popitem()
+    corpus=Corpus(treebank_loc)
+  else:
+    print (f"Missing --treebank", file=sys.stderr)
+    raise ValueError
 
   # NB: we have to iterate on all graph -> CorpusDraft is much more efficient for this
   corpus_draft = CorpusDraft(corpus)
@@ -80,15 +93,15 @@ if __name__ == '__main__':
     return corpus.count(Request(f'N[{feat}]'))
   table = build_table(ud_tagset, features, cell_fct, row_fct, col_fct)
   table.update ({
-    "title": f"## Usage of features by UPOS in `{corpus_name}` (master)",
+    "kind": "DC",
+    "title": f"## Usage of features by UPOS in `{treebank_id}` (master)",
     "timestamp": datetime.datetime.now().isoformat(),
-    "col_key": "feature",
-    "display_modes": [["occ", "NUM"], ["% of row", "PERCENT"], ["% of col", "PERCENT"]],
-    "grew_match": {
-      "cell" : "http://universal.grew.fr?corpus=%s@latest&request=pattern{N [upos=__ROW__, __COL__]}" % corpus_name,
-      "row" : "http://universal.grew.fr?corpus=%s@latest&request=pattern{N [upos=__ROW__]}" % corpus_name,
-      "col": "http://universal.grew.fr?corpus=%s@latest&request=pattern{N [__COL__]}" % corpus_name
-    }
+    "grew_match_instance": args.instance,
+    "request": "pattern { N [] }",
+    "treebank": treebank_id,
+    "col_key": "N.__feature_name__",
+    "row_key": "N.upos",
+    "display_modes": [["occ", "NUM"], ["% of row", "PERCENT"], ["% of col", "PERCENT"]]
   })
 
   print (json.dumps(table, indent=2))

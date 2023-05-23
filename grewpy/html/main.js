@@ -179,15 +179,12 @@ function grew_match(kind, row_header, col_header) {
     if (app.json.kind == "DC") {
     let request = app.json.request;
     if (kind == "row") {
-      request += "%0Awith { "+ app.json.row_key + "=\""+ row_header +"\" }"
+      request += build_with(app.json.row_key, row_header)
     } else if (kind == "col") {
-      request += "%0Awith { "+ app.json.col_key + "=\""+ col_header +"\" }"
+      request += build_with(app.json.col_key, col_header)
     } else if (kind == "cell") {
       request += build_with(app.json.col_key, col_header)
       request += build_with(app.json.row_key, row_header)
-      // request += "%0Awith { "+ app.json.col_key + "=\""+ col_header +"\" }"
-      // request += "%0Awith { "+ app.json.row_key + "=\""+ row_header +"\" }"
-
     }
     let treebank = app.json.treebank;
     let url = app.json.grew_match_instance + "?corpus=" + treebank + "&request=" + request
@@ -197,8 +194,11 @@ function grew_match(kind, row_header, col_header) {
 
 function build_with(key,value) {
   let ks = key.split(/[./]/)
+  console.log(ks)
   if (ks.length == 3) {  // if key = N.upos/ExtPos and value = ADP ----> N [ExtPos="ADP"/upos="ADP"]
     return "%0Awith { "+ ks[0] +" ["+ ks[1] + "=\""+ value +"\""+"/"+ ks[2] + "=\""+ value +"\""+"] }"
+  } else if (ks.length == 2 && ks[1] == "__feature_name__") {
+    return "%0Awith { "+ ks[0] + "["+ value +"] }"
   } else {
   return "%0Awith { "+ key + "=\""+ value +"\" }"
   } 

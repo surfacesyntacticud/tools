@@ -7,7 +7,7 @@ from grewpy import Request, Corpus, set_config
 parser = argparse.ArgumentParser(description="Build a Grew table from a list of treebanks and a list of requests")
 parser.add_argument("kind", help="the kind of table to build: TBR (treebanks/requests) or TBC (treebanks/clustering)")
 parser.add_argument("--treebanks", help="a JSON file with the list of treebanks")
-parser.add_argument("--treebank", help="[DC only] a file or a directory with a treebank")
+parser.add_argument("--treebank", help="[DC only] a JSON string: dict from id to treebank")
 parser.add_argument("--requests", help="[TBR only] a JSON file with the list of requests")
 parser.add_argument("--request", help="[TBC only] a JSON file with the main request")
 parser.add_argument("--clustering_key", help="[TBC only] the key used for clustering")
