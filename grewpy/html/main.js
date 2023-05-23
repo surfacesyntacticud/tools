@@ -175,8 +175,34 @@ function grew_match(kind, row_header, col_header) {
     let url = app.json.grew_match_instance + "?corpus=" + treebank + "&request=" + request
     window.open(url, '_blank');
     }
+
+    if (app.json.kind == "DC") {
+    let request = app.json.request;
+    if (kind == "row") {
+      request += "%0Awith { "+ app.json.row_key + "=\""+ row_header +"\" }"
+    } else if (kind == "col") {
+      request += "%0Awith { "+ app.json.col_key + "=\""+ col_header +"\" }"
+    } else if (kind == "cell") {
+      request += build_with(app.json.col_key, col_header)
+      request += build_with(app.json.row_key, row_header)
+      // request += "%0Awith { "+ app.json.col_key + "=\""+ col_header +"\" }"
+      // request += "%0Awith { "+ app.json.row_key + "=\""+ row_header +"\" }"
+
+    }
+    let treebank = app.json.treebank;
+    let url = app.json.grew_match_instance + "?corpus=" + treebank + "&request=" + request
+    window.open(url, '_blank');
+  }
 }
 
+function build_with(key,value) {
+  let ks = key.split(/[./]/)
+  if (ks.length == 3) {  // if key = N.upos/ExtPos and value = ADP ----> N [ExtPos="ADP"/upos="ADP"]
+    return "%0Awith { "+ ks[0] +" ["+ ks[1] + "=\""+ value +"\""+"/"+ ks[2] + "=\""+ value +"\""+"] }"
+  } else {
+  return "%0Awith { "+ key + "=\""+ value +"\" }"
+  } 
+}
 
 // setup the grid after the page has finished loading
 document.addEventListener('DOMContentLoaded', () => {
