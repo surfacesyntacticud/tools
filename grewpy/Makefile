@@ -29,6 +29,51 @@ stop:
 web:
 	@make -C html
 
+parseme_valid:
+	python3 build_table.py TBR \
+		--instance https://parseme.grew.fr \
+		--title "## Parseme 1.3 validation" \
+		--treebanks parseme/corpora@1.3.json \
+		--requests parseme/validation_req.json \
+		> html/tables/parseme/valid@1.3.json
+
+parseme_label:
+	python3 build_table.py TBC \
+		--instance https://parseme.grew.fr \
+		--title "## Parseme 1.3 sorted by labels" \
+		--treebanks parseme/corpora@1.3.json \
+		--request parseme/label_req.json \
+		--clustering_key MWE.label \
+		> html/tables/parseme/labels.json
+
+parseme_all: parseme_valid parseme_label
+
+
+
+label_upos_French-GSD:
+	python3 build_table.py DC \
+		--treebank "{\"SUD_French-GSD@latest\": \"${SUD}/SUD_French-GSD\"}" \
+		--title "## edge label and dependant UPOS (SUD_French-GSD)" \
+		--request "edge.req" \
+		--row_key "e.label" \
+		--col_key "N.ExtPos/upos" \
+		> html/tables/SUD_French-GSD/label_upos.json
+
+amb_lemma_French-GSD:
+	python3 build_table.py DC \
+		--treebank "{\"SUD_French-GSD@latest\": \"${SUD}/SUD_French-GSD\"}" \
+		--title "## ambiguous lemmas UPOS (SUD_French-GSD@latest)" \
+		--request "lemma.req" \
+		--row_key "N.lemma" \
+		--col_key "N.upos" \
+		--filter \
+		> html/tables/SUD_French-GSD/amb_lemma.json
+
+pos_features_French-GSD:
+	python3 pos_features.py \
+		--treebank "{\"SUD_French-GSD@latest\": \"${SUD}/SUD_French-GSD\"}" \
+		> html/tables/SUD_French-GSD/pos_features.json
+
 all : stat_pos_features label_upos amb_lemma adj_lemma_pos parseme
 
 stat_pos_features:
@@ -77,9 +122,10 @@ adj_lemma_pos:
 	python3 double_clust.py adj_lemma_pos SUD_French-ParisStories@latest ${SUD}/SUD_French-ParisStories/*.conllu > html/_tables/SUD_French-ParisStories/adj_lemma_pos.json
 	python3 double_clust.py adj_lemma_pos PS_2023@latest ${SUD}/PS_2023/*.conllu > html/_tables/PS_2023/adj_lemma_pos.json
 
-parseme:
-	mkdir -p html/_tables/parseme
-	python3 multi_ling.py > html/_tables/parseme/lang_tags.json
+# parseme_old:
+# 	mkdir -p html/_tables/parseme
+# 	python3 parseme_by_label.py > html/_tables/parseme/lang_tags.json
+# 	python3 parseme_validation.py > html/_tables/parseme/valid.json
 
 sud:
 	mkdir -p html/_tables/sud
