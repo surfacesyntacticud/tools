@@ -1,0 +1,649 @@
+{
+  "kind": "TBR",
+  "title": "## Parseme 1.3 validation",
+  "timestamp": "2023-05-23T18:54:20.966113",
+  "grew_match_instance": "https://parseme.grew.fr",
+  "requests": {
+    "one_token": "%25 a VMWE must contain at least 2 tokens%0Apattern {MWE [label <> NotMWE];MWE -> N}%0Awithout {MWE -> X}",
+    "no_verb": "%25 a VMWE must contain a VERB%0Apattern {MWE [label <> NotMWE]}%0Awithout {MWE -> V;V[upos=VERB|AUX]}",
+    "LVC": "%25 an LVC must contain a VERB and a NOUN%0Apattern {MWE [label= \"LVC.full\" | \"LVC.cause\" ]}%0Awithout {MWE -> V;V[upos=VERB|AUX];MWE -> N;V[upos=NOUN]}",
+    "IRV": "%0Apattern {MWE [label = IRV]}%0Awithout {MWE -> V;V[upos=AUX|VERB];MWE -> P;P[upos=PRON]}",
+    "IRV_reflex": "%25 an IRV must contain a VERB and a reflexive PRON%0Apattern {MWE [label = IRV]}%0Awithout {MWE -> V;V[upos=AUX|VERB];MWE -> P;P[upos=PRON, Reflex=Yes]}",
+    "IRV_3": "%25 an IRV must contain at most 2 tokens%0Apattern {MWE [label = IRV]}%0Awith {MWE -> X1;MWE -> X2;MWE -> X3}",
+    "VPC": "%25 a VPC  must contain a VERB and a PART, ADV or ADP%0Apattern {MWE [label = \"VPC.full\" | \"VPC.semi\"]}%0Awithout {MWE -> V;V[upos=AUX|VERB];MWE -> P;P[upos=PART|ADV|ADP]}",
+    "VPC_3": "%25 an VPC must contain at most 2 tokens%0Apattern {MWE [label = VPC]}%0Awith {MWE -> X1;MWE -> X2;MWE -> X3}",
+    "MVC": "%25 an MVC must contain two or more VERBs%0Apattern {MWE [label = MVC]}%0Awithout {MWE -> V1;V1[upos=AUX|VERB];MWE -> V2;V2[upos=AUX|VERB]}",
+    "MVC_not_verb": "%25 an MVC must contain only VERBs%0Apattern {MWE [label = MVC];MWE -> X;X[upos <> AUX|VERB]}",
+    "IAV": "%25 an IAV must contain a VERB and an ADP%0Apattern {MWE [label = IAV]}%0Awithout {MWE -> V;V[upos=AUX|VERB];MWE -> A;A[upos=ADP]}",
+    "IAV_3": "%25 an IAV must contain at most 2 tokens%0Apattern {MWE [label = IAV]}%0Awith {MWE -> X1;MWE -> X2;MWE -> X3}"
+  },
+  "col_key": "Request",
+  "columns": [
+    {
+      "field": "one_token",
+      "headerName": "one_token"
+    },
+    {
+      "field": "no_verb",
+      "headerName": "no_verb"
+    },
+    {
+      "field": "LVC",
+      "headerName": "LVC"
+    },
+    {
+      "field": "IRV",
+      "headerName": "IRV"
+    },
+    {
+      "field": "IRV_reflex",
+      "headerName": "IRV_reflex"
+    },
+    {
+      "field": "IRV_3",
+      "headerName": "IRV_3"
+    },
+    {
+      "field": "VPC",
+      "headerName": "VPC"
+    },
+    {
+      "field": "VPC_3",
+      "headerName": "VPC_3"
+    },
+    {
+      "field": "MVC",
+      "headerName": "MVC"
+    },
+    {
+      "field": "MVC_not_verb",
+      "headerName": "MVC_not_verb"
+    },
+    {
+      "field": "IAV",
+      "headerName": "IAV"
+    },
+    {
+      "field": "IAV_3",
+      "headerName": "IAV_3"
+    }
+  ],
+  "columns_total": {
+    "row_header": "Treebank",
+    "row_type": "TOTAL",
+    "one_token": 14126,
+    "no_verb": 11268,
+    "LVC": 4528,
+    "IRV": 856,
+    "IRV_reflex": 3322,
+    "IRV_3": 1603,
+    "VPC": 13078,
+    "VPC_3": 0,
+    "MVC": 1912,
+    "MVC_not_verb": 684,
+    "IAV": 289,
+    "IAV_3": 1662
+  },
+  "cells": [
+    {
+      "row_header": "PARSEME-AR@1.3",
+      "row_total": 2191,
+      "one_token": [
+        17
+      ],
+      "no_verb": [
+        1302
+      ],
+      "LVC": [
+        774
+      ],
+      "MVC": [
+        3
+      ],
+      "MVC_not_verb": [
+        7
+      ],
+      "IAV": [
+        85
+      ],
+      "IAV_3": [
+        3
+      ]
+    },
+    {
+      "row_header": "PARSEME-BG@1.3",
+      "row_total": 860,
+      "one_token": [
+        11
+      ],
+      "no_verb": [
+        416
+      ],
+      "LVC": [
+        231
+      ],
+      "IRV": [
+        86
+      ],
+      "IRV_reflex": [
+        86
+      ],
+      "IRV_3": [
+        9
+      ],
+      "IAV": [
+        3
+      ],
+      "IAV_3": [
+        18
+      ]
+    },
+    {
+      "row_header": "PARSEME-CS@1.3",
+      "row_total": 3394,
+      "no_verb": [
+        790
+      ],
+      "LVC": [
+        547
+      ],
+      "IRV": [
+        272
+      ],
+      "IRV_reflex": [
+        272
+      ],
+      "IRV_3": [
+        1513
+      ]
+    },
+    {
+      "row_header": "PARSEME-DE@1.3",
+      "row_total": 2707,
+      "one_token": [
+        1268
+      ],
+      "no_verb": [
+        126
+      ],
+      "LVC": [
+        11
+      ],
+      "IRV": [
+        1
+      ],
+      "IRV_reflex": [
+        3
+      ],
+      "IRV_3": [
+        53
+      ],
+      "VPC": [
+        1245
+      ]
+    },
+    {
+      "row_header": "PARSEME-EL@1.3",
+      "row_total": 175,
+      "one_token": [
+        1
+      ],
+      "no_verb": [
+        26
+      ],
+      "LVC": [
+        121
+      ],
+      "IRV_reflex": [
+        1
+      ],
+      "IRV_3": [
+        1
+      ],
+      "VPC": [
+        11
+      ],
+      "MVC_not_verb": [
+        14
+      ]
+    },
+    {
+      "row_header": "PARSEME-EN@1.3",
+      "row_total": 100,
+      "one_token": [
+        4
+      ],
+      "no_verb": [
+        11
+      ],
+      "LVC": [
+        43
+      ],
+      "VPC": [
+        6
+      ],
+      "MVC": [
+        4
+      ],
+      "MVC_not_verb": [
+        4
+      ],
+      "IAV": [
+        10
+      ],
+      "IAV_3": [
+        18
+      ]
+    },
+    {
+      "row_header": "PARSEME-ES@1.3",
+      "row_total": 507,
+      "one_token": [
+        2
+      ],
+      "no_verb": [
+        23
+      ],
+      "LVC": [
+        9
+      ],
+      "IRV": [
+        1
+      ],
+      "IRV_reflex": [
+        8
+      ],
+      "IRV_3": [
+        1
+      ],
+      "VPC": [
+        1
+      ],
+      "MVC": [
+        32
+      ],
+      "MVC_not_verb": [
+        298
+      ],
+      "IAV": [
+        5
+      ],
+      "IAV_3": [
+        127
+      ]
+    },
+    {
+      "row_header": "PARSEME-EU@1.3",
+      "row_total": 203,
+      "no_verb": [
+        4
+      ],
+      "LVC": [
+        199
+      ]
+    },
+    {
+      "row_header": "PARSEME-FA@1.3",
+      "row_total": 107,
+      "one_token": [
+        1
+      ],
+      "no_verb": [
+        1
+      ],
+      "LVC": [
+        103
+      ],
+      "IRV_reflex": [
+        1
+      ],
+      "IRV_3": [
+        1
+      ]
+    },
+    {
+      "row_header": "PARSEME-FR@1.3",
+      "row_total": 177,
+      "one_token": [
+        5
+      ],
+      "no_verb": [
+        2
+      ],
+      "LVC": [
+        59
+      ],
+      "IRV": [
+        1
+      ],
+      "IRV_reflex": [
+        107
+      ],
+      "IRV_3": [
+        3
+      ]
+    },
+    {
+      "row_header": "PARSEME-GA@1.3",
+      "row_total": 412,
+      "one_token": [
+        3
+      ],
+      "no_verb": [
+        214
+      ],
+      "LVC": [
+        119
+      ],
+      "VPC": [
+        26
+      ],
+      "IAV": [
+        41
+      ],
+      "IAV_3": [
+        9
+      ]
+    },
+    {
+      "row_header": "PARSEME-HE@1.3",
+      "row_total": 465,
+      "one_token": [
+        42
+      ],
+      "no_verb": [
+        264
+      ],
+      "LVC": [
+        105
+      ],
+      "VPC": [
+        54
+      ]
+    },
+    {
+      "row_header": "PARSEME-HI@1.3",
+      "row_total": 16,
+      "LVC": [
+        11
+      ],
+      "MVC": [
+        2
+      ],
+      "MVC_not_verb": [
+        3
+      ]
+    },
+    {
+      "row_header": "PARSEME-HR@1.3",
+      "row_total": 760,
+      "no_verb": [
+        146
+      ],
+      "LVC": [
+        79
+      ],
+      "IRV": [
+        24
+      ],
+      "IRV_reflex": [
+        24
+      ],
+      "IRV_3": [
+        1
+      ],
+      "IAV": [
+        83
+      ],
+      "IAV_3": [
+        403
+      ]
+    },
+    {
+      "row_header": "PARSEME-HU@1.3",
+      "row_total": 18055,
+      "one_token": [
+        5745
+      ],
+      "no_verb": [
+        5901
+      ],
+      "LVC": [
+        755
+      ],
+      "VPC": [
+        5654
+      ]
+    },
+    {
+      "row_header": "PARSEME-IT@1.3",
+      "row_total": 1493,
+      "one_token": [
+        9
+      ],
+      "no_verb": [
+        65
+      ],
+      "LVC": [
+        32
+      ],
+      "IRV": [
+        11
+      ],
+      "IRV_reflex": [
+        1144
+      ],
+      "IRV_3": [
+        11
+      ],
+      "VPC": [
+        6
+      ],
+      "MVC": [
+        2
+      ],
+      "MVC_not_verb": [
+        16
+      ],
+      "IAV": [
+        9
+      ],
+      "IAV_3": [
+        188
+      ]
+    },
+    {
+      "row_header": "PARSEME-LT@1.3",
+      "row_total": 28,
+      "no_verb": [
+        12
+      ],
+      "LVC": [
+        16
+      ]
+    },
+    {
+      "row_header": "PARSEME-MT@1.3",
+      "row_total": 113,
+      "one_token": [
+        13
+      ],
+      "no_verb": [
+        59
+      ],
+      "LVC": [
+        39
+      ],
+      "IRV_reflex": [
+        1
+      ],
+      "VPC": [
+        1
+      ]
+    },
+    {
+      "row_header": "PARSEME-PL@1.3",
+      "row_total": 1874,
+      "no_verb": [
+        836
+      ],
+      "LVC": [
+        649
+      ],
+      "IRV": [
+        193
+      ],
+      "IRV_reflex": [
+        193
+      ],
+      "IRV_3": [
+        3
+      ]
+    },
+    {
+      "row_header": "PARSEME-PT@1.3",
+      "row_total": 1513,
+      "one_token": [
+        1
+      ],
+      "no_verb": [
+        26
+      ],
+      "LVC": [
+        213
+      ],
+      "IRV": [
+        249
+      ],
+      "IRV_reflex": [
+        1021
+      ],
+      "IRV_3": [
+        3
+      ]
+    },
+    {
+      "row_header": "PARSEME-RO@1.3",
+      "row_total": 978,
+      "no_verb": [
+        5
+      ],
+      "LVC": [
+        2
+      ],
+      "IRV_reflex": [
+        206
+      ],
+      "IRV_3": [
+        2
+      ],
+      "IAV": [
+        13
+      ],
+      "IAV_3": [
+        750
+      ]
+    },
+    {
+      "row_header": "PARSEME-SL@1.3",
+      "row_total": 213,
+      "LVC": [
+        16
+      ],
+      "IRV": [
+        5
+      ],
+      "IRV_reflex": [
+        5
+      ],
+      "IRV_3": [
+        1
+      ],
+      "IAV": [
+        40
+      ],
+      "IAV_3": [
+        146
+      ]
+    },
+    {
+      "row_header": "PARSEME-SR@1.3",
+      "row_total": 180,
+      "no_verb": [
+        91
+      ],
+      "LVC": [
+        62
+      ],
+      "IRV": [
+        13
+      ],
+      "IRV_reflex": [
+        13
+      ],
+      "IRV_3": [
+        1
+      ]
+    },
+    {
+      "row_header": "PARSEME-SV@1.3",
+      "row_total": 3489,
+      "one_token": [
+        1616
+      ],
+      "no_verb": [
+        92
+      ],
+      "LVC": [
+        12
+      ],
+      "IRV_reflex": [
+        237
+      ],
+      "VPC": [
+        1532
+      ]
+    },
+    {
+      "row_header": "PARSEME-TR@1.3",
+      "row_total": 614,
+      "one_token": [
+        6
+      ],
+      "no_verb": [
+        330
+      ],
+      "LVC": [
+        278
+      ]
+    },
+    {
+      "row_header": "PARSEME-ZH@1.3",
+      "row_total": 12704,
+      "one_token": [
+        5382
+      ],
+      "no_verb": [
+        526
+      ],
+      "LVC": [
+        43
+      ],
+      "VPC": [
+        4542
+      ],
+      "MVC": [
+        1869
+      ],
+      "MVC_not_verb": [
+        342
+      ]
+    }
+  ],
+  "display_modes": [
+    [
+      "occ",
+      "NUM"
+    ]
+  ]
+}

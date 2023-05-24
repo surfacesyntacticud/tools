@@ -1,4 +1,4 @@
-SUD=/Users/guillaum/github/surfacesyntacticud
+SUD=/Users/guillaum/resources/sud-treebanks-v2.12
 PORT=8998
 PID=`lsof -t -i :${PORT}`
 
@@ -27,7 +27,9 @@ stop:
 	fi
 
 web:
-	@make -C html
+	pandoc --standalone --template html/template.html html/list.md -o html/list.html
+
+parseme_all: parseme_valid parseme_label
 
 parseme_valid:
 	python3 build_table.py TBR \
@@ -35,46 +37,54 @@ parseme_valid:
 		--title "## Parseme 1.3 validation" \
 		--treebanks parseme/corpora@1.3.json \
 		--requests parseme/validation_req.json \
-		> html/tables/parseme/valid@1.3.json
+		> html/parseme/valid@1.3.json
 
-parseme_label:
+parseme_labels:
 	python3 build_table.py TBC \
 		--instance https://parseme.grew.fr \
 		--title "## Parseme 1.3 sorted by labels" \
 		--treebanks parseme/corpora@1.3.json \
 		--request parseme/label_req.json \
 		--clustering_key MWE.label \
-		> html/tables/parseme/labels.json
-
-parseme_all: parseme_valid parseme_label
+		> html/parseme/labels@1.3.json
 
 
 
 label_upos_French-GSD:
 	python3 build_table.py DC \
-		--treebank "{\"SUD_French-GSD@latest\": \"${SUD}/SUD_French-GSD\"}" \
-		--title "## edge label and dependant UPOS (SUD_French-GSD)" \
+		--treebank "{\"SUD_French-GSD@2.12\": \"${SUD}/SUD_French-GSD\"}" \
+		--title "## edge label and dependant UPOS (SUD_French-GSD@2.12)" \
 		--request "edge.req" \
 		--row_key "e.label" \
 		--col_key "N.ExtPos/upos" \
-		> html/tables/SUD_French-GSD/label_upos.json
+		> html/SUD_French-GSD/label_upos@2.12.json
 
 amb_lemma_French-GSD:
 	python3 build_table.py DC \
-		--treebank "{\"SUD_French-GSD@latest\": \"${SUD}/SUD_French-GSD\"}" \
-		--title "## ambiguous lemmas UPOS (SUD_French-GSD@latest)" \
+		--treebank "{\"SUD_French-GSD@2.12\": \"${SUD}/SUD_French-GSD\"}" \
+		--title "## ambiguous lemmas UPOS (SUD_French-GSD@2.12)" \
 		--request "lemma.req" \
 		--row_key "N.lemma" \
 		--col_key "N.upos" \
 		--filter \
-		> html/tables/SUD_French-GSD/amb_lemma.json
+		> html/SUD_French-GSD/amb_lemma@2.12.json
 
 pos_features_French-GSD:
 	python3 pos_features.py \
-		--treebank "{\"SUD_French-GSD@latest\": \"${SUD}/SUD_French-GSD\"}" \
-		> html/tables/SUD_French-GSD/pos_features.json
+		--treebank "{\"SUD_French-GSD@2.12\": \"${SUD}/SUD_French-GSD\"}" \
+		> html/SUD_French-GSD/pos_features@2.12.json
 
-all : stat_pos_features label_upos amb_lemma adj_lemma_pos parseme
+gsd : label_upos_French-GSD amb_lemma_French-GSD pos_features_French-GSD
+
+
+
+
+
+
+
+
+
+
 
 stat_pos_features:
 	mkdir -p html/_tables/SUD_Beja-NSC
@@ -121,11 +131,6 @@ adj_lemma_pos:
 	python3 double_clust.py adj_lemma_pos SUD_French-Rhapsodie@latest ${SUD}/SUD_French-Rhapsodie/*.conllu > html/_tables/SUD_French-Rhapsodie/adj_lemma_pos.json
 	python3 double_clust.py adj_lemma_pos SUD_French-ParisStories@latest ${SUD}/SUD_French-ParisStories/*.conllu > html/_tables/SUD_French-ParisStories/adj_lemma_pos.json
 	python3 double_clust.py adj_lemma_pos PS_2023@latest ${SUD}/PS_2023/*.conllu > html/_tables/PS_2023/adj_lemma_pos.json
-
-# parseme_old:
-# 	mkdir -p html/_tables/parseme
-# 	python3 parseme_by_label.py > html/_tables/parseme/lang_tags.json
-# 	python3 parseme_validation.py > html/_tables/parseme/valid.json
 
 sud:
 	mkdir -p html/_tables/sud

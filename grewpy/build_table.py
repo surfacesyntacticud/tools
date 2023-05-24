@@ -217,7 +217,7 @@ if __name__ == '__main__' and args.kind == "DC":
     d["row_header"] = k1
     d["row_total"] = sum(dc[k1].values())
     return d
-  cells = [ build_row (k1) for k1 in main_dict]
+  cells = [ build_row (k1) for k1 in dc]
 
   final_json = {
       "kind": "DC",
