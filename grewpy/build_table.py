@@ -71,9 +71,17 @@ if __name__ == '__main__' and args.kind == "TBR":
     corpus.clean()
 
   columns = [ {"field": id, "headerName": id} for id in grew_requests]
-  columns_total = {"row_header": "Treebank", "row_type": "TOTAL"} | { id: sum([main_dict[corpus_id].get(id,0) for corpus_id in corpora]) for id in grew_requests }
+  # columns_total = {"row_header": "Treebank", "row_type": "TOTAL"} | { id: sum([main_dict[corpus_id].get(id,0) for corpus_id in corpora]) for id in grew_requests }
+  columns_total = { id: sum([main_dict[corpus_id].get(id,0) for corpus_id in corpora]) for id in grew_requests }
+  columns_total["row_header"] = "Treebank"
+  columns_total["row_type"] = "TOTAL"
 
-  cells = [ {"row_header": k1, "row_total": sum(main_dict[k1].values())} | { k2: [main_dict[k1].get(k2,0)] for k2 in main_dict[k1]} for k1 in main_dict]
+  def build_row(k1):
+    d = { k2: [main_dict[k1].get(k2,0)] for k2 in main_dict[k1]}
+    d["row_header"] = k1
+    d["row_total"] = sum(main_dict[k1].values())
+    return d
+  cells = [ build_row (k1) for k1 in main_dict]
 
   output = {
     "kind": "TBR",
@@ -126,14 +134,16 @@ if __name__ == '__main__' and args.kind == "TBC":
   column_list = [(c, columns_dict[c]) for c in columns_dict]
   column_list.sort(key = lambda x: x[1], reverse=True)
   columns = [ {"field": esc(k), "headerName": k} for (k,_) in column_list]
-  columns_total = {"row_header": "Language", "row_type": "TOTAL"} | { esc(p[0]): p[1] for p in column_list }
+  columns_total = { esc(p[0]): p[1] for p in column_list }
+  columns_total["row_header"] = "Language"
+  columns_total["row_type"] = "TOTAL"
 
   def build_row(k1):
     total = sum(main_dict[k1].values())
-    return (
-      { "row_header": k1, "row_total": total} 
-      | { esc(k2): [main_dict[k1][k2], main_dict[k1][k2]/total] for k2 in main_dict[k1]}
-    )
+    d = { esc(k2): [main_dict[k1][k2], main_dict[k1][k2]/total] for k2 in main_dict[k1]}
+    d["row_header"] = k1
+    d["row_total"] = total
+    return d 
   
   cells = [ build_row (k1) for k1 in main_dict ]
 
@@ -198,9 +208,16 @@ if __name__ == '__main__' and args.kind == "DC":
   column_list = [(c, columns_dict[c]) for c in columns_dict]
   column_list.sort(key = lambda x: x[1], reverse=True)
   columns = [ {"field": k, "headerName": k} for (k,_) in column_list]
-  columns_total = {"row_header": row_key, "row_type": "TOTAL"} | { p[0]: p[1] for p in column_list }
+  columns_total = { p[0]: p[1] for p in column_list }
+  columns_total["row_header"] = row_key
+  columns_total["row_type"] = "TOTAL"
 
-  cells = [ {"row_header": k1, "row_total": sum(dc[k1].values())} | { k2: [dc[k1][k2]] for k2 in dc[k1]} for k1 in dc]
+  def build_row(k1):
+    d = { k2: [dc[k1][k2]] for k2 in dc[k1]}
+    d["row_header"] = k1
+    d["row_total"] = sum(dc[k1].values())
+    return d
+  cells = [ build_row (k1) for k1 in main_dict]
 
   final_json = {
       "kind": "DC",
