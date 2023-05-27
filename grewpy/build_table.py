@@ -13,7 +13,7 @@ parser.add_argument("--request", help="[TBC only] a JSON file with the main requ
 parser.add_argument("--clustering_key", help="[TBC only] the key used for clustering")
 parser.add_argument("--col_key", help="[TBC only] the key used for col")
 parser.add_argument("--row_key", help="[TBC only] the key used for row")
-parser.add_argument("--home", help="url to the 'home' page", default="..")
+parser.add_argument("--home", help="url to the 'home' page")
 parser.add_argument('--timestamp', help="Add a timestamp on table", action='store_true')
 parser.add_argument("-i", "--instance", help="grew-match instance", default="https://universal.grew.fr")
 parser.add_argument("-t", "--title", help="title of the table (markdown)")
@@ -88,7 +88,6 @@ if __name__ == '__main__' and args.kind == "TBR":
   output = {
     "kind": "TBR",
     "title": title,
-    "home": args.home,
     "grew_match_instance": args.instance,
     "requests": text_requests,
     "col_key": "Request",
@@ -100,6 +99,9 @@ if __name__ == '__main__' and args.kind == "TBR":
 
   if args.timestamp:
     output["timestamp"] = datetime.datetime.now().isoformat()
+
+  if args.home:
+    output["home"] = args.home
 
   print (json.dumps(output, indent=2))
 
@@ -155,7 +157,6 @@ if __name__ == '__main__' and args.kind == "TBC":
   output = { 
     "kind": "TBC",
     "title": title,
-    "home": args.home,
     "grew_match_instance": args.instance,
     "request": text_request,
     "col_key": clustering_key,
@@ -167,6 +168,9 @@ if __name__ == '__main__' and args.kind == "TBC":
 
   if args.timestamp:
     output["timestamp"] = datetime.datetime.now().isoformat()
+
+  if args.home:
+    output["home"] = args.home
 
   print (json.dumps(output, indent=2))
 
@@ -230,7 +234,6 @@ if __name__ == '__main__' and args.kind == "DC":
   final_json = {
       "kind": "DC",
       "title": title,
-      "home": args.home,
       "grew_match_instance": args.instance,
       "request": text_request,
       "treebank": treebank_id,
@@ -244,5 +247,8 @@ if __name__ == '__main__' and args.kind == "DC":
 
   if args.timestamp:
     output["timestamp"] = datetime.datetime.now().isoformat()
+
+  if args.home:
+    output["home"] = args.home
 
   print (json.dumps(final_json, indent=2))
