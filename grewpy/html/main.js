@@ -12,6 +12,7 @@ var app = new Vue({
     filter_value: "",
     display_mode: 0,
     title: "",
+    home: location.origin,
   },
   watch: {
     display_mode: function () {
@@ -126,8 +127,13 @@ let col1 = {
 function build_grid(data) {
   app.json = data;
   app.title = md.render(app.json.title);
-  $('#update_ago').html('<time class="timeago" datetime="' + app.json.timestamp + '">update time</time>');
-  $('#update_ago > time').timeago(); // make it dynamic
+  if (app.json.home != undefined) {
+    app.home = app.json.home
+  }
+  if (app.json.timestamp != undefined) {
+    $('#update_ago').html('&nbsp;• Updated <time class="timeago" datetime="' + app.json.timestamp + '">update time</time>');
+    $('#update_ago > time').timeago(); // make it dynamic
+  }
 
   app.update_sorting(); // ensure that sorting is done on the right component
 
