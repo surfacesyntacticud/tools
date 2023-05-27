@@ -5,7 +5,7 @@
   "requests": {
     "one_token": "%25 a VMWE must contain at least 2 tokens%0Apattern {MWE [label <> NotMWE];MWE -> N}%0Awithout {MWE -> X}",
     "no_verb": "%25 a VMWE must contain a VERB%0Apattern {MWE [label <> NotMWE]}%0Awithout {MWE -> V;V[upos=VERB|AUX]}",
-    "LVC": "%25 an LVC must contain a VERB and a NOUN%0Apattern {MWE [label= \"LVC.full\" | \"LVC.cause\" ]}%0Awithout {MWE -> V;V[upos=VERB|AUX];MWE -> N;V[upos=NOUN]}",
+    "LVC": "%25 an LVC must contain a VERB and a NOUN%0Apattern {MWE [label= \"LVC.full\" | \"LVC.cause\" ]}%0Awithout {MWE -> V;V[upos=VERB|AUX];MWE -> N;N[upos=NOUN]}",
     "IRV": "%0Apattern {MWE [label = IRV]}%0Awithout {MWE -> V;V[upos=AUX|VERB];MWE -> P;P[upos=PRON]}",
     "IRV_reflex": "%25 an IRV must contain a VERB and a reflexive PRON%0Apattern {MWE [label = IRV]}%0Awithout {MWE -> V;V[upos=AUX|VERB];MWE -> P;P[upos=PRON, Reflex=Yes]}",
     "IRV_3": "%25 an IRV must contain at most 2 tokens%0Apattern {MWE [label = IRV]}%0Awith {MWE -> X1;MWE -> X2;MWE -> X3}",
@@ -70,7 +70,7 @@
   "columns_total": {
     "one_token": 6721,
     "no_verb": 3193,
-    "LVC": 1987,
+    "LVC": 3205,
     "IRV": 391,
     "IRV_reflex": 4010,
     "IRV_3": 72,
@@ -92,7 +92,7 @@
         251
       ],
       "LVC": [
-        21
+        16
       ],
       "IRV": [
         11
@@ -107,7 +107,7 @@
         1284
       ],
       "row_header": "PARSEME-DE@1.2",
-      "row_total": 2906
+      "row_total": 2901
     },
     {
       "one_token": [
@@ -117,7 +117,7 @@
         154
       ],
       "LVC": [
-        152
+        415
       ],
       "VPC": [
         12
@@ -129,17 +129,17 @@
         26
       ],
       "row_header": "PARSEME-EL@1.2",
-      "row_total": 350
+      "row_total": 613
     },
     {
       "no_verb": [
         14
       ],
       "LVC": [
-        195
+        386
       ],
       "row_header": "PARSEME-EU@1.2",
-      "row_total": 209
+      "row_total": 400
     },
     {
       "one_token": [
@@ -149,7 +149,7 @@
         2
       ],
       "LVC": [
-        60
+        3
       ],
       "IRV": [
         1
@@ -161,7 +161,7 @@
         3
       ],
       "row_header": "PARSEME-FR@1.2",
-      "row_total": 1379
+      "row_total": 1322
     },
     {
       "one_token": [
@@ -202,20 +202,20 @@
         467
       ],
       "LVC": [
-        207
+        490
       ],
       "VPC": [
         77
       ],
       "row_header": "PARSEME-HE@1.2",
-      "row_total": 793
+      "row_total": 1076
     },
     {
       "no_verb": [
         5
       ],
       "LVC": [
-        12
+        26
       ],
       "MVC": [
         22
@@ -224,7 +224,7 @@
         23
       ],
       "row_header": "PARSEME-HI@1.2",
-      "row_total": 62
+      "row_total": 76
     },
     {
       "one_token": [
@@ -234,7 +234,7 @@
         65
       ],
       "LVC": [
-        32
+        41
       ],
       "IRV": [
         11
@@ -261,14 +261,14 @@
         188
       ],
       "row_header": "PARSEME-IT@1.2",
-      "row_total": 1493
+      "row_total": 1502
     },
     {
       "no_verb": [
         820
       ],
       "LVC": [
-        640
+        601
       ],
       "IRV": [
         186
@@ -277,7 +277,7 @@
         186
       ],
       "row_header": "PARSEME-PL@1.2",
-      "row_total": 1832
+      "row_total": 1793
     },
     {
       "one_token": [
@@ -287,7 +287,7 @@
         47
       ],
       "LVC": [
-        205
+        107
       ],
       "IRV": [
         176
@@ -305,11 +305,11 @@
         1
       ],
       "row_header": "PARSEME-PT@1.2",
-      "row_total": 1461
+      "row_total": 1363
     },
     {
       "LVC": [
-        3
+        5
       ],
       "IRV": [
         1
@@ -318,7 +318,7 @@
         207
       ],
       "row_header": "PARSEME-RO@1.2",
-      "row_total": 211
+      "row_total": 213
     },
     {
       "one_token": [
@@ -328,7 +328,7 @@
         35
       ],
       "LVC": [
-        10
+        3
       ],
       "IRV_reflex": [
         115
@@ -337,7 +337,7 @@
         918
       ],
       "row_header": "PARSEME-SV@1.2",
-      "row_total": 2045
+      "row_total": 2038
     },
     {
       "one_token": [
@@ -347,10 +347,10 @@
         348
       ],
       "LVC": [
-        283
+        696
       ],
       "row_header": "PARSEME-TR@1.2",
-      "row_total": 637
+      "row_total": 1050
     },
     {
       "one_token": [
@@ -360,7 +360,7 @@
         762
       ],
       "LVC": [
-        40
+        289
       ],
       "VPC": [
         3458
@@ -372,7 +372,7 @@
         571
       ],
       "row_header": "PARSEME-ZH@1.2",
-      "row_total": 11164
+      "row_total": 11413
     }
   ],
   "display_modes": [
