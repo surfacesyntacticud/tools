@@ -1,3 +1,4 @@
+import os
 import sys
 import argparse
 import json
@@ -37,7 +38,8 @@ else:
 def treebanks():
   if args.kind in ["TBR", "TBC"] and args.treebanks:
     with open(args.treebanks, "rb") as f:
-      return json.load(f)
+      data = json.load(f)
+      return data["corpora"]
   else:
     print (f"Missing --treebanks", file=sys.stderr)
     raise ValueError
@@ -50,6 +52,15 @@ def request_of_json (data):
   else:
     text_request = f'{text}'.replace("\n", "%0A")
   return (grew_request, text_request)
+
+def load_corpus (corpus_desc):
+  corpus_id = corpus_desc["id"] 
+  directory = corpus_desc["directory"] 
+  if "files" in corpus_desc:
+    full_names = [os.path.join(directory, file) for file in corpus_desc["files"]]
+    return (corpus_id, Corpus(full_names))
+  else:
+    return (corpus_id, Corpus (directory))
 
 # ===============================================================================================
 # Table with several treebanks and several requests
@@ -66,15 +77,15 @@ if __name__ == '__main__' and args.kind == "TBR":
 
   corpora = treebanks()
   main_dict = {}
-  for corpus_id in corpora:
-    corpus = Corpus(corpora[corpus_id])
+  for corpus_desc in corpora:
+    (corpus_id, corpus) = load_corpus (corpus_desc)
     full_dict = { id: corpus.count(grew_requests[id]) for id in grew_requests }
     main_dict[corpus_id] = { id: full_dict[id] for id in full_dict if full_dict[id]>0 }
     corpus.clean()
 
   columns = [ {"field": id, "headerName": id} for id in grew_requests]
   # columns_total = {"row_header": "Treebank", "row_type": "TOTAL"} | { id: sum([main_dict[corpus_id].get(id,0) for corpus_id in corpora]) for id in grew_requests }
-  columns_total = { id: sum([main_dict[corpus_id].get(id,0) for corpus_id in corpora]) for id in grew_requests }
+  columns_total = { id: sum([main_dict[corpus_desc["id"]].get(id,0) for corpus_desc in corpora]) for id in grew_requests }
   columns_total["row_header"] = "Treebank"
   columns_total["row_type"] = "TOTAL"
 
@@ -126,8 +137,8 @@ if __name__ == '__main__' and args.kind == "TBC":
 
   corpora = treebanks()
   main_dict = {}
-  for corpus_id in corpora:
-    corpus = Corpus(corpora[corpus_id])
+  for corpus_desc in corpora:
+    (corpus_id, corpus) = load_corpus (corpus_desc)
     main_dict[corpus_id] = corpus.count(grew_request, clustering_keys=[clustering_key])
     corpus.clean()
 

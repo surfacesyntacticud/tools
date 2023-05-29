@@ -1,6 +1,7 @@
 SUD=/Users/guillaum/resources/sud-treebanks-v2.12
 PORT=8998
 PID=`lsof -t -i :${PORT}`
+GREW_MATCH_CONFIG=/Users/guillaum/gitlab/grew/grew_match_config
 
 self_doc:
 	@echo " - make start ==> start a local webserver"
@@ -29,21 +30,36 @@ stop:
 web:
 	pandoc --standalone --template html/template.html html/list.md -o html/list.html
 
-parseme_all: parseme_valid parseme_label
+parseme_12_valid:
+	python3 build_table.py TBR \
+		--instance https://parseme.grew.fr \
+		--title "## Parseme 1.2 validation" \
+		--treebanks ${GREW_MATCH_CONFIG}/corpora/parseme_1.2.json \
+		--requests parseme/validation_req.json \
+		> html/parseme/valid@1.2.json
 
-parseme_valid:
+parseme_13_valid:
 	python3 build_table.py TBR \
 		--instance https://parseme.grew.fr \
 		--title "## Parseme 1.3 validation" \
-		--treebanks parseme/corpora@1.3.json \
+		--treebanks ${GREW_MATCH_CONFIG}/corpora/parseme_1.3.json \
 		--requests parseme/validation_req.json \
 		> html/parseme/valid@1.3.json
 
-parseme_labels:
+parseme_12_labels:
+	python3 build_table.py TBC \
+		--instance https://parseme.grew.fr \
+		--title "## Parseme 1.2 sorted by labels" \
+		--treebanks ${GREW_MATCH_CONFIG}/corpora/parseme_1.2.json \
+		--request parseme/label_req.json \
+		--clustering_key MWE.label \
+		> html/parseme/labels@1.2.json
+
+parseme_13_labels:
 	python3 build_table.py TBC \
 		--instance https://parseme.grew.fr \
 		--title "## Parseme 1.3 sorted by labels" \
-		--treebanks parseme/corpora@1.3.json \
+		--treebanks ${GREW_MATCH_CONFIG}/corpora/parseme_1.3.json \
 		--request parseme/label_req.json \
 		--clustering_key MWE.label \
 		> html/parseme/labels@1.3.json
@@ -73,68 +89,3 @@ pos_features_French-GSD:
 	python3 pos_features.py \
 		--treebank "{\"SUD_French-GSD@2.12\": \"${SUD}/SUD_French-GSD\"}" \
 		> html/SUD_French-GSD/pos_features@2.12.json
-
-gsd : label_upos_French-GSD amb_lemma_French-GSD pos_features_French-GSD
-
-
-
-
-
-
-
-
-
-
-
-stat_pos_features:
-	mkdir -p html/_tables/SUD_Beja-NSC
-	mkdir -p html/_tables/SUD_French-GSD
-	mkdir -p html/_tables/SUD_French-Rhapsodie
-	mkdir -p html/_tables/SUD_French-ParisStories
-	mkdir -p html/_tables/PS_2023
-	mkdir -p html/_tables/SUD_Naija-NSC
-	mkdir -p html/_tables/SUD_Zaar-Autogramm
-	python3 stat_pos_features.py SUD_Beja-NSC ${SUD}/SUD_Beja-NSC/*.conllu > html/_tables/SUD_Beja-NSC/stat_pos_features.json
-	python3 stat_pos_features.py SUD_French-GSD ${SUD}/SUD_French-GSD/*.conllu > html/_tables/SUD_French-GSD/stat_pos_features.json
-	python3 stat_pos_features.py SUD_French-Rhapsodie ${SUD}/SUD_French-Rhapsodie/*.conllu > html/_tables/SUD_French-Rhapsodie/stat_pos_features.json
-	python3 stat_pos_features.py SUD_French-ParisStories ${SUD}/SUD_French-ParisStories/*.conllu > html/_tables/SUD_French-ParisStories/stat_pos_features.json
-	python3 stat_pos_features.py PS_2023 ${SUD}/PS_2023/*.conllu > html/_tables/PS_2023/stat_pos_features.json
-	python3 stat_pos_features.py SUD_Naija-NSC ${SUD}/SUD_Naija-NSC/*.conllu > html/_tables/SUD_Naija-NSC/stat_pos_features.json
-	python3 stat_pos_features.py SUD_Zaar-Autogramm ${SUD}/SUD_Zaar-Autogramm/CORPUS/*.conllu > html/_tables/SUD_Zaar-Autogramm/stat_pos_features.json
-
-label_upos:
-	mkdir -p html/_tables/SUD_French-GSD
-	mkdir -p html/_tables/SUD_French-Rhapsodie
-	mkdir -p html/_tables/SUD_French-ParisStories
-	mkdir -p html/_tables/PS_2023
-	python3 double_clust.py label_upos SUD_French-GSD@latest ${SUD}/SUD_French-GSD/*.conllu > html/_tables/SUD_French-GSD/label_upos.json
-	python3 double_clust.py label_upos SUD_French-Rhapsodie@latest ${SUD}/SUD_French-Rhapsodie/*.conllu > html/_tables/SUD_French-Rhapsodie/label_upos.json
-	python3 double_clust.py label_upos SUD_French-ParisStories@latest ${SUD}/SUD_French-ParisStories/*.conllu > html/_tables/SUD_French-ParisStories/label_upos.json
-	python3 double_clust.py label_upos PS_2023@latest ${SUD}/PS_2023/*.conllu > html/_tables/PS_2023/label_upos.json
-
-amb_lemma:
-	mkdir -p html/_tables/SUD_French-GSD
-	mkdir -p html/_tables/SUD_French-Rhapsodie
-	mkdir -p html/_tables/SUD_French-ParisStories
-	mkdir -p html/_tables/PS_2023
-	python3 double_clust.py amb_lemma SUD_French-GSD@latest ${SUD}/SUD_French-GSD/*.conllu > html/_tables/SUD_French-GSD/amb_lemma.json
-	python3 double_clust.py amb_lemma SUD_French-Rhapsodie@latest ${SUD}/SUD_French-Rhapsodie/*.conllu > html/_tables/SUD_French-Rhapsodie/amb_lemma.json
-	python3 double_clust.py amb_lemma SUD_French-ParisStories@latest ${SUD}/SUD_French-ParisStories/*.conllu > html/_tables/SUD_French-ParisStories/amb_lemma.json
-	python3 double_clust.py amb_lemma PS_2023@latest ${SUD}/PS_2023/*.conllu > html/_tables/PS_2023/amb_lemma.json
-
-adj_lemma_pos:
-	mkdir -p html/_tables/SUD_French-GSD
-	mkdir -p html/_tables/SUD_French-Rhapsodie
-	mkdir -p html/_tables/SUD_French-ParisStories
-	mkdir -p html/_tables/PS_2023
-	python3 double_clust.py adj_lemma_pos SUD_French-GSD@latest ${SUD}/SUD_French-GSD/*.conllu > html/_tables/SUD_French-GSD/adj_lemma_pos.json
-	python3 double_clust.py adj_lemma_pos SUD_French-Rhapsodie@latest ${SUD}/SUD_French-Rhapsodie/*.conllu > html/_tables/SUD_French-Rhapsodie/adj_lemma_pos.json
-	python3 double_clust.py adj_lemma_pos SUD_French-ParisStories@latest ${SUD}/SUD_French-ParisStories/*.conllu > html/_tables/SUD_French-ParisStories/adj_lemma_pos.json
-	python3 double_clust.py adj_lemma_pos PS_2023@latest ${SUD}/PS_2023/*.conllu > html/_tables/PS_2023/adj_lemma_pos.json
-
-sud:
-	mkdir -p html/_tables/sud
-	python3 multi_request.py > html/_tables/sud/subj_french.json
-
-clean:
-	rm -rf html/_tables
