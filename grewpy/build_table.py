@@ -41,8 +41,7 @@ def treebanks():
       data = json.load(f)
       return data["corpora"]
   else:
-    print (f"Missing --treebanks", file=sys.stderr)
-    raise ValueError
+    raise ValueError(f"Missing --treebanks")
 
 def request_of_json (data):
   grew_request = Request.from_json(data["request"])
@@ -126,14 +125,12 @@ if __name__ == '__main__' and args.kind == "TBC":
       data = json.load(f)
       (grew_request, text_request) = request_of_json (data)
   else:
-    print (f"Missing --request", file=sys.stderr)
-    raise ValueError
+    raise ValueError(f"Missing --request")
 
   if args.clustering_key:
     clustering_key = args.clustering_key
   else:
-    print (f"Missing --clustering_key", file=sys.stderr)
-    raise ValueError
+    raise ValueError(f"Missing --clustering_key")
 
   corpora = treebanks()
   main_dict = {}
@@ -196,27 +193,23 @@ if __name__ == '__main__' and args.kind == "DC":
       data = json.load(f)
       (grew_request, text_request) = request_of_json (data)
   else:
-    print (f"Missing --request", file=sys.stderr)
-    raise ValueError
+    raise ValueError(f"Missing --request")
 
   if args.row_key:
     row_key = args.row_key
   else:
-    print (f"Missing --row_key", file=sys.stderr)
-    raise ValueError
+    raise ValueError(f"Missing --row_key")
   if args.col_key:
     col_key = args.col_key
   else:
-    print (f"Missing --col_key", file=sys.stderr)
-    raise ValueError
+    raise ValueError(f"Missing --col_key")
 
   if args.treebank:
     data = json.loads(args.treebank)
     (treebank_id, treebank_loc) = data.popitem()
     corpus=Corpus(treebank_loc)
   else:
-    print (f"Missing --treebank", file=sys.stderr)
-    raise ValueError
+    raise ValueError(f"Missing --treebank")
 
   dc_full = corpus.count(grew_request, clustering_keys=[row_key, col_key])
   if args.filter:
