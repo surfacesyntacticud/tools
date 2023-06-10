@@ -6,7 +6,7 @@ import datetime
 from grewpy import Request, Corpus, set_config
 
 parser = argparse.ArgumentParser(description="Build a Grew table from a list of treebanks and a list of requests")
-parser.add_argument("kind", help="the kind of table to build: TBR (treebanks/requests) or TBC (treebanks/clustering)")
+parser.add_argument("kind", help="the kind of table to build: TBR (treebanks/requests), TBC (treebanks/clustering) or DC (double clustering)")
 parser.add_argument("--treebanks", help="a JSON file with the list of treebanks")
 parser.add_argument("--treebank", help="[DC only] a JSON string: dict from id to treebank")
 parser.add_argument("--requests", help="[TBR only] a JSON file with the list of requests")
@@ -25,15 +25,20 @@ args = parser.parse_args()
 if args.config:
   set_config(args.config)
 
-if args.title:
-  title = args.title
-elif args.kind == "TBR":
-  title = "## Table treebanks/request"
-elif args.kind == "TBC":
-  title = "## Table treebanks/clustering"
-else:
-  print (f"Unknown kind {args.kind}", file=sys.stderr)
-  raise ValueError
+if args.kind not in ["TBR", "TBC", "DC"]:
+  raise ValueError(f"Unknown kind {args.kind}")
+
+def get_title():
+  if args.title:
+    return args.title
+  elif args.kind == "TBR":
+    return "## Table treebanks/request"
+  elif args.kind == "TBC":
+    return "## Table treebanks/clustering"
+  elif args.kind == "DC":
+    return "## Table double clustering"
+  else:
+    assert False
 
 def treebanks():
   if args.kind in ["TBR", "TBC"] and args.treebanks:
@@ -97,7 +102,7 @@ if __name__ == '__main__' and args.kind == "TBR":
 
   output = {
     "kind": "TBR",
-    "title": title,
+    "title": get_title(),
     "grew_match_instance": args.instance,
     "requests": text_requests,
     "col_key": "Request",
@@ -164,7 +169,7 @@ if __name__ == '__main__' and args.kind == "TBC":
 
   output = { 
     "kind": "TBC",
-    "title": title,
+    "title": get_title(),
     "grew_match_instance": args.instance,
     "request": text_request,
     "col_key": clustering_key,
@@ -237,7 +242,7 @@ if __name__ == '__main__' and args.kind == "DC":
 
   final_json = {
       "kind": "DC",
-      "title": title,
+      "title": get_title(),
       "grew_match_instance": args.instance,
       "request": text_request,
       "treebank": treebank_id,
