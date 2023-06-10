@@ -16,6 +16,7 @@ parser.add_argument("--col_key", help="[TBC only] the key used for col")
 parser.add_argument("--row_key", help="[TBC only] the key used for row")
 parser.add_argument("--home", help="url to the 'home' page")
 parser.add_argument('--timestamp', help="Add a timestamp on table", action='store_true')
+parser.add_argument('--total', help="Print grand total", action='store_true')
 parser.add_argument("-i", "--instance", help="grew-match instance", default="https://universal.grew.fr")
 parser.add_argument("-t", "--title", help="title of the table (markdown)")
 parser.add_argument("-c", "--config", help="grew config")
@@ -90,6 +91,8 @@ if __name__ == '__main__' and args.kind == "TBR":
   columns = [ {"field": id, "headerName": id} for id in grew_requests]
   # columns_total = {"row_header": "Treebank", "row_type": "TOTAL"} | { id: sum([main_dict[corpus_id].get(id,0) for corpus_id in corpora]) for id in grew_requests }
   columns_total = { id: sum([main_dict[corpus_desc["id"]].get(id,0) for corpus_desc in corpora]) for id in grew_requests }
+  if args.total:
+    columns_total["row_total"] = sum (columns_total.values())
   columns_total["row_header"] = "Treebank"
   columns_total["row_type"] = "TOTAL"
 
@@ -157,6 +160,8 @@ if __name__ == '__main__' and args.kind == "TBC":
   columns_total = { esc(p[0]): p[1] for p in column_list }
   columns_total["row_header"] = "Language"
   columns_total["row_type"] = "TOTAL"
+  if args.total:
+    columns_total["row_total"] = sum(columns_dict.values())
 
   def build_row(k1):
     total = sum(main_dict[k1].values())
@@ -230,6 +235,8 @@ if __name__ == '__main__' and args.kind == "DC":
   column_list.sort(key = lambda x: x[1], reverse=True)
   columns = [ {"field": k, "headerName": k} for (k,_) in column_list]
   columns_total = { p[0]: p[1] for p in column_list }
+  if args.total:
+    columns_total["row_total"] = sum (columns_total.values())
   columns_total["row_header"] = row_key
   columns_total["row_type"] = "TOTAL"
 

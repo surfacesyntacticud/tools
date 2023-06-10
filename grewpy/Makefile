@@ -53,6 +53,7 @@ parseme_12_labels:
 		--treebanks ${GREW_MATCH_CONFIG}/corpora/parseme_1.2.json \
 		--request parseme/label_req.json \
 		--clustering_key MWE.label \
+		--total \
 		> html/parseme/labels@1.2.json
 
 parseme_13_labels:
@@ -62,6 +63,7 @@ parseme_13_labels:
 		--treebanks ${GREW_MATCH_CONFIG}/corpora/parseme_1.3.json \
 		--request parseme/label_req.json \
 		--clustering_key MWE.label \
+		--total \
 		> html/parseme/labels@1.3.json
 
 

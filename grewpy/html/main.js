@@ -73,6 +73,15 @@ var app = new Vue({
         // column 1 ==> just print the data
         if (params.colDef.field == "row_header") {
           return `<b>${params.value}</b>`;
+      
+       // row 2
+      } else if (params.data.row_type == "TOTAL") {
+        // test if full column is searchable
+        if (app.json.kind == "TBR" || app.json.kind == "TBC") {
+          return `<a class="btn btn-secondary disabled btn-sm">${params.value}</a>`;
+        } else {
+          return `<a class="btn btn-primary btn-sm" onclick='grew_match("col", "", "${params.colDef.headerName}")'>${params.value} + "xxx"</a>`;
+        }
 
         // column 2
         } else if (params.colDef.field == "row_total" && params.data.row_total != undefined) {
@@ -83,14 +92,6 @@ var app = new Vue({
             return `<a class="btn btn-primary btn-sm" onclick='grew_match("row","${params.data.row_header}","")'>${params.data.row_total}</a>`;
           }
 
-        // row 2
-        } else if (params.data.row_type == "TOTAL") {
-          // test if full column is searchable
-          if (app.json.kind == "TBR" || app.json.kind == "TBC") {
-            return `<a class="btn btn-secondary disabled btn-sm">${params.value}</a>`;
-          } else {
-            return `<a class="btn btn-primary btn-sm" onclick='grew_match("col", "", "${params.colDef.headerName}")'>${params.value}</a>`;
-          }
 
         // regular cell: row > 2 && col > 2
         } else {
