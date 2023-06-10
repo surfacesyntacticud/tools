@@ -1,8 +1,23 @@
+PORT=9482
+PID=`lsof -t -i :${PORT}`
+
 doc:
 	@echo " * valid    --> Run validation on native SUD"
 	@echo " * clean    --> Clean corpora"
 	@echo " * compile  --> Compile corpora"
 	@echo " * url      --> Show local URLs"
+
+start:
+	python3 -m http.server --directory html ${PORT} &
+	open "http://localhost:${PORT}"
+
+stop:
+	@if [ -z "$(PID)" ]; then \
+		echo "No process running on PORT ${PORT}"; \
+	else \
+		kill -9 ${PID}; \
+		echo "Process killed"; \
+	fi
 
 valid:
 	# remove old validations
@@ -29,3 +44,4 @@ url:
 	@echo "http://localhost:8888/validator/?corpus=SUD_French-ParisStories@latest"
 	@echo "http://localhost:8888/validator/?corpus=SUD_Naija-NSC@latest"
 	@echo "http://localhost:8888/validator/?corpus=SUD_Chinese-Beginner@latest"
+	
