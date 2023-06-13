@@ -66,7 +66,25 @@ parseme_13_labels:
 		--total \
 		> html/parseme/labels@1.3.json
 
+parseme_12_sizes:
+	python3 build_table.py TBC \
+		--instance https://parseme.grew.fr \
+		--title "## Parseme 1.2 sorted by size (nb of tokens)" \
+		--treebanks ${GREW_MATCH_CONFIG}/corpora/parseme_1.3.json \
+		--request parseme/label_req.json \
+		--clustering_key MWE.__out__ \
+		--total \
+		> html/parseme/sizes@1.2.json
 
+parseme_13_sizes:
+	python3 build_table.py TBC \
+		--instance https://parseme.grew.fr \
+		--title "## Parseme 1.3 sorted by size (nb of tokens)" \
+		--treebanks ${GREW_MATCH_CONFIG}/corpora/parseme_1.3.json \
+		--request parseme/label_req.json \
+		--clustering_key MWE.__out__ \
+		--total \
+		> html/parseme/sizes@1.3.json
 
 label_upos_French-GSD:
 	python3 build_table.py DC \
