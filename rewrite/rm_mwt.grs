@@ -1,3 +1,5 @@
+% For a few cases, the determiner may have a dependent (punct, flat@name or conj:dicto)
+% In so, move the dependency one level up
 rule prepare {
   pattern {
     N2 [upos=DET, textform="_"];
@@ -9,6 +11,7 @@ rule prepare {
 }
 
 package mwt {
+  % N2 is the PRON "lequel"
   rule N2_pron {
     pattern { 
       N1 [textform]; N2 [textform="_"]; N1 < N2;
@@ -24,6 +27,7 @@ package mwt {
   }
 
   rule N1_N2 {
+    % flat stuctures (idioms, names)
     pattern { 
       N1 [textform]; N2 [textform="_"]; N1 < N2;
       N2 [upos<>PRON];
@@ -38,6 +42,7 @@ package mwt {
     }
   }
 
+  % main case: ADP+DET
   rule N2_det {
     pattern { 
       N1 [textform]; N2 [textform="_"]; N1 < N2;
