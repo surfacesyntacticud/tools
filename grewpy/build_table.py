@@ -145,6 +145,7 @@ if __name__ == '__main__' and args.kind == "TBC":
   for corpus_desc in corpora:
     (corpus_id, corpus) = load_corpus (corpus_desc)
     main_dict[corpus_id] = corpus.count(grew_request, clustering_keys=[clustering_key])
+    print(f"[{len(main_dict)}/{len(corpora)}] {corpus_id} done", file=sys.stderr)
     corpus.clean()
 
   def esc(s):
@@ -152,8 +153,11 @@ if __name__ == '__main__' and args.kind == "TBC":
 
   columns_dict = dict()
   for corpus_id in main_dict:
-    for k2 in main_dict[corpus_id]:
-      columns_dict[k2] = main_dict[corpus_id][k2] + columns_dict.get(k2, 0)
+    if main_dict[corpus_id] == 0:
+      pass
+    else:
+      for k2 in main_dict[corpus_id]:
+        columns_dict[k2] = main_dict[corpus_id][k2] + columns_dict.get(k2, 0)
   column_list = [(c, columns_dict[c]) for c in columns_dict]
   column_list.sort(key = lambda x: x[1], reverse=True)
   columns = [ {"field": esc(k), "headerName": k} for (k,_) in column_list]
@@ -164,8 +168,12 @@ if __name__ == '__main__' and args.kind == "TBC":
     columns_total["row_total"] = sum(columns_dict.values())
 
   def build_row(k1):
-    total = sum(main_dict[k1].values())
-    d = { esc(k2): [main_dict[k1][k2], main_dict[k1][k2]/total] for k2 in main_dict[k1]}
+    if main_dict[k1] == 0:
+      total = 0
+      d = {}
+    else:
+      total = sum(main_dict[k1].values())
+      d = { esc(k2): [main_dict[k1][k2], main_dict[k1][k2]/total] for k2 in main_dict[k1]}
     d["row_header"] = k1
     d["row_total"] = total
     return d 
