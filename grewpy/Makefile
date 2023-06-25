@@ -109,3 +109,27 @@ pos_features_French-GSD:
 	python3 pos_features.py \
 		--treebank "{\"SUD_French-GSD@2.12\": \"${SUD}/SUD_French-GSD\"}" \
 		> html/SUD_French-GSD/pos_features@2.12.json
+
+subrel:
+	python3 build_table.py TBC \
+		--instance https://universal.grew.fr \
+		--config sud \
+		--treebanks ${GREW_MATCH_CONFIG}/corpora/sud_native.json \
+		--title "## subrel usage in native SUD" \
+		--request sud/subrel.req \
+		--timestamp \
+		--clustering_key e.2 \
+		--total \
+		> html/sud/subrel.json
+
+deep:
+	python3 build_table.py TBC \
+		--instance https://universal.grew.fr \
+		--config sud \
+		--treebanks ${GREW_MATCH_CONFIG}/corpora/sud_native.json \
+		--title "## subrel usage in native SUD" \
+		--request sud/deep.req \
+		--timestamp \
+		--clustering_key e.deep \
+		--total \
+		> html/sud/deep.json
