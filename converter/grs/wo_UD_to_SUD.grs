@@ -28,31 +28,31 @@ strat wo_main {
 
 package wo_pos_labels {
   rule woon_pos {
-    pattern { A[lemma="woon"] }
+    pattern { A[lemma="woon", upos <> PART] }
     commands { A.upos=PART; }
-    }
-    
-    rule daldi_pos {
-    pattern { A[form="daldi"] }
+  }
+
+   rule daldi_pos {
+    pattern { A[form="daldi", upos <> AUX] }
     commands { A.upos=AUX ; }
-    }
-    
-    rule daldil {
-    pattern { A[form="daldil"] }
+  }
+
+  rule daldil {
+    pattern { A[form="daldil", lemma <> "daldi"] }
     commands { A.lemma="daldi"; }
-    }
-    
-    rule dal {
+  }
+
+  rule dal {
     pattern { A[form="dal", upos=ADV] }
     commands { A.lemma="daldi"; A.upos=AUX ; }
-    }
+  }
 
   rule dina {
     pattern { A[lemma="di", form=re"din.*"] }
     commands { A.lemma="dina" }
-    }
   }
-  
+}
+
   package wo_dep_labels {
   rule woon {
     pattern { e: V -[1=aux]-> A; A[lemma="woon"] }
