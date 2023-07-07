@@ -80,7 +80,7 @@ var app = new Vue({
         if (app.json.kind == "TBR" || app.json.kind == "TBC") {
           return `<a class="btn btn-secondary disabled btn-sm">${params.value}</a>`;
         } else {
-          return `<a class="btn btn-primary btn-sm" onclick='grew_match("col", "", "${params.colDef.headerName}")'>${params.value} + "xxx"</a>`;
+          return `<a class="btn btn-primary btn-sm" onclick='grew_match("col", "", "${params.colDef.headerName}")'>${params.value}</a>`;
         }
 
         // column 2
