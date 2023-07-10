@@ -5,43 +5,7 @@ import json
 import datetime
 from grewpy import Request, Corpus, set_config
 
-parser = argparse.ArgumentParser(description="Build a Grew table from a list of treebanks and a list of requests")
-parser.add_argument("kind", help="the kind of table to build: TBR (treebanks/requests), TBC (treebanks/clustering) or DC (double clustering)")
-parser.add_argument("--treebanks", help="a JSON file with the list of treebanks")
-parser.add_argument("--treebank", help="[DC only] a JSON string: dict from id to treebank")
-parser.add_argument("--requests", help="[TBR only] a JSON file with the list of requests")
-parser.add_argument("--request", help="[TBC only] a JSON file with the main request")
-parser.add_argument("--clustering_key", help="[TBC only] the key used for clustering")
-parser.add_argument("--col_key", help="[TBC only] the key used for col")
-parser.add_argument("--row_key", help="[TBC only] the key used for row")
-parser.add_argument("--home", help="url to the 'home' page")
-parser.add_argument('--timestamp', help="Add a timestamp on table", action='store_true')
-parser.add_argument('--total', help="Print grand total", action='store_true')
-parser.add_argument("-i", "--instance", help="grew-match instance", default="https://universal.grew.fr")
-parser.add_argument("-t", "--title", help="title of the table (markdown)")
-parser.add_argument("-c", "--config", help="grew config")
-parser.add_argument('-f', '--filter', help="Remove lines with only one non zero column", action='store_true')
-args = parser.parse_args()
-
-if args.config:
-  set_config(args.config)
-
-if args.kind not in ["TBR", "TBC", "DC"]:
-  raise ValueError(f"Unknown kind {args.kind}")
-
-def get_title():
-  if args.title:
-    return args.title
-  elif args.kind == "TBR":
-    return "## Table treebanks/request"
-  elif args.kind == "TBC":
-    return "## Table treebanks/clustering"
-  elif args.kind == "DC":
-    return "## Table double clustering"
-  else:
-    assert False
-
-def treebanks():
+def treebanks(args):
   if args.kind in ["TBR", "TBC"] and args.treebanks:
     with open(args.treebanks, "rb") as f:
       data = json.load(f)
@@ -67,10 +31,12 @@ def load_corpus (corpus_desc):
   else:
     return (corpus_id, Corpus (directory))
 
+
 # ===============================================================================================
 # Table with several treebanks and several requests
 # ===============================================================================================
-if __name__ == '__main__' and args.kind == "TBR":
+def table_TBR(args):
+  title = args.title if args.title else "## Table treebanks/request"
   with open(args.requests, "rb") as f:
     data_requests = json.load(f)
   grew_requests = dict()
@@ -80,7 +46,7 @@ if __name__ == '__main__' and args.kind == "TBR":
     grew_requests[id] = grew_request
     text_requests[id] = text_request
 
-  corpora = treebanks()
+  corpora = treebanks(args)
   main_dict = {}
   for corpus_desc in corpora:
     (corpus_id, corpus) = load_corpus (corpus_desc)
@@ -105,7 +71,7 @@ if __name__ == '__main__' and args.kind == "TBR":
 
   output = {
     "kind": "TBR",
-    "title": get_title(),
+    "title": title,
     "grew_match_instance": args.instance,
     "requests": text_requests,
     "col_key": "Request",
@@ -126,8 +92,8 @@ if __name__ == '__main__' and args.kind == "TBR":
 # ===============================================================================================
 # Table with several treebanks one request and a clustering_key
 # ===============================================================================================
-if __name__ == '__main__' and args.kind == "TBC":
-
+def table_TBC(args):
+  title = args.title if args.title else "## Table treebanks/clustering"
   if args.request:
     with open(args.request, "rb") as f:
       data = json.load(f)
@@ -140,7 +106,7 @@ if __name__ == '__main__' and args.kind == "TBC":
   else:
     raise ValueError(f"Missing --clustering_key")
 
-  corpora = treebanks()
+  corpora = treebanks(args)
   main_dict = {}
   for corpus_desc in corpora:
     (corpus_id, corpus) = load_corpus (corpus_desc)
@@ -182,7 +148,7 @@ if __name__ == '__main__' and args.kind == "TBC":
 
   output = { 
     "kind": "TBC",
-    "title": get_title(),
+    "title": title,
     "grew_match_instance": args.instance,
     "request": text_request,
     "col_key": clustering_key,
@@ -201,11 +167,11 @@ if __name__ == '__main__' and args.kind == "TBC":
   print (json.dumps(output, indent=2))
 
 
-
 # ===============================================================================================
 # Table with one treebank, one request and a two clustering
 # ===============================================================================================
-if __name__ == '__main__' and args.kind == "DC":
+def table_DC(args):
+  title = args.title if args.title else "## Table double clustering"
   if args.request:
     with open(args.request, "rb") as f:
       data = json.load(f)
@@ -257,7 +223,7 @@ if __name__ == '__main__' and args.kind == "DC":
 
   final_json = {
       "kind": "DC",
-      "title": get_title(),
+      "title": title,
       "grew_match_instance": args.instance,
       "request": text_request,
       "treebank": treebank_id,
@@ -270,9 +236,41 @@ if __name__ == '__main__' and args.kind == "DC":
     }
 
   if args.timestamp:
-    output["timestamp"] = datetime.datetime.now().isoformat()
+    final_json["timestamp"] = datetime.datetime.now().isoformat()
 
   if args.home:
-    output["home"] = args.home
+    final_json["home"] = args.home
 
   print (json.dumps(final_json, indent=2))
+
+if __name__ == '__main__':
+  parser = argparse.ArgumentParser(description="Build a Grew table from a list of treebanks and a list of requests")
+  parser.add_argument("kind", help="the kind of table to build: TBR (treebanks/requests), TBC (treebanks/clustering) or DC (double clustering)")
+  parser.add_argument("--treebanks", help="a JSON file with the list of treebanks")
+  parser.add_argument("--treebank", help="[DC only] a JSON string: dict from id to treebank")
+  parser.add_argument("--requests", help="[TBR only] a JSON file with the list of requests")
+  parser.add_argument("--request", help="[TBC only] a JSON file with the main request")
+  parser.add_argument("--clustering_key", help="[TBC only] the key used for clustering")
+  parser.add_argument("--col_key", help="[TBC only] the key used for col")
+  parser.add_argument("--row_key", help="[TBC only] the key used for row")
+  parser.add_argument("--home", help="url to the 'home' page")
+  parser.add_argument('--timestamp', help="Add a timestamp on table", action='store_true')
+  parser.add_argument('--total', help="Print grand total", action='store_true')
+  parser.add_argument("-i", "--instance", help="grew-match instance", default="https://universal.grew.fr")
+  parser.add_argument("-t", "--title", help="title of the table (markdown)")
+  parser.add_argument("-c", "--config", help="grew config")
+  parser.add_argument('-f', '--filter', help="Remove lines with only one non zero column", action='store_true')
+  args = parser.parse_args()
+
+  if args.config:
+    set_config(args.config)
+
+  match args.kind:
+    case "TBR":
+      table_TBR(args)
+    case "TBC":
+      table_TBC(args)
+    case "DC":
+      table_DC(args)
+    case _:
+      raise ValueError(f"Unknown kind {args.kind}")
