@@ -41,8 +41,9 @@ def table_TBR(args):
     data_requests = json.load(f)
   grew_requests = dict()
   text_requests = dict()
-  for id in data_requests:
-    (grew_request, text_request) = request_of_json (data_requests[id])
+  for request in data_requests:
+    id = request["id"]
+    (grew_request, text_request) = request_of_json (request)
     grew_requests[id] = grew_request
     text_requests[id] = text_request
 

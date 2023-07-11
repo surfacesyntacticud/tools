@@ -133,3 +133,16 @@ deep:
 		--clustering_key e.deep \
 		--total \
 		> html/sud/deep.json
+
+run_test:
+	python3 build_table.py TBR \
+		--config sud \
+		--instance https://universal.grew.fr \
+		--title "## TEST 2 Treebanks / multi-request" \
+		--treebanks test/two_treebanks.json \
+		--requests test/requests.json \
+		> html/test/test_TBR.json
+
+start_test: stop
+	python3 -m http.server --directory html ${PORT} &
+	open "http://localhost:${PORT}?data=test/test_TBR"

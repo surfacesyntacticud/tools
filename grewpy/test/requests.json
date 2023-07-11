@@ -1,0 +1,38 @@
+[
+  {
+    "id": "test_01",
+    "title": "DET_NOUN",
+    "request": "pattern { N1 [upos=PRON]; N2 [lemma=\"être\"];  N1 < N2 }",
+    "description": "Check the DET + NOUN bigram annotation"
+  },
+  {
+    "id": "test_02",
+    "title": "subj",
+    "request": "pattern { M -[1=subj]-> N }",
+    "description": "subj relation (and extension)"
+  },
+  {
+    "id": "test_03",
+    "title": "subj",
+    "request": ["pattern { M -[1=subj]-> N }"],
+    "description": "subj relation (and extension)"
+  },
+  {
+    "id": "test_04",
+    "title": "subj",
+    "request": ["pattern {", "  M -[1=subj]-> N", "}"],
+    "description": "subj relation (and extension)"
+  },
+  {
+    "id": "test_05",
+    "title": "subj",
+    "request": "pattern {\n M -[1=subj]-> N \n}",
+    "description": "subj relation (and extension)"
+  },
+  {
+    "id": "test_06",
+    "title": "subj",
+    "request": [{"pattern": ["M -[1=subj]-> N"] }],
+    "description": "subj relation (and extension)"
+  }
+]
