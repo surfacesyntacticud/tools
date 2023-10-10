@@ -12,7 +12,7 @@ package fusion {
   rule suff_fusion_extpos {
     pattern {
       N [xpos];
-      N -[morph=m]-> M;                                    % M is attached with the :m extension
+      N -[type=m]-> M;                                     % M is attached with the /m extension
       N < M                                                % M is a suffix
     }  
     without { M -> X}                                      % M is a leaf (force application order)
@@ -30,7 +30,7 @@ package fusion {
   rule suff_fusion {
     pattern {
       N[!xpos];
-      N -[morph=m]-> M;                                    % M is attached with the :m extension
+      N -[type=m]-> M;                                     % M is attached with the /m extension
       N < M                                                % M is a suffix
     }  
     without { M -> X}                                      % M is a leaf (force application order)
@@ -47,7 +47,7 @@ package fusion {
   rule pref_fusion_extpos {
     pattern {
       N [xpos];
-      N -[morph=m]-> M;                                    % M is attached with the :m extension
+      N -[type=m]-> M;                                     % M is attached with the /m extension
       M < N                                                % M is a prefix
     }  
     without { M -> X}                                      % M is a leaf (force application order)
@@ -65,7 +65,7 @@ package fusion {
   rule pref_fusion {
     pattern { 
       N [!xpos];
-      N -[morph=m]-> M;                                    % M is attached with the :m extension
+      N -[type=m]-> M;                                     % M is attached with the /m extension
       M < N                                                % M is a prefix
     }  
     without { M -> X}                                      % M is a leaf (force application order)
