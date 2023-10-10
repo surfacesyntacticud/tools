@@ -6,12 +6,12 @@ strat zh_mSUD_to_SUD_main {
 }
 
 % TODO :
-% convert xpos to DerPos
+% convert ExtPos to DerPos
 
 package fusion {
   rule suff_fusion_extpos {
     pattern {
-      N [xpos];
+      N [ExtPos];
       N -[type=m]-> M;                                     % M is attached with the /m extension
       N < M                                                % M is a suffix
     }  
@@ -20,16 +20,15 @@ package fusion {
       N.form = N.form + M.form;                            % concatenate the surface form
       N.wordform = N.wordform + M.wordform;                % concatenate the surface form
       N.lemma = N.lemma + M.lemma;                         % concatenate the surface lemma
-      N.Translit = N.Translit + "_" + M.Translit;          % concatenate the surface Translit
-      N.Tone = N.Tone + "_" + M.Tone;                      % concatenate the surface Tone
+      append_feats "_" M =[re"Translit\|Tone"]=> N;        % concatenate the surface Translit and Tone
       del_node M;
-      N.upos = N.xpos; del_feat N.xpos;
+      N.upos = N.ExtPos; del_feat N.ExtPos;
     }
   }
 
   rule suff_fusion {
     pattern {
-      N[!xpos];
+      N[!ExtPos];
       N -[type=m]-> M;                                     % M is attached with the /m extension
       N < M                                                % M is a suffix
     }  
@@ -38,15 +37,14 @@ package fusion {
       N.form = N.form + M.form;                            % concatenate the surface form
       N.wordform = N.wordform + M.wordform;                % concatenate the surface form
       N.lemma = N.lemma + M.lemma;                         % concatenate the surface lemma
-      N.Translit = N.Translit + "_" + M.Translit;          % concatenate the surface Translit
-      N.Tone = N.Tone + "_" + M.Tone;                      % concatenate the surface Tone
+      append_feats "_" M =[re"Translit\|Tone"]=> N;        % concatenate the surface Translit and Tone
       del_node M;                                          % concatenate the surface form
     }
   }
   
   rule pref_fusion_extpos {
     pattern {
-      N [xpos];
+      N [ExtPos];
       N -[type=m]-> M;                                     % M is attached with the /m extension
       M < N                                                % M is a prefix
     }  
@@ -55,16 +53,15 @@ package fusion {
       N.form = M.form + N.form;                            % concatenate the surface form
       N.wordform = M.wordform + N.wordform;                % concatenate the surface form
       N.lemma = M.lemma + N.lemma;                         % concatenate the surface lemma
-      N.Translit = M.Translit + "_" + N.Translit;          % concatenate the surface Translit
-      N.Tone = M.Tone + "_" + N.Tone;                      % concatenate the surface Tone
+      prepend_feats "_" M =[re"Translit\|Tone"]=> N;       % concatenate the surface Translit and Tone
       del_node M;
-      N.upos = N.xpos; del_feat N.xpos;
+      N.upos = N.ExtPos; del_feat N.ExtPos;
     }
   }
 
   rule pref_fusion {
     pattern { 
-      N [!xpos];
+      N [!ExtPos];
       N -[type=m]-> M;                                     % M is attached with the /m extension
       M < N                                                % M is a prefix
     }  
@@ -73,8 +70,7 @@ package fusion {
       N.form = M.form + N.form;                            % concatenate the surface form
       N.wordform = M.wordform + N.wordform;                % concatenate the surface form
       N.lemma = M.lemma + N.lemma;                         % concatenate the surface lemma
-      N.Translit = M.Translit + "_" + N.Translit;          % concatenate the surface Translit
-      N.Tone = M.Tone + "_" + N.Tone;                      % concatenate the surface Tone
+      prepend_feats "_" M =[re"Translit\|Tone"]=> N;       % concatenate the surface Translit and Tone
       del_node M;                                          % concatenate the surface form
     }
   }
