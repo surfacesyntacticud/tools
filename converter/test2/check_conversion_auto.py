@@ -110,6 +110,10 @@ if __name__ == "__main__":
         cmd = f'opam exec -- grew transform -grs ../grs/{GRS_FILE} -config {CONFIG_TYPE} -i {path_source} -o {path_converted} -strat {STRAT_NAME}'
         print("$", cmd)
         result = subprocess.run(cmd, shell=True, text=True, capture_output=True)
+        if result.returncode != 0:
+            print_red("ERROR IN GREW CONVERSION")
+            print_red(result.stderr)
+            continue
 
         test_sentence_lengths(path_expected, path_converted)
         test_sentences_individually(path_expected, path_converted)
