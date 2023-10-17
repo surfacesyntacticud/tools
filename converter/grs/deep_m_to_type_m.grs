@@ -1,0 +1,19 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+strat deep_m_to_type_m_main { 
+  Seq (
+    Onf (deep_m_to_type_m)
+  )
+}
+
+
+package deep_m_to_type_m {
+  rule convert {
+    pattern { 
+      e: N -[deep=m]-> M;
+    }
+    commands { e.type = m; del_feat e.deep }
+  }
+}
+
+

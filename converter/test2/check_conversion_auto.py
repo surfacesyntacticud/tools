@@ -77,7 +77,7 @@ def test_sentences_individually(path_expected: str, path_converted: str):
         expected_nodes_forms = [node["FORM"] for node in expected_nodes.values()]
         converted_nodes_forms = [node["FORM"] for node in converted_nodes.values()]
         if len(expected_nodes) != len(converted_nodes):
-            print_red(f"Sentence {i+1} (sent_id = {expected_id}) has different number of nodes in expected and converted.\nexpected_nodes_form = {expected_nodes_forms}\nconverted_nodes_form = {converted_nodes_forms}", end="\n\n")
+            print_red(f"Sentence {i+1} (sent_id = {expected_id}) has different number of nodes in expected and converted.\nexpected_nodes_form = {expected_nodes_forms}\nconverted_nodes_form = {converted_nodes_forms}")
             continue
 
         for j, (expected_node, converted_node) in enumerate(zip(expected_nodes.values(), converted_nodes.values())):

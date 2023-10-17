@@ -33,6 +33,13 @@ package comp {
     }
     commands { e.2 = obj }
   }
+
+  rule resultative {
+    pattern { 
+      e: N -[comp:res]-> M;
+    }
+    commands { e.label = "compound:vv" }
+  }
 }
 
 package zh_post {
