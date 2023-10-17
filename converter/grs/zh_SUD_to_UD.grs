@@ -11,6 +11,16 @@ strat zh_SUD_to_UD_main {
 
 
 package comp {
+  % convert comp:obl@temp and mod@temp to obl:tmod
+  % TODO : decide if only one is necessary, if so, choose one
+  % but we could have comp:obl@temp for ADP and mod@temp for other
+  rule temp {
+    pattern { 
+      e: N -[deep=temp]-> M;
+    }
+    commands { e.label = "obl:tmod" }
+  }
+
   rule obl {
     pattern { 
       e: N -[comp]-> M; N[form <> "的"];
