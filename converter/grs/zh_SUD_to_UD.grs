@@ -63,6 +63,7 @@ package comp {
 }
 
 package zh_post {
+  % TODO : check if still useful
   rule obl_mod {
     pattern {
       e: N -[obl:mod]-> M;
@@ -72,6 +73,7 @@ package zh_post {
     }
   }
 
+  % TODO : check if still useful
   rule dep_comp {
     pattern {
       e: N -[dep:comp]-> M;
@@ -80,6 +82,50 @@ package zh_post {
       del_feat e.2;
     }
   }
+
+  % Convert the UPOS and DEPREL of the 3 SUD aspect 着 了 过 (UD has them in AUX, altough they themselves think it doesnt belong in this class)
+  rule convert_aspect {
+    pattern {
+      ASP[form="了"|"着"|"过"];
+      e: VERB -[aspect]-> ASP;
+    }
+    commands {
+      ASP.upos = AUX;
+      e.label = aux;
+    }
+  }
+
+  % Convert the wh-indefinite pronoun to DET (and remove the feat)
+  % TODO : To remove if the PronType=Ind and Int suggestion in the UD guidelines is accepted
+  rule convert_prontype_ind {
+    pattern {
+      WH[PronType="Ind", upos=PRON];
+    }
+    commands {
+      WH.upos = DET;
+      del_feat WH.PronType;
+    }
+  }
+
+  rule convert_prontype_int {
+    pattern {
+      WH[PronType="Int", upos=PRON];
+    }
+    commands {
+      del_feat WH.PronType;
+    }
+  }
+
+  % Convert conj:redup as it doesn't exist in UD Mandarin
+  rule convert_conj_redup {
+    pattern {
+      e: M-[conj:redup]->M;
+    }
+    commands {
+      del_feat e.2;
+    }
+  }
+
 }
 
 
