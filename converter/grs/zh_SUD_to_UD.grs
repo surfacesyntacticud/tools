@@ -126,6 +126,17 @@ package zh_post {
     }
   }
 
+  % Convert the AUX zai (PROG) to a ADV
+  rule convert_zai_aux {
+    pattern {
+      ZAI[form="在", upos=AUX];
+      e: GOV-[aux]->ZAI;
+    }
+    commands {
+      e.label = advmod;
+      ZAI.upos = ADV;
+    }
+  }
 }
 
 
