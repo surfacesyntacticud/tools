@@ -211,6 +211,11 @@ package pcm_post {
     }
   }
 
+  % ExtPos on English produce validation errors, we remove them (18 occurrences in 2.13)
+  rule english_extpos {
+    pattern { N [ExtPos, Lang=en]; }
+    commands { del_feat N.ExtPos }
+  }
 
   strat main {
     Seq (
@@ -223,6 +228,7 @@ package pcm_post {
       Onf (dep_comp),
       Onf (double_subj),
       Onf (remove_ext_final),
+      Onf (english_extpos),
     )
   }
 }
