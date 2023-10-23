@@ -5,46 +5,46 @@ strat zh_mSUD_to_SUD_main {
   )
 }
 
-% TODO :
-% convert ExtPos to DerPos
 
 package fusion {
-  rule suff_fusion_extpos {
+  rule suff_fusion_CpdPos {
     pattern {
-      N [ExtPos];
-      N -[type=m]-> M;                                     % M is attached with the /m extension
+      N [CpdPos];
+      e: N -[type=m]-> M;                                     % M is attached with the /m extension
       N < M                                                % M is a suffix
     }  
     without { M -> X}                                      % M is a leaf (force application order)
     commands { 
+      del_edge e;
       N.form = N.form + M.form;                            % concatenate the surface form
       N.wordform = N.wordform + M.wordform;                % concatenate the surface form
       N.lemma = N.lemma + M.lemma;                         % concatenate the surface lemma
       append_feats "_" M =[re"Translit\|Tone"]=> N;        % concatenate the surface Translit and Tone
+      N.upos = N.CpdPos; 
+      del_feat N.CpdPos;
       del_node M;
-      N.upos = N.ExtPos; del_feat N.ExtPos;
     }
   }
 
   rule suff_fusion {
     pattern {
-      N[!ExtPos];
-      N -[type=m]-> M;                                     % M is attached with the /m extension
-      N < M                                                % M is a suffix
+      P[!CpdPos];
+      P -[type=m]-> Q;                                     % Q is attached with the /m extension
+      P < Q                                                % Q is a suffix
     }  
-    without { M -> X}                                      % M is a leaf (force application order)
+    without { Q -> X}                                      % Q is a leaf (force application order)
     commands { 
-      N.form = N.form + M.form;                            % concatenate the surface form
-      N.wordform = N.wordform + M.wordform;                % concatenate the surface form
-      N.lemma = N.lemma + M.lemma;                         % concatenate the surface lemma
-      append_feats "_" M =[re"Translit\|Tone"]=> N;        % concatenate the surface Translit and Tone
-      del_node M;                                          % concatenate the surface form
+      P.form = P.form + Q.form;                            % concatenate the surface form
+      P.wordform = P.wordform + Q.wordform;                % concatenate the surface form
+      P.lemma = P.lemma + Q.lemma;                         % concatenate the surface lemma
+      append_feats "_" Q =[re"Translit\|Tone"]=> P;        % concatenate the surface Translit and Tone
+      del_node Q;                                          % concatenate the surface form
     }
   }
   
-  rule pref_fusion_extpos {
+  rule pref_fusion_CpdPos {
     pattern {
-      N [ExtPos];
+      N [CpdPos];
       N -[type=m]-> M;                                     % M is attached with the /m extension
       M < N                                                % M is a prefix
     }  
@@ -55,13 +55,14 @@ package fusion {
       N.lemma = M.lemma + N.lemma;                         % concatenate the surface lemma
       prepend_feats "_" M =[re"Translit\|Tone"]=> N;       % concatenate the surface Translit and Tone
       del_node M;
-      N.upos = N.ExtPos; del_feat N.ExtPos;
+      N.upos = N.CpdPos; 
+      del_feat N.CpdPos;
     }
   }
 
   rule pref_fusion {
     pattern { 
-      N [!ExtPos];
+      N [!CpdPos];
       N -[type=m]-> M;                                     % M is attached with the /m extension
       M < N                                                % M is a prefix
     }  
