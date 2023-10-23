@@ -95,27 +95,6 @@ package zh_post {
     }
   }
 
-  % Convert the wh-indefinite pronoun to DET (and remove the feat)
-  % TODO : To remove if the PronType=Ind and Int suggestion in the UD guidelines is accepted
-  rule convert_prontype_ind {
-    pattern {
-      WH[PronType="Ind", upos=PRON];
-    }
-    commands {
-      WH.upos = DET;
-      del_feat WH.PronType;
-    }
-  }
-
-  rule convert_prontype_int {
-    pattern {
-      WH[PronType="Int", upos=PRON];
-    }
-    commands {
-      del_feat WH.PronType;
-    }
-  }
-
   % Convert conj:redup as it doesn't exist in UD Mandarin
   rule convert_conj_redup {
     pattern {
