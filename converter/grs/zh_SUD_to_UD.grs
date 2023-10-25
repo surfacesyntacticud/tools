@@ -3,12 +3,27 @@ include "SUD_to_UD.grs"
 
 strat zh_SUD_to_UD_main { 
   Seq (
+    Onf (zh_pre),
     Onf (comp),
     u_main,
     Onf (zh_post)
   )
 }
 
+
+package zh_pre {
+  % Convert some forbidden AUX in UD to VERB （占 is like a copula in our opinion (meaning is "is")）
+  rule convert_some_aux_to_verb {
+    pattern {
+      AUX[form="别"|"没办法"|"占", upos=AUX];
+      e: AUX-[1=comp, 2=aux|pred]->DEP;
+    }
+    commands {
+      e.label = "comp:obj";
+      AUX.upos = VERB;
+    }
+  }
+}
 
 package comp {
   % convert comp:obl@temp and mod@temp to obl:tmod
