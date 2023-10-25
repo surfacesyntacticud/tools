@@ -98,10 +98,10 @@ package zh_post {
   % Convert conj:redup as it doesn't exist in UD Mandarin
   rule convert_conj_redup {
     pattern {
-      e: M-[conj:redup]->M;
+      e: M-[conj:redup]->N;
     }
     commands {
-      del_feat e.2;
+      e.label = conj;
     }
   }
 
@@ -114,6 +114,16 @@ package zh_post {
     commands {
       e.label = advmod;
       ZAI.upos = ADV;
+    }
+  }
+
+  % Convert parataxis:new to flat (we think UD underspecify the new sentence relation as flat is used for other construction too)
+  rule convert_new_sentences {
+    pattern {
+      e: SENT1-[parataxis:new]->SENT2;
+    }
+    commands {
+      e.label = flat;
     }
   }
 }

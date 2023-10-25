@@ -5,7 +5,7 @@
 2	在	在	ADV	_	_	3	advmod	_	Gloss=PROG|LTranslit=zài|SpaceAfter=No|Translit=zài
 3	找	找	VERB	_	_	0	root	_	Gloss=find|LTranslit=zhǎo|SpaceAfter=No|Translit=zhǎo
 4	些	些	NOUN	_	NounType=Clf	5	clf	_	Gloss=CLF.PL|LTranslit=xiē|SpaceAfter=No|Translit=xiē
-5	什麼	什麼	PRON	_	_	3	obj	_	Gloss=what|LTranslit=shénme|SpaceAfter=No|Translit=shénme
+5	什麼	什麼	PRON	_	PronType=Int	3	obj	_	Gloss=what|LTranslit=shénme|SpaceAfter=No|Translit=shénme
 6	？	？	PUNCT	_	_	3	punct	_	LTranslit=?|SpaceAfter=No|Translit=?
 
 # sent_id = 5
@@ -64,7 +64,7 @@
 # url = https://resources.allsetlearning.com/chinese/grammar/ASG13ALM
 # text_en = Anytime is fine.
 # translit = Shénme shíhou dōu kěyǐ.
-1	什么	什么	DET	_	_	2	det	_	Grammar_Target=Yes|SpaceAfter=No|Tone=2_5|Translit=shén_me
+1	什么	什么	PRON	_	PronType=Ind	2	det	_	Grammar_Target=Yes|SpaceAfter=No|Tone=2_5|Translit=shén_me
 2	时候	时候	NOUN	_	_	4	nsubj	_	Grammar_Target=Yes|SpaceAfter=No|Tone=2_4|Translit=shí_hòu
 3	都	都	ADV	_	_	4	advmod	_	SpaceAfter=No|Tone=1|Translit=dū
 4	可以	可以	AUX	ADJ	_	0	root	_	SpaceAfter=No|Tone=3_3|Translit=kě_yǐ
@@ -76,7 +76,7 @@
 # text_en = Why are you always working late?
 # translit = Nǐ zěnme lǎoshì jiābān?
 1	你	你	PRON	_	Person=2	4	nsubj	_	Gloss=2SG|SpaceAfter=No|Tone=3|Translit=nǐ
-2	怎么	怎么	PRON	_	_	4	obl	_	SpaceAfter=No|Tone=3_5|Translit=zěn_me
+2	怎么	怎么	PRON	_	PronType=Int	4	obl	_	SpaceAfter=No|Tone=3_5|Translit=zěn_me
 3	老是	老是	ADV	_	_	4	advmod	_	Grammar_Target=Yes|SpaceAfter=No|Tone=3_4|Translit=lǎo_shì
 4	加	加	VERB	_	_	0	root	_	SpaceAfter=No|Tone=1|Translit=jiā
 5	班	班	NOUN	_	_	4	obj	_	SpaceAfter=No|Tone=1|Translit=bān
@@ -94,4 +94,16 @@
 5	气	气	NOUN	_	_	4	obj	_	SpaceAfter=No|Tone=4|Translit=qì
 6	吗	吗	PART	_	_	4	discourse:sp	_	SpaceAfter=No|Tone=5|Translit=ma
 7	？	？	PUNCT	_	_	4	punct	_	SpaceAfter=No|Translit=？
+
+# sent_id = remove_conj_redup
+# structure = Adj. + 不 + Adj.
+# text = 他帅不帅？
+# url = https://resources.allsetlearning.com/chinese/grammar/ASGZH7K3
+# text_en = Is he handsome?
+# translit = Tā  shuài bu shuài?
+1	他	他	PRON	_	Person=3	2	nsubj	_	SpaceAfter=No|Tone=1|Translit=tā
+2	帅	帅	ADJ	_	_	0	root	_	Gloss=handsome|Grammar_Target=Yes|SpaceAfter=No|Tone=4|Translit=shuài
+3	不	不	ADV	_	Polarity=Neg	4	advmod	_	Gloss=NEG|Grammar_Target=Yes|SpaceAfter=No|Tone=4|Translit=bù
+4	帅	帅	ADJ	_	_	2	conj	_	Gloss=handsome|Grammar_Target=Yes|SpaceAfter=No|Tone=4|Translit=shuài
+5	？	？	PUNCT	_	_	2	punct	_	SpaceAfter=No|Translit=？
 
