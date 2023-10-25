@@ -23,6 +23,20 @@ package zh_pre {
       AUX.upos = VERB;
     }
   }
+
+  % Convert shi_de_cleft to UD format
+  rule shi_de_cleft {
+    pattern {
+      SHI[form="是", upos=AUX];
+      e: SHI-[comp:cleft]->CLEFT;
+      e2:SHI-[discourse]->DE;
+    }
+    commands {
+      SHI.upos = VERB;
+      e.label = "comp:obj";
+      e2.label = "discourse:sp";
+    }
+  }
 }
 
 package comp {
