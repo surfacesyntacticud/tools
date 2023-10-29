@@ -6,14 +6,14 @@
 % NB: This rule is SUD_Beja-NSC based and may need to be generalized for other corpora or language.
 rule aff_on_aff {
   pattern {
-    STEM [TokenType=Root];
+    ROOT [TokenType=Root];
     IA1 [TokenType=InflAff]; 
     IA2 [TokenType=InflAff];
-    IA2 -[type=m]-> STEM;
+    IA2 -[type=m]-> ROOT;
     e: IA2 -[type=m]-> IA1;
   }
   commands {
-    add_edge f: STEM -> IA1;
+    add_edge f: ROOT -> IA1;
     f.label = e.label;
     del_edge e;
   }
@@ -154,74 +154,74 @@ wait\[PFV]	wait\PFV
 package morph2word {
   rule pre_InflAff_dep {
     pattern {
-      STEM [TokenType=Root];
+      ROOT [TokenType=Root];
       IA [TokenType=InflAff];
-      IA < STEM;
-      e: STEM -[type=m]-> IA;
+      IA < ROOT;
+      e: ROOT -[type=m]-> IA;
     }
     commands {
-      STEM.form = IA.form[:-1] + STEM.form;
-      STEM.wordform = IA.wordform[:-1] + STEM.wordform;
-      STEM.MGloss = IA.MGloss + STEM.MGloss;
-      STEM.MSeg = IA.MSeg + STEM.MSeg;
-      prepend_feats IA =[re"RX\|GE\|Number\|Gender"]=> STEM;
-      STEM.AlignBegin = IA.AlignBegin;
+      ROOT.form = IA.form[:-1] + ROOT.form;
+      ROOT.wordform = IA.wordform[:-1] + ROOT.wordform;
+      ROOT.MGloss = IA.MGloss + ROOT.MGloss;
+      ROOT.MSeg = IA.MSeg + ROOT.MSeg;
+      prepend_feats IA =[re"RX\|GE\|Number\|Gender"]=> ROOT;
+      ROOT.AlignBegin = IA.AlignBegin;
       del_node IA;
     }
   }
 
   rule pre_InflAff_gov {
     pattern {
-      STEM [TokenType=Root];
+      ROOT [TokenType=Root];
       IA [TokenType=InflAff];
-      IA < STEM;
-      e: IA -[type=m]-> STEM;
+      IA < ROOT;
+      e: IA -[type=m]-> ROOT;
     }
     commands {
-      shift IA ==> STEM;
-      STEM.form = IA.form[:-1] + STEM.form;
-      STEM.wordform = IA.wordform[:-1] + STEM.wordform;
-      STEM.MGloss = IA.MGloss + STEM.MGloss;
-      STEM.MSeg = IA.MSeg + STEM.MSeg;
-      prepend_feats IA =[re"RX\|GE\|Number\|Gender"]=> STEM;
-      STEM.AlignBegin = IA.AlignBegin;
+      shift IA ==> ROOT;
+      ROOT.form = IA.form[:-1] + ROOT.form;
+      ROOT.wordform = IA.wordform[:-1] + ROOT.wordform;
+      ROOT.MGloss = IA.MGloss + ROOT.MGloss;
+      ROOT.MSeg = IA.MSeg + ROOT.MSeg;
+      prepend_feats IA =[re"RX\|GE\|Number\|Gender"]=> ROOT;
+      ROOT.AlignBegin = IA.AlignBegin;
       del_node IA;
     }
   }
 
   rule post_InflAff_dep {
     pattern {
-      STEM [TokenType=Root];
+      ROOT [TokenType=Root];
       IA [TokenType=InflAff];
-      STEM < IA;
-      e: STEM -[type=m]-> IA;
+      ROOT < IA;
+      e: ROOT -[type=m]-> IA;
     }
     commands {
-      STEM.form = STEM.form + IA.form[1:];
-      STEM.wordform = STEM.wordform + IA.wordform[1:];
-      STEM.MGloss = STEM.MGloss + IA.MGloss;
-      STEM.MSeg = STEM.MSeg + IA.MSeg;
-      append_feats IA =[re"RX\|GE\|Number\|Gender"]=> STEM;
-      STEM.AlignEnd = IA.AlignEnd;
+      ROOT.form = ROOT.form + IA.form[1:];
+      ROOT.wordform = ROOT.wordform + IA.wordform[1:];
+      ROOT.MGloss = ROOT.MGloss + IA.MGloss;
+      ROOT.MSeg = ROOT.MSeg + IA.MSeg;
+      append_feats IA =[re"RX\|GE\|Number\|Gender"]=> ROOT;
+      ROOT.AlignEnd = IA.AlignEnd;
       del_node IA;
     }
   }
 
   rule post_InflAff_gov {
     pattern {
-      STEM [TokenType=Root];
+      ROOT [TokenType=Root];
       IA [TokenType=InflAff];
-      STEM < IA;
-      e: IA -[type=m]-> STEM;
+      ROOT < IA;
+      e: IA -[type=m]-> ROOT;
     }
     commands {
-      shift IA ==> STEM;
-      STEM.form = STEM.form + IA.form[1:];
-      STEM.wordform = STEM.wordform + IA.wordform[1:];
-      STEM.MGloss = STEM.MGloss + IA.MGloss;
-      STEM.MSeg = STEM.MSeg + IA.MSeg;
-      append_feats IA =[re"RX\|GE\|Number\|Gender"]=> STEM;
-      STEM.AlignEnd = IA.AlignEnd;
+      shift IA ==> ROOT;
+      ROOT.form = ROOT.form + IA.form[1:];
+      ROOT.wordform = ROOT.wordform + IA.wordform[1:];
+      ROOT.MGloss = ROOT.MGloss + IA.MGloss;
+      ROOT.MSeg = ROOT.MSeg + IA.MSeg;
+      append_feats IA =[re"RX\|GE\|Number\|Gender"]=> ROOT;
+      ROOT.AlignEnd = IA.AlignEnd;
       del_node IA;
     }
   }
@@ -229,81 +229,81 @@ package morph2word {
 
   rule pre_DerAff_dep {
     pattern {
-      STEM [TokenType=Root];
+      ROOT [TokenType=Root];
       DA [TokenType=DerAff];
-      DA < STEM;
-      e: STEM -[type=m]-> DA;
+      DA < ROOT;
+      e: ROOT -[type=m]-> DA;
     }
     commands {
-      STEM.form = DA.form[:-1] + STEM.form;
-      STEM.wordform = DA.wordform[:-1] + STEM.wordform;
-      STEM.MGloss = DA.MGloss + STEM.MGloss;
-      STEM.MSeg = DA.MSeg + STEM.MSeg;
-      prepend_feats DA =[re"RX\|GE\|Number\|Gender"]=> STEM;
-      STEM.AlignBegin = DA.AlignBegin;
-      STEM.upos = DA.DerPos;
-      shift_out DA ==> STEM;
+      ROOT.form = DA.form[:-1] + ROOT.form;
+      ROOT.wordform = DA.wordform[:-1] + ROOT.wordform;
+      ROOT.MGloss = DA.MGloss + ROOT.MGloss;
+      ROOT.MSeg = DA.MSeg + ROOT.MSeg;
+      prepend_feats DA =[re"RX\|GE\|Number\|Gender"]=> ROOT;
+      ROOT.AlignBegin = DA.AlignBegin;
+      ROOT.upos = DA.DerPos;
+      shift_out DA ==> ROOT;
       del_node DA;
     }
   }
 
   rule pre_DerAff_gov {
     pattern {
-      STEM [TokenType=Root];
+      ROOT [TokenType=Root];
       DA [TokenType=DerAff];
-      DA < STEM;
-      e: DA -[type=m]-> STEM;
+      DA < ROOT;
+      e: DA -[type=m]-> ROOT;
     }
     commands {
-      shift DA ==> STEM;
-      STEM.form = DA.form[:-1] + STEM.form;
-      STEM.wordform = DA.wordform[:-1] + STEM.wordform;
-      STEM.MGloss = DA.MGloss + STEM.MGloss;
-      STEM.MSeg = DA.MSeg + STEM.MSeg;
-      prepend_feats DA =[re"RX\|GE\|Number\|Gender"]=> STEM;
-      STEM.AlignBegin = DA.AlignBegin;
-      STEM.upos = DA.DerPos;
+      shift DA ==> ROOT;
+      ROOT.form = DA.form[:-1] + ROOT.form;
+      ROOT.wordform = DA.wordform[:-1] + ROOT.wordform;
+      ROOT.MGloss = DA.MGloss + ROOT.MGloss;
+      ROOT.MSeg = DA.MSeg + ROOT.MSeg;
+      prepend_feats DA =[re"RX\|GE\|Number\|Gender"]=> ROOT;
+      ROOT.AlignBegin = DA.AlignBegin;
+      ROOT.upos = DA.DerPos;
       del_node DA;
     }
   }
 
   rule post_DerAff_dep {
     pattern {
-      STEM [TokenType=Root];
+      ROOT [TokenType=Root];
       DA [TokenType=DerAff];
-      STEM < DA;
-      e: STEM -[type=m]-> DA;
+      ROOT < DA;
+      e: ROOT -[type=m]-> DA;
     }
     commands {
-      STEM.form = STEM.form + DA.form[1:];
-      STEM.wordform = STEM.wordform + DA.wordform[1:];
-      STEM.MGloss = STEM.MGloss + DA.MGloss;
-      STEM.MSeg = STEM.MSeg + DA.MSeg;
-      append_feats DA =[re"RX\|GE\|Number\|Gender"]=> STEM;
-      STEM.AlignEnd = DA.AlignEnd;
-      STEM.upos = DA.DerPos;
-      shift_out DA ==> STEM;
+      ROOT.form = ROOT.form + DA.form[1:];
+      ROOT.wordform = ROOT.wordform + DA.wordform[1:];
+      ROOT.MGloss = ROOT.MGloss + DA.MGloss;
+      ROOT.MSeg = ROOT.MSeg + DA.MSeg;
+      append_feats DA =[re"RX\|GE\|Number\|Gender"]=> ROOT;
+      ROOT.AlignEnd = DA.AlignEnd;
+      ROOT.upos = DA.DerPos;
+      shift_out DA ==> ROOT;
       del_node DA;
     }
   }
 
   rule post_DerAff_gov {
     pattern {
-      STEM [TokenType=Root];
+      ROOT [TokenType=Root];
       DA [TokenType=DerAff];
-      STEM < DA;
-      e: DA -[type=m]-> STEM;
+      ROOT < DA;
+      e: DA -[type=m]-> ROOT;
     }
-    without { STEM -[type=m]-> DA2; DA [TokenType=DerAff]; }
+    without { ROOT -[type=m]-> DA2; DA [TokenType=DerAff]; }
     commands {
-      shift DA ==> STEM;
-      STEM.form = STEM.form + DA.form[1:];
-      STEM.wordform = STEM.wordform + DA.wordform[1:];
-      STEM.MGloss = STEM.MGloss + DA.MGloss;
-      STEM.MSeg = STEM.MSeg + DA.MSeg;
-      append_feats DA =[re"RX\|GE\|Number\|Gender"]=> STEM;
-      STEM.AlignEnd = DA.AlignEnd;
-      STEM.upos = DA.DerPos;
+      shift DA ==> ROOT;
+      ROOT.form = ROOT.form + DA.form[1:];
+      ROOT.wordform = ROOT.wordform + DA.wordform[1:];
+      ROOT.MGloss = ROOT.MGloss + DA.MGloss;
+      ROOT.MSeg = ROOT.MSeg + DA.MSeg;
+      append_feats DA =[re"RX\|GE\|Number\|Gender"]=> ROOT;
+      ROOT.AlignEnd = DA.AlignEnd;
+      ROOT.upos = DA.DerPos;
       del_node DA;
     }
   }
@@ -315,23 +315,23 @@ package clitic_included {
   % See section 2.4 in the SyntaxFest 2021 paper
   rule noun_clit_InflAff {
     pattern {
-      STEM [TokenType=Root,upos=NOUN]; POSS []; IA [TokenType=InflAff];
-      STEM < POSS; POSS < IA;
-      STEM -[mod:poss]-> POSS;
-      e: IA -[type=m]-> STEM;
+      ROOT [TokenType=Root,upos=NOUN]; POSS []; IA [TokenType=InflAff];
+      ROOT < POSS; POSS < IA;
+      ROOT -[mod:poss]-> POSS;
+      e: IA -[type=m]-> ROOT;
     }
     commands {
       % add a MWT
-      STEM.textform = STEM.form + POSS.form + IA.form;
+      ROOT.textform = ROOT.form + POSS.form + IA.form;
       POSS.textform = "_";
       
-      shift IA ==> STEM;
-      STEM.form = STEM.form + IA.form;
-      STEM.wordform = STEM.wordform + IA.wordform;
-      STEM.MGloss = STEM.MGloss + IA.MGloss;
-      STEM.MSeg = STEM.MSeg + IA.MSeg;
-      append_feats IA =[re"RX\|GE\|Number\|Gender"]=> STEM;
-      STEM.AlignEnd = IA.AlignEnd;
+      shift IA ==> ROOT;
+      ROOT.form = ROOT.form + IA.form;
+      ROOT.wordform = ROOT.wordform + IA.wordform;
+      ROOT.MGloss = ROOT.MGloss + IA.MGloss;
+      ROOT.MSeg = ROOT.MSeg + IA.MSeg;
+      append_feats IA =[re"RX\|GE\|Number\|Gender"]=> ROOT;
+      ROOT.AlignEnd = IA.AlignEnd;
       del_node IA;
     }
   }
