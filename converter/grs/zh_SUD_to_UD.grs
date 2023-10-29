@@ -37,6 +37,22 @@ package zh_pre {
       e2.label = "discourse:sp";
     }
   }
+
+  % Convert shi_cleft to UD format
+  rule shi_cleft {
+    pattern {
+      SHI[form="是", upos=AUX];
+      e: SHI-[comp:cleft]->CLEFT;
+    }
+    without {
+      e2:SHI-[discourse]->DE;
+    }
+    commands {
+      SHI.upos = VERB;
+      e.label = "comp:obj";
+    }
+  }
+
 }
 
 package comp {
@@ -153,6 +169,17 @@ package zh_post {
     }
     commands {
       e.label = flat;
+    }
+  }
+
+  % Convert you_de_cleft to UD format
+  rule you_de_cleft {
+    pattern {
+      YOU[form="有"];
+      e: YOU-[advcl:cleft]->CLEFT;
+    }
+    commands {
+      e.label = "advcl";
     }
   }
 }
