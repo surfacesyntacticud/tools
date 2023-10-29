@@ -80,4 +80,9 @@ package bej_valid {
     pattern { e:N -[det]-> X; X[upos=X] }
     commands { e.1 = dep }
   }
+
+  rule remove_lemma {
+    pattern { N [lemma] }
+    commands { del_feat N.lemma }
+  }
 }
