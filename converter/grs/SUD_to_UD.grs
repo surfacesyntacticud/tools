@@ -456,6 +456,12 @@ package sub_relations {
     commands {d.1=ccomp}
   }
 
+  rule ccomp_Haitian_Creole {
+    pattern { e:H -[comp:obj@T]-> D; D[!nom] }
+    commands { e.label=ccomp}
+  }
+
+
   % Clausal argument with a non-verbal head.
   rule ccomp_non-verb {
     pattern {
@@ -527,6 +533,12 @@ package sub_relations {
     commands {e.1=iobj}
   }
 
+  rule iobj_Haitian_Creole {
+    pattern { e:H -[comp:obj@R]-> D; }
+    commands { e.label=iobj}
+  }
+
+
   rule nmod_poss {
     pattern { e:H -[1=mod, 2=poss]-> A; A[upos=ADJ] }
     commands {e.1=nmod}
@@ -576,6 +588,13 @@ package sub_relations {
     pattern { e:H -[comp:obj@agent]-> D; H -[aux:caus|aux:aux@caus]-> AUX}
     commands {del_edge e; add_edge H -[obj:agent]-> D }
   }
+
+  rule obj_Haitian_Creole {
+    pattern { e:H -[comp:obj@T]-> D; D[nom=y] }
+    commands { e.label=obj}
+  }
+
+
 
   rule obj_lvc{
     pattern { e:H -[comp:obj@lvc]-> D}
