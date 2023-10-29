@@ -62,7 +62,8 @@
         "without { B[VerbForm = Inf] }",
         "without { A -[1=comp, 2=obj]-> * }",
         "without { B -[det]-> * }",
-        "without { C -[1=conj]-> * }"
+        "without { C -[1=conj]-> * }",
+        "without { C[lemma=vous] }"
       ],
       "level": "warning"
     },
@@ -169,7 +170,8 @@
         "without { A.CorrectNumber = B.Number }",
         "without { B -[1=conj]-> * }",
         "without { B[Title=Yes] }",
-        "without { B[lemma = \"majorité\"|\"nombre\"|\"plupart\"|\"ensemble\"|\"éventail\"|\"%\"|\"pourcentage\"|\"tiers\"|\"moitié\"] }"
+        "without { B[lemma = \"majorité\"|\"nombre\"|\"plupart\"|\"ensemble\"|\"éventail\"|\"%\"|\"pourcentage\"|\"cinquantaine\"|\"tiers\"|\"partie\"|\"moitié\"] }",
+        "without { B[lemma = ce]; A[form=sont] }"
       ],
       "level": "warning"
     },
@@ -203,7 +205,8 @@
         "without { B.Number = C.CorrectNumber }",
         "without { B.CorrectNumber = C.Number }",
         "without { B -[1=conj]-> * }",
-        "without { B[Title=Yes] }"
+        "without { B[Title=Yes] }",
+        "without { B[lemma=tiers|vous] }"
       ],
       "level": "warning"
     },
