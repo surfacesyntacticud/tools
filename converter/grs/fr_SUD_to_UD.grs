@@ -167,8 +167,15 @@ strat FR_main_UDplus{
     Onf (final),
     specific_expr_close,
     Onf(extpos),
+    Onf(no_extpos_with_lang) % avoid UD validation errors
   )
 }
+
+rule no_extpos_with_lang {
+  pattern { N [ExtPos, Lang] }
+  commands { del_feat N.ExtPos }
+}
+
 
 % In GSD, there are 3 discontinuous MWEs (in parenthesis, the insered span):
 % * [fr-ud-train_07306] …et face (à la fois) aux Alliés…
