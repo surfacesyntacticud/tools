@@ -6,7 +6,7 @@
 % NB: This rule is SUD_Beja-NSC based and may need to be generalized for other corpora or language.
 rule aff_on_aff {
   pattern {
-    STEM [TokenType=Stem];
+    STEM [TokenType=Root];
     IA1 [TokenType=InflAff]; 
     IA2 [TokenType=InflAff];
     IA2 -[type=m]-> STEM;
@@ -22,8 +22,8 @@ rule aff_on_aff {
 package init_MGloss_Mseg {
   rule gov { 
     pattern { 
-      N1 [TokenType=DerAff|InflAff|Stem, !MGloss, !MSeg];
-      N2 [TokenType=DerAff|InflAff|Stem];
+      N1 [TokenType=DerAff|InflAff|Root, !MGloss, !MSeg];
+      N2 [TokenType=DerAff|InflAff|Root];
       N1 -[type=m]-> N2;
     }
     commands {
@@ -34,8 +34,8 @@ package init_MGloss_Mseg {
 
   rule dep { 
     pattern { 
-      N1 [TokenType=DerAff|InflAff|Stem];
-      N2 [TokenType=DerAff|InflAff|Stem, !MGloss, !MSeg];
+      N1 [TokenType=DerAff|InflAff|Root];
+      N2 [TokenType=DerAff|InflAff|Root, !MGloss, !MSeg];
       N1 -[type=m]-> N2;
     }
     commands {
@@ -154,7 +154,7 @@ wait\[PFV]	wait\PFV
 package morph2word {
   rule pre_InflAff_dep {
     pattern {
-      STEM [TokenType=Stem];
+      STEM [TokenType=Root];
       IA [TokenType=InflAff];
       IA < STEM;
       e: STEM -[type=m]-> IA;
@@ -172,7 +172,7 @@ package morph2word {
 
   rule pre_InflAff_gov {
     pattern {
-      STEM [TokenType=Stem];
+      STEM [TokenType=Root];
       IA [TokenType=InflAff];
       IA < STEM;
       e: IA -[type=m]-> STEM;
@@ -191,7 +191,7 @@ package morph2word {
 
   rule post_InflAff_dep {
     pattern {
-      STEM [TokenType=Stem];
+      STEM [TokenType=Root];
       IA [TokenType=InflAff];
       STEM < IA;
       e: STEM -[type=m]-> IA;
@@ -209,7 +209,7 @@ package morph2word {
 
   rule post_InflAff_gov {
     pattern {
-      STEM [TokenType=Stem];
+      STEM [TokenType=Root];
       IA [TokenType=InflAff];
       STEM < IA;
       e: IA -[type=m]-> STEM;
@@ -229,7 +229,7 @@ package morph2word {
 
   rule pre_DerAff_dep {
     pattern {
-      STEM [TokenType=Stem];
+      STEM [TokenType=Root];
       DA [TokenType=DerAff];
       DA < STEM;
       e: STEM -[type=m]-> DA;
@@ -249,7 +249,7 @@ package morph2word {
 
   rule pre_DerAff_gov {
     pattern {
-      STEM [TokenType=Stem];
+      STEM [TokenType=Root];
       DA [TokenType=DerAff];
       DA < STEM;
       e: DA -[type=m]-> STEM;
@@ -269,7 +269,7 @@ package morph2word {
 
   rule post_DerAff_dep {
     pattern {
-      STEM [TokenType=Stem];
+      STEM [TokenType=Root];
       DA [TokenType=DerAff];
       STEM < DA;
       e: STEM -[type=m]-> DA;
@@ -289,7 +289,7 @@ package morph2word {
 
   rule post_DerAff_gov {
     pattern {
-      STEM [TokenType=Stem];
+      STEM [TokenType=Root];
       DA [TokenType=DerAff];
       STEM < DA;
       e: DA -[type=m]-> STEM;
@@ -315,7 +315,7 @@ package clitic_included {
   % See section 2.4 in the SyntaxFest 2021 paper
   rule noun_clit_InflAff {
     pattern {
-      STEM [TokenType=Stem,upos=NOUN]; POSS []; IA [TokenType=InflAff];
+      STEM [TokenType=Root,upos=NOUN]; POSS []; IA [TokenType=InflAff];
       STEM < POSS; POSS < IA;
       STEM -[mod:poss]-> POSS;
       e: IA -[type=m]-> STEM;
