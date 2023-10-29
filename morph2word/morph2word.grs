@@ -9,8 +9,8 @@ rule aff_on_aff {
     STEM [TokenType=Stem];
     IA1 [TokenType=InflAff]; 
     IA2 [TokenType=InflAff];
-    IA2 -[2=aff]-> STEM;
-    e: IA2 -[2=aff]-> IA1;
+    IA2 -[type=m]-> STEM;
+    e: IA2 -[type=m]-> IA1;
   }
   commands {
     add_edge f: STEM -> IA1;
@@ -24,7 +24,7 @@ package init_MGloss_Mseg {
     pattern { 
       N1 [TokenType=DerAff|InflAff|Stem, !MGloss, !MSeg];
       N2 [TokenType=DerAff|InflAff|Stem];
-      N1 -[2=aff]-> N2;
+      N1 -[type=m]-> N2;
     }
     commands {
       N1.MGloss = N1.GE;
@@ -36,7 +36,7 @@ package init_MGloss_Mseg {
     pattern { 
       N1 [TokenType=DerAff|InflAff|Stem];
       N2 [TokenType=DerAff|InflAff|Stem, !MGloss, !MSeg];
-      N1 -[2=aff]-> N2;
+      N1 -[type=m]-> N2;
     }
     commands {
       N2.MGloss = N2.GE;
@@ -157,7 +157,7 @@ package morph2word {
       STEM [TokenType=Stem];
       IA [TokenType=InflAff];
       IA < STEM;
-      e: STEM -[2=aff]-> IA;
+      e: STEM -[type=m]-> IA;
     }
     commands {
       STEM.form = IA.form[:-1] + STEM.form;
@@ -175,7 +175,7 @@ package morph2word {
       STEM [TokenType=Stem];
       IA [TokenType=InflAff];
       IA < STEM;
-      e: IA -[2=aff]-> STEM;
+      e: IA -[type=m]-> STEM;
     }
     commands {
       shift IA ==> STEM;
@@ -194,7 +194,7 @@ package morph2word {
       STEM [TokenType=Stem];
       IA [TokenType=InflAff];
       STEM < IA;
-      e: STEM -[2=aff]-> IA;
+      e: STEM -[type=m]-> IA;
     }
     commands {
       STEM.form = STEM.form + IA.form[1:];
@@ -212,7 +212,7 @@ package morph2word {
       STEM [TokenType=Stem];
       IA [TokenType=InflAff];
       STEM < IA;
-      e: IA -[2=aff]-> STEM;
+      e: IA -[type=m]-> STEM;
     }
     commands {
       shift IA ==> STEM;
@@ -232,7 +232,7 @@ package morph2word {
       STEM [TokenType=Stem];
       DA [TokenType=DerAff];
       DA < STEM;
-      e: STEM -[2=aff]-> DA;
+      e: STEM -[type=m]-> DA;
     }
     commands {
       STEM.form = DA.form[:-1] + STEM.form;
@@ -252,7 +252,7 @@ package morph2word {
       STEM [TokenType=Stem];
       DA [TokenType=DerAff];
       DA < STEM;
-      e: DA -[2=aff]-> STEM;
+      e: DA -[type=m]-> STEM;
     }
     commands {
       shift DA ==> STEM;
@@ -272,7 +272,7 @@ package morph2word {
       STEM [TokenType=Stem];
       DA [TokenType=DerAff];
       STEM < DA;
-      e: STEM -[2=aff]-> DA;
+      e: STEM -[type=m]-> DA;
     }
     commands {
       STEM.form = STEM.form + DA.form[1:];
@@ -292,9 +292,9 @@ package morph2word {
       STEM [TokenType=Stem];
       DA [TokenType=DerAff];
       STEM < DA;
-      e: DA -[2=aff]-> STEM;
+      e: DA -[type=m]-> STEM;
     }
-    without { STEM -[2=aff]-> DA2; DA [TokenType=DerAff]; }
+    without { STEM -[type=m]-> DA2; DA [TokenType=DerAff]; }
     commands {
       shift DA ==> STEM;
       STEM.form = STEM.form + DA.form[1:];
@@ -318,7 +318,7 @@ package clitic_included {
       STEM [TokenType=Stem,upos=NOUN]; POSS []; IA [TokenType=InflAff];
       STEM < POSS; POSS < IA;
       STEM -[mod:poss]-> POSS;
-      e: IA -[2=aff]-> STEM;
+      e: IA -[type=m]-> STEM;
     }
     commands {
       % add a MWT
