@@ -178,8 +178,25 @@ package zh_post {
       YOU[form="有"];
       e: YOU-[advcl:cleft]->CLEFT;
     }
+    without {
+      YOU-[comp:obj]->OBJ;
+    }
     commands {
       e.label = "advcl";
+    }
+  }
+
+  % Convert you_de_cleft to UD format
+  rule you_cleft_with_obj {
+    pattern {
+      YOU[form="有"];
+      e: YOU-[advcl:cleft]->CLEFT;
+      e2: YOU-[obj]->OBJ;
+    }
+    commands {
+      del_edge e;
+      add_edge f: OBJ -> CLEFT;
+      f.label = "acl";
     }
   }
 }
