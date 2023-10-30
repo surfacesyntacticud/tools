@@ -199,6 +199,16 @@ package zh_post {
       f.label = "acl";
     }
   }
+
+  % simplify advmod:freq to advmod
+  rule simplify_advmod_freq {
+    pattern {
+      e: GOV-[advmod:freq]->DEP;
+    }
+    commands {
+      e.label = "advmod";
+    }
+  }
 }
 
 
