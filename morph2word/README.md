@@ -1,5 +1,7 @@
 # Morph-based to word-based conversion
 
+NOTE: Page to te update, GRS moved to `conversion/grs/bej_mSUD_to_SUD.grs`.
+
 The GRS file `morph2word.grs` is used to convert a morph-based SUD or UD corpus into a word-based corpus counterpart.
 
 It was built and tested on the [Beja SUD treebank](https://github.com/surfacesyntacticud/SUD_Beja-NSC).
