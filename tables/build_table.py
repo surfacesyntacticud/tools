@@ -10,26 +10,25 @@ from xml.dom.expatbuilder import parseString
 
 # The list of features used in UD 2.11 is needed or generated the right Grew pattern for the MISC case
 # See: https://grew.fr/doc/conllu/#how-the-misc-field-is-handled-by-grew
-# Note: ExtPos is used in FEATS in UD_English-EWT, UD_Portuguese-Bosque and UD_Portuguese-GSD but in MISC in SUD corpora. We consider it as MISC here.
-ud_feats_2_11 = [
-    "Abbr", "Accomp", "AdjType", "AdpType", "AdvType", "Advlz", "Agglutination", "Also", "Analyt", "Animacy", "Animacy[gram]", "Animacy[obj]", "Aspect", "Augm",
+ud_feats_2_13 = [
+    "Abbr", "Accomp", "AdjType", "AdpType", "AdvType", "Advlz", "Agglutination", "Also", "Analyt", "Animacy", "Animacy[gram]", "Animacy[obj]", "Aspect",
     "Case", "Caus", "Cfm", "Clas", "Class", "Clitic", "Clusivity", "Clusivity[obj]", "Clusivity[psor]", "Clusivity[subj]", "Compound", "Comt", "Conces",
-    "ConjType", "Connegative", "Contrast", "Contv", "Corf", "Decl", "Definite", "Definitizer", "Degree", "DegreeModQpm", "Deixis",
-    "DeixisRef", "Deixis[psor]", "Delib", "Deo", "Derivation", "Determ", "Detrans", "Dev", "Dialect", "Dim", "Dimin", "Dist", "Echo", "Emph",
-    "Emphatic", "Evident", "Excl", "Fact", "False", "Foc", "Focus", "FocusType", "Foreign", "Form",
-    "Gender", "Gender[abs]", "Gender[dat]", "Gender[erg]", "Gender[io]", "Gender[obj]", "Gender[psor]", "Gender[subj]", "HebBinyan", "HebExistential", "Hon", "Hum",
+    "ConjType", "Connegative", "Contrast", "Contv", "Corf", "Decl", "Definite", "Definitizer", "Degree", "Deixis", 
+    "DeixisRef", "Deixis[psor]", "Delib", "Deo", "Derivation", "Determ", "Detrans", "Dev", "Dialect", "Dist", "Echo", "Ego", "Emph",
+    "Emphatic", "Evident", "Excl", "ExtPos", "Fact", "False", "Foc", "Focus", "FocusType", "Foreign", "Form",
+    "Gender", "Gender[abs]", "Gender[dat]", "Gender[erg]", "Gender[io]", "Gender[obj]", "Gender[psor]", "Gender[subj]", "Gnq", "HebBinyan", "HebExistential", "Hon", "Htp", "Hum",
     "Hyph", "Imprs", "Incorp", "InfForm", "InflClass", "InflClass[nominal]", "Int", "Intens", "Intense", "Intension",
-    "LangId", "Language", "Link", "Mir", "Mood", "Morph", "Movement", "Mutation", "NCount", "NameType", "NegationType", "Neutral", "Nmzr",
+    "LangId", "Language", "Link", "Mood", "Morph", "Movement", "Mutation", "NCount", "NameType", "NegationType", "Neutral", "Nmzr",
     "Nomzr", "NonFoc", "NounBase", "NounClass", "NounType", "NumForm", "NumType", "NumValue",
     "Number", "Number[abs]", "Number[dat]", "Number[erg]", "Number[grnd]", "Number[io]", "Number[obj]", "Number[psed]", "Number[psor]", "Number[subj]",
     "Obl", "Orth", "PartForm", "PartType", "PartTypeQpm", "Pcl",
     "Person", "Person[abs]", "Person[dat]", "Person[erg]", "Person[grnd]", "Person[io]", "Person[obj]", "Person[psor]", "Person[subj]",
     "Polarity", "Polite", "Polite[abs]", "Polite[dat]", "Polite[erg]", "Position", "Poss", "Possessed",
-    "Pred", "Prefix", "PrepCase", "PrepForm", "Priv", "PronType", "Proper", "Prp", "Pun", "PunctSide", "PunctType",
-    "RcpType", "Recip", "Red", "Redup", "Reflex", "Reflex[obj]", "Reflex[subj]", "Rel", "RelType", "Report", "Restr", "Speech", "Strength",
+    "Pred", "Prefix", "PrepCase", "PrepForm", "Priv", "PronClass", "PronType", "Proper", "Prp", "PunctSide", "PunctType",
+    "Purp", "RcpType", "Recip", "Red", "Redup", "Reflex", "Reflex[obj]", "Reflex[subj]", "Rel", "RelType", "Report", "Speech", "Strength",
     "Style", "SubGender", "Subcat", "Subord", "Subordinative", "Tense", "Top", "Trans", "Tv", "Typo", "Uninflect",
     "Valency", "Variant", "Ventive", "VerbClass", "VerbForm", "VerbStem", "VerbType", "Voice",
-    "Shared" # SUD
+    "Shared", # SUD
   ]
 
 
@@ -39,7 +38,7 @@ parser.add_argument("basedir", help = "The main folder where all corpora are sto
 parser.add_argument("columns", help = "Must be one either of the values 'DEPS', 'UDEPS', 'DEEP', 'SUBREL:xxx (where xxx is a udep), 'META', 'FEATS', 'MISC', 'FEAT:xxx' (where xxx is a feature name)")
 parser.add_argument("-f", "--filter", help = "The template for selecting treebanks", default="*")
 parser.add_argument("-o", "--out_file", help = "The name of the output json file")
-parser.add_argument("-s", "--suffix", default="@2.12", help = "The suffix used in Grew-match naming of the corpus")
+parser.add_argument("-s", "--suffix", default="@2.13", help = "The suffix used in Grew-match naming of the corpus")
 parser.add_argument("-c", "--collection", help = "The name of the collection of corpora")
 parser.add_argument("-q", "--quiet", action="store_true", default = False, help = "turn off the progession info printing")
 args=parser.parse_args()
@@ -163,7 +162,7 @@ def pattern (x):
         grew_feature = grew_feat_name(x)
         return (['pattern { N [%s] }' % grew_feature], "N.%s" % grew_feature)
     elif args.columns == "MISC":
-        prefix = "__MISC__" if x in ud_feats_2_11 else ""
+        prefix = "__MISC__" if x in ud_feats_2_13 else ""
         grew_feature = prefix + grew_feat_name(x)
         return (['pattern { N [%s] }' % grew_feature], "N.%s" % grew_feature)
     elif args.columns[0:5] == "FEAT:":
