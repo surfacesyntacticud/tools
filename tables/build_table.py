@@ -63,28 +63,28 @@ def add_corpus (corpus):
     corpus_cpt += 1
     sub_dict = {}
 
-    nb_token = int(subprocess.run(['cat %s/%s/*.conllu | egrep "^[.0-9]+\t" | wc -l' % (args.basedir, corpus)], capture_output=True, shell=True, encoding='UTF-8').stdout)
+    nb_token = int(subprocess.run(['cat %s/%s/*.conllu | egrep "^[0-9]+\t" | wc -l' % (args.basedir, corpus)], capture_output=True, shell=True, encoding='UTF-8').stdout)
     nb_sent = int(subprocess.run(['cat %s/%s/*.conllu | grep "^# sent_id =" | wc -l' % (args.basedir, corpus)], capture_output=True, shell=True, encoding='UTF-8').stdout)
 
     if args.columns == "DEPS":
-        command = 'cat %s/%s/*.conllu | egrep "^[.0-9]+\t" | cut -f 8 | sort | uniq -c' % (args.basedir, corpus)
+        command = 'cat %s/%s/*.conllu | egrep "^[0-9]+\t" | cut -f 8 | sort | uniq -c' % (args.basedir, corpus)
     elif args.columns == "UDEPS":
-        command = 'cat %s/%s/*.conllu | egrep "^[.0-9]+\t" | cut -f 8 | cut -f 1 -d ":" | cut -f 1 -d "@" | cut -f 1 -d "$" | sort | uniq -c' % (args.basedir, corpus)
+        command = 'cat %s/%s/*.conllu | egrep "^[0-9]+\t" | cut -f 8 | cut -f 1 -d ":" | cut -f 1 -d "@" | cut -f 1 -d "$" | sort | uniq -c' % (args.basedir, corpus)
     elif args.columns == "DEEP":
-        command = 'cat %s/%s/*.conllu | egrep "^[.0-9]+\t" | cut -f 8 | grep "@" | cut -f 2 -d "@" | sort | uniq -c' % (args.basedir, corpus)
+        command = 'cat %s/%s/*.conllu | egrep "^[0-9]+\t" | cut -f 8 | grep "@" | cut -f 2 -d "@" | sort | uniq -c' % (args.basedir, corpus)
     elif args.columns[0:7] == "SUBREL:":
         dep = args.columns[7:]
         dep = dep if dep != "_aux" else "aux"
-        command = 'cat %s/%s/*.conllu | egrep "^[.0-9]+\t" | cut -f 8 | cut -f 1 -d "@" | cut -f 1 -d "$" | egrep "^%s(:|$)" | sort | uniq -c' % (args.basedir, corpus, dep)
+        command = 'cat %s/%s/*.conllu | egrep "^[0-9]+\t" | cut -f 8 | cut -f 1 -d "@" | cut -f 1 -d "$" | egrep "^%s(:|$)" | sort | uniq -c' % (args.basedir, corpus, dep)
     elif args.columns == "META":
         command = 'cat %s/%s/*.conllu | grep "^# " | grep " = " | cut -f 1 -d "=" | sed "s/# *//" | sed "s/ $//" | grep -v "^text$" | grep -v "^sent_id$" | grep -v "^global.columns$" | sort | uniq -c' % (args.basedir, corpus)
     elif args.columns == "FEATS":
-        command = 'cat %s/%s/*.conllu | egrep "^[.0-9]+\t" | cut -f 6 | grep -v "_" | tr "|" "\n" | cut -f 1 -d "=" | sort | uniq -c' % (args.basedir, corpus)
+        command = 'cat %s/%s/*.conllu | egrep "^[0-9]+\t" | cut -f 6 | grep -v "_" | tr "|" "\n" | cut -f 1 -d "=" | sort | uniq -c' % (args.basedir, corpus)
     elif args.columns == "MISC":
-        command = 'cat %s/%s/*.conllu | egrep "^[.0-9]+\t" | cut -f 10 | tr "|" "\n" | grep "=" | cut -f 1 -d "=" | sort | uniq -c' % (args.basedir, corpus)
+        command = 'cat %s/%s/*.conllu | egrep "^[0-9]+\t" | cut -f 10 | tr "|" "\n" | grep "=" | cut -f 1 -d "=" | sort | uniq -c' % (args.basedir, corpus)
     elif args.columns[0:5] == "FEAT:":
         feat = args.columns[5:]
-        command = 'cat %s/%s/*.conllu | egrep "^[.0-9]+\t" | cut -f 6 | tr "|" "\n" | grep "^%s=" | cut -f 2 -d "=" | sort | uniq -c' % (args.basedir, corpus, feat)
+        command = 'cat %s/%s/*.conllu | egrep "^[0-9]+\t" | cut -f 6 | tr "|" "\n" | grep "^%s=" | cut -f 2 -d "=" | sort | uniq -c' % (args.basedir, corpus, feat)
     else:
         raise Exception('Unknonwn column definition', args.columns)
     raw = subprocess.run([command], capture_output=True, shell=True, encoding='UTF-8')
