@@ -7,9 +7,13 @@ include "utils/irregular_expr.grs"
 include "utils/UD_flatten_idioms.grs"
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Some SUD native corpora contain additional anntations specific to spoken language (SUD_Beja-NSC, SUD_French-Spoken and SUD_Naija-NSC)
-% NB: this package can be applied to non-spoken data on which it will have no effect.
-package spoken {
+% Some specific encoding of relations SUD native corpora are normalized here
+%  - `@scrap` is kept as a feature
+%  - `conj:coord` --> `conj`
+%  - `conj:appos` --> `appos`
+%  - `mod:appos` --> `appos`
+
+package init {
   % Remove `scrap` deep extension
   rule scrap {
     pattern { e: N -[deep=scrap]-> M; }
@@ -30,15 +34,11 @@ package spoken {
     pattern { e: N -[mod:appos]-> M; }
     commands { del_edge e; add_edge N -[appos]-> M; }
   }
+}
 
-
-%  rule conjdicto {
-%    pattern { e: N -[conj:dicto]-> M; }
-%    commands { del_edge e; add_edge N -[reparandum]-> M; }
-%  }
-
+package conjdicto {
   % TODO: conj:dicto should be reverserd when change into reparandum: the rule below builds non projective punct, it should be refined!
-  rule conjdicto {
+  rule r {
     pattern { 
       e: N -[conj:dicto]-> M; 
     }
@@ -866,11 +866,12 @@ package final {
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Main strategy for converting any SUD annotation into a UDplus annotation.
-%The UDplus schema is in accordance the UD schema with additional information. It distinguishes between two types of idioms: idioms without syntactic structure are annotated with fixed relations according to the UD guidelines; idioms with a syntactic structure are annotated like any ordinary expression but their head is marked  with the feature Idiom=Yes; it also contains a feature ExtPos, which denotes the element’s function within the wider sentence; the other components of the idiom contain the feature InIdiom=Yes.
+% The UDplus schema is in accordance the UD schema with additional information. It distinguishes between two types of idioms: idioms without syntactic structure are annotated with fixed relations according to the UD guidelines; idioms with a syntactic structure are annotated like any ordinary expression but their head is marked with the feature Idiom=Yes; it also contains a feature ExtPos, which denotes the element’s function within the wider sentence; the other components of the idiom contain the feature InIdiom=Yes.
 % For the sake of uniformity, the use of features Idiom, ExtPos an InIdiom is extended to idioms without syntactic structure.
 strat main_UDplus {
   Seq (
-    Onf (spoken),
+    Onf (init),
+    Onf (conjdicto),
     Onf (shared), % Package SHARED must precede SPECIFIC_EXPR_INIT so that feature Shared=Yes is not embedded in Idiom.
     Onf (remove_shared),
     specific_expr_init, % Initialization of a specific treatment for idioms, titles and translated words.
