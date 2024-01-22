@@ -25,8 +25,8 @@ title: Grew tables
 ## Lemmas which appear with more than one UPOS
  - [SUD_French-GSD](index.html?data=SUD_French-GSD/amb_lemma@2.12)
 
-## What feature is used on which UPOS
- - [SUD_French-GSD](index.html?data=SUD_French-GSD/pos_features@2.12)
+## What feature is used on which UPOS 2.13
+ - [SUD_French-GSD](index.html?data=SUD_French-GSD/pos_features@2.13)
 
 ## MISC
  - [subrel](index.html?data=sud/subrel)

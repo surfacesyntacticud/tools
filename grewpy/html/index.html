@@ -39,17 +39,19 @@
   <div id="app" class="example-wrapper">
     <div class="row" style="width: 100%; margin: auto">
       <div class="col-sm-2">
-        <a v-bind:href="home"><i class="fa-solid fa-house"></i></a><span id="update_ago"></span>
+        <a v-bind:href="home"><i class="fa-solid fa-house"></i></a>
+        <span id="update_ago"></span>
       </div>
+
       <div class="col-sm-2">
         <div class="input-group input-group-sm mb-3">
-          <!-- <h5>Filter:</h5> -->
           <span class="input-group-text">Filter</span>
           <input type="text" class="form-control"  v-model="filter_value">
           <button class="btn btn-outline-secondary" type="button" id="button-addon2" v-on:click="filter_value = ''"><i class="fa-solid fa-circle-xmark"></i></button>
           <button class="btn btn-outline-secondary" type="button" v-on:click="filter_kind = 'rows'" v-bind:class="{ selected: filter_kind == 'rows'}">Rows</button>
           <button class="btn btn-outline-secondary" type="button" v-on:click="filter_kind = 'cols'" v-bind:class="{ selected: filter_kind == 'cols'}">Cols</button>
         </div>
+
       </div>
       <div class="col-sm-2">
         <div v-if="json.display_modes.length> 1" class="input-group input-group-sm me-2" role="group" aria-label="First group">

@@ -1,4 +1,4 @@
-SUD=/Users/guillaum/resources/sud-treebanks-v2.12
+SUD=/Users/guillaum/resources/sud-treebanks-v2.13
 PORT=8998
 PID=`lsof -t -i :${PORT}`
 GREW_MATCH_CONFIG=/Users/guillaum/gitlab/grew/grew_match_config
@@ -88,27 +88,27 @@ parseme_13_sizes:
 
 label_upos_French-GSD:
 	python3 build_table.py DC \
-		--treebank "{\"SUD_French-GSD@2.12\": \"${SUD}/SUD_French-GSD\"}" \
-		--title "## edge label and dependant UPOS (SUD_French-GSD@2.12)" \
+		--treebank "{\"SUD_French-GSD@2.13\": \"${SUD}/SUD_French-GSD\"}" \
+		--title "## edge label and dependant UPOS (SUD_French-GSD@2.13)" \
 		--request "edge.req" \
 		--row_key "e.label" \
 		--col_key "N.ExtPos/upos" \
-		> html/SUD_French-GSD/label_upos@2.12.json
+		> html/SUD_French-GSD/label_upos@2.13.json
 
 amb_lemma_French-GSD:
 	python3 build_table.py DC \
-		--treebank "{\"SUD_French-GSD@2.12\": \"${SUD}/SUD_French-GSD\"}" \
-		--title "## ambiguous lemmas UPOS (SUD_French-GSD@2.12)" \
+		--treebank "{\"SUD_French-GSD@2.13\": \"${SUD}/SUD_French-GSD\"}" \
+		--title "## ambiguous lemmas UPOS (SUD_French-GSD@2.13)" \
 		--request "lemma.req" \
 		--row_key "N.lemma" \
 		--col_key "N.upos" \
 		--filter \
-		> html/SUD_French-GSD/amb_lemma@2.12.json
+		> html/SUD_French-GSD/amb_lemma@2.13.json
 
 pos_features_French-GSD:
 	python3 pos_features.py \
-		--treebank "{\"SUD_French-GSD@2.12\": \"${SUD}/SUD_French-GSD\"}" \
-		> html/SUD_French-GSD/pos_features@2.12.json
+		--treebank "{\"SUD_French-GSD@2.13\": \"${SUD}/SUD_French-GSD\"}" \
+		> html/SUD_French-GSD/pos_features@2.13.json
 
 subrel:
 	python3 build_table.py TBC \
@@ -142,6 +142,16 @@ run_test:
 		--treebanks test/two_treebanks.json \
 		--requests test/requests.json \
 		> html/test/test_TBR.json
+
+gl:
+	python3 build_table.py TBR \
+		--config sud \
+		--instance https://universal.grew.fr \
+		--title "## Guidelines table" \
+		--treebanks /Users/guillaum/github/surfacesyntacticud/guidelines/tools/french/french_table_json/sud_french.json \
+		--requests /Users/guillaum/github/surfacesyntacticud/guidelines/tools/french/french_request_json/request_output_french_subj.json \
+		# > html/test/test_TBR.json
+
 
 start_test: stop
 	python3 -m http.server --directory html ${PORT} &

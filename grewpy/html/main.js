@@ -36,6 +36,7 @@ var app = new Vue({
         });
       });
     },
+
     // method called both atfer filering changes and display mode change (sorting should be changed)
     refresh_columns(){
       if (app.filter_value == "") {
@@ -67,34 +68,38 @@ var app = new Vue({
       }
     },
 
+    // cellRenderer sent to Ag-grid
     cell(params) {
       if (params.value != undefined) {
 
         // column 1 ==> just print the data
         if (params.colDef.field == "row_header") {
           return `<b>${params.value}</b>`;
-      
-       // row 2
-      } else if (params.data.row_type == "TOTAL") {
-        // test if full column is searchable
-        if (app.json.kind == "TBR" || app.json.kind == "TBC") {
-          return `<a class="btn btn-secondary disabled btn-sm">${params.value}</a>`;
-        } else {
-          return `<a class="btn btn-primary btn-sm" onclick='grew_match("col", "", "${params.colDef.headerName}")'>${params.value}</a>`;
+        }
+
+        // row 2
+        else if (params.data.row_type == "TOTAL") {
+          // test if full column is searchable
+          if (app.json.kind == "TBR" || app.json.kind == "TBC") {
+            return `<a class="btn btn-secondary disabled btn-sm">${params.value}</a>`;
+          }
+          else {
+            return `<a class="btn btn-primary btn-sm" onclick='grew_match("col", "", "${params.colDef.headerName}")'>${params.value}</a>`;
+          }
         }
 
         // column 2
-        } else if (params.colDef.field == "row_total" && params.data.row_total != undefined) {
+        else if (params.colDef.field == "row_total" && params.data.row_total != undefined) {
           // test if the full row is searchable
           if (app.json.kind == "TBR") {
             return `<a class="btn btn-secondary disabled btn-sm">${params.value}</a>`;
           } else {
             return `<a class="btn btn-primary btn-sm" onclick='grew_match("row","${params.data.row_header}","")'>${params.data.row_total}</a>`;
           }
-
+        }
 
         // regular cell: row > 2 && col > 2
-        } else {
+        else {
           let style = this.json.display_modes[this.display_mode][1]
           if (style=="PERCENT") {
             v = (params.value[this.display_mode]* 100).toFixed(2) + "%"
@@ -181,9 +186,9 @@ function grew_match(kind, row_header, col_header) {
     let treebank = row_header;
     let url = app.json.grew_match_instance + "?corpus=" + treebank + "&request=" + request
     window.open(url, '_blank');
-    }
+  }
 
-    if (app.json.kind == "DC") {
+  if (app.json.kind == "DC") {
     let request = app.json.request;
     if (kind == "row") {
       request += build_with(app.json.row_key, row_header)
@@ -207,7 +212,7 @@ function build_with(key,value) {
   } else if (ks.length == 2 && ks[1] == "__feature_name__") {
     return "%0Awith { "+ ks[0] + "["+ value +"] }"
   } else {
-  return "%0Awith { "+ key + "=\""+ value +"\" }"
+    return "%0Awith { "+ key + "=\""+ value +"\" }"
   } 
 }
 
