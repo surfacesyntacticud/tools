@@ -42,6 +42,21 @@ package mwt {
     }
   }
 
+  rule scrap {
+    % unfinished structure (mainly in spoken)
+    pattern { 
+      N1 [textform]; N2 [textform="_"]; N1 < N2;
+      N1 -[deep=scrap]-> N2; 
+    }
+    commands {
+      N1.form = N1.textform;
+      del_feat N1.textform; 
+      shift N2 ==> N1;
+      del_node N2;
+      N1.mwt=yes;
+    }
+  }
+
   % main case: ADP+DET
   rule N2_det {
     pattern { 
@@ -104,6 +119,8 @@ aux	aux
 Aux	aux
 Du	du
 du	du
+Des	des
+des	des
 duquel	duquel
 Duquel	duquel
 desquels	desquels
@@ -120,7 +137,7 @@ Auxquelles	auxquelles
 
 rule clean {
   pattern { N [mwt] }
-  commands { del_feat N.mwt; } 
+  commands { del_feat N.mwt; }
 }
 
 strat main {
@@ -131,6 +148,6 @@ strat main {
       Onf(lemma),
       Onf(wordform),
       Onf(clean),
-    ) 
+    )
   }
 
