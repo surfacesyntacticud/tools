@@ -1,0 +1,57 @@
+rule undef {
+  pattern {
+    N[SylForm="__undef__"]
+  }
+  commands { del_node N }
+}
+
+rule fused {
+  pattern {
+    N[SylForm="FUSED"];
+    e: GOV -> N;
+    PREV [SylForm<>"FUSED"]; * -[Syl=*]-> PREV;
+    PREV << N;
+  }
+  without { P[]; PREV << P; P << N; * -[Syl=*]-> P; }
+  commands {
+    add_edge f: GOV -> PREV;
+    f.label = e.label;
+    del_node N;
+  }
+}
+
+package ExternalOnset {
+  rule init {
+    pattern { 
+      N[]; S [ExternalOnset=True];
+      N < S;
+    }
+    without { 
+      S -[ExternalOnset=Yes]-> *; 
+    }
+    commands {
+      add_edge S -[ExternalOnset=Yes]-> N;
+    }
+  }
+
+  rule propagate {
+    pattern { 
+      e: S -[ExternalOnset=Yes]-> N2;
+      N2 [upos];
+      N1[]; N1 < N2;
+    }
+    commands {
+      add_edge f: S -> N1;
+      f.label = e.label;
+      del_edge e;
+    }
+  }
+}
+
+strat main { 
+  Seq (
+    Onf (undef), 
+    Onf (fused), 
+    Onf (ExternalOnset),
+  )
+}
