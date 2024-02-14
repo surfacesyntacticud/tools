@@ -8,30 +8,54 @@ rule rm_goeswih {
 
 package correction {
   rule VerbForm {
-    pattern { N[CorrectVerbForm] }
+    pattern { N[CorrectVerbForm<>none] }
     commands {
       N.VerbForm = N.CorrectVerbForm;
       del_feat N.CorrectVerbForm;
     }
   }
 
+  rule rm_VerbForm {
+    pattern { N[CorrectVerbForm=none] }
+    commands {
+      del_feat N.VerbForm;
+      del_feat N.CorrectVerbForm;
+    }
+  }
+
   rule Number {
-    pattern { N[CorrectNumber] }
+    pattern { N[CorrectNumber<>none] }
     commands {
       N.Number = N.CorrectNumber;
       del_feat N.CorrectNumber;
     }
   }
 
+  rule rm_Number {
+    pattern { N[CorrectNumber=none] }
+    commands {
+      del_feat N.Number;
+      del_feat N.CorrectNumber;
+    }
+  }
+
   rule Gender {
-    pattern { N[CorrectGender] }
+    pattern { N[CorrectGender<>none] }
     commands {
       N.Gender = N.CorrectGender;
       del_feat N.CorrectGender;
     }
   }
 
-  rule fix_Person {
+  rule rm_Gender {
+    pattern { N[CorrectGender=none] }
+    commands {
+      del_feat N.Gender;
+      del_feat N.CorrectGender;
+    }
+  }
+
+  rule Person {
     pattern { N[CorrectPerson<>none] }
     commands {
       N.Person = N.CorrectPerson;
@@ -48,25 +72,48 @@ package correction {
   }
 
   rule Tense {
-    pattern { N[CorrectTense] }
+    pattern { N[CorrectTense<>none] }
     commands {
       N.Tense = N.CorrectTense;
       del_feat N.CorrectTense;
     }
   }
 
-  rule fixMood {
+  rule rm_Tense {
+    pattern { N[CorrectTense=none] }
+    commands {
+      del_feat N.Tense;
+      del_feat N.CorrectTense;
+    }
+  }
+
+  rule Mood {
     pattern { N[CorrectMood<>none] }
     commands {
       N.Mood = N.CorrectMood;
       del_feat N.CorrectMood;
     }
   }
-  rule rmMood {
+  rule rm_Mood {
     pattern { N[CorrectMood=none] }
     commands {
       del_feat N.Mood;
       del_feat N.CorrectMood;
+    }
+  }
+
+  rule Voice {
+    pattern { N[CorrectVoice<>none] }
+    commands {
+      N.Voice = N.CorrectVoice;
+      del_feat N.CorrectVoice;
+    }
+  }
+  rule rm_Voice {
+    pattern { N[CorrectVoice=none] }
+    commands {
+      del_feat N.Voice;
+      del_feat N.CorrectVoice;
     }
   }
 
