@@ -39,6 +39,8 @@ with open(outfile, 'w') as f:
           misc = "|".join([f"{k[4:]}={subfeats[k]}" for k in subfeats if k != prefix]).strip()
           misc = misc.replace("MeanF0=X", "MeanF0_X=Yes")
           misc = misc.replace("Duration=X", "Duration_X=Yes")
+          misc = misc.replace("MaxAmplitude=X", "MaxAmplitude_X=Yes")
+          misc = misc.replace("AvgAmplitude=X", "AvgAmplitude_X=Yes")
           # print (f"+++++{misc}+++++++++++")
           if misc == "":
             misc = "_"
