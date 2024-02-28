@@ -90,7 +90,7 @@ label_upos_French-GSD:
 	python3 build_table.py DC \
 		--treebank "{\"SUD_French-GSD@2.13\": \"${SUD}/SUD_French-GSD\"}" \
 		--title "## edge label and dependant UPOS (SUD_French-GSD@2.13)" \
-		--request "edge.req" \
+		--request "edge.json" \
 		--row_key "e.label" \
 		--col_key "N.ExtPos/upos" \
 		> html/SUD_French-GSD/label_upos@2.13.json
@@ -99,7 +99,7 @@ amb_lemma_French-GSD:
 	python3 build_table.py DC \
 		--treebank "{\"SUD_French-GSD@2.13\": \"${SUD}/SUD_French-GSD\"}" \
 		--title "## ambiguous lemmas UPOS (SUD_French-GSD@2.13)" \
-		--request "lemma.req" \
+		--request "lemma.json" \
 		--row_key "N.lemma" \
 		--col_key "N.upos" \
 		--filter \
@@ -116,7 +116,7 @@ subrel:
 		--config sud \
 		--treebanks ${GREW_MATCH_CONFIG}/corpora/sud_native.json \
 		--title "## subrel usage in native SUD" \
-		--request sud/subrel.req \
+		--request sud/subrel.json \
 		--timestamp \
 		--clustering_key e.2 \
 		--total \
@@ -128,7 +128,7 @@ deep:
 		--config sud \
 		--treebanks ${GREW_MATCH_CONFIG}/corpora/sud_native.json \
 		--title "## subrel usage in native SUD" \
-		--request sud/deep.req \
+		--request sud/deep.json \
 		--timestamp \
 		--clustering_key e.deep \
 		--total \

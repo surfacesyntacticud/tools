@@ -88,7 +88,11 @@ def table_TBR(args):
   if args.home:
     output["home"] = args.home
 
-  print (json.dumps(output, indent=2))
+  if args.output:
+    with open(args.output, 'w') as f:
+      json.dump(output, f)
+  else:
+    print (json.dumps(output, indent=2))
 
 # ===============================================================================================
 # Table with several treebanks one request and a clustering_key
@@ -96,9 +100,13 @@ def table_TBR(args):
 def table_TBC(args):
   title = args.title if args.title else "## Table treebanks/clustering"
   if args.request:
-    with open(args.request, "rb") as f:
-      data = json.load(f)
-      (grew_request, text_request) = request_of_json (data)
+    if args.request.endswith(".json"):
+      with open(args.request, "rb") as f:
+        data = json.load(f)
+        (grew_request, text_request) = request_of_json (data)
+    else:
+      grew_request = Request.parse (args.request)
+      text_request = args.request
   else:
     raise ValueError(f"Missing --request")
 
@@ -165,7 +173,11 @@ def table_TBC(args):
   if args.home:
     output["home"] = args.home
 
-  print (json.dumps(output, indent=2))
+  if args.output:
+    with open(args.output, 'w') as f:
+      json.dump(output, f)
+  else:
+    print (json.dumps(output, indent=2))
 
 
 # ===============================================================================================
@@ -174,9 +186,13 @@ def table_TBC(args):
 def table_DC(args):
   title = args.title if args.title else "## Table double clustering"
   if args.request:
-    with open(args.request, "rb") as f:
-      data = json.load(f)
-      (grew_request, text_request) = request_of_json (data)
+    if args.request.endswith(".json"):
+      with open(args.request, "rb") as f:
+        data = json.load(f)
+        (grew_request, text_request) = request_of_json (data)
+    else:
+      grew_request = Request.parse (args.request)
+      text_request = args.request
   else:
     raise ValueError(f"Missing --request")
 
@@ -197,6 +213,8 @@ def table_DC(args):
     raise ValueError(f"Missing --treebank")
 
   dc_full = corpus.count(grew_request, clustering_keys=[row_key, col_key])
+  if dc_full == 0: # The pattern does not appear in the corpus
+    return
   if args.filter:
     dc = { k: dc_full[k] for k in dc_full if len(dc_full[k]) > 1 }
   else:
@@ -242,7 +260,11 @@ def table_DC(args):
   if args.home:
     final_json["home"] = args.home
 
-  print (json.dumps(final_json, indent=2))
+  if args.output:
+    with open(args.output, 'w') as f:
+      json.dump(final_json, f)
+  else:
+    print (json.dumps(final_json, indent=2))
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description="Build a Grew table from a list of treebanks and a list of requests")
@@ -254,6 +276,7 @@ if __name__ == '__main__':
   parser.add_argument("--clustering_key", help="[TBC only] the key used for clustering")
   parser.add_argument("--col_key", help="[TBC only] the key used for col")
   parser.add_argument("--row_key", help="[TBC only] the key used for row")
+  parser.add_argument("--output", help="output file (default is stdout)")
   parser.add_argument("--home", help="url to the 'home' page")
   parser.add_argument('--timestamp', help="Add a timestamp on table", action='store_true')
   parser.add_argument('--total', help="Print grand total", action='store_true')

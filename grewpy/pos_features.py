@@ -29,14 +29,18 @@ def keep (f):
   elif f.lower() == f:
     # Remove 'special' features form, lemma, upos, xpos, wordform and textform
     return False
-  elif f in ['SpaceAfter', 'Title', 'InTitle', 'Idiom', 'InIdiom', '__RAW_MISC__']:
+  elif f in ['SpaceAfter', 'Shared', 'Typo', 'Title', 'InTitle', 'Idiom', 'InIdiom', '__RAW_MISC__']:
     # Feature not related to POS of the token
+    return False
+  elif f.startswith('Syl'):
+    # Feature used of syllables in Naija-prosody
     return False
   else:
     # Keep everthing else
     return True
 
-def escape_feat_name (s):
+# change xx__yy to xx[yy]
+def feat_name_grew2ud (s):
   sp = s.split("__")
   if len(sp) == 2:
     return f"{sp[0]}[{sp[1]}]"
@@ -44,7 +48,7 @@ def escape_feat_name (s):
     return s
 
 def build_table (rows, columns, cell_fct, row_fct, col_fct):
-  columns_dict = [ {"field": column, "headerName": escape_feat_name(column)} for column in columns ]
+  columns_dict = [ {"field": column, "headerName": feat_name_grew2ud(column)} for column in columns ]
   columns_total_dict =  {"row_header": "upos", "row_type": "TOTAL"} | { column: col_fct (column) for column in columns }
   def line(row):
     row_total = row_fct (row)
@@ -86,21 +90,21 @@ if __name__ == '__main__':
   features.sort()
 
   def cell_fct(upos,feat): 
-    return corpus.count(Request(f'N[upos={upos}, {feat}]'))
+    return corpus.count(Request(f'X[upos={upos}, {feat}]'))
   def row_fct(upos):
-    return corpus.count(Request(f'N[upos={upos}]'))
+    return corpus.count(Request(f'X[upos={upos}]'))
   def col_fct(feat):
-    return corpus.count(Request(f'N[{feat}]'))
+    return corpus.count(Request(f'X[{feat}]'))
   table = build_table(ud_tagset, features, cell_fct, row_fct, col_fct)
   table.update ({
     "kind": "DC",
     "title": f"## Usage of features by UPOS in `{treebank_id}` (master)",
     "timestamp": datetime.datetime.now().isoformat(),
     "grew_match_instance": args.instance,
-    "request": "pattern { N [] }",
+    "request": "pattern { X [] }",
     "treebank": treebank_id,
-    "col_key": "N.__feature_name__",
-    "row_key": "N.upos",
+    "col_key": "X.__feature_name__",
+    "row_key": "X.upos",
     "display_modes": [["occ", "NUM"], ["% of row", "PERCENT"], ["% of col", "PERCENT"]]
   })
 
