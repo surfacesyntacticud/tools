@@ -84,7 +84,7 @@ var app = new Vue({
             return `<a class="btn btn-secondary disabled btn-sm">${params.value}</a>`;
           }
           else {
-            return `<a class="btn btn-primary btn-sm" onclick='grew_match("col", "", "${params.colDef.headerName}")'>${params.value}</a>`;
+            return `<a class="btn btn-primary btn-sm" onclick='grew_match("col", "", "${params.colDef.field}")'>${params.value}</a>`;
           }
         }
 
@@ -106,7 +106,7 @@ var app = new Vue({
           } else {
             v = params.value[this.display_mode]
           }
-          return (`<a class="btn btn-success btn-sm" onclick='grew_match("cell", "${params.data.row_header}","${params.colDef.headerName}")'>${v}</a>`)
+          return (`<a class="btn btn-success btn-sm" onclick='grew_match("cell", "${params.data.row_header}","${params.colDef.field}")'>${v}</a>`)
         }
       }
     }

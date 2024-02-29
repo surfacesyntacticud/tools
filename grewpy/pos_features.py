@@ -6,6 +6,7 @@ from grewpy import CorpusDraft, Request, Corpus, set_config
 
 parser = argparse.ArgumentParser(description="Build a Grew table listing features by UPOS")
 parser.add_argument("--treebank", help="a JSON string: dict from id to treebank")
+parser.add_argument("--output", help="output file (default is stdout)")
 parser.add_argument("-i", "--instance", help="grew-match instance", default="https://universal.grew.fr")
 parser.add_argument("-c", "--config", help="grew config")
 args = parser.parse_args()
@@ -108,4 +109,8 @@ if __name__ == '__main__':
     "display_modes": [["occ", "NUM"], ["% of row", "PERCENT"], ["% of col", "PERCENT"]]
   })
 
-  print (json.dumps(table, indent=2))
+  if args.output:
+    with open(args.output, 'w') as f:
+      json.dump(table, f)
+  else:
+    print (json.dumps(table, indent=2))
