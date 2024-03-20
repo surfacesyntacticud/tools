@@ -1,0 +1,18 @@
+{
+  "title": "mSUD specific validation",
+  "languages": ["bej"],
+  "items": [
+    {
+      "description": "Affix without morph-level annotation",
+      "request": [
+
+        "% Search for a affix without morph-level annotation",
+        "",
+        "pattern { X [form=re\"-.+\"]|[form=re\".+-\"] }  % starts or ends with \"-\"",
+        "without { Y -[type=m]-> X }                  % neither the target of a /m relation",
+        "without { X -[type=m]-> Y }                  % nor the source of a /m relation"
+      ],
+      "level": "error"
+    }
+  ]
+}
