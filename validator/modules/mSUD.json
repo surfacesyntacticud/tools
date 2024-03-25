@@ -13,6 +13,18 @@
         "without { X -[type=m]-> Y }                  % nor the source of a /m relation"
       ],
       "level": "error"
+    },
+    {
+      "description": "Morph-level annotation without an affix",
+      "request": [
+
+        "% Search for a morph-level annotation without an affix",
+        "",
+        "pattern { X -[type=m]-> Y }                          % there is a /m relation",
+        "without  { X [form=re\"-.+\"]|[form=re\".+-\"] } % neither the gov is an affix",
+        "without  { Y [form=re\"-.+\"]|[form=re\".+-\"] } % nor the dependent"
+      ],
+      "level": "error"
     }
   ]
 }
