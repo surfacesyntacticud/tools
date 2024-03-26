@@ -1,0 +1,10 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+include "bej_SUD_to_UD.grs"
+include "bej_mSUD_to_SUD.grs"
+
+strat bej_mSUD_to_UD_main { 
+  Seq (
+    bej_mSUD_to_SUD_main,
+    bej_SUD_to_UD_main,
+  )
+}

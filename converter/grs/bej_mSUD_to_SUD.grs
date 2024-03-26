@@ -1,9 +1,17 @@
-
+strat bej_mSUD_to_SUD_main { 
+  Seq(
+    Onf (aff_on_aff),
+    Onf (init_MGloss_Mseg),
+    Onf (remove_bracket),
+    Onf (morph2word),
+    Onf (clitic_included)
+    )
+  }
 
 % In a few case in SUD_Beja-NSC, the affixe is not directly linked to the stem 
-% See: http://match.grew.fr/?corpus=SUD_Beja-NSC@latest&custom=61bc53b75739b
+% request: pattern { X1 [TokenType=InflAff]; X2[TokenType=InflAff]; X1 -[type=m]-> X2 }
 % The rule [aff_on_aff] reorganize [*.aff] relations to prepare data for the main [morph2word] package
-% NB: This rule is SUD_Beja-NSC based and may need to be generalized for other corpora or language.
+% NB: This rule is mSUD_Beja-NSC based and may need to be generalized for other corpora or language.
 rule aff_on_aff {
   pattern {
     ROOT [TokenType=Root];
@@ -230,7 +238,7 @@ package morph2word {
   rule pre_DerAff_dep {
     pattern {
       ROOT [TokenType=Root];
-      DA [TokenType=DerAff];
+      DA [TokenType=DerAff, DerPos];
       DA < ROOT;
       e: ROOT -[type=m]-> DA;
     }
@@ -250,7 +258,7 @@ package morph2word {
   rule pre_DerAff_gov {
     pattern {
       ROOT [TokenType=Root];
-      DA [TokenType=DerAff];
+      DA [TokenType=DerAff, DerPos];
       DA < ROOT;
       e: DA -[type=m]-> ROOT;
     }
@@ -270,7 +278,7 @@ package morph2word {
   rule post_DerAff_dep {
     pattern {
       ROOT [TokenType=Root];
-      DA [TokenType=DerAff];
+      DA [TokenType=DerAff, DerPos];
       ROOT < DA;
       e: ROOT -[type=m]-> DA;
     }
@@ -290,7 +298,7 @@ package morph2word {
   rule post_DerAff_gov {
     pattern {
       ROOT [TokenType=Root];
-      DA [TokenType=DerAff];
+      DA [TokenType=DerAff, DerPos];
       ROOT < DA;
       e: DA -[type=m]-> ROOT;
     }
@@ -337,12 +345,3 @@ package clitic_included {
   }
 }
 
-strat main { 
-  Seq(
-    Onf (aff_on_aff),
-    Onf (init_MGloss_Mseg),
-    Onf (remove_bracket),
-    Onf (morph2word),
-    Onf (clitic_included)
-    ) 
-  }
