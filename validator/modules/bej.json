@@ -25,6 +25,20 @@
         "without  { Y [form=re\"-.+\"]|[form=re\".+-\"] } % nor the dependent"
       ],
       "level": "error"
+    },
+    {
+      "description": "Each token has a TokenType",
+      "request": [
+        "pattern { X [!TokenType, form <> \"__0__\"] }"
+      ],
+      "level": "error"
+    },
+    {
+      "description": "A DerAff must have a DerPos",
+      "request": [
+        "pattern { X [TokenType=DerAff, !DerPos] }"
+      ],
+      "level": "error"
     }
   ]
 }
