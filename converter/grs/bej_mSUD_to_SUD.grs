@@ -8,7 +8,7 @@ strat bej_mSUD_to_SUD_main {
     )
   }
 
-% In a few case in SUD_Beja-NSC, the affixe is not directly linked to the stem 
+% In a few case in mSUD_Beja-NSC, the affixe is not directly linked to the stem 
 % request: pattern { X1 [TokenType=InflAff]; X2[TokenType=InflAff]; X1 -[type=m]-> X2 }
 % The rule [aff_on_aff] reorganize [*.aff] relations to prepare data for the main [morph2word] package
 % NB: This rule is mSUD_Beja-NSC based and may need to be generalized for other corpora or language.
@@ -17,15 +17,16 @@ rule aff_on_aff {
     ROOT [TokenType=Root];
     IA1 [TokenType=InflAff]; 
     IA2 [TokenType=InflAff];
-    IA2 -[type=m]-> ROOT;
-    e: IA2 -[type=m]-> IA1;
+    ROOT -[type=m]-> IA1;
+    e: IA1 -> X2;
   }
   commands {
-    add_edge f: ROOT -> IA1;
+    add_edge f: ROOT -> X2;
     f.label = e.label;
     del_edge e;
   }
 }
+
 
 package init_MGloss_Mseg {
   rule gov { 
