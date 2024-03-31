@@ -15,15 +15,21 @@
       "level": "error"
     },
     {
-      "description": "Morph-level annotation without an affix",
+      "description": "Morph-level head initial annotation without an affix",
       "request": [
-
-        "% Search for a morph-level annotation without an affix",
-        "",
-        "pattern { X -[type=m]-> Y }                          % there is a /m relation",
-        "without  { X [form=re\"-.+\"]|[form=re\".+-\"] } % neither the gov is an affix",
-        "without  { Y [form=re\"-.+\"]|[form=re\".+-\"] } % nor the dependent"
-      ],
+        "pattern { X -[type=m]-> Y; X << Y }  % there is a head final /m relation",
+        "without  { X [form=re\".+-\"] }        % neither the gov is an affix",
+        "without  { Y [form=re\"-.+\"] }        % nor the dependent"
+          ],
+      "level": "error"
+    },
+    {
+      "description": "Morph-level head final annotation without an affix",
+      "request": [
+        "pattern { X -[type=m]-> Y; Y << X }  % there is a head final /m relation",
+        "without  { X [form=re\"-.+\"] }        % neither the gov is an affix",
+        "without  { Y [form=re\".+-\"] }        % nor the dependent"
+          ],
       "level": "error"
     },
     {
