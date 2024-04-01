@@ -4,7 +4,8 @@ strat bej_mSUD_to_SUD_main {
     Onf (init_MGloss_Mseg),
     Onf (remove_bracket),
     Onf (morph2word),
-    Onf (clitic_included)
+    Onf (clitic_included),
+    Onf (fix_features)
     )
   }
 
@@ -319,9 +320,9 @@ package morph2word {
 }
 
 package clitic_included {
-  % A special case in the Beja corpus: http://match.grew.fr/?corpus=SUD_Beja-NSC@latest&custom=61b7690c7ca5b
+  % A special case in the Beja corpus, sent_id: BEJ_MV_NARR_03_camel_025-034 (http://match.grew.fr/?corpus=mSUD_Beja-NSC@latest&custom=61b7690c7ca5b)
   % where there is a clitic between the stem and its affix
-  % See section 2.4 in the SyntaxFest 2021 paper
+  % See section 2.4 in the SyntaxFest 2021 paper (https://aclanthology.org/2021.tlt-1.5/)
   rule noun_clit_InflAff {
     pattern {
       ROOT [TokenType=Root,upos=NOUN]; POSS []; IA [TokenType=InflAff];
@@ -344,5 +345,34 @@ package clitic_included {
       del_node IA;
     }
   }
+}
+
+package fix_features {
+  % The rules in package `morph2word` use concatenation for Gender and Numnber which supposes that the feature is defined only once in the morphs of a word
+  % There are a few cases where it is not true
+  % - pattern { X -[type=m]-> Y1; Y1[Gender]; X -[type=m]-> Y2; Y2[Gender] }
+  % - pattern { X -[type=m]-> Y; Y[Number]; X [Number] }
+  % The two rules above are a post edition which correct the wrong concatenation in these cases
+  rule gender {
+    pattern { X[Gender=lex.concat] }
+    commands { X.Gender = lex.fix}
+  }
+#BEGIN lex
+concat	fix
+%-----------------------------
+MascMasc	Masc
+FemMasc	Masc
+#END
+
+  rule number {
+    pattern { X[Number=lex.concat] }
+    commands { X.Number = lex.fix}
+  }
+#BEGIN lex
+concat	fix
+%-----------------------------
+PlurPlur	Plur
+#END
+
 }
 
