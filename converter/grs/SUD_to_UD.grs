@@ -25,6 +25,11 @@ package init {
     commands { del_edge e; add_edge N -[conj]-> M; }
   }
 
+  rule conjcoordemb {
+    pattern { e: N -[conj:coord@emb]-> M; }
+    commands { del_edge e; add_edge N -[conj@emb]-> M; }
+  }
+
   rule conjappos {
     pattern { e: N -[conj:appos]-> M; }
     commands { del_edge e; add_edge N -[appos]-> M; }
