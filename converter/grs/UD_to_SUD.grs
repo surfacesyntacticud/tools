@@ -3,6 +3,28 @@
 include "utils/irregular_expr.grs"
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+strat main {
+  Seq (
+    Onf (eud_to_ud),
+    Onf (idioms),
+    specific_expr_init, % Initialization of a specific treatment for MWE, titles and translated words.
+    Onf (sub_relations), % Package SUB_RELATIONS must precede package REL_EXTENSIONS because this package swat extensions on level 2.
+    Onf (rel_extensions),
+    Onf (relations), % Package RELATIONS must precede REVERSE_RELATIONS.MAIN because the renaming of some relations depends on the cooccurrence with other relations (nsubj, csubj in the impersonal diathesis for instance)
+    reverse_relations.main, % Reversing aux, case, cop and mark relations.
+    Onf (minimize_right_conj-dep), % Package MINIMIZE_CONJ_DEP must follow strategy REVERSE_RELATIONS.MAIN because the shared dependents can depend on relation inversions.Moreover, a dependance can shift from a coordination to an ascendant. Ex: fr-ud-dev_00446 -entre 3 et 6 généralement
+    Onf (add_conj_emb), % Package ADD_CONJ_EMB must follow REVERSE_RELATIONS.MAIN because it depends on head changes ; Ex: UD_French-GSD fr-ud-dev_00751
+    Onf (chained_relations),% Package CHAINED_RELATIONS must follow package SHIFT_RULES because it can entail a wrong coordination between two elements because of errors in head changes (UD_French-GS: fr-ud-dev_00131).
+    specific_expr_close, % Closing a specific treatment for MWE, titles and translated words.
+    Onf(shared_left_conj-dep), % Package SHARED_LEFT_CONJ-DEP must follow strategy REVERSE_RELATIONS.MAIN because this strategy transforms some dependents into governors, for which the Shared feature is not relevant. It must also follow strategy SPECIFIC_EXPR_ClOSE because idioms must be annotated in the definitive manner.
+    Onf(unshared_left_conj-dep),
+    Onf(unshared_right_conj-dep),
+    Onf(extpos),
+    Onf(normalize),
+  )
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Remove all information specific to Enhanced UD.
 package eud_to_ud {
   rule deep { % remove add enhanced relations
@@ -20,13 +42,13 @@ package eud_to_ud {
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Marking the elements of idioms without syntactic structure.
 package idioms{
-% Marking the heads. We make the hypothesis that the idiom has the same POS as its head.
+  % Marking the heads. We make the hypothesis that the idiom has the same POS as its head.
   rule idiom_head{
     pattern{H -[fixed]-> *; H[!ExtPos,!Idiom]}
     commands{H.ExtPos=H.upos; H.Idiom=Yes}
   }
 
-% Marking the dependents.
+  % Marking the dependents.
   rule idiom_dependent{
     pattern{* -[fixed]-> D; D[!InIdiom]}
     commands{D.InIdiom=Yes}
@@ -38,22 +60,24 @@ package idioms{
 % UD sub-relations are renamed as SUD sub-relations or relations.
 % The rules are arranged in the alphabetic order of the SUD resulting relations or sub-relations.
 package sub_relations {
-% comp
-%=====
-% All sub-relations of COMP, for which the extension does not change from UD to SUD.
+  % comp
+  %=====
+  % All sub-relations of COMP, for which the extension does not change from UD to SUD.
   rule comp {
     pattern { e:H -[advcl:cleft|ccomp:obj|ccomp:obl|ccomp:pred]-> D; }
     commands {e.1=comp}
   }
 
-% XCOMP:OBJ, XCOMP:OBL, XCOMP:PRED UD relations with a verb as dependent become COMP with the same extension if this extension exists. By default, if the governor has no direct object, the subject of the dependent is the subject of the governor.
+  % XCOMP:OBJ, XCOMP:OBL, XCOMP:PRED UD relations with a verb as dependent become COMP with the same extension if this extension exists.
+  % By default, if the governor has no direct object, the subject of the dependent is the subject of the governor.
   rule comp_xcomp{
     pattern{d: H -[xcomp:obj|xcomp:obl|xcomp:pred]-> D; D[upos=VERB]}
     without{H -[obj]-> OBJ; OBJ[upos=NOUN|PRON|PROPN|X]}
     commands{d.1=comp; D.Subject2=SubjRaising}
   }
 
-% XCOMP:OBJ, XCOMP:OBL, XCOMP:PRED UD relations with a verb as dependent become COMP with the same extension if this extension exists. By default, if the governor has a direct object, the subject of the dependent is the object of the governor.
+  % XCOMP:OBJ, XCOMP:OBL, XCOMP:PRED UD relations with a verb as dependent become COMP with the same extension if this extension exists.
+  % By default, if the governor has a direct object, the subject of the dependent is the object of the governor.
   rule comp_xcomp_obj{
     pattern{
       d: H -[xcomp:obl|xcomp:pred]-> D; D[upos=VERB];
@@ -61,7 +85,9 @@ package sub_relations {
     commands{d.1=comp; D.Subject2=ObjRaising}
   }
 
-% XCOMP:OBJ, XCOMP:OBL, XCOMP:PRED UD relations with a non verbal dependent D, and D has a copula dependent. The relations become COMP with the same extension if this extension exists. By default, if the governor has no direct object, the subject of the dependent is the subject of the governor.
+  % XCOMP:OBJ, XCOMP:OBL, XCOMP:PRED UD relations with a non verbal dependent D, and D has a copula dependent.
+  % The relations become COMP with the same extension if this extension exists. 
+  % By default, if the governor has no direct object, the subject of the dependent is the subject of the governor.
   rule comp_xcomp_cop{
     pattern{
       d: H -[xcomp:obj|xcomp:obl|xcomp:pred]-> D;
@@ -69,64 +95,64 @@ package sub_relations {
     commands{d.1=comp; AUX.Subject2=SubjRaising}
   }
 
-% Sub-relations DEP:COMP are renamed COMP in SUD if they do not start from nominals.
+  % Sub-relations DEP:COMP are renamed COMP in SUD if they do not start from nominals.
   rule comp_dep {
     pattern { H[upos <> NOUN|PRON]; e:H -[dep:comp]-> D; }
     commands {del_edge e; add_edge H -[comp]-> D}
   }
 
-% Clitic pronouns linked to pronominal verbs.
-% Ex: les enfants s'enfuient.
+  % Clitic pronouns linked to pronominal verbs.
+  % Ex: les enfants s'enfuient.
   rule comp-expl_expl-pv{
     pattern{e: H -[expl:pv|expl:comp]-> D}
     commands{del_edge e; add_edge H -[comp@expl]-> D}
   }
 
-% Clitic pronouns expressing the mediopassive redistribution.
-% Ex: les maisons se vendent bien en ce moment.
+  % Clitic pronouns expressing the mediopassive redistribution.
+  % Ex: les maisons se vendent bien en ce moment.
   rule comp-pass_expl-pass{
     pattern{e: H -[expl:pass]-> D}
     commands{del_edge e; add_edge H -[comp@pass]-> D}
   }
 
-% In the impersonal diathesis, the deep subject, which is a NSUBJ or CSUBJ dependent in UD, becomes a direct object in SUD with the deep extension AGENT.
-% The impersonal diathesis is detected by means of the impersonal subject.
-% The UD relation that is renamed as a SUD relation is not a sub-relation but it must be processed before the general processing of relations.
-% Ex: Il arrive deux personnes.  - Il m'arrive de faire des erreurs.
+  % In the impersonal diathesis, the deep subject, which is a NSUBJ or CSUBJ dependent in UD, becomes a direct object in SUD with the deep extension AGENT.
+  % The impersonal diathesis is detected by means of the impersonal subject.
+  % The UD relation that is renamed as a SUD relation is not a sub-relation but it must be processed before the general processing of relations.
+  % Ex: Il arrive deux personnes.  - Il m'arrive de faire des erreurs.
   rule comp-obj-agent_subj {
     pattern{d:H -[nsubj|csubj]-> D; H -[expl:subj]-> S}
     without{H -[mark]-> C; D << C; C << S}%Ex:  UD_French-GSD  fr-ud-dev_01470 - une autre façon[SUBJ1] de le voir est qu'[C]il n'existe[V] pas de foncteur
-   without{H -[mark]-> C; S << C; C << D} %Ex:  UD_French-GSD fr-ud-train_01049 - Est ce[S] que[C] vous[D] envisagez un retour définitif en Tunisie ?
+    without{H -[mark]-> C; S << C; C << D} %Ex:  UD_French-GSD fr-ud-train_01049 - Est ce[S] que[C] vous[D] envisagez un retour définitif en Tunisie ?
     commands{del_edge d; add_edge H -[comp:obj@agent]-> D }
   }
 
-% In the impersonal passive diathesis, the deep subject, which is a NSUBJ:PASS or CSUBJ:PASS dependent in UD, becomes an OBJ:PASS dependent in SUD.
-% The impersonal diathesis is detected by means of the impersonal subject,which may not be a direct dependent of the main verb, hence the need for several rules.
-% Ex: Il sera vendu une grande maison aujourd'hui - Il est prévu de continuer. - Il a été vendu une grande maison aujourd'hui. - Il a été prévu de continuer. - Il peut avoir été vendu une grande maison aujourd'hui.- Il se dit que tu viendras.  Il s'est vendu une grande maison aujourd'hui. - Il a pu se vendre une grande maison aujourd'hui.
+  % In the impersonal passive diathesis, the deep subject, which is a NSUBJ:PASS or CSUBJ:PASS dependent in UD, becomes an OBJ:PASS dependent in SUD.
+  % The impersonal diathesis is detected by means of the impersonal subject,which may not be a direct dependent of the main verb, hence the need for several rules.
+  % Ex: Il sera vendu une grande maison aujourd'hui - Il est prévu de continuer. - Il a été vendu une grande maison aujourd'hui. - Il a été prévu de continuer. - Il peut avoir été vendu une grande maison aujourd'hui.- Il se dit que tu viendras.  Il s'est vendu une grande maison aujourd'hui. - Il a pu se vendre une grande maison aujourd'hui.
   rule comp-obj-pass_subj {
     pattern{e:H -[1=csubj|nsubj, 2=pass]-> D; H -[expl:subj]-> *}
     commands{del_edge e; add_edge H -[comp:obj@pass]-> D; }
   }
 
-% Oblique argument.
+  % Oblique argument.
   rule comp_obl {
     pattern { e:H -[1=obl, 2=arg|comp]-> D; } % comp pour Spoken
     commands {e.1=comp; e.2=obl}
   }
 
-% Agent complement.
+  % Agent complement.
   rule comp_obl-agent {
     pattern { e:H -[1=obl, 2=agent]-> D}
     commands {del_edge e; add_edge H -[comp:obl@agent]-> D}
   }
 
-% Sub-relations DEP:COMP starting from nominals are renamed COMP:OBL in SUD. We make the hypothesis that all arguments of nominals are oblique arguments.
+  % Sub-relations DEP:COMP starting from nominals are renamed COMP:OBL in SUD. We make the hypothesis that all arguments of nominals are oblique arguments.
   rule comp_dep_nom {
     pattern { H[upos = NOUN|PRON]; e:H -[dep:comp]-> D; }
     commands {del_edge e; add_edge H -[comp:obl]-> D}
   }
 
-% Predicative non clausal argument.
+  % Predicative non clausal argument.
   rule comp-pred_xcomp {
     pattern { e:H -[xcomp:pred]-> D}
     without{D[upos=AUX|VERB] }
@@ -134,42 +160,41 @@ package sub_relations {
     commands {del_edge e; add_edge H -[comp:pred]-> D}
   }
 
-% Predicative clausal argument without control of its subject.
+  % Predicative clausal argument without control of its subject.
   rule comp-pred_ccomp {
     pattern { e:H -[ccomp:pred]-> D; }
     commands {e.1=comp; e.2=pred}
   }
 
 
-% mod
-%=========
-
- % Oblique modifier.
+  % mod
+  %=========
+  % Oblique modifier.
   rule mod {
     pattern { e:H -[obl:mod]-> D; }
     commands {e.1=mod; del_feat e.2}
   }
 
-   rule mod-relcl{
-     pattern { e:H -[acl:relcl]-> D; }
-     commands {del_edge e; add_edge H -[mod@relcl]-> D}
-   }
+  rule mod-relcl{
+    pattern { e:H -[acl:relcl]-> D; }
+    commands {del_edge e; add_edge H -[mod@relcl]-> D}
+  }
 
 
-% subj
-%=========
-% In an impersonal construction, the impersonal subject, which is an EXPL dependent in UD, becomes an  explicit subject in SUD with the deep extension expl.
-% In the general case, there is no potential direct object of the impersonal verb
-% Ex: Il arrive deux personnes. - Il faut un bilan. - Il s'agit d'une erreur. - Il a été vendu une grande maison. - il se dit que tu viendras.
+  % subj
+  %=========
+  % In an impersonal construction, the impersonal subject, which is an EXPL dependent in UD, becomes an  explicit subject in SUD with the deep extension expl.
+  % In the general case, there is no potential direct object of the impersonal verb
+  % Ex: Il arrive deux personnes. - Il faut un bilan. - Il s'agit d'une erreur. - Il a été vendu une grande maison. - il se dit que tu viendras.
   rule subj_expl {
     pattern { e:H -[expl:subj]-> D; }
     without{H -[csubj|nsubj|csubj:pass|nsubj:pass]-> S} 
     commands {e.1=subj;e.deep=expl; del_feat e.2}
   }
 
-% In an impersonal construction, the impersonal subject, which is an EXPL dependent in UD, becomes an  explicit subject in SUD with the deep extension expl.
-% The impersonal subject is in a complement clause, whose head has a subject outside the clause.
-%Ex:  UD_French-GSD  fr-ud-dev_01470 - une autre façon[S] de le voir est qu'[C]il[D] n'existe[V] pas de foncteur
+  % In an impersonal construction, the impersonal subject, which is an EXPL dependent in UD, becomes an  explicit subject in SUD with the deep extension expl.
+  % The impersonal subject is in a complement clause, whose head has a subject outside the clause.
+  %Ex:  UD_French-GSD  fr-ud-dev_01470 - une autre façon[S] de le voir est qu'[C]il[D] n'existe[V] pas de foncteur
   rule subj_expl_comp-clause1 {
     pattern {
       d:H -[expl:subj]-> D;
@@ -180,9 +205,9 @@ package sub_relations {
     commands {d.1=subj;d.deep=expl; del_feat d.2}
   }
 
-% In an impersonal construction, the impersonal subject, which is an EXPL dependent in UD, becomes an  explicit subject in SUD with the deep extension expl.
-% There is predicative clause complement of the impersonal verb with a personal subject.
-%Ex:  UD_French-GSD fr-ud-train_01049 - Est ce[S] que[C] vous[D] envisagez un retour définitif en Tunisie ?
+  % In an impersonal construction, the impersonal subject, which is an EXPL dependent in UD, becomes an  explicit subject in SUD with the deep extension expl.
+  % There is predicative clause complement of the impersonal verb with a personal subject.
+  %Ex:  UD_French-GSD fr-ud-train_01049 - Est ce[S] que[C] vous[D] envisagez un retour définitif en Tunisie ?
   rule subj_expl_comp-clause2 {
     pattern {
       d:H -[expl:subj]-> D;
@@ -193,28 +218,28 @@ package sub_relations {
     commands {d.1=subj;d.deep=expl; del_feat d.2}
   }
 
-% unk
-%=========
+  % unk
+  %=========
   rule other_expl {
     pattern { e:H -[1=expl, 2<>subj|comp|pass|pv]-> D; }
     commands {del_edge e; add_edge H -[unk@expl]-> D}
   }
+} % package sub_relations
 
-}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % UD extensions of relations are transformed into deep extensions of SUD relations.
 % Examples of cop extensions: cop:locat in UD_Polish-LFG and cop:own in UD_Finnish-* and UD_Karelian-KKPP
 package rel_extensions {
-% When a relation with an extension is different from COMP, its extension is transformed into a deep extension.
+  % When a relation with an extension is different from COMP, its extension is transformed into a deep extension.
   rule change_ext{
-    pattern{e: H -[1=*,2=*]-> D}
-    without{ H -[1=aux|comp|subj]-> D}
-    without{ e.2=outer}
+    pattern{ e: H -[1=*,2=*]-> D }
+    without{ H -[1=aux|comp|subj]-> D }
+    without{ e.2=outer }
     commands{ add_edge H -[1=e.1,deep=e.2]-> D; del_edge e}
   }
+} % package rel_extensions
 
-}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % UD relations are renamed as SUD relations or sub-relations.
@@ -222,18 +247,18 @@ package rel_extensions {
 package relations {
 
 
-%comp:expl
-%=========
-% Clitic pronoun linked with verbs to form fixed expressions.
-% Ex: IL en veut à sa fille.
+  %comp:expl
+  %=========
+  % Clitic pronoun linked with verbs to form fixed expressions.
+  % Ex: IL en veut à sa fille.
   rule comp-expl{
     pattern{e: H -[expl]-> D; H[upos=VERB]; D[upos=PRON]}
     commands{del_edge e; add_edge H -[comp@expl]-> D}
   }
 
 
-%comp:obj
-%=========
+  %comp:obj
+  %=========
   rule comp-obj_obj {
     pattern { e:H -[1=obj]-> D; }
     without{e.deep=agent; H -[aux:caus]-> AUX}
@@ -246,7 +271,7 @@ package relations {
   }
 
 
-% Direct clausal argument of a verb without control of its subject. We make the assumption that a clausal argument that is not introduced with an adposition is a direct object.
+  % Direct clausal argument of a verb without control of its subject. We make the assumption that a clausal argument that is not introduced with an adposition is a direct object.
   rule comp-obj_ccomp {
     pattern {e:H -[1=ccomp]-> D; H[upos=VERB]}
     without{D[VerbFom=Part]}% Participles are considered as predicative arguments
@@ -257,7 +282,7 @@ package relations {
     commands{e.1=comp;e.2=obj}
   }
 
-% Direct clausal argument of a verb with control of its subject. We make the assumption that a clausal argument that is not introduced with an adposition is a direct object.
+  % Direct clausal argument of a verb with control of its subject. We make the assumption that a clausal argument that is not introduced with an adposition is a direct object.
   rule comp-obj_xcomp {
     pattern { e:H -[1=xcomp]-> D; H[upos=VERB]; D[upos=VERB]}
     without{D -[cop]-> *}
@@ -268,8 +293,8 @@ package relations {
     commands {e.1=comp;e.2=obj;D.Subject2=SubjRaising}
   }
 
-% Direct clausal argument of a verb with a copula: the coupla subject is controlled by the main verb. We make the assumption that a clausal argument that is not introduced with an adposition is a direct object.
-% Ex: Il veut être soldat.
+  % Direct clausal argument of a verb with a copula: the coupla subject is controlled by the main verb. We make the assumption that a clausal argument that is not introduced with an adposition is a direct object.
+  % Ex: Il veut être soldat.
   rule comp-obj_xcomp-cop {
     pattern { e:H -[1=xcomp]-> D; H[upos=VERB];D -[cop]-> D1}
     without{H -[obj|comp:obj]-> *}% There is no other direct object.
@@ -279,33 +304,33 @@ package relations {
   }
 
 
-% comp:obl
-%=========
-% Oblique clausal argument of a verb without control of its subject.
-% Ex: C'est facile à faire.
+  % comp:obl
+  %=========
+  % Oblique clausal argument of a verb without control of its subject.
+  % Ex: C'est facile à faire.
   rule comp-obl_ccomp {
     pattern { e:H -[1=ccomp]-> D;  H[upos=VERB]; D -[mark]-> ADP; ADP[upos=ADP]}
     without{D[VerbFom=Part]}% Participles are considered as predicative arguments
     commands {e.1=comp;e.2=obl}
   }
 
-% Oblique clausal argument of a non verbal predicate without control of its subject. We make the assumption that all clausal arguments of non verbal predicates are oblique arguments.
-% Ex: Il est heureux que Jean soit venu.
+  % Oblique clausal argument of a non verbal predicate without control of its subject. We make the assumption that all clausal arguments of non verbal predicates are oblique arguments.
+  % Ex: Il est heureux que Jean soit venu.
   rule comp-obl_ccomp-non-verb {
     pattern { e:H -[1=ccomp]-> D; H[upos<>VERB]; }
     without{D[VerbFom=Part]}% Participles are considered as predicative arguments
     commands {e.1=comp;e.2=obl}
   }
 
-% Clausal agent complements.
-%Ex: fr-ud-train_03013 -  La fédération italienne se dit choquée que le joueur français ait été choisi
+  % Clausal agent complements.
+  %Ex: fr-ud-train_03013 -  La fédération italienne se dit choquée que le joueur français ait été choisi
   rule comp-obl_ccomp-agent {
     pattern {e:H -[1=ccomp,deep=agent]-> D}
     commands {e.1=comp;e.2=obl}
   }
 
-% Clausal arguments in the presence of a direct object are considered as oblique arguments.
-% Je convainc Marc qu'il doit venir.
+  % Clausal arguments in the presence of a direct object are considered as oblique arguments.
+  % Je convainc Marc qu'il doit venir.
   rule comp-obl_ccomp-obj {
     pattern {
       e:H -[1=ccomp]-> D;
@@ -314,8 +339,8 @@ package relations {
     commands {e.1=comp;e.2=obl}
   }
 
-% Clausal arguments of passive verbs are considered as oblique arguments.
-% Il est convaincu qu'il doit venir.
+  % Clausal arguments of passive verbs are considered as oblique arguments.
+  % Il est convaincu qu'il doit venir.
   rule comp-obl_ccomp-pass {
     pattern {
       e:H -[1=ccomp]-> D;
@@ -329,21 +354,21 @@ package relations {
     commands {e.1=comp;e.2=obl}
   }
 
-% Clausal arguments with control of their subject and marked with an adposition.
-% Il songe à venir.
+  % Clausal arguments with control of their subject and marked with an adposition.
+  % Il songe à venir.
   rule comp-obl_xcomp {
     pattern { e:H -[1=xcomp]-> D; D[upos=VERB]; D -[mark]-> *}
     without{D[VerbFom=Part]}% Participles are considered as predicative arguments
     commands {e.1=comp;e.2=obl;D.Subject2=SubjRaising}
   }
 
-% Clausal arguments with a copula and marked with an adposition; the copula subject is controlled   by the main verb.
-% Ex: Il songe à être soldat.
+  % Clausal arguments with a copula and marked with an adposition; the copula subject is controlled   by the main verb.
+  % Ex: Il songe à être soldat.
   rule comp-obl_xcomp-cop {
     pattern { e:H -[1=xcomp]-> D; D -[cop]-> D1; D1[upos=AUX]; D -[mark]-> *}
     commands {e.1=comp;e.2=obl;D1.Subject2=SubjRaising}
   }
-% Direct clausal arguments with control of their subject in presence of a direct object are considered as oblique arguments.
+  % Direct clausal arguments with control of their subject in presence of a direct object are considered as oblique arguments.
   rule comp-obl_xcomp-obj {
     pattern {
       e:H -[1=xcomp]-> D;D[upos=VERB];
@@ -354,10 +379,10 @@ package relations {
   }
 
 
-% comp:pred
-%==========
-% A direct argument, which is not a verb, is considered  as a predicative complement in SUD.
-% Ex: Il semble malade. - Je le considère comme un ami -
+  % comp:pred
+  %==========
+  % A direct argument, which is not a verb, is considered  as a predicative complement in SUD.
+  % Ex: Il semble malade. - Je le considère comme un ami -
   rule comp-pred_xcomp {
     pattern { e:H -[1=xcomp]-> D}
     without{D[upos=VERB] }
@@ -365,24 +390,23 @@ package relations {
     commands {e.1=comp;e.2=pred}
   }
 
-% A participle argument with the control of its subject is considered as predicative argument.
-% Ex: Il paraît accablé par la mort de sa femme.
+  % A participle argument with the control of its subject is considered as predicative argument.
+  % Ex: Il paraît accablé par la mort de sa femme.
   rule comp_pred_part {
     pattern { e:H -[1=xcomp]-> D; D[upos=VERB,VerbForm=Part]}
     commands {add_edge H -[comp:pred]-> D; D.Subject2=SubjRaising; del_edge e}
   }
 
-
-% mod
-%====
-% This rule is too strong for nummod, because in many languages, the relation is DET when D precedes H.
+  % mod
+  %====
+  % This rule is too strong for nummod, because in many languages, the relation is DET when D precedes H.
   rule mod {
     pattern { e:H -[1=advcl|advmod|amod|nummod]-> D; }
     commands {e.1=mod}
   }
 
-% Modifiers of nominals that are not marked with a conjunction or an adposition are considered as MOD dependents in SUD.
-% Ex: un samedi soir - un homme accablé par le décès de sa femme
+  % Modifiers of nominals that are not marked with a conjunction or an adposition are considered as MOD dependents in SUD.
+  % Ex: un samedi soir - un homme accablé par le décès de sa femme
   rule mod_acl-nmod {
     pattern { e:H -[1=acl|nmod]-> D; }
     without{ D -[case|mark]-> *}
@@ -390,44 +414,44 @@ package relations {
   }
 
 
-% subj
-%=====
-%Ex: UD_French-GSD fr-ud-dev_00269 - ...Maria[D] se suicide[H]-t-elle ...
+  % subj
+  %=====
+  %Ex: UD_French-GSD fr-ud-dev_00269 - ...Maria[D] se suicide[H]-t-elle ...
   rule subj {
     pattern { e:H -[1=nsubj|csubj]-> D}
     commands {e.1=subj}
   }
 
 
-% udep
-%=====
-% Modifiers of nominals that are marked with a conjunction or an adposition are considered as UDEP dependents in SUD.
+  % udep
+  %=====
+  % Modifiers of nominals that are marked with a conjunction or an adposition are considered as UDEP dependents in SUD.
   rule udep {
     pattern { e:H -[1=acl|nmod]-> D; D -[case|mark]-> *}
     commands {e.1=udep}
   }
 
-% Adverbs that are modifiers of determined words and marked with a conjunction or an adposition are considered as UDEP dependents in SUD.
-   rule udep_advmod-det {
-     pattern { H -[det]-> *; e:H -[advmod]-> D; D -[case|mark]-> *}
-     commands {del_edge e; add_edge H -[udep]-> D}
-   }
+  % Adverbs that are modifiers of determined words and marked with a conjunction or an adposition are considered as UDEP dependents in SUD.
+  rule udep_advmod-det {
+    pattern { H -[det]-> *; e:H -[advmod]-> D; D -[case|mark]-> *}
+    commands {del_edge e; add_edge H -[udep]-> D}
+  }
 
-% Adverbs that are nominal modifiers and marked with a conjunction or an adposition are considered as UDEP dependents in SUD.
-   rule udep_advmod-noun {
-     pattern { H[upos=NOUN|NUM|PRON|PROPN|X]; e:H -[advmod]-> D; D -[case|mark]-> *}
-     commands {del_edge e; add_edge H -[udep]-> D}
-   }
+  % Adverbs that are nominal modifiers and marked with a conjunction or an adposition are considered as UDEP dependents in SUD.
+  rule udep_advmod-noun {
+    pattern { H[upos=NOUN|NUM|PRON|PROPN|X]; e:H -[advmod]-> D; D -[case|mark]-> *}
+    commands {del_edge e; add_edge H -[udep]-> D}
+  }
 
-   rule udep_obl {
-     pattern { e:H -[1=obl]-> D}
-     without{H -[deep=agent]-> D}
-     commands {e.1=udep}
-   }
+  rule udep_obl {
+    pattern { e:H -[1=obl]-> D}
+    without{H -[deep=agent]-> D}
+    commands {e.1=udep}
+  }
 
 
-% unk
-%=====
+  % unk
+  %=====
   rule unk {
     pattern { e:H -[1=dep|fixed]-> D; }
     commands {e.1=unk}
@@ -439,7 +463,7 @@ package relations {
     commands{del_edge e;add_edge H -[unk@expl]-> D;}
   }
 
-}
+} % package relations
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -457,7 +481,7 @@ package reverse_relations {
       Onf (set_level),
       Onf (reverse_edges),
       Onf (shift_out_edges),
-      Onf(shift_out_features),
+      Onf (shift_out_features),
       Onf (cleaning),
       Onf (rename_rel),
     )
@@ -467,6 +491,7 @@ package reverse_relations {
   package set_level {
     rule r { pattern { e:H -[1=case|aux|mark|cop, !level]-> D } commands { e.level=10 } }
   }
+
   % ---------------------------------------------------------------------------------------------
   package reverse_edges {
     rule r {
@@ -535,7 +560,7 @@ package reverse_relations {
       commands { add_edge f: H -> N; f.label = e.label; del_edge e }
     }
 
-% Counterex: French-GSD fr-ud-dev_00863 - La question suivante est : Peut[H]-on[D] y prendre épouse ?
+    % Counterex: French-GSD fr-ud-dev_00863 - La question suivante est : Peut[H]-on[D] y prendre épouse ?
     rule all_mark_embedded{
       pattern {
         H -[1=cop|aux|case,REV=Yes]-> D;
@@ -558,8 +583,8 @@ package reverse_relations {
     rule prep_nom_comp{
       pattern{
         H[upos=ADP]; D[upos=NOUN|NUM|PROPN|X];
-	H -[1=case, REV=Yes]-> D;
-	d1:D -[1=comp]-> N}
+	      H -[1=case, REV=Yes]-> D;
+	      d1:D -[1=comp]-> N}
       commands{add_edge d2: H -> N; d2.label=d1.label; del_edge d1}
     }
     
@@ -642,10 +667,10 @@ package reverse_relations {
     % Relations that rise when their source D is on the left of N and when their dependent N is also on the left of H.
     rule D_N_H {
       pattern {
-          H -[1=cop,REV=Yes]-> D;
-          e: D -[1=mod]-> N;
-          D << N; N << H
-        }
+        H -[1=cop,REV=Yes]-> D;
+        e: D -[1=mod]-> N;
+        D << N; N << H
+      }
       commands { add_edge f: H -> N; f.label = e.label; del_edge e }
     }
 
@@ -693,7 +718,7 @@ package reverse_relations {
         e: D -[1=conj]-> N;
         H << D;
         D[upos=AUX|VERB, VerbForm];
-	%N[upos=AUX|VERB, VerbForm];
+	      %N[upos=AUX|VERB, VerbForm];
         %D.VerbForm <> N.VerbForm
       }
       without{N[upos=AUX|VERB, VerbForm];  D.VerbForm = N.VerbForm}
@@ -704,17 +729,16 @@ package reverse_relations {
       pattern{H -[REV=Yes]-> D; D[Shared=Yes]}
       commands{H.Shared=Yes; del_feat D.Shared}
     }
-  }
+  } % package shift_out_edges
 
- % ---------------------------------------------------------------------------------------------
-% shfit some features from a node to its governor.
+  % ---------------------------------------------------------------------------------------------
+  % shfit some features from a node to its governor.
   package shift_out_features{
     rule subject{
       pattern{d:AUX -[1=aux|cop]-> V; V[Subject2]}
       commands{AUX.Subject2=V.Subject2; del_feat V.Subject2}
     }
-    
-  }
+  } % package shift_out_features
   
   % ---------------------------------------------------------------------------------------------
   package cleaning {
@@ -729,7 +753,7 @@ package reverse_relations {
       pattern { e: M -[level=*]-> N }
       commands{del_feat e.level}
     }
-  }
+  } % package cleaning
 
   % ---------------------------------------------------------------------------------------------
   % Renaming the reversed relations
@@ -752,24 +776,24 @@ package reverse_relations {
     }
 
     % Next two rules: potential subrel for aux are moved now in the "deep" feature
-     rule aux {
-       pattern { e:M -[aux]-> N }
-       commands { add_edge M -[comp:aux]-> N; del_edge e }
-     }
+    rule aux {
+      pattern { e:M -[aux]-> N }
+      commands { add_edge M -[comp:aux]-> N; del_edge e }
+    }
  
-     rule aux_with_subrel {
-       pattern { e:M -[1=aux,2=*]-> N }
-       commands { add_edge M -[1=comp,2=aux,deep=e.2]-> N; del_edge e }
-     }
-  }
-}
+    rule aux_with_subrel {
+      pattern { e:M -[1=aux,2=*]-> N }
+      commands { add_edge M -[1=comp,2=aux,deep=e.2]-> N; del_edge e }
+    }
+  } % package rename_rel
+} % package reverse_relations
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Move the right dependents of a conjunction from the left conjunct to the right conjunct. Dependencies CONJ, DISCOURSE, PARATAXIS and PUNCT are not moved.
 package minimize_right_conj-dep {
 
-% The right shared element directly depends on the head of the first conjunct.
+  % The right shared element directly depends on the head of the first conjunct.
   rule minimize_direct {
     pattern {
       C1 -[1=conj]-> C2;
@@ -783,7 +807,7 @@ package minimize_right_conj-dep {
   }
 
 
-% The shared element depends on the head of the first conjunct via a MOD dependency.
+  % The shared element depends on the head of the first conjunct via a MOD dependency.
   rule minimize_indirect_mod {
     pattern {
       C1 -[1=conj]-> C2;
@@ -798,7 +822,7 @@ package minimize_right_conj-dep {
     }
   }
 
-% The shared element depends on the head of the first conjunct via a COMP:OBJ dependency.
+  % The shared element depends on the head of the first conjunct via a COMP:OBJ dependency.
   rule minimize_indirect_conj-obj {
     pattern {
       C1 -[1=conj]-> C2;
@@ -812,9 +836,7 @@ package minimize_right_conj-dep {
       D.Shared=Yes
     }
   }
-
-
-}
+} % package minimize_right_conj-dep
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Mark embedded conj relations with the extension "emb".
@@ -858,18 +880,18 @@ package chained_relations {
     commands {add_edge f: D1 -> D2; f.label=e.label; del_edge e}
   }
 
-}
+} % package chained_relations
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Mark some left dependents of a coordination with the feature Shared=Yes.
 package shared_left_conj-dep {
-% The general case, which includes only cc, mod, udep an subj dependencies in certain conditions.
-% Ex:  SUD_English-GUM GUM_voyage_chatham-12 - In[D1] 1835 Maori settlers from the mainland arrived[C1], massacred[C2] and enslaved the Moriori.
-% Ex: SUD_English-GUM GUM_news_clock-10 - Police[D1] arrested[C1] and questioned[C1] the student.
-% CounterEx: SUD_English-GUM GUM_bio_jespersen-12 - Academic[D1] life[C1] and work[C2].
-% CounterEx: SUD_French-GSD fr-ud-train_09075 - L'UNFP en[D1] sera durablement affaiblie[C1] et son dirigeant assassiné[C2] à Paris, ...
-% CounterEx: French-GSD fr-ud-test_00032 : faisait vivre toute[D1] cette région[C1] et bien au-delà[C2]
-% CounterEx: French-GSD fr-ud-test_00289 - un lycée où[D1] on travaille[C1], où on apprend[C2] 
+  % The general case, which includes only cc, mod, udep an subj dependencies in certain conditions.
+  % Ex:  SUD_English-GUM GUM_voyage_chatham-12 - In[D1] 1835 Maori settlers from the mainland arrived[C1], massacred[C2] and enslaved the Moriori.
+  % Ex: SUD_English-GUM GUM_news_clock-10 - Police[D1] arrested[C1] and questioned[C1] the student.
+  % CounterEx: SUD_English-GUM GUM_bio_jespersen-12 - Academic[D1] life[C1] and work[C2].
+  % CounterEx: SUD_French-GSD fr-ud-train_09075 - L'UNFP en[D1] sera durablement affaiblie[C1] et son dirigeant assassiné[C2] à Paris, ...
+  % CounterEx: French-GSD fr-ud-test_00032 : faisait vivre toute[D1] cette région[C1] et bien au-delà[C2]
+  % CounterEx: French-GSD fr-ud-test_00289 - un lycée où[D1] on travaille[C1], où on apprend[C2] 
   rule gen {
     pattern {
       d1:C1 -[1=conj]-> C2;
@@ -885,9 +907,9 @@ package shared_left_conj-dep {
     commands{D1.Shared=Yes}
   }
 
-% The left dependent is a punctuation sign, which is not embedding.
-% Ex: SUD_English-GUM GUM_fiction_pag-88 - The rock dropped to the ground,[P1] blood-slick[C1] and glistening[C2].
-% Ex: SUD_English-GUM GUM_bio_byron-21 - he described the affair as "[P1]a violent, though pure love[C1] and passion[C2]"[P2]
+  % The left dependent is a punctuation sign, which is not embedding.
+  % Ex: SUD_English-GUM GUM_fiction_pag-88 - The rock dropped to the ground,[P1] blood-slick[C1] and glistening[C2].
+  % Ex: SUD_English-GUM GUM_bio_byron-21 - he described the affair as "[P1]a violent, though pure love[C1] and passion[C2]"[P2]
   rule punct {
     pattern {
       d1:C1 -[1=conj]-> C2;
@@ -900,8 +922,8 @@ package shared_left_conj-dep {
   }
 
 
-% The left dependent precedes another left dependent, which is not a punctuation sign and is shared by the conjuncts.
-% Ex: SUD_French-GSD fr-ud-train_00210 - l'est de l'Arctique canadien, où[D2] ils[D1] font[C1] des interviews et des fouilles et recueillent[C2] des artefacts ...
+  % The left dependent precedes another left dependent, which is not a punctuation sign and is shared by the conjuncts.
+  % Ex: SUD_French-GSD fr-ud-train_00210 - l'est de l'Arctique canadien, où[D2] ils[D1] font[C1] des interviews et des fouilles et recueillent[C2] des artefacts ...
   rule double {
     pattern {
       C1 -[1=conj]-> C2;
@@ -910,14 +932,13 @@ package shared_left_conj-dep {
     without{D2[Shared]}
     commands{D2.Shared=Yes}
   }
-
-}
+} % package shared_left_conj-dep
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Mark the left dependents of the head conjunct of a coordination, which are not dependents of the coordination, with the feature Shared=No.
 package unshared_left_conj-dep {
-% Determiners of the head of the first conjunct are not shared, if the head of the second conjunct is not a noun.
-% Ex: SUD_English-GUM GUM_whow_ballet-6 - ... the[D] basic positions[C1], and some[C2] of the first techniques you're likely to encounter in ballet
+  % Determiners of the head of the first conjunct are not shared, if the head of the second conjunct is not a noun.
+  % Ex: SUD_English-GUM GUM_whow_ballet-6 - ... the[D] basic positions[C1], and some[C2] of the first techniques you're likely to encounter in ballet
   rule det1{
     pattern {
       d1:C1 -[1=conj]-> C2;
@@ -929,7 +950,7 @@ package unshared_left_conj-dep {
     commands{D1.Shared=No}
   }
 
-% Determiners of the head of the first conjunct are not shared, if the head of the second conjunct already has a determiner.
+  % Determiners of the head of the first conjunct are not shared, if the head of the second conjunct already has a determiner.
   rule det2{
     pattern {
       d1:C1 -[1=conj]-> C2;
@@ -941,8 +962,8 @@ package unshared_left_conj-dep {
     commands{D1.Shared=No}
   }
 
-% Personal pronouns that are left modifiers or complements of the head of the first conjunct are not shared.
-% Ex: SUD_French-GSD fr-ud-train_02634 - L'accueil y[D1] est[C1] chaleureux et les prix défient[C2] toute concurrence !
+  % Personal pronouns that are left modifiers or complements of the head of the first conjunct are not shared.
+  % Ex: SUD_French-GSD fr-ud-train_02634 - L'accueil y[D1] est[C1] chaleureux et les prix défient[C2] toute concurrence !
   rule pron-pers{
     pattern {
       d1:C1 -[1=conj]-> C2;
@@ -953,7 +974,7 @@ package unshared_left_conj-dep {
     commands{D1.Shared=No}
   }
 
-% Interrogtive and relative adverbs or pronouns.
+  % Interrogtive and relative adverbs or pronouns.
   rule int-rel{
     pattern {
       d1:C1 -[1=conj]-> C2;
@@ -965,7 +986,7 @@ package unshared_left_conj-dep {
     commands{D1.Shared=No}
   }
 
-% Specific dependencies are never shared.
+  % Specific dependencies are never shared.
   rule spec{
     pattern {
       d1:C1 -[1=conj]-> C2;
@@ -976,8 +997,8 @@ package unshared_left_conj-dep {
     commands{D1.Shared=No}
   }
 
-% Subjects of the first conjunct are not shared, if there is a subject of the second conjunct.
-% Ex: SUD_English-GUM GUM_fiction_honour-42 - Feet[D1] moved[C1] and Chalmers[D2] felt[C2] his stomach lurch.
+  % Subjects of the first conjunct are not shared, if there is a subject of the second conjunct.
+  % Ex: SUD_English-GUM GUM_fiction_honour-42 - Feet[D1] moved[C1] and Chalmers[D2] felt[C2] his stomach lurch.
   rule subj{
     pattern {
       d1:C1 -[1=conj]-> C2;
@@ -988,10 +1009,8 @@ package unshared_left_conj-dep {
     commands{D1.Shared=No}
   }
 
-
-
-% Punctuation signs that dependent of the first conjunct are not dependents of the coordination,if the head of this conjunct has another dependent, which is punctuation sign before the second conjunct.
-% Ex: SUD_English-GUM GUM_interview_dungeon-19 - Yeah, "[P1]think[C1] again"[P2] or something[C2] like that.
+  % Punctuation signs that dependent of the first conjunct are not dependents of the coordination,if the head of this conjunct has another dependent, which is punctuation sign before the second conjunct.
+  % Ex: SUD_English-GUM GUM_interview_dungeon-19 - Yeah, "[P1]think[C1] again"[P2] or something[C2] like that.
   rule punct{
     pattern {
       d1:C1 -[1=conj]-> C2;
@@ -1003,8 +1022,8 @@ package unshared_left_conj-dep {
     commands{P1.Shared=No}
   }
 
-% The left dependent follows another left dependent, which is not shared by the conjuncts.
-% Ex: SUD_English-GUM GUM_whow_overalls-25 - The bib has a[D2] wallet[D1] pocket[C1] and a watch pocket[C2].
+  % The left dependent follows another left dependent, which is not shared by the conjuncts.
+  % Ex: SUD_English-GUM GUM_whow_overalls-25 - The bib has a[D2] wallet[D1] pocket[C1] and a watch pocket[C2].
   rule double {
     pattern {
       C1 -[1=conj]-> C2;
@@ -1014,12 +1033,12 @@ package unshared_left_conj-dep {
     commands{D1.Shared=No}
   }
 
-}
+} % package unshared_left_conj-dep
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Right dependents of the last conjunct in a coordination, which are not shared by the coordination.
-package unshared_right_conj-dep{
-% Last conjunct of a coordination.
+package unshared_right_conj-dep {
+  % Last conjunct of a coordination.
   rule gen{
     pattern {
       C1 -[1=conj]-> C2;
@@ -1035,61 +1054,41 @@ package unshared_right_conj-dep{
     without{C2 -[conj@emb]-> *}
     commands{D2.Shared=No}
   }
-
-}
+} % package unshared_right_conj-dep
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Normalization of features and relations to comply with guidelines.
-package normalize{
-% All remaining UD relations are renamed UNK in SUD
+package normalize {
+  % All remaining UD relations are renamed UNK in SUD
   rule unk_rel{
     pattern{e:H -[1<>appos|cc|clf|comp|compound|conj|det|discourse|dislocated|flat|goeswith|list|mod|orphan|parataxis|punct|reparandum|root|subj|udep|unk|vocative|CONV|HEAD|IDIOM|TITLE]-> D}
     commands{del_edge e; add_edge H -[unk]-> D}
   }
-% All Subject2 features that are introduced for verbs the subject of which is controlled by their governor are replaced with Subject features.
+
+  % All Subject2 features that are introduced for verbs the subject of which is controlled by their governor are replaced with Subject features.
   rule del_feat_subject2{
     pattern{V[Subject2]}
     commands{V.Subject= V.Subject2; del_feat V.Subject2}
   }
-    rule subject-objraising_caus{
-      pattern{AUX -[aux:caus]-> V; V-[comp:obj@agent]-> OBJ}
-      without{AUX[VerbForm=Inf]}
-      without{V[Subject=ObjRaising]}
-      commands{V.Subject=ObjRaising}
-    }
 
-    rule subject-generic_caus{
-      pattern{AUX -[aux:caus]-> V}
-      without{V-[comp:obj@agent]-> OBJ}
-      without{AUX[VerbForm=Inf]}
-      without{V[Subject=Generic]}
-      commands{V.Subject=Generic}
-    }
+  rule subject-objraising_caus{
+    pattern{AUX -[aux:caus]-> V; V-[comp:obj@agent]-> OBJ}
+    without{AUX[VerbForm=Inf]}
+    without{V[Subject=ObjRaising]}
+    commands{V.Subject=ObjRaising}
+  }
 
-    rule outer_subj{
-      pattern{d: G -[1=subj,2=outer]-> D}
-      commands{del_feat d.2}
-    }
-}
+  rule subject-generic_caus{
+    pattern{AUX -[aux:caus]-> V}
+    without{V-[comp:obj@agent]-> OBJ}
+    without{AUX[VerbForm=Inf]}
+    without{V[Subject=Generic]}
+    commands{V.Subject=Generic}
+  }
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-strat main {
-  Seq (
-    Onf (eud_to_ud),
-    Onf (idioms),
-    specific_expr_init, % Initialization of a specific treatment for MWE, titles and translated words.
-    Onf (sub_relations), % Package SUB_RELATIONS must precede package REL_EXTENSIONS because this package swat extensions on level 2.
-    Onf (rel_extensions),
-    Onf (relations), % Package RELATIONS must precede REVERSE_RELATIONS.MAIN because the renaming of some relations depends on the cooccurrence with other relations (nsubj, csubj in the impersonal diathesis for instance)
-    reverse_relations.main, % Reversing aux, case, cop and mark relations.
-    Onf (minimize_right_conj-dep), % Package MINIMIZE_CONJ_DEP must follow strategy REVERSE_RELATIONS.MAIN because the shared dependents can depend on relation inversions.Moreover, a dependance can shift from a coordination to an ascendant. Ex: fr-ud-dev_00446 -entre 3 et 6 généralement
-    Onf (add_conj_emb), % Package ADD_CONJ_EMB must follow REVERSE_RELATIONS.MAIN because it depends on head changes ; Ex: UD_French-GSD fr-ud-dev_00751
-    Onf (chained_relations),% Package CHAINED_RELATIONS must follow package SHIFT_RULES because it can entail a wrong coordination between two elements because of errors in head changes (UD_French-GS: fr-ud-dev_00131).
-    specific_expr_close, % Closing a specific treatment for MWE, titles and translated words.
-    Onf(shared_left_conj-dep), % Package SHARED_LEFT_CONJ-DEP must follow strategy REVERSE_RELATIONS.MAIN because this strategy transforms some dependents into governors, for which the Shared feature is not relevant. It must also follow strategy SPECIFIC_EXPR_ClOSE because idioms must be annotated in the definitive manner.
-    Onf(unshared_left_conj-dep),
-   Onf(unshared_right_conj-dep),
-    Onf(extpos),
-    Onf(normalize),
-  )
-}
+  rule outer_subj{
+    pattern{d: G -[1=subj,2=outer]-> D}
+    commands{del_feat d.2}
+  }
+} % package normalize
+
