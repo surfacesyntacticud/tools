@@ -397,6 +397,15 @@ package relations {
     commands {add_edge H -[comp:pred]-> D; D.Subject2=SubjRaising; del_edge e}
   }
 
+  % conj
+  %====
+  % 
+  rule conj_coord {
+    pattern { e:H -[conj]-> D; }
+    commands {e.2=coord}
+  }
+
+
   % mod
   %====
   % This rule is too strong for nummod, because in many languages, the relation is DET when D precedes H.
@@ -797,7 +806,7 @@ package minimize_right_conj-dep {
   rule minimize_direct {
     pattern {
       C1 -[1=conj]-> C2;
-      e:C1 -[^conj|discourse|parataxis|punct]-> D; C2 << D}
+      e:C1 -[^conj:coord|discourse|parataxis|punct]-> D; C2 << D}
     without { C1 -[1=conj]-> C; C2 << C ; C << D} % Ex :fr-ud-train_03266, fr-ud-train_02016
     commands {
       add_edge f:C2 -> D; f.label = e.label;
@@ -842,11 +851,11 @@ package minimize_right_conj-dep {
 % Mark embedded conj relations with the extension "emb".
 rule add_conj_emb{
   pattern {
-    N1 -[conj|conj@emb]-> N2;
-    e: N2 -[conj]-> N3;
+    N1 -[conj:coord|conj:coord@emb]-> N2;
+    e: N2 -[conj:coord]-> N3;
   }
   commands {
-    del_edge e; add_edge N2 -[conj@emb]-> N3;
+    del_edge e; add_edge N2 -[conj:coord@emb]-> N3;
   }
 
 }
