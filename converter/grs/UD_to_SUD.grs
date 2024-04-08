@@ -246,6 +246,10 @@ package rel_extensions {
 % Rem: the order of the rules follows the alphabetic order of the names of the resulting relations.
 package relations {
 
+  rule conj_appos {
+    pattern { e: H -[appos]-> D }
+    commands{ del_edge e; add_edge H -[conj:appos]-> D}
+  }
 
   %comp:expl
   %=========
@@ -709,7 +713,7 @@ package reverse_relations {
     rule conj{
       pattern{
         H -[REV=Yes]-> D;
-        e: D -[1=conj]-> N;
+        e: D -[1=conj,2=coord]-> N;
         D.upos <> N.upos;
       }
       without { D[upos=NOUN|PRON|PROPN|NUM|X]; N[upos=NOUN|PRON|PROPN|NUM|X] }
@@ -724,7 +728,7 @@ package reverse_relations {
     rule conj_verb {
       pattern {
         H -[REV=Yes]-> D;
-        e: D -[1=conj]-> N;
+        e: D -[1=conj,2=coord]-> N;
         H << D;
         D[upos=AUX|VERB, VerbForm];
 	      %N[upos=AUX|VERB, VerbForm];
@@ -805,9 +809,9 @@ package minimize_right_conj-dep {
   % The right shared element directly depends on the head of the first conjunct.
   rule minimize_direct {
     pattern {
-      C1 -[1=conj]-> C2;
+      C1 -[1=conj,2=coord]-> C2;
       e:C1 -[^conj:coord|discourse|parataxis|punct]-> D; C2 << D}
-    without { C1 -[1=conj]-> C; C2 << C ; C << D} % Ex :fr-ud-train_03266, fr-ud-train_02016
+    without { C1 -[1=conj,2=coord]-> C; C2 << C ; C << D} % Ex :fr-ud-train_03266, fr-ud-train_02016
     commands {
       add_edge f:C2 -> D; f.label = e.label;
       del_edge e;
@@ -819,11 +823,11 @@ package minimize_right_conj-dep {
   % The shared element depends on the head of the first conjunct via a MOD dependency.
   rule minimize_indirect_mod {
     pattern {
-      C1 -[1=conj]-> C2;
+      C1 -[1=conj,2=coord]-> C2;
       C1 -[mod]-> D1; D1 << C2;
       C2 -[mod]-> D2; D2 << C2; %Ex:fr-ud-dev_01562 - ... plus savoureuse (73%) et plus sucrée (68%) que les autres fraises
       e:D1 -[^conj|discourse|parataxis|punct]-> D; C2 << D}
-    without { C1 -[1=conj]-> C; C2 << C ; C << D} % Ex :fr-ud-train_03266, fr-ud-train_02016
+    without { C1 -[1=conj,2=coord]-> C; C2 << C ; C << D} % Ex :fr-ud-train_03266, fr-ud-train_02016
     commands {
       add_edge f:D2 -> D; f.label = e.label;
       del_edge e;
@@ -834,11 +838,11 @@ package minimize_right_conj-dep {
   % The shared element depends on the head of the first conjunct via a COMP:OBJ dependency.
   rule minimize_indirect_conj-obj {
     pattern {
-      C1 -[1=conj]-> C2;
+      C1 -[1=conj,2=coord]-> C2;
       C1 -[1=comp,2=obj]-> D1; D1 << C2;
       C2 -[1=comp,2=obj]-> D2;
       e:D1 -[^conj|discourse|parataxis|punct]-> D; C2 << D}
-    without { C1 -[1=conj]-> C; C2 << C ; C << D} % Ex :fr-ud-train_03266, fr-ud-train_02016
+    without { C1 -[1=conj,2=coord]-> C; C2 << C ; C << D} % Ex :fr-ud-train_03266, fr-ud-train_02016
     commands {
       add_edge f:D2 -> D; f.label = e.label;
       del_edge e;
@@ -864,9 +868,9 @@ rule add_conj_emb{
 % Dependencies of type CONJ, FIXED and FLAT:NAME grouped into a bouquet are reorganized into a chain.
 package chained_relations {
   rule conj {
-    pattern {H -[1=conj]-> D1;e: H -[1=conj]-> D2;D1 << D2}
-    without {H -[1=conj]-> D;D1 << D; D << D2}
-    without {H -[1=conj]-> D;D2 << D}
+    pattern {H -[1=conj,2=coord]-> D1;e: H -[1=conj,2=coord]-> D2;D1 << D2}
+    without {H -[1=conj,2=coord]-> D;D1 << D; D << D2}
+    without {H -[1=conj,2=coord]-> D;D2 << D}
     commands {
       add_edge f:D1 -> D2; f.label = e.label;
       del_edge e;
@@ -903,7 +907,7 @@ package shared_left_conj-dep {
   % CounterEx: French-GSD fr-ud-test_00289 - un lycée où[D1] on travaille[C1], où on apprend[C2] 
   rule gen {
     pattern {
-      d1:C1 -[1=conj]-> C2;
+      d1:C1 -[1=conj,2=coord]-> C2;
       d:C1 -[1=cc|mod|parataxis|udep|subj]-> D1; D1[!InIdiom, !Shared]; D1 << C1}
     without{d2: C -> C1; d2.label=d1.label}% C1 is the first conjunct of the coordination.
     without{d2: C -> C1; d2.label="conj@emb"; d1.label=conj}% C1 is the first conjunct of the coordination. Ex: SUD_French-GSD fr-ud-dev_01028 - l'opposition des cultes monothéistes et polythéistes, l'art sacré et le profane, ou l'absence de progrès chez les romains...
@@ -921,7 +925,7 @@ package shared_left_conj-dep {
   % Ex: SUD_English-GUM GUM_bio_byron-21 - he described the affair as "[P1]a violent, though pure love[C1] and passion[C2]"[P2]
   rule punct {
     pattern {
-      d1:C1 -[1=conj]-> C2;
+      d1:C1 -[1=conj,2=coord]-> C2;
       C1 -[punct]-> P1; P1 << C1}
     without{d2: C -> C1; d2.label=d1.label}% C1 is the first conjunct of the coordination.
     without{d2: C -> C1; d2.label="conj@emb"; d1.label=conj} % C1 is the first conjunct of the coordination.
@@ -935,7 +939,7 @@ package shared_left_conj-dep {
   % Ex: SUD_French-GSD fr-ud-train_00210 - l'est de l'Arctique canadien, où[D2] ils[D1] font[C1] des interviews et des fouilles et recueillent[C2] des artefacts ...
   rule double {
     pattern {
-      C1 -[1=conj]-> C2;
+      C1 -[1=conj,2=coord]-> C2;
       C1 -> D1; D1 << C1; D1[upos <> PUNCT,Shared=Yes];
       C1 -> D2; D2 << D1; }
     without{D2[Shared]}
@@ -950,7 +954,7 @@ package unshared_left_conj-dep {
   % Ex: SUD_English-GUM GUM_whow_ballet-6 - ... the[D] basic positions[C1], and some[C2] of the first techniques you're likely to encounter in ballet
   rule det1{
     pattern {
-      d1:C1 -[1=conj]-> C2;
+      d1:C1 -[1=conj,2=coord]-> C2;
       C1 -[1=det]-> D1; D1[!InIdiom]; D1 << C1}
     without{d2: C -> C1; d2.label=d1.label}% C1 is the first conjunct of the coordination.
     without{d2: C -> C1; d2.label="conj@emb"; d1.label=conj} % C1 is the first conjunct of the coordination.
@@ -962,7 +966,7 @@ package unshared_left_conj-dep {
   % Determiners of the head of the first conjunct are not shared, if the head of the second conjunct already has a determiner.
   rule det2{
     pattern {
-      d1:C1 -[1=conj]-> C2;
+      d1:C1 -[1=conj,2=coord]-> C2;
       C1 -[1=det]-> D1; D1[!InIdiom]; D1 << C1;
       C2 -[1=det]-> D2}
     without{d2: C -> C1; d2.label=d1.label}% C1 is the first conjunct of the coordination.
@@ -975,7 +979,7 @@ package unshared_left_conj-dep {
   % Ex: SUD_French-GSD fr-ud-train_02634 - L'accueil y[D1] est[C1] chaleureux et les prix défient[C2] toute concurrence !
   rule pron-pers{
     pattern {
-      d1:C1 -[1=conj]-> C2;
+      d1:C1 -[1=conj,2=coord]-> C2;
       C1 -[1=comp|mod|udep]-> D1; D1[upos=PRON, !InIdiom, PronType=Prs]; D1 << C1}
     without{d2: C -> C1; d2.label=d1.label}% C1 is the first conjunct of the coordination.
     without{d2: C -> C1; d2.label="conj@emb"; d1.label=conj} % C1 is the first conjunct of the coordination.
@@ -986,7 +990,7 @@ package unshared_left_conj-dep {
   % Interrogtive and relative adverbs or pronouns.
   rule int-rel{
     pattern {
-      d1:C1 -[1=conj]-> C2;
+      d1:C1 -[1=conj,2=coord]-> C2;
       C1 -> D1; D1[upos=ADV|PRON, !InIdiom, PronType=Int|Rel]; D1 << C1;
       C2 -> D2; D2[upos=ADV|PRON, PronType=Int|Rel]; D2 << C2}
     without{d2: C -> C1; d2.label=d1.label}% C1 is the first conjunct of the coordination.
@@ -998,7 +1002,7 @@ package unshared_left_conj-dep {
   % Specific dependencies are never shared.
   rule spec{
     pattern {
-      d1:C1 -[1=conj]-> C2;
+      d1:C1 -[1=conj,2=coord]-> C2;
       C1 -[1=compound|reparandum]-> D1; D1 << C1}
     without{d2: C -> C1; d2.label=d1.label}% C1 is the first conjunct of the coordination.
     without{d2: C -> C1; d2.label="conj@emb"; d1.label=conj} % C1 is the first conjunct of the coordination.
@@ -1010,7 +1014,7 @@ package unshared_left_conj-dep {
   % Ex: SUD_English-GUM GUM_fiction_honour-42 - Feet[D1] moved[C1] and Chalmers[D2] felt[C2] his stomach lurch.
   rule subj{
     pattern {
-      d1:C1 -[1=conj]-> C2;
+      d1:C1 -[1=conj,2=coord]-> C2;
       C1 -[1=subj]-> D1; D1[!InIdiom]; D1 << C1; C2-[1=subj]->D2}
     without{d2: C -> C1; d2.label=d1.label}% C1 is the first conjunct of the coordination.
     without{d2: C -> C1; d2.label="conj@emb"; d1.label=conj} % C1 is the first conjunct of the coordination.
@@ -1022,7 +1026,7 @@ package unshared_left_conj-dep {
   % Ex: SUD_English-GUM GUM_interview_dungeon-19 - Yeah, "[P1]think[C1] again"[P2] or something[C2] like that.
   rule punct{
     pattern {
-      d1:C1 -[1=conj]-> C2;
+      d1:C1 -[1=conj,2=coord]-> C2;
       C1 -[1=punct]-> P1; P1 << C1;
       C1 -[1=punct]-> P2; C1 << P2; P2 << C2}
     without{d2: C -> C1; d2.label=d1.label}% C1 is the first conjunct of the coordination.
@@ -1035,7 +1039,7 @@ package unshared_left_conj-dep {
   % Ex: SUD_English-GUM GUM_whow_overalls-25 - The bib has a[D2] wallet[D1] pocket[C1] and a watch pocket[C2].
   rule double {
     pattern {
-      C1 -[1=conj]-> C2;
+      C1 -[1=conj,2=coord]-> C2;
       C1 -[^punct]-> D1; D1 << C1; 
       C1 -> D2; D2 << D1; D2[Shared=No]}
     without{D1[Shared=No]}
@@ -1050,9 +1054,9 @@ package unshared_right_conj-dep {
   % Last conjunct of a coordination.
   rule gen{
     pattern {
-      C1 -[1=conj]-> C2;
+      C1 -[1=conj,2=coord]-> C2;
       C2 -> D2; D2 >> C2; D2[!Shared]}
-    without{C2 -[1=conj]-> *}
+    without{C2 -[1=conj,2=coord]-> *}
     commands{D2.Shared=No}
   }
 
