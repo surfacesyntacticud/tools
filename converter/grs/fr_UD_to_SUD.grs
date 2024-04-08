@@ -35,26 +35,26 @@ package FR_relations {
 
 
 % Control verbs with an infintive as an oblique argument and the subject of the infinitive is the object of the control verb.
-  rule verb_obj-noun_obl-inf(lex from "lexicons/verb_obj-noun_obl-inf-objraising.lp"){
-    pattern{
-      V -[obj]-> N; V[upos=VERB,lemma=lex.verb];
-      N[upos=NOUN|PRON|PROPN|X];
-      d:V -[xcomp:obl]-> COMP}
-    commands{
-      COMP.Subject2=ObjRaising;
-      add_edge V -[comp:obl]-> COMP; del_edge d}
-  }
+%  rule verb_obj-noun_obl-inf(lex from "lexicons/verb_obj-noun_obl-inf-objraising.lp"){
+%    pattern{
+%      V -[obj]-> N; V[upos=VERB,lemma=lex.verb];
+%      N[upos=NOUN|PRON|PROPN|X];
+%      d:V -[xcomp:obl]-> COMP}
+%    commands{
+%      COMP.Subject2=ObjRaising;
+%      add_edge V -[comp:obl]-> COMP; del_edge d}
+%  }
 
 % Control verbs with an infinitive as a direct object and the subject of the infinitive is the oblique argument of the control verb.
-  rule verb_obl-noun_obj-inf(lex from "lexicons/verb_obl-noun_obj-de-inf-oblraising.lp"){
-    pattern{
-      V -[iobj|obl:arg]-> N; V[upos=VERB,lemma=lex.verb];
-      N[upos=NOUN|PRON|PROPN|X];
-      d:V -[xcomp:obj]-> COMP}
-    commands{
-      COMP.Subject2=OblRaising;
-      add_edge V -[comp:obj]-> COMP; del_edge d}
-  }
+%  rule verb_obl-noun_obj-inf(lex from "lexicons/verb_obl-noun_obj-de-inf-oblraising.lp"){
+%    pattern{
+%      V -[iobj|obl:arg]-> N; V[upos=VERB,lemma=lex.verb];
+%      N[upos=NOUN|PRON|PROPN|X];
+%      d:V -[xcomp:obj]-> COMP}
+%    commands{
+%      COMP.Subject2=OblRaising;
+%      add_edge V -[comp:obj]-> COMP; del_edge d}
+%  }
 
 }
 
