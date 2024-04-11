@@ -12,10 +12,11 @@ strat bej_SUD_to_UD_main {
 
 
 package bej_pre {
-  % Change relation "aff:xxx" into "xxx:aff"
-  rule aff {
-    pattern { e:M -[1=aff,2=*]-> N }
-    commands { e.1 = e.2; e.2=aff }
+
+  rule intern {
+    pattern { e: X -[deep=intern]-> Y }
+    commands { del_feat e.deep }
+
   }
 
   % Remove whitespaces in XPOS values
@@ -58,6 +59,11 @@ package bej_post {
     pattern { e:N -[conj:redup]-> M; }
     commands { del_edge e; add_edge N -[dep:redup]-> M; }
   }
+
+  rule dislocated_obl {
+    pattern { e:N -[dislocated:obl]-> M; }
+    commands { del_edge e; add_edge N -[dislocated]-> M; }
+  }
 }
 
 package bej_valid {
@@ -69,11 +75,6 @@ package bej_valid {
   rule Voice {
     pattern { N [upos=NOUN, Voice] }
     commands { del_feat N.Voice }
-  }
-
-  rule Number {
-    pattern { N [upos=ADJ, Number] }
-    commands { del_feat N.Number }
   }
 
   rule x {

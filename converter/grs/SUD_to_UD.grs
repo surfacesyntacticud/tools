@@ -649,7 +649,7 @@ package rel_extensions {
 
   rule del_ext{
     pattern{e: H -[1=*,2=aux|emb|obj|obl|pred,!deep]-> D}
-    without{ H -[1=ccomp|xcomp,2=obj|obl|pred]-> D}
+    without{ H -[1=ccomp|xcomp|dislocated,2=obj|obl|pred]-> D}
     commands{del_feat e.2}
   }
 
