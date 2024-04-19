@@ -16,7 +16,7 @@ rule dep_on_InflAff {
   pattern {
     X -[type=m]-> IA;
     IA [TokenType=InflAff]; 
-    e: IA -> Y;
+    e: IA -[!type]-> Y;
   }
   commands {
     add_edge f: X -> Y;
