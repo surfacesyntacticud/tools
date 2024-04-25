@@ -928,11 +928,11 @@ package fix_punct {
     }
   }
 
-  % A punction under a reversed relation should be attached to the dependent of it
+  % A punctuation under a reversed relation should be attached to the dependent of it
   % See https://github.com/surfacesyntacticud/guidelines/issues/53
-  rule punct_under_reversed {
+  rule punct_under_reparandum {
     pattern {
-      H -[1=reparandum|case|mark|aux|cop]-> R; e: H -[punct]-> P; P[upos=PUNCT];
+      H -[1=reparandum]-> R; e: H -[punct]-> P; P[upos=PUNCT];
       R << P; P << H;
     }
     without { H -> X; R << X; X << P  }
