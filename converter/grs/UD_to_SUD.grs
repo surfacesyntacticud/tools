@@ -48,6 +48,11 @@ package idioms{
     commands{H.ExtPos=H.upos; H.Idiom=Yes}
   }
 
+  rule idiom_head_with_extpos{
+    pattern{H -[fixed]-> *; H[ExtPos,!Idiom]}
+    commands{ H.Idiom=Yes}
+  }
+
   % Marking the dependents.
   rule idiom_dependent{
     pattern{* -[fixed]-> D; D[!InIdiom]}
