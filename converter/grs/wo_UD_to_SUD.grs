@@ -28,7 +28,7 @@ strat wo_main {
 
 package wo_pos_labels {
   rule woon_pos {
-    pattern { A[lemma="woon", upos <> PART] }
+    pattern { A[lemma="woon", upos = AUX] }
     commands { A.upos=PART; }
   }
 
