@@ -1,6 +1,7 @@
 strat bej_mSUD_to_SUD_main { 
   Seq(
     Onf (dep_on_InflAff),
+    Onf (right_headeed_appos),
     Onf (init_MGloss_Mseg),
     Onf (remove_bracket),
     Onf (morph2word),
@@ -18,6 +19,7 @@ rule dep_on_InflAff {
     IA [TokenType=InflAff]; 
     e: IA -> Y;
   }
+  without { e.type = m; Y << IA } % BEJ_MV_NARR_05_eritrea_167-171
   commands {
     add_edge f: X -> Y;
     f.label = e.label;
@@ -25,6 +27,13 @@ rule dep_on_InflAff {
   }
 }
 
+rule right_headeed_appos {
+  pattern { X -[conj:appos]-> Y; Y << X }
+  commands {
+    del_edge X -[conj:appos]-> Y;
+    add_edge X -[mod]-> Y;
+  }
+}
 
 package init_MGloss_Mseg {
   rule gov { 
