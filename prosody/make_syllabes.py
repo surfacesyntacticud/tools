@@ -1,11 +1,5 @@
 import sys
 
-infile = sys.argv[1]
-outfile = sys.argv[2]
-
-with open(infile, 'r') as f:
-  lines = f.readlines()
-
 def parse_misc(m):
   d = dict()
   for feat in m.split("|"):
@@ -13,9 +7,12 @@ def parse_misc(m):
     d[feat[0:e]] = feat[e+1:]
   return d
 
-last = "undefined"
+infile = sys.argv[1]
+with open(infile, 'r') as f:
+  lines = f.readlines()
 
-with open(outfile, 'w') as f:
+outfile = sys.argv[2] if len(sys.argv) > 2 else None
+with open(outfile, "w") if outfile else sys.stdout as f:
   for line in lines:
     l = line.strip()
     if l == "":
@@ -36,17 +33,19 @@ with open(outfile, 'w') as f:
         if len(subfeats) == 0:
           cont=False
         else:
-          misc = "|".join([f"{k[4:]}={subfeats[k]}" for k in subfeats if k != prefix]).strip()
+          misc_list = [f"{k[4:]}={subfeats[k]}" for k in subfeats if k != prefix]
+          misc = "|".join(misc_list)
+          # Some numeric features can occasionaly have value "X" like "MeanF0=X"
+          # This value is not accepted by Grew, so it is replaced by "MeanF0_X=Yes"
           misc = misc.replace("MeanF0=X", "MeanF0_X=Yes")
           misc = misc.replace("Duration=X", "Duration_X=Yes")
           misc = misc.replace("MaxAmplitude=X", "MaxAmplitude_X=Yes")
           misc = misc.replace("AvgAmplitude=X", "AvgAmplitude_X=Yes")
-          # print (f"+++++{misc}+++++++++++")
           if misc == "":
             misc = "_"
-          last = f"{fields[0]}.{pos}"
+          syl_id = f"{fields[0]}.{pos}"
           form = subfeats.get(prefix, "__undef__").strip()
           if form == "":
             form = "__empty__"
-          f.write(f"{last}\t_\t_\t_\t_\tSylForm={form}\t{fields[0]}\tSyl={pos}\t_\t{misc}\n")
+          f.write(f"{syl_id}\t_\t_\t_\t_\tSylForm={form}\t{fields[0]}\tSyl={pos}\t_\t{misc}\n")
           pos += 1

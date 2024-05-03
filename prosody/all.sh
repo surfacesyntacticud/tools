@@ -1,6 +1,6 @@
 indir=SUD_Naija-NSC
 outdir=SUD_Naija-NSC-prosody
-pattern=*_MG.conllu  # _MG to have only monologues (dialogue are not annotated at the syllabes level)
+pattern=*_MG.conllu  # _MG to have only monologues (dialogue are not annotated at the syllables level)
 
 for infile in ${indir}/${pattern}
 do
