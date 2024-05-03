@@ -6,7 +6,5 @@ for infile in ${indir}/${pattern}
 do
   outfile=`echo $infile | sed "s+${indir}+${outdir}+"`
   echo "$infile --> $outfile"
-  python3 make_syllabes.py $infile tmp.conllu
-  grew transform -config sud -grs fused.grs -i tmp.conllu -o $outfile
+  python3 make_syllables.py $infile | grew transform -config sud -grs fused.grs -o $outfile
 done
-rm -f tmp.conllu
