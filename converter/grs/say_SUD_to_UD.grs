@@ -8,6 +8,8 @@ strat say_main {
     Onf (foreign_X),
     u_main,
     Onf(say_post),
+    Onf(tmp_escape_aux_cop),
+    Onf(foreign),
   )
 }
 
@@ -34,23 +36,23 @@ package say_pre {
 
 % The Hausa language is not in UD, hence all morph related to it should be removed.
 package hausa {
-  rule Aspect { pattern { N [Lang=hau, Aspect]} commands {del_feat N.Aspect} }
-  rule Case { pattern { N [Lang=hau, Case]} commands {del_feat N.Case} }
-  rule Definite { pattern { N [Lang=hau, Definite]} commands {del_feat N.Definite} }
-  rule Deixis { pattern { N [Lang=hau, Deixis]} commands {del_feat N.Deixis} }
-  rule Mood { pattern { N [Lang=hau, Mood]} commands {del_feat N.Mood} }
-  rule Number { pattern { N [Lang=hau, Number]} commands {del_feat N.Number} }
-  rule Person { pattern { N [Lang=hau, Person]} commands {del_feat N.Person} }
-  rule Polarity { pattern { N [Lang=hau, Polarity]} commands {del_feat N.Polarity} }
-  rule PronType { pattern { N [Lang=hau, PronType]} commands {del_feat N.PronType} }
-  rule Tense { pattern { N [Lang=hau, Tense]} commands {del_feat N.Tense} }
-  rule VerbForm { pattern { N [Lang=hau, VerbForm]} commands {del_feat N.VerbForm} }
+  rule Aspect { pattern { N [Lang=ha, Aspect]} commands {del_feat N.Aspect} }
+  rule Case { pattern { N [Lang=ha, Case]} commands {del_feat N.Case} }
+  rule Definite { pattern { N [Lang=ha, Definite]} commands {del_feat N.Definite} }
+  rule Deixis { pattern { N [Lang=ha, Deixis]} commands {del_feat N.Deixis} }
+  rule Mood { pattern { N [Lang=ha, Mood]} commands {del_feat N.Mood} }
+  rule Number { pattern { N [Lang=ha, Number]} commands {del_feat N.Number} }
+  rule Person { pattern { N [Lang=ha, Person]} commands {del_feat N.Person} }
+  rule Polarity { pattern { N [Lang=ha, Polarity]} commands {del_feat N.Polarity} }
+  rule PronType { pattern { N [Lang=ha, PronType]} commands {del_feat N.PronType} }
+  rule Tense { pattern { N [Lang=ha, Tense]} commands {del_feat N.Tense} }
+  rule VerbForm { pattern { N [Lang=ha, VerbForm]} commands {del_feat N.VerbForm} }
 }
 
 rule foreign_X { pattern { N [Foreign=Yes, upos <> X]} commands {N.upos=X} }
 
 
-% TMP rule for 2.11 --> remove non documented extension
+% TMP rule --> remove non documented extension
 package say_post {
   rule parataxis {
     pattern { e: N -[1=parataxis, 2=*]-> M }
@@ -61,14 +63,77 @@ package say_post {
     commands { del_feat e.2 }
   }
   rule missing_extension {
-    pattern { e: N -[advcl:cleft|compound:svc|dep:comp|flat:num|iobj:agent|nmod:top|obj:lvc|obl:mod]-> M }
+    pattern { e: N -[advcl:cleft|conj:svc|compound:svc|dep:comp|flat:num|iobj:expl|iobj:agent|nmod:top|nmod:emp|obj:lvc|obl:mod|obl:expl]-> M }
     commands { del_feat e.2 }
   }
 
-  rule case {
+  rule Case {
     pattern { N[Case] }
     commands { del_feat N.Case }
   }
+  rule ExtPos {
+    pattern { N[ExtPos] }
+    commands { del_feat N.ExtPos }
+  }
+  rule NumType {
+    pattern { N[NumType] }
+    commands { del_feat N.NumType }
+  }
+  rule Aspect_on_X {
+    pattern { N[Aspect, upos=X] }
+    commands { del_feat N.Aspect }
+  }
+  rule Number_on_X {
+    pattern { N[Number, upos=X] }
+    commands { del_feat N.Number }
+  }
+  rule Deixis_on_X {
+    pattern { N[Deixis, upos=X] }
+    commands { del_feat N.Deixis }
+  }
+  rule Person_on_X {
+    pattern { N[Person, upos=X] }
+    commands { del_feat N.Person }
+  }
+
+  rule advmod {
+    pattern { X -[advmod]-> Y; Y[ExtPos=ADV, upos=VERB] }
+    commands { Y.upos=ADV }
+  }
 }
 
+rule tmp_escape_aux_cop {
+  pattern { 
+    X [upos=AUX, lemma]
+  }
+  commands {
+    X.xpos = X.lemma;
+    del_feat X.lemma
+  }
+}
 
+package foreign {
+ rule upos_X {
+    pattern { X -[flat:foreign]-> Y }
+    without { X.upos=X; Y.upos=X }
+    commands { X.upos=X; Y.upos=X }
+  }
+
+ rule DefiniteX {
+    pattern { X -[flat:foreign]-> Y; X[Definite] }
+    commands { del_feat X.Definite }
+  }
+ rule DefiniteY {
+    pattern { X -[flat:foreign]-> Y; Y[Definite] }
+    commands { del_feat Y.Definite }
+  }
+
+ rule Foreign_X {
+    pattern { X -[flat:foreign]-> Y; X[!Foreign] }
+    commands { X.Foreign = Yes }
+  }
+ rule Foreign_Y {
+    pattern { X -[flat:foreign]-> Y; Y[!Foreign] }
+    commands { Y.Foreign = Yes }
+  }
+}

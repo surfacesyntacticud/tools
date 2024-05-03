@@ -1,0 +1,26 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+include "SUD_to_UD.grs"
+
+strat ht_SUD_to_UD_main {
+  Seq (
+    u_main,
+    Onf (ht_post),
+  )
+}
+
+package ht_post {
+  % The conversion produces a swap between cop and aux in construction "se te"
+  % We fix the output with a post processing rule
+  % TODO: adapt the global conversion system to take this case into account
+  rule swap_se_te {
+    pattern {
+      e_se: X -[aux]-> SE; SE [upos=AUX, lemma=se];
+      e_te: X -[cop]-> TE; TE [upos=AUX, lemma=te];
+      SE < TE
+    }
+    commands {
+      e_se.label = cop;
+      e_te.label = aux;
+    }
+  }
+}

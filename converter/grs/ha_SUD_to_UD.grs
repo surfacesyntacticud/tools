@@ -5,7 +5,11 @@ strat ha_main {
   Seq (
     Onf (ha_pre),
     u_main,
-    Onf(ha_post),
+    Onf (ha_post),
+    Onf (fixed_children),
+    Onf (case_children),
+    Onf (tmp_escape_aux_cop),
+    Onf (foreign),
   )
 }
 
@@ -34,8 +38,6 @@ package ha_pre {
   }
 }
 
-
-
 % TMP rule for 2.11 --> remove non documented extension
 package ha_post {
 %  rule parataxis {
@@ -50,6 +52,73 @@ package ha_post {
     pattern { e: N -[dep:comp|flat:num|obj:lvc|obl:mod|nummod:mod|advmod:emp]-> M }
     commands { del_feat e.2 }
   }
+
+  rule advmod {
+    pattern { X -[advmod]-> Y; Y[upos=VERB, Voice, VerbForm] }
+    without { Y -[fixed]-> * }
+    commands { Y.upos=ADV; del_feat Y.Voice; del_feat Y.VerbForm }
+  }
 }
 
 
+  rule fixed_children {
+    pattern {
+      X -[fixed]-> Y; 
+      e: Y -> Z;
+    }
+    commands {
+      add_edge f: X -> Z;
+      f.label = e.label;
+      del_edge e;
+    }
+  }
+
+  rule case_children {
+    pattern {
+      X -[case]-> Y; 
+      e: Y -[^fixed]-> Z;
+    }
+    commands {
+      add_edge f: X -> Z;
+      f.label = e.label;
+      del_edge e;
+    }
+  }
+
+
+
+rule tmp_escape_aux_cop {
+  pattern { 
+    X [upos=AUX, lemma]
+  }
+  commands {
+    X.xpos = X.lemma;
+    del_feat X.lemma
+  }
+}
+
+package foreign {
+ rule upos_X {
+    pattern { X -[flat:foreign]-> Y }
+    without { X.upos=X; Y.upos=X }
+    commands { X.upos=X; Y.upos=X }
+  }
+
+ rule DefiniteX {
+    pattern { X -[flat:foreign]-> Y; X[Definite] }
+    commands { del_feat X.Definite }
+  }
+ rule DefiniteY {
+    pattern { X -[flat:foreign]-> Y; Y[Definite] }
+    commands { del_feat Y.Definite }
+  }
+
+ rule Foreign_X {
+    pattern { X -[flat:foreign]-> Y; X[!Foreign] }
+    commands { X.Foreign = Yes }
+  }
+ rule Foreign_Y {
+    pattern { X -[flat:foreign]-> Y; Y[!Foreign] }
+    commands { Y.Foreign = Yes }
+  }
+}
