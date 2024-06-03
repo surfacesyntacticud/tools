@@ -1,26 +1,33 @@
 {
-  "title": "## Usage of subtypes of relation `flat` \u2022\u2022\u2022 UD 2.13",
+  "title": "## Usage of subtypes of relation `flat` \u2022\u2022\u2022 UD 2.14",
   "grew_match": {
     "flat": {
       "code": [
         "pattern {M -[1=flat,!2]-> N}"
       ],
       "key": null,
-      "users": 195
+      "users": 215
     },
     "flat:name": {
       "code": [
         "pattern {M -[1=flat,2=name]-> N}"
       ],
       "key": null,
-      "users": 97
+      "users": 103
     },
     "flat:foreign": {
       "code": [
         "pattern {M -[1=flat,2=foreign]-> N}"
       ],
       "key": null,
-      "users": 76
+      "users": 78
+    },
+    "flat:redup": {
+      "code": [
+        "pattern {M -[1=flat,2=redup]-> N}"
+      ],
+      "key": null,
+      "users": 4
     },
     "flat:range": {
       "code": [
@@ -29,16 +36,23 @@
       "key": null,
       "users": 3
     },
-    "flat:redup": {
+    "flat:gov": {
       "code": [
-        "pattern {M -[1=flat,2=redup]-> N}"
+        "pattern {M -[1=flat,2=gov]-> N}"
       ],
       "key": null,
-      "users": 3
+      "users": 2
     },
     "flat:dist": {
       "code": [
         "pattern {M -[1=flat,2=dist]-> N}"
+      ],
+      "key": null,
+      "users": 2
+    },
+    "flat:vv": {
+      "code": [
+        "pattern {M -[1=flat,2=vv]-> N}"
       ],
       "key": null,
       "users": 2
@@ -50,9 +64,9 @@
       "key": null,
       "users": 2
     },
-    "flat:vv": {
+    "flat:repeat": {
       "code": [
-        "pattern {M -[1=flat,2=vv]-> N}"
+        "pattern {M -[1=flat,2=repeat]-> N}"
       ],
       "key": null,
       "users": 1
@@ -64,16 +78,9 @@
       "key": null,
       "users": 1
     },
-    "flat:title": {
+    "flat:time": {
       "code": [
-        "pattern {M -[1=flat,2=title]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "flat:abs": {
-      "code": [
-        "pattern {M -[1=flat,2=abs]-> N}"
+        "pattern {M -[1=flat,2=time]-> N}"
       ],
       "key": null,
       "users": 1
@@ -85,20 +92,6 @@
       "key": null,
       "users": 1
     },
-    "flat:time": {
-      "code": [
-        "pattern {M -[1=flat,2=time]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "flat:sibl": {
-      "code": [
-        "pattern {M -[1=flat,2=sibl]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
     "flat:date": {
       "code": [
         "pattern {M -[1=flat,2=date]-> N}"
@@ -106,16 +99,23 @@
       "key": null,
       "users": 1
     },
-    "flat:repeat": {
+    "flat:abs": {
       "code": [
-        "pattern {M -[1=flat,2=repeat]-> N}"
+        "pattern {M -[1=flat,2=abs]-> N}"
       ],
       "key": null,
       "users": 1
     },
-    "flat:gov": {
+    "flat:title": {
       "code": [
-        "pattern {M -[1=flat,2=gov]-> N}"
+        "pattern {M -[1=flat,2=title]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "flat:sibl": {
+      "code": [
+        "pattern {M -[1=flat,2=sibl]-> N}"
       ],
       "key": null,
       "users": 1
@@ -135,65 +135,65 @@
       "headerName": "flat:foreign"
     },
     {
+      "field": "flat:redup",
+      "headerName": "flat:redup"
+    },
+    {
       "field": "flat:range",
       "headerName": "flat:range"
     },
     {
-      "field": "flat:redup",
-      "headerName": "flat:redup"
+      "field": "flat:gov",
+      "headerName": "flat:gov"
     },
     {
       "field": "flat:dist",
       "headerName": "flat:dist"
     },
     {
-      "field": "flat:num",
-      "headerName": "flat:num"
-    },
-    {
       "field": "flat:vv",
       "headerName": "flat:vv"
     },
     {
-      "field": "flat:number",
-      "headerName": "flat:number"
-    },
-    {
-      "field": "flat:title",
-      "headerName": "flat:title"
-    },
-    {
-      "field": "flat:abs",
-      "headerName": "flat:abs"
-    },
-    {
-      "field": "flat:frac",
-      "headerName": "flat:frac"
-    },
-    {
-      "field": "flat:time",
-      "headerName": "flat:time"
-    },
-    {
-      "field": "flat:sibl",
-      "headerName": "flat:sibl"
-    },
-    {
-      "field": "flat:date",
-      "headerName": "flat:date"
+      "field": "flat:num",
+      "headerName": "flat:num"
     },
     {
       "field": "flat:repeat",
       "headerName": "flat:repeat"
     },
     {
-      "field": "flat:gov",
-      "headerName": "flat:gov"
+      "field": "flat:number",
+      "headerName": "flat:number"
+    },
+    {
+      "field": "flat:time",
+      "headerName": "flat:time"
+    },
+    {
+      "field": "flat:frac",
+      "headerName": "flat:frac"
+    },
+    {
+      "field": "flat:date",
+      "headerName": "flat:date"
+    },
+    {
+      "field": "flat:abs",
+      "headerName": "flat:abs"
+    },
+    {
+      "field": "flat:title",
+      "headerName": "flat:title"
+    },
+    {
+      "field": "flat:sibl",
+      "headerName": "flat:sibl"
     }
   ],
   "cells": [
     {
-      "treebank": "UD_Akkadian-RIAO@2.13"
+      "treebank": "UD_Akkadian-RIAO@2.14"
     },
     {
       "flat": [
@@ -201,20 +201,20 @@
         0.2088,
         0.009926785204906342
       ],
-      "treebank": "UD_Armenian-ArmTDP@2.13"
+      "treebank": "UD_Armenian-ArmTDP@2.14"
     },
     {
       "flat": [
-        197,
-        0.07966033158107562,
-        0.004059344735215331
+        201,
+        0.07879263034104272,
+        0.0039641061039345235
       ],
       "flat:name": [
-        317,
-        0.12818439142741608,
-        0.0065320420358541105
+        321,
+        0.1258330066640533,
+        0.006330736613746179
       ],
-      "treebank": "UD_Welsh-CCG@2.13"
+      "treebank": "UD_Welsh-CCG@2.14"
     },
     {
       "flat": [
@@ -222,7 +222,7 @@
         0.002070393374741201,
         0.00012507817385866166
       ],
-      "treebank": "UD_Gheg-GPS@2.13"
+      "treebank": "UD_Gheg-GPS@2.14"
     },
     {
       "flat": [
@@ -240,7 +240,7 @@
         0.360398293029872,
         0.021018539719199744
       ],
-      "treebank": "UD_Norwegian-Nynorsk@2.13"
+      "treebank": "UD_Norwegian-Nynorsk@2.14"
     },
     {
       "flat:name": [
@@ -248,7 +248,7 @@
         0.034005132850241544,
         0.003649989872392141
       ],
-      "treebank": "UD_Old_East_Slavic-TOROT@2.13"
+      "treebank": "UD_Old_East_Slavic-TOROT@2.14"
     },
     {
       "flat": [
@@ -256,7 +256,7 @@
         0.09097844745374785,
         0.005062780602226775
       ],
-      "treebank": "UD_English-LinES@2.13"
+      "treebank": "UD_English-LinES@2.14"
     },
     {
       "flat": [
@@ -264,28 +264,49 @@
         0.06666666666666667,
         0.004338394793926247
       ],
-      "treebank": "UD_Albanian-TSA@2.13"
+      "treebank": "UD_Albanian-TSA@2.14"
+    },
+    {
+      "flat": [
+        2,
+        0.1,
+        0.009345794392523364
+      ],
+      "treebank": "UD_Tswana-Popapolelo@2.14"
     },
     {
       "flat:foreign": [
-        143,
-        0.046143917392707325,
-        0.0020270461826326085
+        134,
+        0.043239754759599874,
+        0.001899496775108087
       ],
       "flat:name": [
         740,
         0.23878670538883512,
-        0.010489609616420491
+        0.010489758310298391
       ],
-      "treebank": "UD_French-Sequoia@2.13"
+      "treebank": "UD_French-Sequoia@2.14"
     },
     {
-      "flat:name": [
-        1,
-        0.0015432098765432098,
-        7.395355716609969e-05
+      "flat": [
+        7,
+        0.001688374336710082,
+        8.537001804966096e-05
       ],
-      "treebank": "UD_Classical_Armenian-CAVaL@2.13"
+      "flat:name": [
+        62,
+        0.014954172696575013,
+        0.0007561344455827113
+      ],
+      "treebank": "UD_Classical_Armenian-CAVaL@2.14"
+    },
+    {
+      "flat": [
+        2,
+        0.018518518518518517,
+        0.003048780487804878
+      ],
+      "treebank": "UD_Azerbaijani-TueCL@2.14"
     },
     {
       "flat": [
@@ -303,25 +324,25 @@
         0.42407039455009937,
         0.015433405989483798
       ],
-      "treebank": "UD_Old_East_Slavic-Ruthenian@2.13"
+      "treebank": "UD_Old_East_Slavic-Ruthenian@2.14"
     },
     {
       "flat": [
-        59,
-        0.0185069008782936,
-        0.0020008138903960934
+        201,
+        0.03292922673656619,
+        0.0026329233308445004
       ],
       "flat:foreign": [
-        60,
-        0.018820577164366373,
-        0.0020347259902333153
+        94,
+        0.015399737876802096,
+        0.0012313173786038956
       ],
       "flat:name": [
-        125,
-        0.039209535759096616,
-        0.00423901247965274
+        208,
+        0.03407601572739188,
+        0.0027246171781873437
       ],
-      "treebank": "UD_Slovenian-SST@2.13"
+      "treebank": "UD_Slovenian-SST@2.14"
     },
     {
       "flat": [
@@ -329,7 +350,7 @@
         0.37110537805120064,
         0.013267115998581058
       ],
-      "treebank": "UD_Hebrew-IAHLTwiki@2.13"
+      "treebank": "UD_Hebrew-IAHLTwiki@2.14"
     },
     {
       "flat": [
@@ -337,7 +358,7 @@
         0.004230118443316413,
         0.0005458515283842794
       ],
-      "treebank": "UD_Guajajara-TuDeT@2.13"
+      "treebank": "UD_Guajajara-TuDeT@2.14"
     },
     {
       "flat": [
@@ -345,7 +366,15 @@
         0.16312997347480107,
         0.011988304093567251
       ],
-      "treebank": "UD_Kurmanji-MG@2.13"
+      "treebank": "UD_Kurmanji-MG@2.14"
+    },
+    {
+      "flat": [
+        126,
+        0.11775700934579439,
+        0.008386581469648562
+      ],
+      "treebank": "UD_Bavarian-MaiBaam@2.14"
     },
     {
       "flat": [
@@ -353,7 +382,7 @@
         0.481,
         0.020268846656272387
       ],
-      "treebank": "UD_Italian-PUD@2.13"
+      "treebank": "UD_Italian-PUD@2.14"
     },
     {
       "flat": [
@@ -361,7 +390,7 @@
         0.002777777777777778,
         0.0004657390696862083
       ],
-      "treebank": "UD_Turkish-GB@2.13"
+      "treebank": "UD_Turkish-GB@2.14"
     },
     {
       "flat": [
@@ -369,7 +398,7 @@
         0.043689579661379055,
         0.005124927950279428
       ],
-      "treebank": "UD_Finnish-FTB@2.13"
+      "treebank": "UD_Finnish-FTB@2.14"
     },
     {
       "flat": [
@@ -387,50 +416,50 @@
         1.443372633083244,
         0.06621919537121268
       ],
-      "treebank": "UD_Indonesian-GSD@2.13"
+      "treebank": "UD_Indonesian-GSD@2.14"
     },
     {
       "flat": [
         25,
         0.0035250987027636775,
-        0.0002032801281477928
+        0.00020366598778004074
       ],
       "flat:abs": [
         48,
         0.00676818950930626,
-        0.00039029784604376213
+        0.0003910386965376782
       ],
       "flat:foreign": [
         220,
         0.03102086858432036,
-        0.0017888651277005764
+        0.0017922606924643584
       ],
       "flat:name": [
         530,
         0.07473209249858996,
-        0.004309538716733207
+        0.004317718940936864
       ],
       "flat:range": [
         120,
         0.01692047377326565,
-        0.0009757446151094053
+        0.0009775967413441955
       ],
       "flat:repeat": [
         78,
         0.010998307952622674,
-        0.0006342339998211135
+        0.0006354378818737271
       ],
       "flat:sibl": [
         69,
         0.00972927241962775,
-        0.000561053153687908
+        0.0005621181262729124
       ],
       "flat:title": [
         1070,
         0.15087422447828538,
-        0.008700389484725532
+        0.008716904276985743
       ],
-      "treebank": "UD_Ukrainian-IU@2.13"
+      "treebank": "UD_Ukrainian-IU@2.14"
     },
     {
       "flat": [
@@ -438,15 +467,23 @@
         0.5804491899852725,
         0.05095428174340245
       ],
-      "treebank": "UD_English-Atis@2.13"
+      "treebank": "UD_English-Atis@2.14"
     },
     {
       "flat": [
-        5941,
-        0.8092902874267811,
-        0.06047373296281593
+        11270,
+        0.6582943925233645,
+        0.037937825055122616
       ],
-      "treebank": "UD_Dutch-LassySmall@2.13"
+      "treebank": "UD_Dutch-LassySmall@2.14"
+    },
+    {
+      "flat": [
+        22,
+        0.030513176144244106,
+        0.003989120580235721
+      ],
+      "treebank": "UD_Egyptian-UJaen@2.14"
     },
     {
       "flat": [
@@ -459,7 +496,7 @@
         0.003746840014445648,
         0.0002371577642023213
       ],
-      "treebank": "UD_Polish-PDB@2.13"
+      "treebank": "UD_Polish-PDB@2.14"
     },
     {
       "flat": [
@@ -467,7 +504,7 @@
         0.0312516722855461,
         0.0032688152783530546
       ],
-      "treebank": "UD_Turkish-Kenet@2.13"
+      "treebank": "UD_Turkish-Kenet@2.14"
     },
     {
       "flat": [
@@ -485,7 +522,7 @@
         0.6040397563321578,
         0.024808297523998473
       ],
-      "treebank": "UD_Portuguese-Bosque@2.13"
+      "treebank": "UD_Portuguese-Bosque@2.14"
     },
     {
       "flat:name": [
@@ -493,7 +530,7 @@
         0.08348794063079777,
         0.008542141230068337
       ],
-      "treebank": "UD_Kazakh-KTB@2.13"
+      "treebank": "UD_Kazakh-KTB@2.14"
     },
     {
       "flat": [
@@ -511,7 +548,7 @@
         0.3995828367103695,
         0.021539573545355982
       ],
-      "treebank": "UD_Italian-PoSTWITA@2.13"
+      "treebank": "UD_Italian-PoSTWITA@2.14"
     },
     {
       "flat": [
@@ -519,23 +556,23 @@
         0.003780998628461282,
         0.00022640655069620014
       ],
-      "treebank": "UD_Latin-ITTB@2.13"
+      "treebank": "UD_Latin-ITTB@2.14"
     },
     {
-      "treebank": "UD_Madi-Jarawara@2.13"
+      "treebank": "UD_Madi-Jarawara@2.14"
     },
     {
       "flat": [
         1,
         0.001,
-        4.294241422252759e-05
+        4.294794708812919e-05
       ],
       "flat:name": [
-        210,
-        0.21,
-        0.009017906986730793
+        200,
+        0.2,
+        0.008589589417625838
       ],
-      "treebank": "UD_Spanish-PUD@2.13"
+      "treebank": "UD_Spanish-PUD@2.14"
     },
     {
       "flat": [
@@ -548,7 +585,7 @@
         0.002157497303128371,
         0.00019636720667648503
       ],
-      "treebank": "UD_Buryat-BDT@2.13"
+      "treebank": "UD_Buryat-BDT@2.14"
     },
     {
       "flat": [
@@ -556,10 +593,10 @@
         0.07703281027104136,
         0.0026392961876832845
       ],
-      "treebank": "UD_Italian-ParlaMint@2.13"
+      "treebank": "UD_Italian-ParlaMint@2.14"
     },
     {
-      "treebank": "UD_Kaapor-TuDeT@2.13"
+      "treebank": "UD_Kaapor-TuDeT@2.14"
     },
     {
       "flat": [
@@ -572,7 +609,7 @@
         0.27,
         0.016280752532561504
       ],
-      "treebank": "UD_Korean-PUD@2.13"
+      "treebank": "UD_Korean-PUD@2.14"
     },
     {
       "flat": [
@@ -585,7 +622,7 @@
         0.035,
         0.001903829416884247
       ],
-      "treebank": "UD_Polish-PUD@2.13"
+      "treebank": "UD_Polish-PUD@2.14"
     },
     {
       "flat": [
@@ -598,7 +635,7 @@
         0.032116146062472505,
         0.0024982033469080457
       ],
-      "treebank": "UD_Latin-Perseus@2.13"
+      "treebank": "UD_Latin-Perseus@2.14"
     },
     {
       "flat": [
@@ -616,20 +653,20 @@
         0.0262,
         0.0013151158004638041
       ],
-      "treebank": "UD_Icelandic-GC@2.13"
+      "treebank": "UD_Icelandic-GC@2.14"
     },
     {
       "flat": [
         5104,
         0.16487385728591272,
-        0.011644195012889831
+        0.011657599137556929
       ],
       "flat:foreign": [
         303,
         0.009787770132764802,
-        0.000691260009581822
+        0.0006920557481739321
       ],
-      "treebank": "UD_Estonian-EDT@2.13"
+      "treebank": "UD_Estonian-EDT@2.14"
     },
     {
       "flat": [
@@ -642,7 +679,7 @@
         0.006770255271920089,
         0.0003059039461609055
       ],
-      "treebank": "UD_Croatian-SET@2.13"
+      "treebank": "UD_Croatian-SET@2.14"
     },
     {
       "flat:name": [
@@ -650,7 +687,7 @@
         0.024439918533604887,
         0.0023854272083273097
       ],
-      "treebank": "UD_Gothic-PROIEL@2.13"
+      "treebank": "UD_Gothic-PROIEL@2.14"
     },
     {
       "flat": [
@@ -658,7 +695,7 @@
         0.062028838856564635,
         0.0053976234607307485
       ],
-      "treebank": "UD_Old_French-PROFITEROLE@2.13"
+      "treebank": "UD_Old_French-PROFITEROLE@2.14"
     },
     {
       "flat": [
@@ -666,7 +703,7 @@
         0.0014825796886582653,
         0.0002080840659626489
       ],
-      "treebank": "UD_Turkish-FrameNet@2.13"
+      "treebank": "UD_Turkish-FrameNet@2.14"
     },
     {
       "flat": [
@@ -674,7 +711,7 @@
         0.2869333924415383,
         0.010680208406384199
       ],
-      "treebank": "UD_Latin-LLCT@2.13"
+      "treebank": "UD_Latin-LLCT@2.14"
     },
     {
       "flat": [
@@ -682,7 +719,7 @@
         0.009852216748768473,
         0.0012422360248447205
       ],
-      "treebank": "UD_Swedish_Sign_Language-SSLC@2.13"
+      "treebank": "UD_Swedish_Sign_Language-SSLC@2.14"
     },
     {
       "flat": [
@@ -690,7 +727,7 @@
         0.6038291605301914,
         0.0714487986581567
       ],
-      "treebank": "UD_Turkish-Atis@2.13"
+      "treebank": "UD_Turkish-Atis@2.14"
     },
     {
       "flat": [
@@ -698,7 +735,7 @@
         0.1,
         0.006925207756232687
       ],
-      "treebank": "UD_Swiss_German-UZH@2.13"
+      "treebank": "UD_Swiss_German-UZH@2.14"
     },
     {
       "flat": [
@@ -706,28 +743,28 @@
         0.251953125,
         0.010727650727650728
       ],
-      "treebank": "UD_Middle_French-PROFITEROLE@2.13"
+      "treebank": "UD_Middle_French-PROFITEROLE@2.14"
     },
     {
-      "treebank": "UD_Assyrian-AS@2.13"
+      "treebank": "UD_Assyrian-AS@2.14"
     },
     {
       "flat": [
-        570,
-        0.040234347427119364,
-        0.001910354119326751
+        592,
+        0.041787252064657304,
+        0.0019843265021552738
       ],
       "flat:foreign": [
-        145,
-        0.010235053292863698,
-        0.00048596727596908576
+        129,
+        0.009105668101927013,
+        0.00043239547090883495
       ],
       "flat:name": [
-        3483,
-        0.24585303875202935,
-        0.011673269118622936
+        3484,
+        0.24592362532646292,
+        0.011678029617413805
       ],
-      "treebank": "UD_Italian-ISDT@2.13"
+      "treebank": "UD_Italian-ISDT@2.14"
     },
     {
       "flat": [
@@ -735,7 +772,7 @@
         0.041319666880205,
         0.004805364127398026
       ],
-      "treebank": "UD_North_Sami-Giella@2.13"
+      "treebank": "UD_North_Sami-Giella@2.14"
     },
     {
       "flat": [
@@ -753,33 +790,33 @@
         0.29455198563161045,
         0.019031593605848735
       ],
-      "treebank": "UD_Norwegian-Bokmaal@2.13"
+      "treebank": "UD_Norwegian-Bokmaal@2.14"
     },
     {
       "flat": [
         23,
         0.008285302593659942,
-        0.0005374459633134712
+        0.000537546451024844
       ],
       "flat:name": [
         31,
         0.0111671469740634,
-        0.0007243836896833742
+        0.0007245191296421811
       ],
-      "treebank": "UD_French-ParisStories@2.13"
+      "treebank": "UD_French-ParisStories@2.14"
     },
     {
       "flat": [
         1029,
-        0.11136363636363636,
-        0.007307304463917965
+        0.1113515853262634,
+        0.007306059272092132
       ],
       "flat:foreign": [
         170,
-        0.0183982683982684,
-        0.0012072320299961652
+        0.018396277459149443,
+        0.0012070263131736272
       ],
-      "treebank": "UD_Naija-NSC@2.13"
+      "treebank": "UD_Naija-NSC@2.14"
     },
     {
       "flat": [
@@ -792,7 +829,7 @@
         0.00603448275862069,
         0.000656906906906907
       ],
-      "treebank": "UD_English-ESLSpok@2.13"
+      "treebank": "UD_English-ESLSpok@2.14"
     },
     {
       "flat": [
@@ -800,7 +837,7 @@
         0.029166666666666667,
         0.0013844252163164401
       ],
-      "treebank": "UD_German-LIT@2.13"
+      "treebank": "UD_German-LIT@2.14"
     },
     {
       "flat": [
@@ -818,25 +855,25 @@
         0.15170278637770898,
         0.004840940525587829
       ],
-      "treebank": "UD_Italian-MarkIT@2.13"
+      "treebank": "UD_Italian-MarkIT@2.14"
     },
     {
       "flat": [
-        115,
-        0.006285870456408855,
-        0.00037075724749819456
+        123,
+        0.006525198938992042,
+        0.00038756148206031465
       ],
       "flat:foreign": [
-        131,
-        0.007160426345996174,
-        0.00042234086454142163
+        128,
+        0.006790450928381963,
+        0.00040331601385138437
       ],
       "flat:name": [
-        2662,
-        0.1455042361300902,
-        0.008582224285566905
+        2695,
+        0.14297082228116711,
+        0.008491692635386568
       ],
-      "treebank": "UD_Latvian-LVTB@2.13"
+      "treebank": "UD_Latvian-LVTB@2.14"
     },
     {
       "flat:foreign": [
@@ -849,7 +886,7 @@
         0.24334600760456274,
         0.009862844814301126
       ],
-      "treebank": "UD_Chinese-GSDSimp@2.13"
+      "treebank": "UD_Chinese-GSDSimp@2.14"
     },
     {
       "flat:foreign": [
@@ -862,7 +899,7 @@
         0.12435233160621761,
         0.005017771273259461
       ],
-      "treebank": "UD_Irish-Cadhan@2.13"
+      "treebank": "UD_Irish-Cadhan@2.14"
     },
     {
       "flat": [
@@ -875,7 +912,7 @@
         0.21975308641975308,
         0.011557691059022141
       ],
-      "treebank": "UD_Xibe-XDT@2.13"
+      "treebank": "UD_Xibe-XDT@2.14"
     },
     {
       "flat": [
@@ -883,7 +920,7 @@
         0.06382978723404255,
         0.0054694621695533276
       ],
-      "treebank": "UD_Tagalog-Ugnayan@2.13"
+      "treebank": "UD_Tagalog-Ugnayan@2.14"
     },
     {
       "flat": [
@@ -891,20 +928,28 @@
         0.07309941520467836,
         0.005425739709180351
       ],
-      "treebank": "UD_Bambara-CRB@2.13"
+      "treebank": "UD_Bambara-CRB@2.14"
     },
     {
       "flat": [
         350,
         0.09610104338275673,
-        0.004996359795006495
+        0.00499664510971205
       ],
       "flat:foreign": [
         31,
         0.008511806699615597,
-        0.0004425347247005753
+        0.00044255999543163873
       ],
-      "treebank": "UD_Lithuanian-ALKSNIS@2.13"
+      "treebank": "UD_Lithuanian-ALKSNIS@2.14"
+    },
+    {
+      "flat": [
+        2,
+        0.013793103448275862,
+        0.001998001998001998
+      ],
+      "treebank": "UD_Kyrgyz-TueCL@2.14"
     },
     {
       "flat:name": [
@@ -912,7 +957,7 @@
         0.0019035532994923859,
         7.593206611151889e-05
       ],
-      "treebank": "UD_Ancient_Greek-PTNK@2.13"
+      "treebank": "UD_Ancient_Greek-PTNK@2.14"
     },
     {
       "flat": [
@@ -920,15 +965,15 @@
         0.04307538191835712,
         0.001238862839156709
       ],
-      "treebank": "UD_Galician-CTG@2.13"
+      "treebank": "UD_Galician-CTG@2.14"
     },
     {
       "flat:name": [
-        64,
-        0.4444444444444444,
-        0.019524100061012812
+        65,
+        0.4513888888888889,
+        0.01982311680390363
       ],
-      "treebank": "UD_Haitian_Creole-Autogramm@2.13"
+      "treebank": "UD_Haitian_Creole-Autogramm@2.14"
     },
     {
       "flat": [
@@ -936,7 +981,7 @@
         0.044820717131474105,
         0.0045574235365606645
       ],
-      "treebank": "UD_Chinese-HK@2.13"
+      "treebank": "UD_Chinese-HK@2.14"
     },
     {
       "flat": [
@@ -944,7 +989,7 @@
         0.005319148936170213,
         0.0007722007722007722
       ],
-      "treebank": "UD_Cebuano-GJA@2.13"
+      "treebank": "UD_Cebuano-GJA@2.14"
     },
     {
       "flat": [
@@ -982,7 +1027,7 @@
         0.006319590731266927,
         0.000361638740119513
       ],
-      "treebank": "UD_Vietnamese-VTB@2.13"
+      "treebank": "UD_Vietnamese-VTB@2.14"
     },
     {
       "flat": [
@@ -990,7 +1035,7 @@
         1.9312194352421517,
         0.15241154353726252
       ],
-      "treebank": "UD_Korean-GSD@2.13"
+      "treebank": "UD_Korean-GSD@2.14"
     },
     {
       "flat": [
@@ -998,7 +1043,7 @@
         0.0037243947858473,
         0.0003996003996003996
       ],
-      "treebank": "UD_Amharic-ATT@2.13"
+      "treebank": "UD_Amharic-ATT@2.14"
     },
     {
       "flat": [
@@ -1006,7 +1051,7 @@
         0.26338754462514874,
         0.010466417616367964
       ],
-      "treebank": "UD_Greek-GDT@2.13"
+      "treebank": "UD_Greek-GDT@2.14"
     },
     {
       "flat": [
@@ -1019,31 +1064,42 @@
         0.29208436881344507,
         0.01605374495743117
       ],
-      "treebank": "UD_German-HDT@2.13"
+      "treebank": "UD_German-HDT@2.14"
     },
     {
       "flat": [
-        7402,
-        0.46224942234434524,
-        0.017150695342295626
+        7401,
+        0.46218697308436896,
+        0.01714837830698864
       ],
-      "treebank": "UD_Spanish-GSD@2.13"
+      "treebank": "UD_Spanish-GSD@2.14"
     },
     {
       "flat": [
         18014,
         1.0801055282407963,
-        0.03253750645728797
+        0.032916652200686694
       ],
-      "treebank": "UD_Catalan-AnCora@2.13"
+      "treebank": "UD_Catalan-AnCora@2.14"
     },
     {
       "flat": [
         233,
         0.233,
-        0.010997309671024686
+        0.011000944287063268
       ],
-      "treebank": "UD_English-PUD@2.13"
+      "treebank": "UD_English-PUD@2.14"
+    },
+    {
+      "flat": [
+        11,
+        0.02040816326530612,
+        0.0013625665799578844
+      ],
+      "treebank": "UD_Spanish-COSER@2.14"
+    },
+    {
+      "treebank": "UD_Telugu_English-TECT@2.14"
     },
     {
       "flat": [
@@ -1061,7 +1117,7 @@
         0.016909162406606372,
         0.0013414025455452958
       ],
-      "treebank": "UD_Russian-Poetry@2.13"
+      "treebank": "UD_Russian-Poetry@2.14"
     },
     {
       "flat": [
@@ -1069,15 +1125,15 @@
         0.04854368932038835,
         0.003837298541826554
       ],
-      "treebank": "UD_Veps-VWT@2.13"
+      "treebank": "UD_Veps-VWT@2.14"
     },
     {
       "flat": [
-        2105,
-        0.1266393935747804,
-        0.008259371738430993
+        2114,
+        0.12718084466369872,
+        0.00829601955882757
       ],
-      "treebank": "UD_English-EWT@2.13"
+      "treebank": "UD_English-EWT@2.14"
     },
     {
       "flat": [
@@ -1085,101 +1141,101 @@
         0.125,
         0.01818181818181818
       ],
-      "treebank": "UD_Soi-AHA@2.13"
+      "treebank": "UD_Soi-AHA@2.14"
     },
     {
       "flat": [
-        27,
-        0.01574344023323615,
-        0.0005550188089707485
+        15,
+        0.004251700680272109,
+        0.00015698422831786167
+      ],
+      "flat:foreign": [
+        34,
+        0.00963718820861678,
+        0.00035583091752048647
       ],
       "flat:name": [
-        1092,
-        0.636734693877551,
-        0.02244742738503916
+        2226,
+        0.6309523809523809,
+        0.02329645948237067
       ],
-      "treebank": "UD_Old_East_Slavic-RNC@2.13"
+      "treebank": "UD_Old_East_Slavic-RNC@2.14"
     },
     {
       "flat": [
-        408,
-        0.07781804310509251,
-        0.004485488126649077
+        410,
+        0.0781995041007057,
+        0.004507426259605765
       ],
-      "treebank": "UD_Swedish-LinES@2.13"
+      "treebank": "UD_Swedish-LinES@2.14"
     },
     {
-      "treebank": "UD_Yupik-SLI@2.13"
+      "treebank": "UD_Yupik-SLI@2.14"
     },
     {
       "flat": [
         1278,
         0.014633140972794724,
-        0.000841963236907241
+        0.0008431842278365595
       ],
       "flat:foreign": [
         2447,
         0.028018228451039663,
-        0.0016121158378028318
+        0.00161445368193745
       ],
       "flat:name": [
         7737,
         0.08858889804891454,
-        0.0050972375304783445
+        0.005104629398099735
       ],
-      "treebank": "UD_Russian-SynTagRus@2.13"
+      "treebank": "UD_Russian-SynTagRus@2.14"
     },
     {
       "flat": [
         18844,
         0.2143629062531994,
-        0.012316275470455057
+        0.012508579568611988
       ],
       "flat:foreign": [
         3879,
         0.0441261788025982,
-        0.0025352808612765423
+        0.0025748662782130068
       ],
-      "treebank": "UD_Czech-PDT@2.13"
+      "treebank": "UD_Czech-PDT@2.14"
     },
     {
-      "flat:foreign": [
-        1,
-        0.01282051282051282,
-        0.0008291873963515755
-      ],
-      "treebank": "UD_Beja-NSC@2.13"
+      "treebank": "UD_Beja-NSC@2.14"
     },
     {
       "flat": [
-        802,
-        0.07950827798156042,
-        0.002862803191204555
+        863,
+        0.08555566570833746,
+        0.0030804596060010066
       ],
       "flat:foreign": [
-        190,
-        0.018836125706354713,
-        0.0006782202073926003
+        170,
+        0.016853375632001587,
+        0.0006068112781230257
       ],
       "flat:name": [
-        2940,
-        0.2914642609299098,
-        0.010494565314390763
+        2934,
+        0.29086943590760383,
+        0.0104728487647821
       ],
-      "treebank": "UD_Italian-VIT@2.13"
+      "treebank": "UD_Italian-VIT@2.14"
     },
     {
       "flat": [
-        17,
-        0.007951356407857811,
-        0.0008210577155276503
+        11,
+        0.005144995322731525,
+        0.0005312726394590679
       ],
       "flat:name": [
-        37,
-        0.017305893358278764,
-        0.001787007969089592
+        32,
+        0.014967259120673527,
+        0.0015455204056991066
       ],
-      "treebank": "UD_Erzya-JR@2.13"
+      "treebank": "UD_Erzya-JR@2.14"
     },
     {
       "flat": [
@@ -1187,7 +1243,7 @@
         0.025806451612903226,
         0.0029411764705882353
       ],
-      "treebank": "UD_Macedonian-MTB@2.13"
+      "treebank": "UD_Macedonian-MTB@2.14"
     },
     {
       "flat": [
@@ -1210,7 +1266,7 @@
         0.02608695652173913,
         0.0014352350197344816
       ],
-      "treebank": "UD_Armenian-BSUT@2.13"
+      "treebank": "UD_Armenian-BSUT@2.14"
     },
     {
       "flat": [
@@ -1218,7 +1274,7 @@
         0.0028011204481792717,
         0.00015003750937734434
       ],
-      "treebank": "UD_Bhojpuri-BHTB@2.13"
+      "treebank": "UD_Bhojpuri-BHTB@2.14"
     },
     {
       "flat": [
@@ -1226,25 +1282,25 @@
         0.06413081294213151,
         0.00844487542663419
       ],
-      "treebank": "UD_Polish-LFG@2.13"
+      "treebank": "UD_Polish-LFG@2.14"
     },
     {
       "flat": [
-        5,
-        0.006119951040391677,
-        0.0006557377049180328
+        7,
+        0.0037553648068669528,
+        0.000395882818685669
       ],
       "flat:foreign": [
-        81,
-        0.09914320685434516,
-        0.010622950819672131
+        89,
+        0.04774678111587983,
+        0.005033367266146363
       ],
       "flat:name": [
-        8,
-        0.009791921664626682,
-        0.0010491803278688525
+        17,
+        0.009120171673819743,
+        0.0009614297025223391
       ],
-      "treebank": "UD_Zaar-Autogramm@2.13"
+      "treebank": "UD_Zaar-Autogramm@2.14"
     },
     {
       "flat": [
@@ -1252,7 +1308,7 @@
         0.03759398496240601,
         0.006361323155216285
       ],
-      "treebank": "UD_Umbrian-IKUVINA@2.13"
+      "treebank": "UD_Umbrian-IKUVINA@2.14"
     },
     {
       "flat:name": [
@@ -1260,7 +1316,7 @@
         0.507,
         0.022713018546725205
       ],
-      "treebank": "UD_Thai-PUD@2.13"
+      "treebank": "UD_Thai-PUD@2.14"
     },
     {
       "flat": [
@@ -1268,7 +1324,7 @@
         0.012875536480686695,
         0.0015596568754873928
       ],
-      "treebank": "UD_Marathi-UFAL@2.13"
+      "treebank": "UD_Marathi-UFAL@2.14"
     },
     {
       "flat": [
@@ -1276,20 +1332,20 @@
         0.22784387857222285,
         0.016872112843062177
       ],
-      "treebank": "UD_Basque-BDT@2.13"
+      "treebank": "UD_Basque-BDT@2.14"
     },
     {
       "flat": [
         18,
         0.0016974726518294984,
-        0.00016951706471784826
+        0.00016965606944588442
       ],
       "flat:foreign": [
         81,
         0.007638626933232743,
-        0.0007628267912303171
+        0.00076345231250648
       ],
-      "treebank": "UD_Slovak-SNK@2.13"
+      "treebank": "UD_Slovak-SNK@2.14"
     },
     {
       "flat": [
@@ -1307,7 +1363,7 @@
         0.558,
         0.03890128276631344
       ],
-      "treebank": "UD_Javanese-CSUI@2.13"
+      "treebank": "UD_Javanese-CSUI@2.14"
     },
     {
       "flat": [
@@ -1315,7 +1371,7 @@
         0.011846689895470384,
         0.001697792869269949
       ],
-      "treebank": "UD_Kiche-IU@2.13"
+      "treebank": "UD_Kiche-IU@2.14"
     },
     {
       "flat": [
@@ -1323,10 +1379,10 @@
         0.05547226386806597,
         0.004158004158004158
       ],
-      "treebank": "UD_English-GENTLE@2.13"
+      "treebank": "UD_English-GENTLE@2.14"
     },
     {
-      "treebank": "UD_Japanese-GSDLUW@2.13"
+      "treebank": "UD_Japanese-GSDLUW@2.14"
     },
     {
       "flat": [
@@ -1344,10 +1400,10 @@
         0.030158907788719786,
         0.002736026720676545
       ],
-      "treebank": "UD_Russian-Taiga@2.13"
+      "treebank": "UD_Russian-Taiga@2.14"
     },
     {
-      "treebank": "UD_Guarani-OldTuDeT@2.13"
+      "treebank": "UD_Guarani-OldTuDeT@2.14"
     },
     {
       "flat": [
@@ -1355,21 +1411,21 @@
         0.03459119496855346,
         0.0013344656071818512
       ],
-      "treebank": "UD_Yoruba-YTB@2.13"
+      "treebank": "UD_Yoruba-YTB@2.14"
     },
     {
-      "treebank": "UD_Warlpiri-UFAL@2.13"
+      "treebank": "UD_Warlpiri-UFAL@2.14"
     },
     {
       "flat": [
-        39,
-        0.20634920634920634,
-        0.008327994875080076
+        145,
+        0.145,
+        0.006404876540483237
       ],
-      "treebank": "UD_Low_Saxon-LSDC@2.13"
+      "treebank": "UD_Low_Saxon-LSDC@2.14"
     },
     {
-      "treebank": "UD_English-Pronouns@2.13"
+      "treebank": "UD_English-Pronouns@2.14"
     },
     {
       "flat": [
@@ -1387,10 +1443,18 @@
         0.07445805843543826,
         0.00815189350944175
       ],
-      "treebank": "UD_Finnish-OOD@2.13"
+      "treebank": "UD_Finnish-OOD@2.14"
     },
     {
-      "treebank": "UD_Tamil-TTB@2.13"
+      "treebank": "UD_Tamil-TTB@2.14"
+    },
+    {
+      "flat:name": [
+        2,
+        0.1,
+        0.011904761904761904
+      ],
+      "treebank": "UD_Latvian-Cairo@2.14"
     },
     {
       "flat:name": [
@@ -1398,15 +1462,15 @@
         0.046357615894039736,
         0.0029978586723768737
       ],
-      "treebank": "UD_Georgian-GLC@2.13"
+      "treebank": "UD_Georgian-GLC@2.14"
     },
     {
       "flat": [
-        14452,
-        0.818253878382969,
-        0.02543251285967947
+        14436,
+        0.8173479787113577,
+        0.025772266427677513
       ],
-      "treebank": "UD_Spanish-AnCora@2.13"
+      "treebank": "UD_Spanish-AnCora@2.14"
     },
     {
       "flat": [
@@ -1419,25 +1483,25 @@
         0.2550626808100289,
         0.01197862415651465
       ],
-      "treebank": "UD_Maltese-MUDT@2.13"
+      "treebank": "UD_Maltese-MUDT@2.14"
     },
     {
       "flat": [
         896,
         0.05919661733615222,
-        0.004425718561839044
+        0.004431431510643349
       ],
       "flat:foreign": [
         93,
         0.006144291754756871,
-        0.0004593658775123115
+        0.00045995885099311544
       ],
       "flat:name": [
         2811,
         0.18571617336152219,
-        0.013884704104162447
+        0.013902627205824167
       ],
-      "treebank": "UD_Finnish-TDT@2.13"
+      "treebank": "UD_Finnish-TDT@2.14"
     },
     {
       "flat": [
@@ -1450,15 +1514,15 @@
         0.050171392957307576,
         0.003639075991139641
       ],
-      "treebank": "UD_French-Rhapsodie@2.13"
+      "treebank": "UD_French-Rhapsodie@2.14"
     },
     {
       "flat": [
         11,
-        0.00887812752219532,
-        0.0008632190222082712
+        0.007482993197278911,
+        0.0007315775472200053
       ],
-      "treebank": "UD_Nheengatu-CompLin@2.13"
+      "treebank": "UD_Nheengatu-CompLin@2.14"
     },
     {
       "flat": [
@@ -1471,7 +1535,7 @@
         0.03125,
         0.004962779156327543
       ],
-      "treebank": "UD_Old_Irish-DipSGG@2.13"
+      "treebank": "UD_Old_Irish-DipSGG@2.14"
     },
     {
       "flat": [
@@ -1489,10 +1553,10 @@
         1.3883495145631068,
         0.05059618582599158
       ],
-      "treebank": "UD_Indonesian-CSUI@2.13"
+      "treebank": "UD_Indonesian-CSUI@2.14"
     },
     {
-      "treebank": "UD_Ancient_Greek-Perseus@2.13"
+      "treebank": "UD_Ancient_Greek-Perseus@2.14"
     },
     {
       "flat": [
@@ -1505,7 +1569,7 @@
         0.06840077071290944,
         0.00781106751256005
       ],
-      "treebank": "UD_Old_East_Slavic-Birchbark@2.13"
+      "treebank": "UD_Old_East_Slavic-Birchbark@2.14"
     },
     {
       "flat": [
@@ -1518,7 +1582,7 @@
         0.013299556681443952,
         0.0005379649554257608
       ],
-      "treebank": "UD_Ancient_Hebrew-PTNK@2.13"
+      "treebank": "UD_Ancient_Hebrew-PTNK@2.14"
     },
     {
       "flat": [
@@ -1526,20 +1590,25 @@
         0.3783783783783784,
         0.02456140350877193
       ],
-      "treebank": "UD_Tatar-NMCTT@2.13"
+      "treebank": "UD_Tatar-NMCTT@2.14"
     },
     {
+      "flat": [
+        2,
+        4.5424606509346114e-05,
+        2.0303620338542568e-06
+      ],
       "flat:foreign": [
-        994,
-        0.022576029435145018,
-        0.0010090868576080987
+        900,
+        0.02044107292920575,
+        0.0009136629152344155
       ],
       "flat:name": [
-        3390,
-        0.07699470803334166,
-        0.0034414531662891896
+        3395,
+        0.07710826954961503,
+        0.0034465395524676005
       ],
-      "treebank": "UD_Icelandic-IcePaHC@2.13"
+      "treebank": "UD_Icelandic-IcePaHC@2.14"
     },
     {
       "flat": [
@@ -1547,7 +1616,7 @@
         0.02040816326530612,
         0.0015174506828528073
       ],
-      "treebank": "UD_Mbya_Guarani-Thomas@2.13"
+      "treebank": "UD_Mbya_Guarani-Thomas@2.14"
     },
     {
       "flat": [
@@ -1555,7 +1624,7 @@
         0.0007797270955165692,
         2.8969343192566467e-05
       ],
-      "treebank": "UD_Urdu-UDTB@2.13"
+      "treebank": "UD_Urdu-UDTB@2.14"
     },
     {
       "flat": [
@@ -1563,7 +1632,7 @@
         0.15581688366232677,
         0.006791078243838149
       ],
-      "treebank": "UD_Romanian-RRT@2.13"
+      "treebank": "UD_Romanian-RRT@2.14"
     },
     {
       "flat": [
@@ -1571,7 +1640,7 @@
         0.0078125,
         0.0013623978201634877
       ],
-      "treebank": "UD_Tagalog-TRG@2.13"
+      "treebank": "UD_Tagalog-TRG@2.14"
     },
     {
       "flat": [
@@ -1579,7 +1648,7 @@
         0.0891089108910891,
         0.004859611231101512
       ],
-      "treebank": "UD_Akkadian-PISANDUB@2.13"
+      "treebank": "UD_Akkadian-PISANDUB@2.14"
     },
     {
       "flat:foreign": [
@@ -1592,7 +1661,7 @@
         0.03194392423350634,
         0.002904176760748373
       ],
-      "treebank": "UD_Latin-PROIEL@2.13"
+      "treebank": "UD_Latin-PROIEL@2.14"
     },
     {
       "flat:name": [
@@ -1605,10 +1674,10 @@
         0.020854090081423714,
         0.0012097031344663754
       ],
-      "treebank": "UD_Persian-PerDT@2.13"
+      "treebank": "UD_Persian-PerDT@2.14"
     },
     {
-      "treebank": "UD_Apurina-UFPA@2.13"
+      "treebank": "UD_Apurina-UFPA@2.14"
     },
     {
       "flat": [
@@ -1616,7 +1685,7 @@
         0.19,
         0.02159090909090909
       ],
-      "treebank": "UD_Sinhala-STB@2.13"
+      "treebank": "UD_Sinhala-STB@2.14"
     },
     {
       "flat": [
@@ -1634,7 +1703,7 @@
         0.607,
         0.03121464568548802
       ],
-      "treebank": "UD_Indonesian-PUD@2.13"
+      "treebank": "UD_Indonesian-PUD@2.14"
     },
     {
       "flat": [
@@ -1652,20 +1721,20 @@
         0.059803921568627454,
         0.0021346584546472563
       ],
-      "treebank": "UD_French-ParTUT@2.13"
+      "treebank": "UD_French-ParTUT@2.14"
     },
     {
       "flat:foreign": [
         34,
         0.009618104667609617,
-        0.0004229118726288948
+        0.000422917133119387
       ],
       "flat:name": [
         481,
         0.13606789250353607,
-        0.005982959139249953
+        0.005983033559718387
       ],
-      "treebank": "UD_Icelandic-Modern@2.13"
+      "treebank": "UD_Icelandic-Modern@2.14"
     },
     {
       "flat:name": [
@@ -1673,10 +1742,10 @@
         0.5538888888888889,
         0.02372002283974115
       ],
-      "treebank": "UD_Hungarian-Szeged@2.13"
+      "treebank": "UD_Hungarian-Szeged@2.14"
     },
     {
-      "treebank": "UD_Hindi-HDTB@2.13"
+      "treebank": "UD_Hindi-HDTB@2.14"
     },
     {
       "flat": [
@@ -1694,15 +1763,15 @@
         0.06677953130254294,
         0.013295072581538803
       ],
-      "treebank": "UD_Classical_Chinese-Kyoto@2.13"
+      "treebank": "UD_Classical_Chinese-Kyoto@2.14"
     },
     {
       "flat:name": [
         5,
-        0.043859649122807015,
-        0.004985044865403789
+        0.0390625,
+        0.004625346901017576
       ],
-      "treebank": "UD_Komi_Permyak-UH@2.13"
+      "treebank": "UD_Komi_Permyak-UH@2.14"
     },
     {
       "flat": [
@@ -1710,7 +1779,7 @@
         0.0066518847006651885,
         0.00041345093715545756
       ],
-      "treebank": "UD_Chinese-CFL@2.13"
+      "treebank": "UD_Chinese-CFL@2.14"
     },
     {
       "flat:foreign": [
@@ -1723,15 +1792,15 @@
         0.03763109191856878,
         0.0015067681059183875
       ],
-      "treebank": "UD_Faroese-FarPaHC@2.13"
+      "treebank": "UD_Faroese-FarPaHC@2.14"
     },
     {
       "flat": [
-        146,
-        0.03652739554665999,
-        0.005384076409632334
+        14509,
+        0.5337723493488338,
+        0.07028192210811858
       ],
-      "treebank": "UD_Sanskrit-Vedic@2.13"
+      "treebank": "UD_Sanskrit-Vedic@2.14"
     },
     {
       "flat": [
@@ -1739,7 +1808,7 @@
         0.15953859804791481,
         0.015474387221151197
       ],
-      "treebank": "UD_Turkish-IMST@2.13"
+      "treebank": "UD_Turkish-IMST@2.14"
     },
     {
       "flat": [
@@ -1757,7 +1826,7 @@
         0.39807555238774056,
         0.019936934792955736
       ],
-      "treebank": "UD_Portuguese-Porttinari@2.13"
+      "treebank": "UD_Portuguese-Porttinari@2.14"
     },
     {
       "flat": [
@@ -1765,25 +1834,25 @@
         0.20152091254752852,
         0.009895444361463779
       ],
-      "treebank": "UD_Lithuanian-HSE@2.13"
+      "treebank": "UD_Lithuanian-HSE@2.14"
     },
     {
       "flat": [
-        180,
-        0.01339784145887607,
-        0.0006739124737454932
+        179,
+        0.013323409006326758,
+        0.0006701685155580182
       ],
       "flat:foreign": [
-        570,
-        0.04242649795310755,
-        0.0021340561668607284
+        784,
+        0.05835504279866022,
+        0.0029352632189803703
       ],
       "flat:name": [
-        1738,
-        0.1293636025307034,
-        0.0065069993298314845
+        1732,
+        0.12891700781540752,
+        0.006484535580706634
       ],
-      "treebank": "UD_Slovenian-SSJ@2.13"
+      "treebank": "UD_Slovenian-SSJ@2.14"
     },
     {
       "flat:name": [
@@ -1791,15 +1860,23 @@
         0.088,
         0.006740196078431373
       ],
-      "treebank": "UD_Livvi-KKPP@2.13"
+      "treebank": "UD_Livvi-KKPP@2.14"
+    },
+    {
+      "flat": [
+        14,
+        0.16470588235294117,
+        0.017220172201722016
+      ],
+      "treebank": "UD_Ottoman_Turkish-DUDU@2.14"
     },
     {
       "flat:name": [
         157,
         0.02605376700962496,
-        0.001620912873351986
+        0.0016215657921916959
       ],
-      "treebank": "UD_Swedish-Talbanken@2.13"
+      "treebank": "UD_Swedish-Talbanken@2.14"
     },
     {
       "flat": [
@@ -1807,7 +1884,7 @@
         0.8047421217955213,
         0.02149713962449028
       ],
-      "treebank": "UD_Arabic-NYUAD@2.13"
+      "treebank": "UD_Arabic-NYUAD@2.14"
     },
     {
       "flat": [
@@ -1815,7 +1892,7 @@
         0.054748603351955305,
         0.002994377902713273
       ],
-      "treebank": "UD_English-GUMReddit@2.13"
+      "treebank": "UD_English-GUMReddit@2.14"
     },
     {
       "flat": [
@@ -1833,15 +1910,23 @@
         0.17511961722488037,
         0.006587710140753807
       ],
-      "treebank": "UD_Italian-ParTUT@2.13"
+      "treebank": "UD_Italian-ParTUT@2.14"
     },
     {
       "flat": [
         306,
         0.023981191222570534,
-        0.00182827371527923
+        0.001831721099511541
       ],
-      "treebank": "UD_Czech-FicTree@2.13"
+      "treebank": "UD_Czech-FicTree@2.14"
+    },
+    {
+      "flat": [
+        62,
+        0.2246376811594203,
+        0.006686077860455084
+      ],
+      "treebank": "UD_English-CTeTex@2.14"
     },
     {
       "flat": [
@@ -1849,7 +1934,7 @@
         0.2952064546748932,
         0.01405395634687514
       ],
-      "treebank": "UD_Wolof-WTB@2.13"
+      "treebank": "UD_Wolof-WTB@2.14"
     },
     {
       "flat": [
@@ -1857,7 +1942,10 @@
         0.1521817202370264,
         0.010855016682783752
       ],
-      "treebank": "UD_Bulgarian-BTB@2.13"
+      "treebank": "UD_Bulgarian-BTB@2.14"
+    },
+    {
+      "treebank": "UD_Paumari-TueCL@2.14"
     },
     {
       "flat": [
@@ -1875,7 +1963,7 @@
         0.222,
         0.011469904417463189
       ],
-      "treebank": "UD_Russian-PUD@2.13"
+      "treebank": "UD_Russian-PUD@2.14"
     },
     {
       "flat": [
@@ -1888,21 +1976,21 @@
         0.153,
         0.0065365061733669415
       ],
-      "treebank": "UD_Portuguese-PUD@2.13"
+      "treebank": "UD_Portuguese-PUD@2.14"
     },
     {
-      "treebank": "UD_Romanian-ArT@2.13"
+      "treebank": "UD_Romanian-ArT@2.14"
     },
     {
       "flat": [
-        3,
-        0.008086253369272238,
-        0.0015748031496062992
+        14,
+        0.015891032917139614,
+        0.002002002002002002
       ],
-      "treebank": "UD_Bororo-BDT@2.13"
+      "treebank": "UD_Bororo-BDT@2.14"
     },
     {
-      "treebank": "UD_Akuntsu-TuDeT@2.13"
+      "treebank": "UD_Akuntsu-TuDeT@2.14"
     },
     {
       "flat": [
@@ -1920,10 +2008,18 @@
         0.6389447797898502,
         0.022808802697472118
       ],
-      "treebank": "UD_Portuguese-PetroGold@2.13"
+      "treebank": "UD_Portuguese-PetroGold@2.14"
     },
     {
-      "treebank": "UD_Makurap-TuDeT@2.13"
+      "flat": [
+        17,
+        0.17,
+        0.009004237288135594
+      ],
+      "treebank": "UD_Vietnamese-TueCL@2.14"
+    },
+    {
+      "treebank": "UD_Makurap-TuDeT@2.14"
     },
     {
       "flat": [
@@ -1931,7 +2027,7 @@
         0.2601854110758722,
         0.023240990438833046
       ],
-      "treebank": "UD_Turkish-Penn@2.13"
+      "treebank": "UD_Turkish-Penn@2.14"
     },
     {
       "flat": [
@@ -1939,10 +2035,15 @@
         0.10893246187363835,
         0.012500625031251563
       ],
-      "treebank": "UD_Chinese-Beginner@2.13"
+      "treebank": "UD_Chinese-Beginner@2.14"
     },
     {
-      "treebank": "UD_Kangri-KDTB@2.13"
+      "flat": [
+        1,
+        0.003472222222222222,
+        0.0003977724741447892
+      ],
+      "treebank": "UD_Kangri-KDTB@2.14"
     },
     {
       "flat:name": [
@@ -1950,7 +2051,7 @@
         0.007537688442211055,
         0.0004422169811320755
       ],
-      "treebank": "UD_Italian-Valico@2.13"
+      "treebank": "UD_Italian-Valico@2.14"
     },
     {
       "flat": [
@@ -1958,13 +2059,13 @@
         0.44036697247706424,
         0.039950062421972535
       ],
-      "treebank": "UD_Malayalam-UFAL@2.13"
+      "treebank": "UD_Malayalam-UFAL@2.14"
     },
     {
-      "treebank": "UD_Japanese-BCCWJ@2.13"
+      "treebank": "UD_Japanese-BCCWJ@2.14"
     },
     {
-      "treebank": "UD_Bengali-BRU@2.13"
+      "treebank": "UD_Bengali-BRU@2.14"
     },
     {
       "flat": [
@@ -1982,7 +2083,7 @@
         0.30407303370786515,
         0.01462739004121343
       ],
-      "treebank": "UD_Italian-TWITTIRO@2.13"
+      "treebank": "UD_Italian-TWITTIRO@2.14"
     },
     {
       "flat:name": [
@@ -1990,7 +2091,7 @@
         0.01662568785856457,
         0.0013270717973879115
       ],
-      "treebank": "UD_Ancient_Greek-PROIEL@2.13"
+      "treebank": "UD_Ancient_Greek-PROIEL@2.14"
     },
     {
       "flat:name": [
@@ -1998,26 +2099,44 @@
         0.02828054298642534,
         0.002498500899460324
       ],
-      "treebank": "UD_Breton-KEB@2.13"
+      "treebank": "UD_Breton-KEB@2.14"
     },
     {
       "flat": [
         1527,
         0.06179934436844874,
-        0.0030817542790370074
+        0.003088698438255361
       ],
       "flat:foreign": [
         133,
         0.005382654093650087,
-        0.0002684173668054499
+        0.0002690221953424774
       ],
-      "treebank": "UD_Czech-CAC@2.13"
+      "treebank": "UD_Czech-CAC@2.14"
     },
     {
-      "treebank": "UD_Japanese-GSD@2.13"
+      "treebank": "UD_Japanese-GSD@2.14"
     },
     {
-      "treebank": "UD_Neapolitan-RB@2.13"
+      "treebank": "UD_Neapolitan-RB@2.14"
+    },
+    {
+      "flat": [
+        1,
+        0.001,
+        4.253509145044662e-05
+      ],
+      "flat:foreign": [
+        58,
+        0.058,
+        0.002467035304125904
+      ],
+      "flat:name": [
+        262,
+        0.262,
+        0.011144193960017014
+      ],
+      "treebank": "UD_Galician-PUD@2.14"
     },
     {
       "flat": [
@@ -2025,30 +2144,30 @@
         0.008283132530120483,
         0.0017014694508894045
       ],
-      "treebank": "UD_Telugu-MTG@2.13"
+      "treebank": "UD_Telugu-MTG@2.14"
     },
     {
       "flat": [
-        9,
-        0.007328990228013029,
-        0.00021756472550583798
+        15,
+        0.0062447960033305576,
+        0.0001815013794104835
       ],
       "flat:foreign": [
-        11,
-        0.008957654723127036,
-        0.0002659124422849131
+        85,
+        0.03538717735220649,
+        0.0010285078166594067
       ],
       "flat:name": [
-        57,
-        0.046416938110749185,
-        0.0013779099282036405
+        88,
+        0.03663613655287261,
+        0.0010648080925415033
       ],
       "flat:redup": [
-        29,
-        0.023615635179153095,
-        0.0007010418932965891
+        62,
+        0.025811823480432972,
+        0.0007502057015633318
       ],
-      "treebank": "UD_Italian-Old@2.13"
+      "treebank": "UD_Italian-Old@2.14"
     },
     {
       "flat": [
@@ -2056,7 +2175,7 @@
         0.029346197419873554,
         0.0022936959067668314
       ],
-      "treebank": "UD_Korean-Kaist@2.13"
+      "treebank": "UD_Korean-Kaist@2.14"
     },
     {
       "flat": [
@@ -2064,7 +2183,7 @@
         0.026892430278884463,
         0.001939933898548642
       ],
-      "treebank": "UD_Cantonese-HK@2.13"
+      "treebank": "UD_Cantonese-HK@2.14"
     },
     {
       "flat": [
@@ -2072,7 +2191,7 @@
         0.0260989010989011,
         0.0015311467483278265
       ],
-      "treebank": "UD_Turkish_German-SAGT@2.13"
+      "treebank": "UD_Turkish_German-SAGT@2.14"
     },
     {
       "flat": [
@@ -2080,15 +2199,15 @@
         0.007667031763417305,
         0.0024171270718232043
       ],
-      "treebank": "UD_Teko-TuDeT@2.13"
+      "treebank": "UD_Teko-TuDeT@2.14"
     },
     {
       "flat": [
-        1745,
-        0.16215965059009385,
-        0.009305574812555327
+        1891,
+        0.15567629867456986,
+        0.008923178557946394
       ],
-      "treebank": "UD_English-GUM@2.13"
+      "treebank": "UD_English-GUM@2.14"
     },
     {
       "flat": [
@@ -2101,15 +2220,23 @@
         0.142,
         0.006630866215269671
       ],
-      "treebank": "UD_Chinese-PUD@2.13"
+      "treebank": "UD_Chinese-PUD@2.14"
     },
     {
       "flat": [
-        16,
-        0.0025196850393700786,
-        0.00018437427978796957
+        40,
+        0.017777777777777778,
+        0.001164551065564225
       ],
-      "treebank": "UD_Pomak-Philotis@2.13"
+      "treebank": "UD_Pomak-Philotis@2.14"
+    },
+    {
+      "flat": [
+        1,
+        0.0038022813688212928,
+        0.0004091653027823241
+      ],
+      "treebank": "UD_Abkhaz-AbNC@2.14"
     },
     {
       "flat": [
@@ -2117,7 +2244,7 @@
         0.020819828408007626,
         0.0009538184181288389
       ],
-      "treebank": "UD_Romanian-Nonstandard@2.13"
+      "treebank": "UD_Romanian-Nonstandard@2.14"
     },
     {
       "flat": [
@@ -2125,7 +2252,7 @@
         0.5236690186016677,
         0.027885466015869168
       ],
-      "treebank": "UD_German-GSD@2.13"
+      "treebank": "UD_German-GSD@2.14"
     },
     {
       "flat:name": [
@@ -2133,7 +2260,7 @@
         0.006452183135937776,
         0.0007342476224961402
       ],
-      "treebank": "UD_Old_Church_Slavonic-PROIEL@2.13"
+      "treebank": "UD_Old_Church_Slavonic-PROIEL@2.14"
     },
     {
       "flat": [
@@ -2146,7 +2273,7 @@
         0.17982456140350878,
         0.013251454427925016
       ],
-      "treebank": "UD_Karelian-KKPP@2.13"
+      "treebank": "UD_Karelian-KKPP@2.14"
     },
     {
       "flat": [
@@ -2154,7 +2281,7 @@
         0.0979020979020979,
         0.006365886929722629
       ],
-      "treebank": "UD_Maghrebi_Arabic_French-Arabizi@2.13"
+      "treebank": "UD_Maghrebi_Arabic_French-Arabizi@2.14"
     },
     {
       "flat": [
@@ -2162,7 +2289,30 @@
         0.613203125,
         0.04948304123061405
       ],
-      "treebank": "UD_Portuguese-CINTIL@2.13"
+      "treebank": "UD_Portuguese-CINTIL@2.14"
+    },
+    {
+      "flat": [
+        11,
+        0.00870942201108472,
+        0.000579924082665542
+      ],
+      "flat:gov": [
+        3,
+        0.0023752969121140144,
+        0.0001581611134542387
+      ],
+      "flat:name": [
+        7,
+        0.0055423594615993665,
+        0.00036904259805989033
+      ],
+      "flat:redup": [
+        14,
+        0.011084718923198733,
+        0.0007380851961197807
+      ],
+      "treebank": "UD_Latin-CIRCSE@2.14"
     },
     {
       "flat:foreign": [
@@ -2175,7 +2325,7 @@
         0.252,
         0.01019170104343606
       ],
-      "treebank": "UD_French-PUD@2.13"
+      "treebank": "UD_French-PUD@2.14"
     },
     {
       "flat": [
@@ -2188,7 +2338,7 @@
         0.0030959752321981426,
         0.0001786352268667381
       ],
-      "treebank": "UD_Upper_Sorbian-UFAL@2.13"
+      "treebank": "UD_Upper_Sorbian-UFAL@2.14"
     },
     {
       "flat": [
@@ -2196,15 +2346,15 @@
         0.29825834542815677,
         0.01632037167561772
       ],
-      "treebank": "UD_Danish-DDT@2.13"
+      "treebank": "UD_Danish-DDT@2.14"
     },
     {
       "flat": [
         91,
         0.07222222222222222,
-        0.009007225576561417
+        0.00902061855670103
       ],
-      "treebank": "UD_Highland_Puebla_Nahuatl-ITML@2.13"
+      "treebank": "UD_Highland_Puebla_Nahuatl-ITML@2.14"
     },
     {
       "flat": [
@@ -2217,25 +2367,20 @@
         0.319,
         0.016938352891201613
       ],
-      "treebank": "UD_Icelandic-PUD@2.13"
+      "treebank": "UD_Icelandic-PUD@2.14"
     },
     {
-      "flat": [
-        29,
-        0.029,
-        0.0011351182088617504
-      ],
       "flat:foreign": [
         2,
         0.002,
         7.828401440425865e-05
       ],
       "flat:name": [
-        329,
-        0.329,
-        0.012877720369500549
+        325,
+        0.325,
+        0.012721152340692031
       ],
-      "treebank": "UD_Galician-TreeGal@2.13"
+      "treebank": "UD_Galician-TreeGal@2.14"
     },
     {
       "flat": [
@@ -2248,10 +2393,10 @@
         0.206,
         0.008644928448529102
       ],
-      "treebank": "UD_Hindi-PUD@2.13"
+      "treebank": "UD_Hindi-PUD@2.14"
     },
     {
-      "treebank": "UD_Japanese-PUDLUW@2.13"
+      "treebank": "UD_Japanese-PUDLUW@2.14"
     },
     {
       "flat:foreign": [
@@ -2259,7 +2404,7 @@
         0.06,
         0.0076045627376425855
       ],
-      "treebank": "UD_South_Levantine_Arabic-MADAR@2.13"
+      "treebank": "UD_South_Levantine_Arabic-MADAR@2.14"
     },
     {
       "flat": [
@@ -2268,24 +2413,32 @@
         0.0003711493257453916
       ],
       "flat:name": [
-        54,
-        0.08144796380090498,
-        0.006680687863417048
+        53,
+        0.07993966817496229,
+        0.0065569714215019176
       ],
       "flat:num": [
         2,
         0.0030165912518853697,
         0.00024743288383026105
       ],
-      "treebank": "UD_Komi_Zyrian-Lattice@2.13"
+      "treebank": "UD_Komi_Zyrian-Lattice@2.14"
+    },
+    {
+      "flat": [
+        36,
+        0.23529411764705882,
+        0.01909814323607427
+      ],
+      "treebank": "UD_Gujarati-GujTB@2.14"
     },
     {
       "flat": [
         37,
         0.0407040704070407,
-        0.0036550429714511507
+        0.003651796288985393
       ],
-      "treebank": "UD_Western_Sierra_Puebla_Nahuatl-ITML@2.13"
+      "treebank": "UD_Western_Sierra_Puebla_Nahuatl-ITML@2.14"
     },
     {
       "flat": [
@@ -2293,10 +2446,10 @@
         0.013043478260869565,
         0.0016277807921866521
       ],
-      "treebank": "UD_Sanskrit-UFAL@2.13"
+      "treebank": "UD_Sanskrit-UFAL@2.14"
     },
     {
-      "treebank": "UD_Tamil-MWTT@2.13"
+      "treebank": "UD_Tamil-MWTT@2.14"
     },
     {
       "flat": [
@@ -2304,7 +2457,7 @@
         0.41,
         0.02428766068360879
       ],
-      "treebank": "UD_Turkish-PUD@2.13"
+      "treebank": "UD_Turkish-PUD@2.14"
     },
     {
       "flat": [
@@ -2322,7 +2475,7 @@
         0.15478615071283094,
         0.00655228899043021
       ],
-      "treebank": "UD_Irish-IDT@2.13"
+      "treebank": "UD_Irish-IDT@2.14"
     },
     {
       "flat": [
@@ -2335,7 +2488,7 @@
         0.010101010101010102,
         0.00047709923664122136
       ],
-      "treebank": "UD_Czech-Poetry@2.13"
+      "treebank": "UD_Czech-Poetry@2.14"
     },
     {
       "flat": [
@@ -2343,7 +2496,7 @@
         0.04056291390728477,
         0.004899020195960808
       ],
-      "treebank": "UD_Faroese-OFT@2.13"
+      "treebank": "UD_Faroese-OFT@2.14"
     },
     {
       "flat": [
@@ -2351,7 +2504,7 @@
         0.1,
         0.01282051282051282
       ],
-      "treebank": "UD_Nayini-AHA@2.13"
+      "treebank": "UD_Nayini-AHA@2.14"
     },
     {
       "flat": [
@@ -2364,7 +2517,7 @@
         0.345,
         0.03700724054706356
       ],
-      "treebank": "UD_Frisian_Dutch-Fame@2.13"
+      "treebank": "UD_Frisian_Dutch-Fame@2.14"
     },
     {
       "flat": [
@@ -2372,7 +2525,7 @@
         0.006329113924050633,
         0.0009784735812133072
       ],
-      "treebank": "UD_Munduruku-TuDeT@2.13"
+      "treebank": "UD_Munduruku-TuDeT@2.14"
     },
     {
       "flat": [
@@ -2380,7 +2533,7 @@
         0.007352941176470588,
         0.0007639419404125286
       ],
-      "treebank": "UD_Hittite-HitTB@2.13"
+      "treebank": "UD_Hittite-HitTB@2.14"
     },
     {
       "flat": [
@@ -2393,41 +2546,41 @@
         0.0017123287671232876,
         0.00019300361881785283
       ],
-      "treebank": "UD_Manx-Cadhan@2.13"
+      "treebank": "UD_Manx-Cadhan@2.14"
     },
     {
       "flat": [
-        22,
-        0.028169014084507043,
-        0.0029526238088847133
+        42,
+        0.05377720870678617,
+        0.00563682727150718
       ],
-      "treebank": "UD_Kyrgyz-KTMU@2.13"
+      "treebank": "UD_Kyrgyz-KTMU@2.14"
     },
     {
       "flat:name": [
         2,
-        0.00816326530612245,
-        0.0006891798759476223
+        0.008,
+        0.0006754474839581223
       ],
-      "treebank": "UD_Skolt_Sami-Giellagas@2.13"
+      "treebank": "UD_Skolt_Sami-Giellagas@2.14"
     },
     {
       "flat": [
         48,
         0.048,
-        0.003034709489789467
+        0.0030354771390627964
       ],
       "flat:foreign": [
         3,
         0.003,
-        0.00018966934311184168
+        0.00018971732119142478
       ],
       "flat:name": [
         389,
         0.389,
-        0.024593791490168805
+        0.024600012647821412
       ],
-      "treebank": "UD_Finnish-PUD@2.13"
+      "treebank": "UD_Finnish-PUD@2.14"
     },
     {
       "flat": [
@@ -2435,7 +2588,15 @@
         0.011472275334608031,
         0.0010194545917933905
       ],
-      "treebank": "UD_Mbya_Guarani-Dooley@2.13"
+      "treebank": "UD_Mbya_Guarani-Dooley@2.14"
+    },
+    {
+      "flat": [
+        88,
+        0.17120622568093385,
+        0.009984116178806445
+      ],
+      "treebank": "UD_Ottoman_Turkish-BOUN@2.14"
     },
     {
       "flat": [
@@ -2448,7 +2609,7 @@
         0.02801400700350175,
         0.0010986136541982737
       ],
-      "treebank": "UD_Persian-Seraji@2.13"
+      "treebank": "UD_Persian-Seraji@2.14"
     },
     {
       "flat": [
@@ -2456,7 +2617,7 @@
         0.1360759493670886,
         0.006206697459584296
       ],
-      "treebank": "UD_Ligurian-GLT@2.13"
+      "treebank": "UD_Ligurian-GLT@2.14"
     },
     {
       "flat": [
@@ -2464,34 +2625,34 @@
         0.12099276111685625,
         0.004750304506699147
       ],
-      "treebank": "UD_Afrikaans-AfriBooms@2.13"
+      "treebank": "UD_Afrikaans-AfriBooms@2.14"
     },
     {
-      "treebank": "UD_Japanese-PUD@2.13"
+      "treebank": "UD_Japanese-PUD@2.14"
     },
     {
-      "treebank": "UD_Czech-CLTT@2.13"
+      "treebank": "UD_Czech-CLTT@2.14"
     },
     {
       "flat": [
         16,
         0.0009790723289683026,
-        3.996952323853062e-05
+        3.99694233911058e-05
       ],
       "flat:foreign": [
-        1053,
-        0.06443519765022641,
-        0.0026304942481357963
+        1049,
+        0.06419042956798433,
+        0.0026204953210793745
       ],
       "flat:name": [
-        7029,
-        0.4301187125198874,
-        0.017559111177726985
+        7024,
+        0.42981275241708483,
+        0.017546576868695447
       ],
-      "treebank": "UD_French-GSD@2.13"
+      "treebank": "UD_French-GSD@2.14"
     },
     {
-      "treebank": "UD_Karo-TuDeT@2.13"
+      "treebank": "UD_Karo-TuDeT@2.14"
     },
     {
       "flat": [
@@ -2504,7 +2665,7 @@
         0.164,
         0.007687980498781174
       ],
-      "treebank": "UD_German-PUD@2.13"
+      "treebank": "UD_German-PUD@2.14"
     },
     {
       "flat": [
@@ -2522,28 +2683,28 @@
         0.20647149460708783,
         0.01121573550952082
       ],
-      "treebank": "UD_Irish-TwittIrish@2.13"
+      "treebank": "UD_Irish-TwittIrish@2.14"
     },
     {
       "flat": [
         5358,
         0.39388370212453133,
-        0.025667311782627857
+        0.02568379878627513
       ],
-      "treebank": "UD_Dutch-Alpino@2.13"
+      "treebank": "UD_Dutch-Alpino@2.14"
     },
     {
       "flat": [
         3,
         0.003,
-        0.00015719151165837045
+        0.00015726567414552317
       ],
       "flat:name": [
         201,
         0.201,
-        0.01053183128111082
+        0.010536800167750052
       ],
-      "treebank": "UD_Swedish-PUD@2.13"
+      "treebank": "UD_Swedish-PUD@2.14"
     },
     {
       "flat:foreign": [
@@ -2556,10 +2717,7 @@
         0.24334600760456274,
         0.009862844814301126
       ],
-      "treebank": "UD_Chinese-GSD@2.13"
-    },
-    {
-      "treebank": "UD_Old_Turkish-Tonqq@2.13"
+      "treebank": "UD_Chinese-GSD@2.14"
     },
     {
       "flat": [
@@ -2567,7 +2725,7 @@
         0.08395641956846828,
         0.002691412135323928
       ],
-      "treebank": "UD_Romanian-SiMoNERo@2.13"
+      "treebank": "UD_Romanian-SiMoNERo@2.14"
     },
     {
       "flat": [
@@ -2575,7 +2733,7 @@
         0.28,
         0.013495927121993542
       ],
-      "treebank": "UD_Arabic-PUD@2.13"
+      "treebank": "UD_Arabic-PUD@2.14"
     },
     {
       "flat": [
@@ -2583,49 +2741,49 @@
         0.010327022375215147,
         0.0013309671694764862
       ],
-      "treebank": "UD_Tupinamba-TuDeT@2.13"
+      "treebank": "UD_Tupinamba-TuDeT@2.14"
     },
     {
       "flat": [
         1340,
         0.053109270342039556,
-        0.004387444051902808
+        0.004391873068313291
       ],
       "flat:foreign": [
         1051,
         0.04165510681304744,
-        0.003441196789962576
+        0.0034446705931322906
       ],
       "flat:name": [
         3871,
         0.15342237723435456,
-        0.012674474570832666
+        0.012687269139881158
       ],
-      "treebank": "UD_Belarusian-HSE@2.13"
+      "treebank": "UD_Belarusian-HSE@2.14"
     },
     {
       "flat": [
         50,
         0.022696323195642305,
-        0.0008757180888328429
+        0.0008757027514580451
       ],
-      "treebank": "UD_Coptic-Scriptorium@2.13"
+      "treebank": "UD_Coptic-Scriptorium@2.14"
     },
     {
-      "treebank": "UD_Yakut-YKTDT@2.13"
+      "treebank": "UD_Yakut-YKTDT@2.14"
     },
     {
       "flat:foreign": [
         131,
         0.057230231542158144,
-        0.0054809422199907955
+        0.005481400895434955
       ],
       "flat:name": [
         581,
         0.25382262996941896,
-        0.024308606334462992
+        0.02431064061257793
       ],
-      "treebank": "UD_French-FQB@2.13"
+      "treebank": "UD_French-FQB@2.14"
     },
     {
       "flat": [
@@ -2633,7 +2791,7 @@
         0.12244897959183673,
         0.018404907975460124
       ],
-      "treebank": "UD_Abaza-ATB@2.13"
+      "treebank": "UD_Abaza-ATB@2.14"
     },
     {
       "flat:foreign": [
@@ -2646,7 +2804,7 @@
         0.03271028037383177,
         0.0030316154179298397
       ],
-      "treebank": "UD_Komi_Zyrian-IKDP@2.13"
+      "treebank": "UD_Komi_Zyrian-IKDP@2.14"
     },
     {
       "flat": [
@@ -2654,7 +2812,7 @@
         0.65625,
         0.02945542780502288
       ],
-      "treebank": "UD_Serbian-SET@2.13"
+      "treebank": "UD_Serbian-SET@2.14"
     },
     {
       "flat": [
@@ -2662,33 +2820,67 @@
         0.003933434190620273,
         0.0008557135334386519
       ],
-      "treebank": "UD_Turkish-Tourism@2.13"
+      "treebank": "UD_Turkish-Tourism@2.14"
     },
     {
       "flat": [
-        558,
-        0.0776077885952712,
-        0.006152556949743092
+        559,
+        0.07774687065368567,
+        0.006170999613622564
       ],
       "flat:foreign": [
-        73,
-        0.010152990264255911,
-        0.0008049044038194368
+        71,
+        0.009874826147426982,
+        0.0007837942264171772
       ],
-      "treebank": "UD_Estonian-EWT@2.13"
+      "treebank": "UD_Estonian-EWT@2.14"
+    },
+    {
+      "flat": [
+        2,
+        0.1,
+        0.009708737864077669
+      ],
+      "treebank": "UD_Luxembourgish-LuxBank@2.14"
+    },
+    {
+      "flat:name": [
+        2,
+        0.1,
+        0.011764705882352941
+      ],
+      "treebank": "UD_Latgalian-Cairo@2.14"
+    },
+    {
+      "flat": [
+        14,
+        0.0072992700729927005,
+        0.0009598902982516284
+      ],
+      "flat:foreign": [
+        16,
+        0.008342022940563087,
+        0.0010970174837161468
+      ],
+      "flat:name": [
+        46,
+        0.023983315954118872,
+        0.003153925265683922
+      ],
+      "treebank": "UD_Hausa-SouthernAutogramm@2.14"
     },
     {
       "flat": [
         3,
-        0.006607929515418502,
-        0.0007262164124909223
+        0.006329113924050633,
+        0.0006891798759476223
       ],
       "flat:name": [
-        17,
-        0.037444933920704845,
-        0.00411522633744856
+        18,
+        0.0379746835443038,
+        0.004135079255685734
       ],
-      "treebank": "UD_Moksha-JR@2.13"
+      "treebank": "UD_Moksha-JR@2.14"
     },
     {
       "flat": [
@@ -2716,15 +2908,15 @@
         0.010366586538461538,
         0.0005614000829895774
       ],
-      "treebank": "UD_Western_Armenian-ArmTDP@2.13"
+      "treebank": "UD_Western_Armenian-ArmTDP@2.14"
     },
     {
       "flat": [
         317,
         0.317,
-        0.017021962089888848
+        0.017033852767329393
       ],
-      "treebank": "UD_Czech-PUD@2.13"
+      "treebank": "UD_Czech-PUD@2.14"
     },
     {
       "flat:foreign": [
@@ -2732,25 +2924,28 @@
         0.058823529411764705,
         0.0045662100456621
       ],
-      "treebank": "UD_Old_Irish-DipWBG@2.13"
+      "treebank": "UD_Old_Irish-DipWBG@2.14"
+    },
+    {
+      "treebank": "UD_Cappadocian-TueCL@2.14"
     },
     {
       "flat": [
-        445,
-        0.09386205441889897,
-        0.004946752929144712
+        537,
+        0.11326724319763763,
+        0.005969452411125192
       ],
       "flat:foreign": [
-        194,
-        0.04091963720734022,
-        0.0021565619511327507
+        101,
+        0.02130352246361527,
+        0.001122746170435092
       ],
       "flat:name": [
-        710,
-        0.14975743514026577,
-        0.007892572089197181
+        711,
+        0.14996836110525205,
+        0.00790368838791436
       ],
-      "treebank": "UD_Scottish_Gaelic-ARCOSG@2.13"
+      "treebank": "UD_Scottish_Gaelic-ARCOSG@2.14"
     },
     {
       "flat": [
@@ -2768,10 +2963,10 @@
         0.16905158069883527,
         0.006376582377787402
       ],
-      "treebank": "UD_Portuguese-GSD@2.13"
+      "treebank": "UD_Portuguese-GSD@2.14"
     },
     {
-      "treebank": "UD_Chinese-PatentChar@2.13"
+      "treebank": "UD_Chinese-PatentChar@2.14"
     },
     {
       "flat": [
@@ -2789,7 +2984,7 @@
         0.210337972166998,
         0.010796579382411168
       ],
-      "treebank": "UD_Russian-GSD@2.13"
+      "treebank": "UD_Russian-GSD@2.14"
     },
     {
       "flat": [
@@ -2797,7 +2992,7 @@
         0.1,
         0.013513513513513514
       ],
-      "treebank": "UD_Khunsari-AHA@2.13"
+      "treebank": "UD_Khunsari-AHA@2.14"
     },
     {
       "flat": [
@@ -2805,15 +3000,23 @@
         0.20192603216883517,
         0.01574130275053509
       ],
-      "treebank": "UD_Turkish-BOUN@2.13"
+      "treebank": "UD_Turkish-BOUN@2.14"
     },
     {
       "flat:foreign": [
         745,
         0.09720772442588727,
-        0.002637541598810451
+        0.002638251459006176
       ],
-      "treebank": "UD_Arabic-PADT@2.13"
+      "treebank": "UD_Arabic-PADT@2.14"
+    },
+    {
+      "flat:name": [
+        14,
+        0.035,
+        0.003572339882623118
+      ],
+      "treebank": "UD_Hausa-NorthernAutogramm@2.14"
     },
     {
       "flat": [
@@ -2826,7 +3029,28 @@
         0.43675728471430897,
         0.016748337963107464
       ],
-      "treebank": "UD_Hebrew-HTB@2.13"
+      "treebank": "UD_Hebrew-HTB@2.14"
+    },
+    {
+      "flat": [
+        8,
+        0.08,
+        0.012345679012345678
+      ],
+      "flat:vv": [
+        3,
+        0.03,
+        0.004629629629629629
+      ],
+      "treebank": "UD_Classical_Chinese-TueCL@2.14"
+    },
+    {
+      "flat": [
+        24,
+        0.11428571428571428,
+        0.005433552184740774
+      ],
+      "treebank": "UD_Romanian-TueCL@2.14"
     },
     {
       "flat": [
@@ -2834,7 +3058,7 @@
         0.04261206419479801,
         0.0030204369827011336
       ],
-      "treebank": "UD_Greek-GUD@2.13"
+      "treebank": "UD_Greek-GUD@2.14"
     },
     {
       "flat": [
@@ -2847,7 +3071,7 @@
         0.034928229665071774,
         0.0014707956399975823
       ],
-      "treebank": "UD_English-ParTUT@2.13"
+      "treebank": "UD_English-ParTUT@2.14"
     },
     {
       "flat": [
@@ -2855,7 +3079,7 @@
         0.015625,
         0.0013420817178645989
       ],
-      "treebank": "UD_Uyghur-UDT@2.13"
+      "treebank": "UD_Uyghur-UDT@2.14"
     },
     {
       "flat": [
@@ -2883,31 +3107,34 @@
         0.0017431725740848344,
         5.4035555395450205e-05
       ],
-      "treebank": "UD_Latin-UDante@2.13"
+      "treebank": "UD_Latin-UDante@2.14"
     },
     {
-      "treebank": "UD_Japanese-BCCWJLUW@2.13"
+      "treebank": "UD_Japanese-BCCWJLUW@2.14"
     },
     {
       "flat": [
         3,
         0.00298804780876494,
-        0.0004830140074062148
+        0.0004898758981058132
       ],
       "flat:foreign": [
         38,
         0.037848605577689244,
-        0.0061181774271453875
+        0.0062050947093403004
       ],
       "flat:name": [
         4,
         0.00398406374501992,
-        0.0006440186765416197
+        0.0006531678641410843
       ],
-      "treebank": "UD_Chukchi-HSE@2.13"
+      "treebank": "UD_Chukchi-HSE@2.14"
     },
     {
-      "treebank": "UD_Xavante-XDT@2.13"
+      "treebank": "UD_Old_Turkish-Clausal@2.14"
+    },
+    {
+      "treebank": "UD_Xavante-XDT@2.14"
     }
   ]
 }
