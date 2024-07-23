@@ -1,0 +1,46 @@
+% This GRS changes the tokenization of token like "12h30", "1h15" or "14h" into separate tokens with the expeected SUD annotation
+
+strat main {
+  Seq ( 
+    Onf (min),
+    Onf (hour)
+  )
+}
+
+% This rule take care about the minutes and split "12h30" into "12h" and "30"
+rule min {
+  pattern { X [form=re"[0-9][0-9]?h[0-9][0-9]", lemma=re"[0-9][0-9]?h[0-9][0-9]"] }
+  commands { 
+    add_node Y :> X;
+
+    Y.upos = NUM;
+    Y.form = X.form[-2:];
+    Y.lemma = X.lemma[-2:];
+    Y.Number = Plur;
+    append_feats X =[re"SpaceAfter"]=> Y;
+ 
+    X.form = X.form[:-2];
+    X.lemma = X.lemma[:-2]; 
+    add_edge X -[mod]-> Y;
+    X.SpaceAfter=No;
+  }
+}
+
+% This rule take care about the hours and split "12h" into "12" and "h"
+rule hour {
+  pattern { X [form=re"[0-9][0-9]?h", lemma=re"[0-9][0-9]?h"] }
+  commands { 
+    add_node Y :< X;
+
+    Y.upos = NUM;
+    Y.form = X.form[:-1];
+    Y.lemma = X.lemma[:-1];
+    Y.Number = Plur;
+    Y.SpaceAfter=No;
+
+    X.form = X.form[-1:];
+    X.lemma = X.lemma[-1:];
+    add_edge X -[det]-> Y;
+  }
+}
+

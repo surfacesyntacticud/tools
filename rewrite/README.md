@@ -19,6 +19,6 @@ The available GRS (and associated converted treebanks) are:
 Some of these GRS were used during the maintenance of treebanks (mostly in SUD).
 There are listed here as example of GRS that can be adated for similar operations on other treebanks.
 
- - [`gsd2spoken.grs`](gsd2spoken.grs): update of `SUD_French-GSD` to a spoken setting (to make it more consistent with `SUD_French-Rhapsodie` and `SUD_French-ParisStories`). This system was initially written by [@mmahamdi](https://github.com/mmahamdi) (see [here](https://github.com/mmahamdi/SUD_Spoken/blob/20984009b13a267268b0807dcf7ebe3f4abb3b9e/grew_grammars/gsd2spoken.grs) for original version).
-
+  - [`gsd2spoken.grs`](gsd2spoken.grs): update of `SUD_French-GSD` to a spoken setting (to make it more consistent with `SUD_French-Rhapsodie` and `SUD_French-ParisStories`). This system was initially written by [@mmahamdi](https://github.com/mmahamdi) (see [here](https://github.com/mmahamdi/SUD_Spoken/blob/20984009b13a267268b0807dcf7ebe3f4abb3b9e/grew_grammars/gsd2spoken.grs) for original version).
+  - [`hours.grs`](hours.grs): update the tokenisation of `SUD_French-GSD` to split utterances like *12h30* in 3 tokens or *14h* in 2 tokens. It was used in [`9318f3d`](https://github.com/surfacesyntacticud/SUD_French-GSD/commit/9318f3d4c56380f68f478a30a92c92d1abe8ce32).
 
