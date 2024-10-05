@@ -1,7 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 strat mSUD_to_SUD_main { 
   Seq (
-    % Onf (up_type_m),
     Onf (init),
     Onf (fusion),
     Onf (final),
@@ -49,38 +48,6 @@ package fusion {
     }
   }
 
-  rule merge_X2 {
-    pattern {
-      X1[]; X2[]; X1 < X2;                              % bigram X1 X2
-      X1 -[type=m]-> X2;                                % X2 is attached with the /m extension
-    }
-    without { X2 -> * }                                 % X2 is a leaf (force application order)
-    commands { 
-      X1.form = X1.form + X2.form;                      % concatenate the surface form
-      X1.wordform = X1.wordform + X2.wordform;          % concatenate the surface form
-      X1.lemma = X1.lemma + X2.lemma;                   % concatenate the surface lemma
-      append_feats "_" X2 =[re"Translit\|Tone"]=> X1;   % concatenate the surface Translit and Tone
-      X1.upos = X1.FinalPos; 
-      del_node X2;
-    }
-  }
-  
-  rule merge_X1 {
-    pattern {
-      X1[]; X2[]; X1 < X2;                              % bigram X1 X2
-      X2 -[type=m]-> X1;                                % X1 is attached with the /m extension
-    }
-    without { X1 -> * }                                 % X1 is a leaf (force application order)
-    commands { 
-      X2.form = X1.form + X2.form;                      % concatenate the surface form
-      X2.wordform = X1.wordform + X2.wordform;          % concatenate the surface form
-      X2.lemma = X1.lemma + X2.lemma;                   % concatenate the surface lemma
-      prepend_feats "_" X1 =[re"Translit\|Tone"]=> X2;  % concatenate the surface Translit and Tone
-      X2.upos = X2.FinalPos; 
-      del_node X1;
-    }
-  }
-
   rule missing_m_pref_fwd {
     pattern { X[form=re".+-"]; Y[]; X < Y; e: X -[!type]-> Y; }
     commands { e.type=m }
@@ -97,6 +64,75 @@ package fusion {
     pattern { X[]; Y[form = re"-.+"]; X < Y; e: Y -[!type]-> X; }
     commands { e.type=m }
   }
+
+  % trick with alognement ti avoir duplicating the merge rules (i.e. the same merge rule can be applied with or without Align)
+  rule anticipate_align_1 {
+    pattern { X1[AlignBegin, AlignEnd]; X2[AlignBegin, AlignEnd]; X1 < X2; X1 -[type=m]-> X2 }
+    without { X1.AlignEnd = X2.AlignEnd }
+    commands { X1.AlignEnd = X2.AlignEnd }
+  }
+  rule anticipate_align_2 {
+    pattern { X1[AlignBegin, AlignEnd]; X2[AlignBegin, AlignEnd]; X1 < X2; X2 -[type=m]-> X1 }
+    without { X2.AlignBegin = X1.AlignBegin }
+    commands { X2.AlignBegin = X1.AlignBegin }
+  }
+
+
+  rule hyphen1 {
+    pattern { X1[form=re".+-"]; X2[]; X1 < X2; X1 -[type=m]-> X2 }
+    commands { X1.form = X1.form[:-1]; X1.wordform = X1.wordform[:-1] }
+  }
+  rule hyphen2 {
+    pattern { X1[form=re".+-"]; X2[]; X1 < X2; X2 -[type=m]-> X1 }
+    commands { X1.form = X1.form[:-1]; X1.wordform = X1.wordform[:-1] }
+  }
+  rule hyphen3 {
+    pattern { X1[]; X2[form=re"-.+"]; X1 < X2; X1 -[type=m]-> X2 }
+    commands { X2.form = X2.form[1:]; X2.wordform = X2.wordform[1:] }
+  }
+  rule hyphen4 {
+    pattern { X1[]; X2[form=re"-.+"]; X1 < X2; X2 -[type=m]-> X1 }
+    commands { X2.form = X2.form[1:]; X2.wordform = X2.wordform[1:] }
+  }
+
+  rule merge_X2 {
+    pattern {
+      X1[]; X2[]; X1 < X2;                              % bigram X1 X2
+      X1 -[type=m]-> X2;                                % X2 is attached with the /m extension
+    }
+    without { X2 -> * }                                 % X2 is a leaf (force application order)
+    without { X1[form=re".+-"] }
+    without { X2[form=re"-.+"] }
+    without { X1.AlignEnd <> X2.AlignEnd }
+    commands { 
+      X1.form = X1.form + X2.form;                      % concatenate the surface form
+      X1.wordform = X1.wordform + X2.wordform;          % concatenate the surface form
+      X1.lemma = X1.lemma + X2.lemma;                   % concatenate the surface lemma
+      append_feats "_" X2 =[re"Translit\|Tone"]=> X1;   % concatenate the surface Translit and Tone
+      X1.upos = X1.FinalPos; 
+      del_node X2;
+    }
+  }
+  
+  rule merge_X1 {
+    pattern {
+      X1[]; X2[]; X1 < X2;                              % bigram X1 X2
+      X2 -[type=m]-> X1;                                % X1 is attached with the /m extension
+    }
+    without { X1 -> * }                                 % X1 is a leaf (force application order)
+    without { X1[form=re".+-"] }
+    without { X2[form=re"-.+"] }
+    without { X1.AlignBegin <> X2.AlignBegin }
+    commands { 
+      X2.form = X1.form + X2.form;                      % concatenate the surface form
+      X2.wordform = X1.wordform + X2.wordform;          % concatenate the surface form
+      X2.lemma = X1.lemma + X2.lemma;                   % concatenate the surface lemma
+      prepend_feats "_" X1 =[re"Translit\|Tone"]=> X2;  % concatenate the surface Translit and Tone
+      X2.upos = X2.FinalPos; 
+      del_node X1;
+    }
+  }
+
 }
 
 package final {
