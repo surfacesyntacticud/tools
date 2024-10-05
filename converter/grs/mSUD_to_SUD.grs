@@ -39,47 +39,45 @@ package fusion {
   % WARNING: may have unexpected effect if a /m is missing (cf Pesh)
   rule up_type_m {
     pattern { 
-      N1 -[type=m]-> N2;
-      e: N2 -[!type]-> N3;
+      X1 -[type=m]-> X2;
+      e: X2 -[!type]-> X3;
     }
     commands {
-      add_edge f:N1 -> N3;
+      add_edge f:X1 -> X3;
       f.label = e.label;
       del_edge e
     }
   }
 
-  rule suff_fusion {
+  rule merge_X2 {
     pattern {
-      N[]; M[];
-      N -[type=m]-> M;                                    % M is attached with the /m extension
-      N < M                                                % M is a suffix
+      X1[]; X2[]; X1 < X2;                              % bigram X1 X2
+      X1 -[type=m]-> X2;                                % X2 is attached with the /m extension
     }
-    without { M -> * }                                     % M is a leaf (force application order)
+    without { X2 -> * }                                 % X2 is a leaf (force application order)
     commands { 
-      N.form = N.form + M.form;                            % concatenate the surface form
-      N.wordform = N.wordform + M.wordform;                % concatenate the surface form
-      N.lemma = N.lemma + M.lemma;                         % concatenate the surface lemma
-      append_feats "_" M =[re"Translit\|Tone"]=> N;        % concatenate the surface Translit and Tone
-      N.upos = N.FinalPos; 
-      del_node M;
+      X1.form = X1.form + X2.form;                      % concatenate the surface form
+      X1.wordform = X1.wordform + X2.wordform;          % concatenate the surface form
+      X1.lemma = X1.lemma + X2.lemma;                   % concatenate the surface lemma
+      append_feats "_" X2 =[re"Translit\|Tone"]=> X1;   % concatenate the surface Translit and Tone
+      X1.upos = X1.FinalPos; 
+      del_node X2;
     }
   }
   
-  rule pref_fusion {
+  rule merge_X1 {
     pattern {
-      N[]; M[];
-      N -[type=m]-> M;                                     % M is attached with the /m extension
-      M < N                                                % M is a prefix
+      X1[]; X2[]; X1 < X2;                              % bigram X1 X2
+      X2 -[type=m]-> X1;                                % X1 is attached with the /m extension
     }
-    without { M -> * }                                     % M is a leaf (force application order)
+    without { X1 -> * }                                 % X1 is a leaf (force application order)
     commands { 
-      N.form = M.form + N.form;                            % concatenate the surface form
-      N.wordform = M.wordform + N.wordform;                % concatenate the surface form
-      N.lemma = M.lemma + N.lemma;                         % concatenate the surface lemma
-      prepend_feats "_" M =[re"Translit\|Tone"]=> N;       % concatenate the surface Translit and Tone
-      del_node M;
-      N.upos = N.FinalPos; 
+      X2.form = X1.form + X2.form;                      % concatenate the surface form
+      X2.wordform = X1.wordform + X2.wordform;          % concatenate the surface form
+      X2.lemma = X1.lemma + X2.lemma;                   % concatenate the surface lemma
+      prepend_feats "_" X1 =[re"Translit\|Tone"]=> X2;  % concatenate the surface Translit and Tone
+      X2.upos = X2.FinalPos; 
+      del_node X1;
     }
   }
 
