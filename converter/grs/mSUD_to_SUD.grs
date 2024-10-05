@@ -97,7 +97,7 @@ package fusion {
 
   rule merge_X2 {
     pattern {
-      X1[]; X2[]; X1 < X2;                              % bigram X1 X2
+      X1[FinalPos]; X2[FinalPos]; X1 < X2;                              % bigram X1 X2
       X1 -[type=m]-> X2;                                % X2 is attached with the /m extension
     }
     without { X2 -> * }                                 % X2 is a leaf (force application order)
@@ -116,7 +116,7 @@ package fusion {
   
   rule merge_X1 {
     pattern {
-      X1[]; X2[]; X1 < X2;                              % bigram X1 X2
+      X1[FinalPos]; X2[FinalPos]; X1 < X2;                              % bigram X1 X2
       X2 -[type=m]-> X1;                                % X1 is attached with the /m extension
     }
     without { X1 -> * }                                 % X1 is a leaf (force application order)
