@@ -21,7 +21,7 @@ package init {
   % replace no_lemma by empty lemma for uniform rules later
   % no_lemma is restored in final package
   rule empty_lemma {
-    pattern { X [upos, !lemma]}
+    pattern { X [form<>"__0__", !lemma]}
     commands { X.lemma = "" }
   }
 }
@@ -61,19 +61,19 @@ package fusion {
   }
 
   rule pref_final_pos_r {
-    pattern { X1[form=re".+-"]; X2[]; X1 < X2; X1 -[type=m]-> X2; X1 [!FinalPos]; X2 [!FinalPos] }
+    pattern { X1[form=re".+-"]; X2[upos]; X1 < X2; X1 -[type=m]-> X2; X1 [!FinalPos]; X2 [!FinalPos] }
     commands { X2.FinalPos = X2.upos }
   }
   rule pref_final_pos_l {
-    pattern { X1[form=re".+-"]; X2[]; X1 < X2; X2 -[type=m]-> X1; X1 [!FinalPos]; X2 [!FinalPos] }
+    pattern { X1[form=re".+-"]; X2[upos]; X1 < X2; X2 -[type=m]-> X1; X1 [!FinalPos]; X2 [!FinalPos] }
     commands { X2.FinalPos = X2.upos }
   }
   rule suff_final_pos_r {
-    pattern { X1[]; X2[form=re"-.+"]; X1 < X2; X1 -[type=m]-> X2; X1 [!FinalPos]; X2 [!FinalPos] }
+    pattern { X1[upos]; X2[form=re"-.+"]; X1 < X2; X1 -[type=m]-> X2; X1 [!FinalPos]; X2 [!FinalPos] }
     commands { X1.FinalPos = X1.upos }
   }
   rule suff_final_pos_l {
-    pattern { X1[]; X2[form=re"-.+"]; X1 < X2; X2 -[type=m]-> X1; X1 [!FinalPos]; X2 [!FinalPos] }
+    pattern { X1[upos]; X2[form=re"-.+"]; X1 < X2; X2 -[type=m]-> X1; X1 [!FinalPos]; X2 [!FinalPos] }
     commands { X1.FinalPos = X1.upos }
   }
 
