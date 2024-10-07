@@ -1,0 +1,77 @@
+strat main { 
+	Seq (
+		Onf(init),
+		Onf (p),
+		Onf (final_word),
+	)
+ }
+
+package init {
+  rule pref {
+    pattern { X[form=re".+-"]; }
+    commands { X.form = X.form[:-1] }
+  }
+  rule suff {
+    pattern { X[form=re"-.+"];}
+    commands { X.form = X.form[1:] }
+  }
+
+  % replace no_lemma by empty lemma for uniform rules later
+  % no_lemma is restored in final package
+  rule empty_lemma {
+    pattern { X [form<>"__0__", !lemma]}
+    commands { X.lemma = "" }
+  }
+
+}
+
+package p {
+	rule fwd {
+		pattern { X1[nWord]; X2[nWord]; X1 < X2; X1.nWord = X2.nWord; X1 -> X2 }
+		commands {
+      X1.form = X1.form + X2.form;                      % concatenate the surface form
+      X1.wordform = X1.wordform + X2.wordform;          % concatenate the surface form
+      X1.lemma = X1.lemma + X2.lemma;                   % concatenate the surface lemma
+      append_feats "_" X2 =[re"Translit\|Tone"]=> X1;   % concatenate the surface Translit and Tone
+      del_node X2;
+		}
+	}
+	rule back {
+		pattern { X1[nWord]; X2[nWord]; X1 < X2; X1.nWord = X2.nWord; X2 -> X1 }
+		commands {
+      X2.form = X1.form + X2.form;                      % concatenate the surface form
+      X2.wordform = X1.wordform + X2.wordform;          % concatenate the surface form
+      X2.lemma = X1.lemma + X2.lemma;                   % concatenate the surface lemma
+      prepend_feats "_" X1 =[re"Translit\|Tone"]=> X2;  % concatenate the surface Translit and Tone
+      del_node X1;
+		}
+	}
+	rule fwd_nohead {
+		pattern { X1[nWord]; X2[nWord]; X1 < X2; X1.nWord = X2.nWord; }
+		without { * -> X2}
+		commands {
+      X1.form = X1.form + X2.form;                      % concatenate the surface form
+      X1.wordform = X1.wordform + X2.wordform;          % concatenate the surface form
+      X1.lemma = X1.lemma + X2.lemma;                   % concatenate the surface lemma
+      append_feats "_" X2 =[re"Translit\|Tone"]=> X1;   % concatenate the surface Translit and Tone
+      del_node X2;
+		}
+
+	}
+	rule back_nohead {
+		pattern { X1[nWord]; X2[nWord]; X1 < X2; X1.nWord = X2.nWord; }
+		without { * -> X1}
+		commands {
+      X2.form = X1.form + X2.form;                      % concatenate the surface form
+      X2.wordform = X1.wordform + X2.wordform;          % concatenate the surface form
+      X2.lemma = X1.lemma + X2.lemma;                   % concatenate the surface lemma
+      prepend_feats "_" X1 =[re"Translit\|Tone"]=> X2;  % concatenate the surface Translit and Tone
+      del_node X1;
+		}
+	}
+}
+
+rule final_word {
+	pattern { X [Word] }
+	commands { X.form = X.Word; del_feat X.Word }
+}
