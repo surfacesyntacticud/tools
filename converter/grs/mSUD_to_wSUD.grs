@@ -1,6 +1,7 @@
 strat main { 
 	Seq (
 		Onf(init),
+    Onf (DerAff),
 		Onf (p),
 		Onf (final_word),
 	)
@@ -22,7 +23,13 @@ package init {
     pattern { X [form<>"__0__", !lemma]}
     commands { X.lemma = "" }
   }
+}
 
+package DerAff {
+  rule Root_DerAff {
+    pattern { X2 [TokenType=DerAff, DerPos]; X1 < X2; X2 -> X1 }
+    commands { X2.upos = X2.DerPos; del_feat X2.DerPos }
+  } 
 }
 
 package p {
@@ -33,9 +40,11 @@ package p {
       X1.wordform = X1.wordform + X2.wordform;          % concatenate the surface form
       X1.lemma = X1.lemma + X2.lemma;                   % concatenate the surface lemma
       append_feats "_" X2 =[re"Translit\|Tone"]=> X1;   % concatenate the surface Translit and Tone
+      shift X2 ==> X1;
       del_node X2;
 		}
 	}
+
 	rule back {
 		pattern { X1[nWord]; X2[nWord]; X1 < X2; X1.nWord = X2.nWord; X2 -> X1 }
 		commands {
@@ -43,9 +52,11 @@ package p {
       X2.wordform = X1.wordform + X2.wordform;          % concatenate the surface form
       X2.lemma = X1.lemma + X2.lemma;                   % concatenate the surface lemma
       prepend_feats "_" X1 =[re"Translit\|Tone"]=> X2;  % concatenate the surface Translit and Tone
+      shift X1 ==> X2;
       del_node X1;
 		}
 	}
+
 	rule fwd_nohead {
 		pattern { X1[nWord]; X2[nWord]; X1 < X2; X1.nWord = X2.nWord; }
 		without { * -> X2}
@@ -54,10 +65,11 @@ package p {
       X1.wordform = X1.wordform + X2.wordform;          % concatenate the surface form
       X1.lemma = X1.lemma + X2.lemma;                   % concatenate the surface lemma
       append_feats "_" X2 =[re"Translit\|Tone"]=> X1;   % concatenate the surface Translit and Tone
+      shift X2 ==> X1;
       del_node X2;
 		}
-
 	}
+
 	rule back_nohead {
 		pattern { X1[nWord]; X2[nWord]; X1 < X2; X1.nWord = X2.nWord; }
 		without { * -> X1}
@@ -66,6 +78,7 @@ package p {
       X2.wordform = X1.wordform + X2.wordform;          % concatenate the surface form
       X2.lemma = X1.lemma + X2.lemma;                   % concatenate the surface lemma
       prepend_feats "_" X1 =[re"Translit\|Tone"]=> X2;  % concatenate the surface Translit and Tone
+      shift X1 ==> X2;
       del_node X1;
 		}
 	}
