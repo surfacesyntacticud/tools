@@ -6,12 +6,12 @@
       "level": "error"
     },
     {
-      "request": "pattern { ROOT[!upos]; ROOT -[1=root]-> N1; ROOT -[1=root]-> N2; N1 << N2 }",
+      "request": "pattern { ROOT[form=\"__0__\"]; ROOT -[1=root]-> N1; ROOT -[1=root]-> N2; N1 << N2 }",
       "description": "More than one node used as root",
       "level": "error"
     },
     {
-      "request": "pattern { ROOT[!upos] } without { ROOT -[1=root]-> N }",
+      "request": "pattern { ROOT[form=\"__0__\"] } without { ROOT -[1=root]-> N }",
       "description": "The ROOT node is not linked with a root relation",
       "level": "error"
     },
