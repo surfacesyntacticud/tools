@@ -68,8 +68,13 @@ package bej_post {
 
 package bej_valid {
   rule VerbClass {
-    pattern { N [upos=NOUN, VerbClass] }
+    pattern { N [upos<>VERB|AUX, VerbClass] }
     commands { del_feat N.VerbClass }
+  }
+
+  rule VerbType {
+    pattern { N [upos<>VERB|AUX, VerbType] }
+    commands { del_feat N.VerbType }
   }
 
   rule Voice {
@@ -85,5 +90,10 @@ package bej_valid {
   rule remove_lemma {
     pattern { N [lemma] }
     commands { del_feat N.lemma }
+  }
+
+  rule obl_poss {
+    pattern { e:X -[obl:poss]-> Y }
+    commands { e.label="nmod:poss" }
   }
 }
