@@ -6,7 +6,8 @@ strat bej_mSUD_to_SUD_main {
     Onf (remove_bracket),
     Onf (morph2word),
     Onf (clitic_included),
-    Onf (fix_features)
+    Onf (fix_features),
+    Onf (fix_rel),
     )
   }
 
@@ -378,7 +379,12 @@ FemMasc	Masc
 concat	fix
 %-----------------------------
 PlurPlur	Plur
+SingSing	Sing
 #END
 
 }
 
+rule fix_rel {
+  pattern { e:X -[comp:aux]-> Y; X [upos<>AUX] }
+  commands { e.label = comp }
+}
