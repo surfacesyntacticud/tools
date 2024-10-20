@@ -369,6 +369,7 @@ concat	fix
 %-----------------------------
 MascMasc	Masc
 FemMasc	Masc
+FemFem	Fem
 #END
 
   rule number {
@@ -382,6 +383,10 @@ PlurPlur	Plur
 SingSing	Sing
 #END
 
+  rule NOUN_VerbForm {
+    pattern { X [upos=NOUN, VerbForm] }
+    commands { del_feat X.VerbForm }
+  }
 }
 
 rule fix_rel {
