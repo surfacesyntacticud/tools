@@ -96,4 +96,9 @@ package bej_valid {
     pattern { e:X -[obl:poss]-> Y }
     commands { e.label="nmod:poss" }
   }
+
+  rule ArabicVerbClass {
+    pattern { N [Lang=ar, VerbClass] }
+    commands { del_feat N.VerbClass }
+  }
 }
