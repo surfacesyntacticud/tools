@@ -1,13 +1,13 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 strat mSUD_to_SUD_main { 
   Seq (
-    Onf (init),
+    Onf (mSUD_to_SUD_init),
     Onf (fusion),
-    Onf (final),
+    Onf (mSUD_to_SUD_final),
   )
 }
 
-package init {
+package mSUD_to_SUD_init {
   % Two next rules unify potential DerPos and CpdPos into one unique name "FinalPos" for uniform rule later
   rule DerPos {
     pattern { X [DerPos] }
@@ -163,7 +163,7 @@ package fusion {
       X1.wordform = X1.wordform + X2.wordform;          % concatenate the surface form
       X1.lemma = X1.lemma + X2.lemma;                   % concatenate the surface lemma
       append_feats "_" X2 =[re"Translit\|Tone"]=> X1;   % concatenate the surface Translit and Tone
-      X2.upos = X2.FinalPos; 
+      X1.upos = X2.FinalPos; 
       del_node X2;
     }
   }
@@ -182,7 +182,7 @@ package fusion {
       X2.wordform = X1.wordform + X2.wordform;          % concatenate the surface form
       X2.lemma = X1.lemma + X2.lemma;                   % concatenate the surface lemma
       prepend_feats "_" X1 =[re"Translit\|Tone"]=> X2;  % concatenate the surface Translit and Tone
-      X1.upos = X1.FinalPos; 
+      X2.upos = X1.FinalPos; 
       del_node X1;
     }
   }
@@ -207,7 +207,7 @@ package fusion {
 
 }
 
-package final {
+package mSUD_to_SUD_final {
   rule clean_final_pos {
     pattern { X [FinalPos] }
     commands { del_feat X.FinalPos }
