@@ -1,0 +1,270 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+strat pay_mSUD_to_SUD_main { 
+  Seq (
+    Onf (mSUD_to_SUD_init),
+    Onf (fusion),
+    Onf (mSUD_to_SUD_final),
+  )
+}
+
+package mSUD_to_SUD_init {
+  % replace no_lemma by empty lemma for uniform rules later
+  % no_lemma is restored in final package
+  rule empty_lemma {
+    pattern { X [form<>"__0__", !lemma]}
+    commands { X.lemma = "" }
+  }
+}
+
+package fusion {
+  rule merge_X2_suff_InflAff {
+    pattern {
+      X1 < X2;
+      X1 -> X2;
+      X2[form=re"-.+"];
+      X2[TokenType=InflAff];
+    }
+    commands { 
+      shift X2 ==> X1;
+      X1.form = X1.form + X2.form[1:];
+      X1.wordform = X1.wordform + X2.wordform;
+      X1.lemma = X1.lemma + X2.lemma;
+      append_feats "_" X2 =[re"Translit\|Tone"]=> X1;
+      append_feats X2 =[re"Gloss\|Rx"]=> X1;
+      X1.AlignEnd = X2.AlignEnd;
+      del_node X2;
+    }
+  }
+  rule merge_X2_suff_Root {
+    pattern {
+      X1 < X2;
+      X1 -> X2;
+      X2[form=re"-.+"];
+      X2[TokenType=Root];
+    }
+    commands { 
+      shift X2 ==> X1;
+      X1.form = X1.form + X2.form[1:];
+      X1.wordform = X1.wordform + X2.wordform;
+      X1.lemma = X1.lemma + X2.lemma;
+      append_feats "_" X2 =[re"Translit\|Tone"]=> X1;
+      append_feats X2 =[re"Gloss\|Rx"]=> X1;
+      X1.upos = X2.upos;
+      X1.AlignEnd = X2.AlignEnd;
+      del_node X2;
+    }
+  }
+  rule merge_X2_suff_DerAff {
+    pattern {
+      X1 < X2;
+      X1 -> X2;
+      X2[form=re"-.+"];
+      X2[TokenType=DerAff, DerPos];
+    }
+    commands { 
+      shift X2 ==> X1;
+      X1.form = X1.form + X2.form[1:];
+      X1.wordform = X1.wordform + X2.wordform;
+      X1.lemma = X1.lemma + X2.lemma;
+      append_feats "_" X2 =[re"Translit\|Tone"]=> X1;
+      append_feats X2 =[re"Gloss\|Rx"]=> X1;
+      X1.upos = X2.DerPos;
+      X1.AlignEnd = X2.AlignEnd;
+      del_node X2;
+    }
+  }
+
+
+
+
+
+
+
+  rule merge_X1_suff_InflAff {
+    pattern {
+      X1 < X2;
+      X2 -> X1;
+      X2[form=re"-.+"];
+      X1[TokenType = InflAff];
+    }
+    commands { 
+      shift X1 ==> X2;
+      X2.form = X1.form + X2.form[1:];
+      X2.wordform = X1.wordform + X2.wordform;
+      X2.lemma = X1.lemma + X2.lemma;
+      prepend_feats "_" X1 =[re"Translit\|Tone"]=> X2;
+      prepend_feats X1 =[re"Gloss\|Rx"]=> X2;
+      X2.AlignBegin = X1.AlignBegin;
+      del_node X1;
+    }
+  }
+  rule merge_X1_suff_Root {
+    pattern {
+      X1 < X2;
+      X2 -> X1;
+      X2[form=re"-.+"];
+      X1[TokenType = Root];
+    }
+    commands { 
+      shift X1 ==> X2;
+      X2.form = X1.form + X2.form[1:];
+      X2.wordform = X1.wordform + X2.wordform;
+      X2.lemma = X1.lemma + X2.lemma;
+      prepend_feats "_" X1 =[re"Translit\|Tone"]=> X2;
+      prepend_feats X1 =[re"Gloss\|Rx"]=> X2;
+      X2.upos = X1.upos;
+      X2.AlignBegin = X1.AlignBegin;
+      del_node X1;
+    }
+  }
+  rule merge_X1_suff_DerAff {
+    pattern {
+      X1 < X2;
+      X2 -> X1;
+      X2[form=re"-.+"];
+      X1[TokenType = DerAff, DerPos];
+    }
+    commands { 
+      shift X1 ==> X2;
+      X2.form = X1.form + X2.form[1:];
+      X2.wordform = X1.wordform + X2.wordform;
+      X2.lemma = X1.lemma + X2.lemma;
+      prepend_feats "_" X1 =[re"Translit\|Tone"]=> X2;
+      prepend_feats X1 =[re"Gloss\|Rx"]=> X2;
+      X2.upos = X1.DerPos;
+      X2.AlignBegin = X1.AlignBegin;
+      del_node X1;
+    }
+  }
+
+  rule merge_X2_pref_InflAff {
+    pattern {
+      X1 < X2;
+      X1 -> X2;
+      X1[form=re".+-"];
+      X2[TokenType=InflAff]
+    }
+    commands { 
+      shift X2 ==> X1;
+
+      X1.form = X1.form[:-1] + X2.form;
+      X1.wordform = X1.wordform + X2.wordform;
+      X1.lemma = X1.lemma + X2.lemma;
+      append_feats "_" X2 =[re"Translit\|Tone"]=> X1;
+      append_feats X2 =[re"Gloss\|Rx"]=> X1;
+      X1.AlignEnd = X2.AlignEnd;
+      del_node X2;
+    }
+  }
+  rule merge_X2_pref_Root {
+    pattern {
+      X1 < X2;
+      X1 -> X2;
+      X1[form=re".+-"];
+      X2[TokenType=Root];
+    }
+    commands { 
+      shift X2 ==> X1;
+
+      X1.form = X1.form[:-1] + X2.form;
+      X1.wordform = X1.wordform + X2.wordform;
+      X1.lemma = X1.lemma + X2.lemma;
+      append_feats "_" X2 =[re"Translit\|Tone"]=> X1;
+      append_feats X2 =[re"Gloss\|Rx"]=> X1;
+      X1.upos = X2.upos;
+      X1.AlignEnd = X2.AlignEnd;
+      del_node X2;
+    }
+  }
+  rule merge_X2_pref_DerAff {
+    pattern {
+      X1 < X2;
+      X1 -> X2;
+      X1[form=re".+-"];
+      X2[TokenType=DerAff, DerPos]
+    }
+    commands { 
+      shift X2 ==> X1;
+
+      X1.form = X1.form[:-1] + X2.form;
+      X1.wordform = X1.wordform + X2.wordform;
+      X1.lemma = X1.lemma + X2.lemma;
+      append_feats "_" X2 =[re"Translit\|Tone"]=> X1;
+      append_feats X2 =[re"Gloss\|Rx"]=> X1;
+      X1.upos = X2.DerPos;
+      X1.AlignEnd = X2.AlignEnd;
+      del_node X2;
+    }
+  }
+
+
+
+
+
+  rule merge_X1_pref_InflAff {
+    pattern {
+      X1 < X2;
+      X2 -> X1;
+      X1[form=re".+-"];
+      X1[TokenType=InflAff]
+    }
+    commands { 
+      shift X1 ==> X2;
+      X2.form = X1.form[:-1] + X2.form;
+      X2.wordform = X1.wordform + X2.wordform;
+      X2.lemma = X1.lemma + X2.lemma;
+      prepend_feats "_" X1 =[re"Translit\|Tone"]=> X2;
+      prepend_feats X1 =[re"Gloss\|Rx"]=> X2;
+      X2.AlignBegin = X1.AlignBegin;
+      del_node X1;
+    }
+  }
+  rule merge_X1_pref_Root {
+    pattern {
+      X1 < X2;
+      X2 -> X1;
+      X1[form=re".+-"];
+      X1[TokenType=Root]
+    }
+    commands { 
+      shift X1 ==> X2;
+      X2.form = X1.form[:-1] + X2.form;
+      X2.wordform = X1.wordform + X2.wordform;
+      X2.lemma = X1.lemma + X2.lemma;
+      prepend_feats "_" X1 =[re"Translit\|Tone"]=> X2;
+      prepend_feats X1 =[re"Gloss\|Rx"]=> X2;
+      X2.upos = X1.upos;
+      X2.AlignBegin = X1.AlignBegin;
+      del_node X1;
+    }
+  }
+  rule merge_X1_pref_DerAff {
+    pattern {
+      X1 < X2;
+      X2 -> X1;
+      X1[form=re".+-"];
+      X1[TokenType=DerAff, DerPos]
+    }
+    commands { 
+      shift X1 ==> X2;
+      X2.form = X1.form[:-1] + X2.form;
+      X2.wordform = X1.wordform + X2.wordform;
+      X2.lemma = X1.lemma + X2.lemma;
+      prepend_feats "_" X1 =[re"Translit\|Tone"]=> X2;
+      prepend_feats X1 =[re"Gloss\|Rx"]=> X2;
+      X2.upos = X1.DerPos;
+      X2.AlignBegin = X1.AlignBegin;
+      del_node X1;
+    }
+  }
+}
+
+
+package mSUD_to_SUD_final {
+  % restore no_lemma
+  rule empty_lemma {
+    pattern { X [lemma= ""]}
+    commands { del_feat X.lemma }
+  }
+}
+
