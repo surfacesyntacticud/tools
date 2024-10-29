@@ -2,6 +2,7 @@
 strat pay_mSUD_to_SUD_main { 
   Seq (
     Onf (mSUD_to_SUD_init),
+    Onf (zero),
     Onf (fusion),
     Onf (mSUD_to_SUD_final),
   )
@@ -14,23 +15,48 @@ package mSUD_to_SUD_init {
     pattern { X [form<>"__0__", !lemma]}
     commands { X.lemma = "" }
   }
+
+  rule init_mseg {
+    pattern { X[form <> "__0__", !MSeg ] }
+    commands { X.MSeg = X.form }
+  }
+  rule init_mgloss {
+    pattern { X[Gloss, !MGloss ] }
+    commands { X.MGloss = X.Gloss }
+  }
 }
+
+
+rule zero {
+  pattern { X[form = lex.search ] }
+  commands { X.form = lex.replace }
+}
+#BEGIN lex
+search	replace
+%--------------
+Ø-	-
+-Ø	-
+-Øwa	-wa
+#END
 
 package fusion {
   rule merge_X2_suff_InflAff {
     pattern {
       X1 < X2;
       X1 -> X2;
-      X2[form=re"-.+"];
+      X2[form=re"-.*"];
       X2[TokenType=InflAff];
     }
     commands { 
       shift X2 ==> X1;
       X1.form = X1.form + X2.form[1:];
       X1.wordform = X1.wordform + X2.wordform;
+      X1.MSeg = X1.MSeg + X2.MSeg;
       X1.lemma = X1.lemma + X2.lemma;
       append_feats "_" X2 =[re"Translit\|Tone"]=> X1;
-      append_feats X2 =[re"Gloss\|Rx"]=> X1;
+      append_feats X2 =[re"Rx"]=> X1;
+      append_feats " " X2 =[re"MGloss"]=> X1;
+      append_feats X2 =[re"AdvType\|Animacy\|Case\|Clusivity\|Person\|PronType\|VerbForm\|Voice"]=> X1;
       X1.AlignEnd = X2.AlignEnd;
       del_node X2;
     }
@@ -39,37 +65,44 @@ package fusion {
     pattern {
       X1 < X2;
       X1 -> X2;
-      X2[form=re"-.+"];
-      X2[TokenType=Root];
+      X2[form=re"-.*"];
+      X2[TokenType=Root|Clit];
     }
     commands { 
       shift X2 ==> X1;
       X1.form = X1.form + X2.form[1:];
       X1.wordform = X1.wordform + X2.wordform;
+      X1.MSeg = X1.MSeg + X2.MSeg;
       X1.lemma = X1.lemma + X2.lemma;
       append_feats "_" X2 =[re"Translit\|Tone"]=> X1;
-      append_feats X2 =[re"Gloss\|Rx"]=> X1;
-      X1.upos = X2.upos;
+      append_feats X2 =[re"Rx"]=> X1;
+      append_feats " " X2 =[re"MGloss"]=> X1;
+      append_feats X2 =[re"AdvType\|Animacy\|Case\|Clusivity\|Person\|PronType\|VerbForm\|Voice"]=> X1;
+      X1.upos = X2.upos; X1.Gloss=X2.Gloss;
       X1.TokenType=Root;
       X1.AlignEnd = X2.AlignEnd;
       del_node X2;
     }
   }
+
   rule merge_X2_suff_DerAff {
     pattern {
       X1 < X2;
       X1 -> X2;
-      X2[form=re"-.+"];
+      X2[form=re"-.*"];
       X2[TokenType=DerAff, DerPos];
     }
     commands { 
       shift X2 ==> X1;
       X1.form = X1.form + X2.form[1:];
       X1.wordform = X1.wordform + X2.wordform;
+      X1.MSeg = X1.MSeg + X2.MSeg;
       X1.lemma = X1.lemma + X2.lemma;
       append_feats "_" X2 =[re"Translit\|Tone"]=> X1;
-      append_feats X2 =[re"Gloss\|Rx"]=> X1;
-      X1.upos = X2.DerPos;
+      append_feats X2 =[re"Rx"]=> X1;
+      append_feats " " X2 =[re"MGloss"]=> X1;
+      append_feats X2 =[re"AdvType\|Animacy\|Case\|Clusivity\|Person\|PronType\|VerbForm\|Voice"]=> X1;
+      X1.upos = X2.DerPos;  X1.Gloss=X2.Gloss;
       X1.AlignEnd = X2.AlignEnd;
       del_node X2;
     }
@@ -85,16 +118,19 @@ package fusion {
     pattern {
       X1 < X2;
       X2 -> X1;
-      X2[form=re"-.+"];
+      X2[form=re"-.*"];
       X1[TokenType = InflAff];
     }
     commands { 
       shift X1 ==> X2;
       X2.form = X1.form + X2.form[1:];
       X2.wordform = X1.wordform + X2.wordform;
+      X2.MSeg = X1.MSeg + X2.MSeg;
       X2.lemma = X1.lemma + X2.lemma;
       prepend_feats "_" X1 =[re"Translit\|Tone"]=> X2;
-      prepend_feats X1 =[re"Gloss\|Rx"]=> X2;
+      prepend_feats X1 =[re"Rx"]=> X2;
+      prepend_feats " " X1 =[re"MGloss"]=> X2;
+      prepend_feats X1 =[re"AdvType\|Animacy\|Case\|Clusivity\|Person\|PronType\|VerbForm\|Voice"]=> X2;
       X2.AlignBegin = X1.AlignBegin;
       del_node X1;
     }
@@ -103,17 +139,20 @@ package fusion {
     pattern {
       X1 < X2;
       X2 -> X1;
-      X2[form=re"-.+"];
-      X1[TokenType = Root];
+      X2[form=re"-.*"];
+      X1[TokenType = Root|Clit];
     }
     commands { 
       shift X1 ==> X2;
       X2.form = X1.form + X2.form[1:];
       X2.wordform = X1.wordform + X2.wordform;
+      X2.MSeg = X1.MSeg + X2.MSeg;
       X2.lemma = X1.lemma + X2.lemma;
       prepend_feats "_" X1 =[re"Translit\|Tone"]=> X2;
-      prepend_feats X1 =[re"Gloss\|Rx"]=> X2;
-      X2.upos = X1.upos;
+      prepend_feats X1 =[re"Rx"]=> X2;
+      prepend_feats " " X1 =[re"MGloss"]=> X2;
+      prepend_feats X1 =[re"AdvType\|Animacy\|Case\|Clusivity\|Person\|PronType\|VerbForm\|Voice"]=> X2;
+      X2.upos = X1.upos; X2.Gloss = X1.Gloss;
       X2.TokenType=Root;
       X2.AlignBegin = X1.AlignBegin;
       del_node X1;
@@ -123,17 +162,20 @@ package fusion {
     pattern {
       X1 < X2;
       X2 -> X1;
-      X2[form=re"-.+"];
+      X2[form=re"-.*"];
       X1[TokenType = DerAff, DerPos];
     }
     commands { 
       shift X1 ==> X2;
       X2.form = X1.form + X2.form[1:];
       X2.wordform = X1.wordform + X2.wordform;
+      X2.MSeg = X1.MSeg + X2.MSeg;
       X2.lemma = X1.lemma + X2.lemma;
       prepend_feats "_" X1 =[re"Translit\|Tone"]=> X2;
-      prepend_feats X1 =[re"Gloss\|Rx"]=> X2;
-      X2.upos = X1.DerPos;
+      prepend_feats X1 =[re"Rx"]=> X2;
+      prepend_feats " " X1 =[re"MGloss"]=> X2;
+      prepend_feats X1 =[re"AdvType\|Animacy\|Case\|Clusivity\|Person\|PronType\|VerbForm\|Voice"]=> X2;
+      X2.upos = X1.DerPos; X2.Gloss = X1.Gloss;
       X2.AlignBegin = X1.AlignBegin;
       del_node X1;
     }
@@ -143,7 +185,7 @@ package fusion {
     pattern {
       X1 < X2;
       X1 -> X2;
-      X1[form=re".+-"];
+      X1[form=re".*-"];
       X2[TokenType=InflAff]
     }
     commands { 
@@ -151,9 +193,12 @@ package fusion {
 
       X1.form = X1.form[:-1] + X2.form;
       X1.wordform = X1.wordform + X2.wordform;
+      X1.MSeg = X1.MSeg + X2.MSeg;
       X1.lemma = X1.lemma + X2.lemma;
       append_feats "_" X2 =[re"Translit\|Tone"]=> X1;
-      append_feats X2 =[re"Gloss\|Rx"]=> X1;
+      append_feats X2 =[re"Rx"]=> X1;
+      append_feats " " X2 =[re"MGloss"]=> X1;
+      append_feats X2 =[re"AdvType\|Animacy\|Case\|Clusivity\|Person\|PronType\|VerbForm\|Voice"]=> X1;
       X1.AlignEnd = X2.AlignEnd;
       del_node X2;
     }
@@ -162,18 +207,21 @@ package fusion {
     pattern {
       X1 < X2;
       X1 -> X2;
-      X1[form=re".+-"];
-      X2[TokenType=Root];
+      X1[form=re".*-"];
+      X2[TokenType=Root|Clit];
     }
     commands { 
       shift X2 ==> X1;
 
       X1.form = X1.form[:-1] + X2.form;
       X1.wordform = X1.wordform + X2.wordform;
+      X1.MSeg = X1.MSeg + X2.MSeg;
       X1.lemma = X1.lemma + X2.lemma;
       append_feats "_" X2 =[re"Translit\|Tone"]=> X1;
-      append_feats X2 =[re"Gloss\|Rx"]=> X1;
-      X1.upos = X2.upos;
+      append_feats X2 =[re"Rx"]=> X1;
+      append_feats " " X2 =[re"MGloss"]=> X1;
+      append_feats X2 =[re"AdvType\|Animacy\|Case\|Clusivity\|Person\|PronType\|VerbForm\|Voice"]=> X1;
+      X1.upos = X2.upos; X1.Gloss=X2.Gloss;
       X1.TokenType=Root;
       X1.AlignEnd = X2.AlignEnd;
       del_node X2;
@@ -183,7 +231,7 @@ package fusion {
     pattern {
       X1 < X2;
       X1 -> X2;
-      X1[form=re".+-"];
+      X1[form=re".*-"];
       X2[TokenType=DerAff, DerPos]
     }
     commands { 
@@ -191,10 +239,13 @@ package fusion {
 
       X1.form = X1.form[:-1] + X2.form;
       X1.wordform = X1.wordform + X2.wordform;
+      X1.MSeg = X1.MSeg + X2.MSeg;
       X1.lemma = X1.lemma + X2.lemma;
       append_feats "_" X2 =[re"Translit\|Tone"]=> X1;
-      append_feats X2 =[re"Gloss\|Rx"]=> X1;
-      X1.upos = X2.DerPos;
+      append_feats X2 =[re"Rx"]=> X1;
+      append_feats " " X2 =[re"MGloss"]=> X1;
+      append_feats X2 =[re"AdvType\|Animacy\|Case\|Clusivity\|Person\|PronType\|VerbForm\|Voice"]=> X1;
+      X1.upos = X2.DerPos;  X1.Gloss=X2.Gloss;
       X1.AlignEnd = X2.AlignEnd;
       del_node X2;
     }
@@ -208,16 +259,19 @@ package fusion {
     pattern {
       X1 < X2;
       X2 -> X1;
-      X1[form=re".+-"];
+      X1[form=re".*-"];
       X1[TokenType=InflAff]
     }
     commands { 
       shift X1 ==> X2;
       X2.form = X1.form[:-1] + X2.form;
       X2.wordform = X1.wordform + X2.wordform;
+      X2.MSeg = X1.MSeg + X2.MSeg;
       X2.lemma = X1.lemma + X2.lemma;
       prepend_feats "_" X1 =[re"Translit\|Tone"]=> X2;
-      prepend_feats X1 =[re"Gloss\|Rx"]=> X2;
+      prepend_feats X1 =[re"Rx"]=> X2;
+      prepend_feats " " X1 =[re"MGloss"]=> X2;
+      prepend_feats X1 =[re"AdvType\|Animacy\|Case\|Clusivity\|Person\|PronType\|VerbForm\|Voice"]=> X2;
       X2.AlignBegin = X1.AlignBegin;
       del_node X1;
     }
@@ -226,17 +280,20 @@ package fusion {
     pattern {
       X1 < X2;
       X2 -> X1;
-      X1[form=re".+-"];
-      X1[TokenType=Root]
+      X1[form=re".*-"];
+      X1[TokenType=Root|Clit]
     }
     commands { 
       shift X1 ==> X2;
       X2.form = X1.form[:-1] + X2.form;
       X2.wordform = X1.wordform + X2.wordform;
+      X2.MSeg = X1.MSeg + X2.MSeg;
       X2.lemma = X1.lemma + X2.lemma;
       prepend_feats "_" X1 =[re"Translit\|Tone"]=> X2;
-      prepend_feats X1 =[re"Gloss\|Rx"]=> X2;
-      X2.upos = X1.upos;
+      prepend_feats X1 =[re"Rx"]=> X2;
+      prepend_feats " " X1 =[re"MGloss"]=> X2;
+      prepend_feats X1 =[re"AdvType\|Animacy\|Case\|Clusivity\|Person\|PronType\|VerbForm\|Voice"]=> X2;
+      X2.upos = X1.upos;  X2.Gloss = X1.Gloss;
       X2.TokenType=Root;
       X2.AlignBegin = X1.AlignBegin;
       del_node X1;
@@ -246,17 +303,20 @@ package fusion {
     pattern {
       X1 < X2;
       X2 -> X1;
-      X1[form=re".+-"];
+      X1[form=re".*-"];
       X1[TokenType=DerAff, DerPos]
     }
     commands { 
       shift X1 ==> X2;
       X2.form = X1.form[:-1] + X2.form;
       X2.wordform = X1.wordform + X2.wordform;
+      X2.MSeg = X1.MSeg + X2.MSeg;
       X2.lemma = X1.lemma + X2.lemma;
       prepend_feats "_" X1 =[re"Translit\|Tone"]=> X2;
-      prepend_feats X1 =[re"Gloss\|Rx"]=> X2;
-      X2.upos = X1.DerPos;
+      prepend_feats X1 =[re"Rx"]=> X2;
+      prepend_feats " " X1 =[re"MGloss"]=> X2;
+      prepend_feats X1 =[re"AdvType\|Animacy\|Case\|Clusivity\|Person\|PronType\|VerbForm\|Voice"]=> X2;
+      X2.upos = X1.DerPos;  X2.Gloss = X1.Gloss;
       X2.AlignBegin = X1.AlignBegin;
       del_node X1;
     }
