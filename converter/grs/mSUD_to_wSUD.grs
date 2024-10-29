@@ -46,7 +46,7 @@ package p {
       append_feats "_" X2 =[re"Translit\|Tone"]=> X1;   % concatenate the surface Translit and Tone
       append_feats X2 =[re"Gloss\|Rx"]=> X1;
       shift X2 ==> X1;
-      X1.upos = X2.upos;
+      X1.upos = X2.upos; X1.TokenType=Root;
       del_node X2;
     }
   }
@@ -94,7 +94,7 @@ package p {
       prepend_feats "_" X1 =[re"Translit\|Tone"]=> X2;  % concatenate the surface Translit and Tone
       prepend_feats X1 =[re"Gloss\|Rx"]=> X2;
       shift X1 ==> X2;
-      X2.upos = X1.upos;
+      X2.upos = X1.upos; X2.TokenType=Root;
       del_node X1;
     }
   }
