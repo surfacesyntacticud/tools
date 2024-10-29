@@ -582,6 +582,12 @@ package sub_relations {
     commands {e.1=obj}
   }
 
+   rule obj_nom_deep{
+    pattern { e:H -[1=comp, 2=obj, deep<>agent]-> D; D[nom=y]}
+    without{ D -[1=mark]-> *}
+    commands {e.1=obj; e.2=e.deep; del_feat e.deep}
+  }
+
    rule obj_pred{
     pattern { e:H -[1=comp, 2=obj]-> D; D[cat=ADJ|ADV|INTJ,!nom]}
     without{ D -[1=mark]-> *}

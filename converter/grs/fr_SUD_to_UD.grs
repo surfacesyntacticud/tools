@@ -22,6 +22,17 @@ grâce	à
 suite	à
 histoire	de
 #END
+
+  % New validation rule in 2024: a det should not have a dep
+  % SUD annotation of tel point que / telle façon que are invalid
+  % Changed before conversion
+  rule no_child_on_det {
+    pattern { N -[det]-> X; X [upos=DET]; e: X -[comp:obj]-> CL }
+    commands {
+      del_edge e;
+      add_edge N -[comp:obj]-> CL;
+    }
+  }
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

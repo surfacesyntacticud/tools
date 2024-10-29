@@ -181,7 +181,7 @@ package morph2word {
       ROOT.wordform = IA.wordform[:-1] + ROOT.wordform;
       ROOT.MGloss = IA.MGloss + ROOT.MGloss;
       ROOT.MSeg = IA.MSeg + ROOT.MSeg;
-      prepend_feats IA =[re"RX\|GE\|Number\|Gender"]=> ROOT;
+      prepend_feats IA =[re"RX\|Number\|Gender"]=> ROOT;
       ROOT.AlignBegin = IA.AlignBegin;
       del_node IA;
     }
@@ -200,7 +200,7 @@ package morph2word {
       ROOT.wordform = IA.wordform[:-1] + ROOT.wordform;
       ROOT.MGloss = IA.MGloss + ROOT.MGloss;
       ROOT.MSeg = IA.MSeg + ROOT.MSeg;
-      prepend_feats IA =[re"RX\|GE\|Number\|Gender"]=> ROOT;
+      prepend_feats IA =[re"RX\|Number\|Gender"]=> ROOT;
       ROOT.AlignBegin = IA.AlignBegin;
       del_node IA;
     }
@@ -218,7 +218,7 @@ package morph2word {
       ROOT.wordform = ROOT.wordform + IA.wordform[1:];
       ROOT.MGloss = ROOT.MGloss + IA.MGloss;
       ROOT.MSeg = ROOT.MSeg + IA.MSeg;
-      append_feats IA =[re"RX\|GE\|Number\|Gender"]=> ROOT;
+      append_feats IA =[re"RX\|Number\|Gender"]=> ROOT;
       ROOT.AlignEnd = IA.AlignEnd;
       del_node IA;
     }
@@ -237,7 +237,7 @@ package morph2word {
       ROOT.wordform = ROOT.wordform + IA.wordform[1:];
       ROOT.MGloss = ROOT.MGloss + IA.MGloss;
       ROOT.MSeg = ROOT.MSeg + IA.MSeg;
-      append_feats IA =[re"RX\|GE\|Number\|Gender"]=> ROOT;
+      append_feats IA =[re"RX\|Number\|Gender"]=> ROOT;
       ROOT.AlignEnd = IA.AlignEnd;
       del_node IA;
     }
@@ -256,7 +256,7 @@ package morph2word {
       ROOT.wordform = DA.wordform[:-1] + ROOT.wordform;
       ROOT.MGloss = DA.MGloss + ROOT.MGloss;
       ROOT.MSeg = DA.MSeg + ROOT.MSeg;
-      prepend_feats DA =[re"RX\|GE\|Number\|Gender"]=> ROOT;
+      prepend_feats DA =[re"RX\|Number\|Gender"]=> ROOT;
       ROOT.AlignBegin = DA.AlignBegin;
       ROOT.upos = DA.DerPos;
       shift_out DA ==> ROOT;
@@ -277,7 +277,7 @@ package morph2word {
       ROOT.wordform = DA.wordform[:-1] + ROOT.wordform;
       ROOT.MGloss = DA.MGloss + ROOT.MGloss;
       ROOT.MSeg = DA.MSeg + ROOT.MSeg;
-      prepend_feats DA =[re"RX\|GE\|Number\|Gender"]=> ROOT;
+      prepend_feats DA =[re"RX\|Number\|Gender"]=> ROOT;
       ROOT.AlignBegin = DA.AlignBegin;
       ROOT.upos = DA.DerPos;
       del_node DA;
@@ -296,7 +296,7 @@ package morph2word {
       ROOT.wordform = ROOT.wordform + DA.wordform[1:];
       ROOT.MGloss = ROOT.MGloss + DA.MGloss;
       ROOT.MSeg = ROOT.MSeg + DA.MSeg;
-      append_feats DA =[re"RX\|GE\|Number\|Gender"]=> ROOT;
+      append_feats DA =[re"RX\|Number\|Gender"]=> ROOT;
       ROOT.AlignEnd = DA.AlignEnd;
       ROOT.upos = DA.DerPos;
       shift_out DA ==> ROOT;
@@ -318,7 +318,7 @@ package morph2word {
       ROOT.wordform = ROOT.wordform + DA.wordform[1:];
       ROOT.MGloss = ROOT.MGloss + DA.MGloss;
       ROOT.MSeg = ROOT.MSeg + DA.MSeg;
-      append_feats DA =[re"RX\|GE\|Number\|Gender"]=> ROOT;
+      append_feats DA =[re"RX\|Number\|Gender"]=> ROOT;
       ROOT.AlignEnd = DA.AlignEnd;
       ROOT.upos = DA.DerPos;
       del_node DA;
@@ -347,7 +347,7 @@ package clitic_included {
       ROOT.wordform = ROOT.wordform + IA.wordform;
       ROOT.MGloss = ROOT.MGloss + IA.MGloss;
       ROOT.MSeg = ROOT.MSeg + IA.MSeg;
-      append_feats IA =[re"RX\|GE\|Number\|Gender"]=> ROOT;
+      append_feats IA =[re"RX\|Number\|Gender"]=> ROOT;
       ROOT.AlignEnd = IA.AlignEnd;
       del_node IA;
     }
