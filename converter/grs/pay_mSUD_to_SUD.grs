@@ -50,6 +50,7 @@ package fusion {
       append_feats "_" X2 =[re"Translit\|Tone"]=> X1;
       append_feats X2 =[re"Gloss\|Rx"]=> X1;
       X1.upos = X2.upos;
+      X1.TokenType=Root;
       X1.AlignEnd = X2.AlignEnd;
       del_node X2;
     }
@@ -113,6 +114,7 @@ package fusion {
       prepend_feats "_" X1 =[re"Translit\|Tone"]=> X2;
       prepend_feats X1 =[re"Gloss\|Rx"]=> X2;
       X2.upos = X1.upos;
+      X2.TokenType=Root;
       X2.AlignBegin = X1.AlignBegin;
       del_node X1;
     }
@@ -172,6 +174,7 @@ package fusion {
       append_feats "_" X2 =[re"Translit\|Tone"]=> X1;
       append_feats X2 =[re"Gloss\|Rx"]=> X1;
       X1.upos = X2.upos;
+      X1.TokenType=Root;
       X1.AlignEnd = X2.AlignEnd;
       del_node X2;
     }
@@ -234,6 +237,7 @@ package fusion {
       prepend_feats "_" X1 =[re"Translit\|Tone"]=> X2;
       prepend_feats X1 =[re"Gloss\|Rx"]=> X2;
       X2.upos = X1.upos;
+      X2.TokenType=Root;
       X2.AlignBegin = X1.AlignBegin;
       del_node X1;
     }
