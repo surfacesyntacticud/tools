@@ -1,9 +1,9 @@
 strat main {
   Seq (
     Onf(init),
-    Onf (DerAff),
+    %Onf (DerAff),
     Onf (p),
-    Onf (final_word),
+    % Onf (final_word),
     Onf (empty_lemma),
   )
 }
@@ -24,6 +24,16 @@ package init {
     pattern { X [form<>"__0__", !lemma]}
     commands { X.lemma = "" }
   }
+
+  rule init_mseg {
+    pattern { X[form <> "__0__", !MSeg ] }
+    commands { X.MSeg = X.form }
+  }
+  rule init_mgloss {
+    pattern { X[Gloss, !MGloss ] }
+    commands { X.MGloss = X.Gloss }
+  }
+
 }
 
 package DerAff {
@@ -131,6 +141,88 @@ package p {
     }
   }
 
+  rule pre_X1_fct {
+    pattern { 
+      X1[nWord]; X2[nWord]; X1 < X2; X1.nWord = X2.nWord;
+      X2[upos=NOUN|VERB|PROPN|ADJ|ADV|ADP|PRON|DET];
+      X1[upos=CCONJ|SCONJ|DET|AUX|X|PRON]; % if two pron --> "keep" the second one
+      e: H -> X1; f: X1 -> D;
+    }
+    commands {
+      add_edge g: H -> D; g.label = e.label;
+      del_edge f;
+    }
+  }
+
+  rule X1_fct {
+    pattern { 
+      X1[nWord]; X2[nWord]; X1 < X2; X1.nWord = X2.nWord;
+      X2[upos=NOUN|VERB|PROPN|ADJ|ADV|ADP|PRON|DET];
+      X1[upos=CCONJ|SCONJ|DET|AUX|X|PRON]; % if two pron --> "keep" the second one
+    }
+    without { X1 -> * }
+    without { X2 -> X1 }
+    commands {
+      X2.form = X1.form + X2.form;                      % concatenate the surface form
+      X2.wordform = X1.wordform + X2.wordform;          % concatenate the surface form
+      X2.lemma = X1.lemma + X2.lemma;                   % concatenate the surface lemma
+      prepend_feats "_" X1 =[re"Translit\|Tone"]=> X2;  % concatenate the surface Translit and Tone
+      prepend_feats X1 =[re"Gloss\|Rx"]=> X2;
+      del_node X1;
+    }
+  }
+
+  rule pre_X2_fct {
+    pattern { 
+      X1[nWord]; X2[nWord]; X1 < X2; X1.nWord = X2.nWord;
+      X1[upos=NOUN|VERB|PROPN|ADJ|ADV|ADP|PRON];
+      X2[upos=CCONJ|SCONJ|DET|AUX|X];
+      e: H -> X2; f: X2 -> D;
+    }
+    commands {
+      add_edge g: H -> D; g.label = e.label;
+      del_edge f;
+    }
+  }
+
+  rule X2_fct {
+    pattern { 
+      X1[nWord]; X2[nWord]; X1 < X2; X1.nWord = X2.nWord;
+      X1[upos=NOUN|VERB|PROPN|ADJ|ADV|ADP|PRON];
+      X2[upos=CCONJ|SCONJ|DET|AUX|X];
+    }
+    without { X2 -> * }
+    without { X1 -> X2 }
+    commands {
+      X1.form = X1.form + X2.form;                      % concatenate the surface form
+      X1.wordform = X1.wordform + X2.wordform;          % concatenate the surface form
+      X1.lemma = X1.lemma + X2.lemma;                   % concatenate the surface lemma
+      append_feats "_" X2 =[re"Translit\|Tone"]=> X1;   % concatenate the surface Translit and Tone
+      append_feats X2 =[re"Gloss\|Rx"]=> X1;
+      del_node X2;
+    }
+  }
+
+
+}
+
+rule final_word {
+  pattern { X [Word] }
+  commands { X.form = X.Word; del_feat X.Word }
+}
+
+% restore no_lemma
+rule empty_lemma {
+  pattern { X [lemma= ""]}
+  commands { del_feat X.lemma }
+}
+
+
+
+
+
+
+package unused {
   rule fwd_nohead {
     pattern { X1[nWord]; X2[nWord]; X1 < X2; X1.nWord = X2.nWord; }
     without { * -> X2 }
@@ -160,15 +252,4 @@ package p {
       del_node X1;
     }
   }
-}
-
-rule final_word {
-  pattern { X [Word] }
-  commands { X.form = X.Word; del_feat X.Word }
-}
-
-% restore no_lemma
-rule empty_lemma {
-  pattern { X [lemma= ""]}
-  commands { del_feat X.lemma }
 }
