@@ -10,19 +10,59 @@ strat pay_SUD_to_UD_main {
 
 package pay_post {
   rule conj {
-    pattern { e:N -[conj]-> M; }
+    pattern { e:N -[conj]-> M; M << N }
     commands { del_edge e; add_edge N -[dep:conj]-> M; }
   }
 
   rule remove_extensions {
-    pattern { e: X -[1=dislocated|nmod|parataxis|dep|conj, 2=*]-> Y }
+    pattern { e: X -[1=dislocated|nmod|parataxis|conj, 2=*]-> Y }
     commands { del_feat e.2}
   }
 
   rule remove_extensions_specific {
-    pattern { e: X -[acl:lmod|advcl:cleft|advcl:lmod|advcl:tmod|advmod:tmod|obj:appl|obj:lvc|obl:appl]-> Y }
+    pattern { e: X -[acl:lmod|advcl:cleft|advcl:lmod|advcl:tmod|advmod:tmod|obj:appl|obj:lvc|obl:appl|dep:comp]-> Y }
     commands { del_feat e.2}
   }
+
+  rule VerbForm_on_NOUN {
+    pattern { X[upos=NOUN, VerbForm] }
+    commands { del_feat X.VerbForm }
+  }
+
+  rule Voice_on_NOUN {
+    pattern { X[upos=NOUN, Voice] }
+    commands { del_feat X.Voice }
+  }
+
+  rule hide_lemma_copula {
+    pattern { X -[cop]-> Y; Y[lemma <> "r"] }
+    commands { del_feat Y.lemma }
+  }
+
+  rule multi_voice {
+    pattern { X[Voice = MidAppl|ApplMid] }
+    commands { X.Voice = Mid }
+  }
+
+
+  rule case_children {
+    pattern { X -[case]-> Y; e: Y -> Z }
+    commands {
+      add_edge f:X -> Z;
+      f.label = e.label;
+      del_edge e;
+    }
+  }
+
+  rule det_children {
+    pattern { X -[det]-> Y; e: Y -> Z }
+    commands {
+      add_edge f:X -> Z;
+      f.label = e.label;
+      del_edge e;
+    }
+  }
+
 }
 
 
