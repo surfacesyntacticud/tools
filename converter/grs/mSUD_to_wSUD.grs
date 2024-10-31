@@ -39,6 +39,14 @@ package init {
     commands { X.MGloss = X.Gloss }
   }
 
+  rule AlignBegin {
+    pattern { X1 [upos, AlignEnd]; X2 [upos, !AlignBegin]; X1 < X2 }
+    commands { X2.AlignBegin = X1.AlignEnd }
+  }
+  rule AlignEnd {
+    pattern { X1 [upos, !AlignEnd]; X2 [upos, AlignBegin]; X1 < X2 }
+    commands { X1.AlignEnd = X2.AlignBegin }
+  }
 }
 
 package p {
