@@ -1,0 +1,30 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+include "SUD_to_UD.grs"
+
+strat pay_SUD_to_UD_main {
+  Seq (
+    u_main,
+    Onf (pay_post),
+  )
+}
+
+package pay_post {
+  rule conj {
+    pattern { e:N -[conj]-> M; }
+    commands { del_edge e; add_edge N -[dep:conj]-> M; }
+  }
+
+  rule remove_extensions {
+    pattern { e: X -[1=dislocated|nmod|parataxis|dep|conj, 2=*]-> Y }
+    commands { del_feat e.2}
+  }
+
+  rule remove_extensions_specific {
+    pattern { e: X -[acl:lmod|advcl:cleft|advcl:lmod|advcl:tmod|advmod:tmod|obj:appl|obj:lvc|obl:appl]-> Y }
+    commands { del_feat e.2}
+  }
+}
+
+
+
+
