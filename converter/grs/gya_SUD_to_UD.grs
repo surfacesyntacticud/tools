@@ -1,0 +1,42 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+include "SUD_to_UD.grs"
+
+strat gya_SUD_to_UD_main {
+  Seq (
+    Onf (gya_pre),
+    u_main,
+    Onf (gya_post),
+  )
+}
+
+package gya_pre {
+  rule comp {
+    pattern { e: X -[comp]-> Y }
+    commands { e.label = "comp:obj" }
+  }
+}
+package gya_post {
+  rule log {
+    pattern { X[PronType=Log] }
+    commands { X.PronType=Prs; X.Logophoric=Yes }
+  }
+
+  rule remove_extensions {
+    pattern { e: X -[1=dislocated, 2=*]-> Y }
+    commands { del_feat e.2}
+  }
+
+  rule remove_extensions_specific {
+    pattern { e: X -[parataxis:comp]-> Y }
+    commands { del_feat e.2}
+  }
+
+  rule hide_aux_lemma {
+    pattern { X[upos=AUX, lemma] }
+    commands { del_feat X.lemma }
+  }
+}
+
+
+
+
