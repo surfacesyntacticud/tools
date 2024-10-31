@@ -1,12 +1,13 @@
 strat main {
   Seq (
-    Onf(init),
-    %Onf (DerAff),
+    Onf (init),
     Onf (p),
     Onf (final_word),
     Onf (empty_lemma),
   )
 }
+
+
 
 package init {
   rule pref {
@@ -29,18 +30,15 @@ package init {
     pattern { X[form <> "__0__", !MSeg ] }
     commands { X.MSeg = X.form }
   }
+  rule init_gloss {
+    pattern { X[!Gloss, GE ] }
+    commands { X.Gloss = X.GE; del_feat X.GE; }
+  }
   rule init_mgloss {
     pattern { X[Gloss, !MGloss ] }
     commands { X.MGloss = X.Gloss }
   }
 
-}
-
-package DerAff {
-  rule Root_DerAff {
-    pattern { X2 [TokenType=DerAff, DerPos]; X1 < X2; X2 -> X1 }
-    commands { X2.upos = X2.DerPos; del_feat X2.DerPos }
-  }
 }
 
 package p {
@@ -54,9 +52,10 @@ package p {
       X1.wordform = X1.wordform + X2.wordform;          % concatenate the surface form
       X1.lemma = X1.lemma + X2.lemma;                   % concatenate the surface lemma
       append_feats "_" X2 =[re"Translit\|Tone"]=> X1;   % concatenate the surface Translit and Tone
-      append_feats X2 =[re"Gloss\|Rx"]=> X1;
+      append_feats X2 =[re"MGloss\|MSeg"]=> X1;
       shift X2 ==> X1;
-      X1.upos = X2.upos; X1.TokenType=Root;
+      X1.upos = X2.upos; X1.TokenType=Root; X1.Gloss=X2.Gloss;
+      X1.AlignEnd = X2.AlignEnd;
       del_node X2;
     }
   }
@@ -70,9 +69,10 @@ package p {
       X1.wordform = X1.wordform + X2.wordform;          % concatenate the surface form
       X1.lemma = X1.lemma + X2.lemma;                   % concatenate the surface lemma
       append_feats "_" X2 =[re"Translit\|Tone"]=> X1;   % concatenate the surface Translit and Tone
-      append_feats X2 =[re"Gloss\|Rx"]=> X1;
+      append_feats X2 =[re"MGloss\|MSeg"]=> X1;
       shift X2 ==> X1;
-      X1.upos = X2.DerPos;
+      X1.upos = X2.DerPos; X1.Gloss=X2.Gloss;
+      X1.AlignEnd = X2.AlignEnd;
       del_node X2;
     }
   }
@@ -86,8 +86,9 @@ package p {
       X1.wordform = X1.wordform + X2.wordform;          % concatenate the surface form
       X1.lemma = X1.lemma + X2.lemma;                   % concatenate the surface lemma
       append_feats "_" X2 =[re"Translit\|Tone"]=> X1;   % concatenate the surface Translit and Tone
-      append_feats X2 =[re"Gloss\|Rx"]=> X1;
+      append_feats X2 =[re"MGloss\|MSeg"]=> X1;
       shift X2 ==> X1;
+      X1.AlignEnd = X2.AlignEnd;
       del_node X2;
     }
   }
@@ -102,9 +103,10 @@ package p {
       X2.wordform = X1.wordform + X2.wordform;          % concatenate the surface form
       X2.lemma = X1.lemma + X2.lemma;                   % concatenate the surface lemma
       prepend_feats "_" X1 =[re"Translit\|Tone"]=> X2;  % concatenate the surface Translit and Tone
-      prepend_feats X1 =[re"Gloss\|Rx"]=> X2;
+      prepend_feats X1 =[re"MGloss\|MSeg"]=> X2;
       shift X1 ==> X2;
-      X2.upos = X1.upos; X2.TokenType=Root;
+      X2.upos = X1.upos; X2.TokenType=Root; X2.Gloss=X1.Gloss;
+      X2.AlignBegin = X1.AlignBegin;
       del_node X1;
     }
   }
@@ -118,9 +120,10 @@ package p {
       X2.wordform = X1.wordform + X2.wordform;          % concatenate the surface form
       X2.lemma = X1.lemma + X2.lemma;                   % concatenate the surface lemma
       prepend_feats "_" X1 =[re"Translit\|Tone"]=> X2;  % concatenate the surface Translit and Tone
-      prepend_feats X1 =[re"Gloss\|Rx"]=> X2;
+      prepend_feats X1 =[re"MGloss\|MSeg"]=> X2;
       shift X1 ==> X2;
-      X2.upos = X1.DerPos;
+      X2.upos = X1.DerPos; X2.Gloss=X1.Gloss;
+      X2.AlignBegin = X1.AlignBegin;
       del_node X1;
     }
   }
@@ -135,8 +138,9 @@ package p {
       X2.wordform = X1.wordform + X2.wordform;          % concatenate the surface form
       X2.lemma = X1.lemma + X2.lemma;                   % concatenate the surface lemma
       prepend_feats "_" X1 =[re"Translit\|Tone"]=> X2;  % concatenate the surface Translit and Tone
-      prepend_feats X1 =[re"Gloss\|Rx"]=> X2;
+      prepend_feats X1 =[re"MGloss\|MSeg"]=> X2;
       shift X1 ==> X2;
+      X2.AlignBegin = X1.AlignBegin;
       del_node X1;
     }
   }
@@ -167,7 +171,8 @@ package p {
       X2.wordform = X1.wordform + X2.wordform;          % concatenate the surface form
       X2.lemma = X1.lemma + X2.lemma;                   % concatenate the surface lemma
       prepend_feats "_" X1 =[re"Translit\|Tone"]=> X2;  % concatenate the surface Translit and Tone
-      prepend_feats X1 =[re"Gloss\|Rx"]=> X2;
+      prepend_feats X1 =[re"MGloss\|MSeg"]=> X2;
+      X2.AlignBegin = X1.AlignBegin;
       del_node X1;
     }
   }
@@ -198,7 +203,8 @@ package p {
       X1.wordform = X1.wordform + X2.wordform;          % concatenate the surface form
       X1.lemma = X1.lemma + X2.lemma;                   % concatenate the surface lemma
       append_feats "_" X2 =[re"Translit\|Tone"]=> X1;   % concatenate the surface Translit and Tone
-      append_feats X2 =[re"Gloss\|Rx"]=> X1;
+      append_feats X2 =[re"MGloss\|MSeg"]=> X1;
+      X1.AlignEnd = X2.AlignEnd;
       del_node X2;
     }
   }
@@ -215,41 +221,4 @@ rule final_word {
 rule empty_lemma {
   pattern { X [lemma= ""]}
   commands { del_feat X.lemma }
-}
-
-
-
-
-
-
-package unused {
-  rule fwd_nohead {
-    pattern { X1[nWord]; X2[nWord]; X1 < X2; X1.nWord = X2.nWord; }
-    without { * -> X2 }
-    without { X2 -> X1 }
-    commands {
-      X1.form = X1.form + X2.form;                      % concatenate the surface form
-      X1.wordform = X1.wordform + X2.wordform;          % concatenate the surface form
-      X1.lemma = X1.lemma + X2.lemma;                   % concatenate the surface lemma
-      append_feats "_" X2 =[re"Translit\|Tone"]=> X1;   % concatenate the surface Translit and Tone
-      append_feats X2 =[re"Gloss\|Rx"]=> X1;
-      shift X2 ==> X1;
-      del_node X2;
-    }
-  }
-
-  rule back_nohead {
-    pattern { X1[nWord]; X2[nWord]; X1 < X2; X1.nWord = X2.nWord; }
-    without { * -> X1 }
-    without { X1 -> X2 }
-    commands {
-      X2.form = X1.form + X2.form;                      % concatenate the surface form
-      X2.wordform = X1.wordform + X2.wordform;          % concatenate the surface form
-      X2.lemma = X1.lemma + X2.lemma;                   % concatenate the surface lemma
-      prepend_feats "_" X1 =[re"Translit\|Tone"]=> X2;  % concatenate the surface Translit and Tone
-      prepend_feats X1 =[re"Gloss\|Rx"]=> X2;
-      shift X1 ==> X2;
-      del_node X1;
-    }
-  }
 }
