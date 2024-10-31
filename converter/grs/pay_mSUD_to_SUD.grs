@@ -68,6 +68,7 @@ package fusion {
       X2[form=re"-.*"];
       X2[TokenType=Root|Clit];
     }
+    without { X1[TokenType=DerAff] }
     commands { 
       shift X2 ==> X1;
       X1.form = X1.form + X2.form[1:];
@@ -89,6 +90,30 @@ package fusion {
     pattern {
       X1 < X2;
       X1 -> X2;
+      X2[form=re"-.*"];
+      X2[TokenType=DerAff, DerPos];
+    }
+    commands { 
+      shift X2 ==> X1;
+      X1.form = X1.form + X2.form[1:];
+      X1.wordform = X1.wordform + X2.wordform;
+      X1.MSeg = X1.MSeg + X2.MSeg;
+      X1.lemma = X1.lemma + X2.lemma;
+      append_feats "_" X2 =[re"Translit\|Tone"]=> X1;
+      append_feats X2 =[re"Rx"]=> X1;
+      append_feats " " X2 =[re"MGloss"]=> X1;
+      append_feats X2 =[re"AdvType\|Animacy\|Case\|Clusivity\|Person\|PronType\|VerbForm\|Voice"]=> X1;
+      X1.upos = X2.DerPos;  X1.Gloss=X2.Gloss;
+      X1.AlignEnd = X2.AlignEnd;
+      del_node X2;
+    }
+  }
+
+  % for sent_id: 008_126-126 
+  rule merge_X2_suff_DerAff_head {
+    pattern {
+      X1 < X2;
+      X2 -> X1;
       X2[form=re"-.*"];
       X2[TokenType=DerAff, DerPos];
     }
@@ -142,6 +167,7 @@ package fusion {
       X2[form=re"-.*"];
       X1[TokenType = Root|Clit];
     }
+    without { X2[TokenType=DerAff] }
     commands { 
       shift X1 ==> X2;
       X2.form = X1.form + X2.form[1:];
@@ -162,6 +188,28 @@ package fusion {
     pattern {
       X1 < X2;
       X2 -> X1;
+      X2[form=re"-.*"];
+      X1[TokenType = DerAff, DerPos];
+    }
+    commands { 
+      shift X1 ==> X2;
+      X2.form = X1.form + X2.form[1:];
+      X2.wordform = X1.wordform + X2.wordform;
+      X2.MSeg = X1.MSeg + X2.MSeg;
+      X2.lemma = X1.lemma + X2.lemma;
+      prepend_feats "_" X1 =[re"Translit\|Tone"]=> X2;
+      prepend_feats X1 =[re"Rx"]=> X2;
+      prepend_feats " " X1 =[re"MGloss"]=> X2;
+      prepend_feats X1 =[re"AdvType\|Animacy\|Case\|Clusivity\|Person\|PronType\|VerbForm\|Voice"]=> X2;
+      X2.upos = X1.DerPos; X2.Gloss = X1.Gloss;
+      X2.AlignBegin = X1.AlignBegin;
+      del_node X1;
+    }
+  }
+  rule merge_X1_suff_DerAff_head {
+    pattern {
+      X1 < X2;
+      X1 -> X2;
       X2[form=re"-.*"];
       X1[TokenType = DerAff, DerPos];
     }
