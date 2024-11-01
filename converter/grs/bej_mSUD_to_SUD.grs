@@ -5,7 +5,6 @@ strat bej_mSUD_to_SUD_main {
     Onf (init_MGloss_Mseg),
     Onf (remove_bracket),
     Onf (morph2word),
-    Onf (clitic_included),
     Onf (fix_features),
     Onf (fix_rel),
     )
@@ -224,6 +223,24 @@ package morph2word {
     }
   }
 
+  % One case of affix attaching on a clitic (sent_id = BEJ_MV_NARR_12_witch_126-135)
+  % A special rule is needed: no MGloss/MSeg on Clit
+  rule post_InflAff_dep_on_clit {
+    pattern {
+      CLIT [TokenType=Clit];
+      IA [TokenType=InflAff];
+      CLIT < IA;
+      e: CLIT -[type=m]-> IA;
+    }
+    commands {
+      CLIT.form = CLIT.form + IA.form[1:];
+      CLIT.wordform = CLIT.wordform + IA.wordform[1:];
+      append_feats IA =[re"RX\|Number\|Gender"]=> CLIT;
+      CLIT.AlignEnd = IA.AlignEnd;
+      del_node IA;
+    }
+  }
+
   rule post_InflAff_gov {
     pattern {
       ROOT [TokenType=Root];
@@ -326,36 +343,8 @@ package morph2word {
   }
 }
 
-package clitic_included {
-  % A special case in the Beja corpus, sent_id: BEJ_MV_NARR_03_camel_025-034 (http://match.grew.fr/?corpus=mSUD_Beja-NSC@latest&custom=61b7690c7ca5b)
-  % where there is a clitic between the stem and its affix
-  % See section 2.4 in the SyntaxFest 2021 paper (https://aclanthology.org/2021.tlt-1.5/)
-  rule noun_clit_InflAff {
-    pattern {
-      ROOT [TokenType=Root,upos=NOUN]; POSS []; IA [TokenType=InflAff];
-      ROOT < POSS; POSS < IA;
-      ROOT -[mod:poss]-> POSS;
-      e: IA -[type=m]-> ROOT;
-    }
-    commands {
-      % add a MWT
-      ROOT.textform = ROOT.form + POSS.form + IA.form;
-      POSS.textform = "_";
-      
-      shift IA ==> ROOT;
-      ROOT.form = ROOT.form + IA.form;
-      ROOT.wordform = ROOT.wordform + IA.wordform;
-      ROOT.MGloss = ROOT.MGloss + IA.MGloss;
-      ROOT.MSeg = ROOT.MSeg + IA.MSeg;
-      append_feats IA =[re"RX\|Number\|Gender"]=> ROOT;
-      ROOT.AlignEnd = IA.AlignEnd;
-      del_node IA;
-    }
-  }
-}
-
 package fix_features {
-  % The rules in package `morph2word` use concatenation for Gender and Numnber which supposes that the feature is defined only once in the morphs of a word
+  % The rules in package `morph2word` use concatenation for Gender and Number which supposes that the feature is defined only once in the morphs of a word
   % There are a few cases where it is not true
   % - pattern { X -[type=m]-> Y1; Y1[Gender]; X -[type=m]-> Y2; Y2[Gender] }
   % - pattern { X -[type=m]-> Y; Y[Number]; X [Number] }

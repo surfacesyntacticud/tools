@@ -55,6 +55,11 @@ package bej_post {
     commands { del_edge e; add_edge N -[dep:conj]-> M; }
   }
 
+  rule flat {
+    pattern { e:N -[flat]-> M; }
+    commands { del_edge e; add_edge N -[dep:flat]-> M; }
+  }
+
   rule redup {
     pattern { e:N -[conj:redup]-> M; }
     commands { del_edge e; add_edge N -[dep:redup]-> M; }
@@ -101,4 +106,24 @@ package bej_valid {
     pattern { N [Lang=ar, VerbClass] }
     commands { del_feat N.VerbClass }
   }
+
+  rule det_dep {
+    pattern { X -[det]-> Y; e: Y -[dep]-> Z }
+    commands { 
+      del_edge e; add_edge X -[dep]-> Z;
+      shift_out Y =[punct]=> X
+    }
+  }
+
+  rule nsubj_n {
+    pattern { e: X -[nsubj/m]-> Y }
+    commands { e.label=dep }
+  }
+
+  % rule to avoid UD validation alert
+  rule det_INTJ {
+    pattern { e: X -[det]-> Y; Y[upos=INTJ] }
+    commands { e.label=dep }
+  }
+
 }
