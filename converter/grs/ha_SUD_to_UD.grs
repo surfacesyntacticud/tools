@@ -10,6 +10,7 @@ strat ha_main {
     Onf (case_children),
     Onf (tmp_escape_aux_cop),
     Onf (foreign),
+    Onf (valid_215),
   )
 }
 
@@ -121,4 +122,52 @@ package foreign {
     pattern { X -[flat:foreign]-> Y; Y[!Foreign] }
     commands { Y.Foreign = Yes }
   }
+}
+
+% validation 2.15
+package valid_215 {
+  rule subrels {
+    pattern { e: X -[parataxis:discourse|parataxis:top|parataxis:mod|obl:expl]-> Y }
+    commands { del_feat e.2 }
+  }
+
+  rule aux {
+    pattern { e: X -[aux]-> Y; Y[upos <> AUX] }
+    commands { e.label = dep }
+  }
+
+  rule advmod {
+    pattern { e: X -[advmod]-> Y; Y[upos = SCONJ] }
+    commands { e.label = dep }
+  }
+
+  rule Aspect_Imp {
+    pattern { X [Aspect=Imp] }
+    commands { del_feat X.Aspect }
+  }
+
+  rule Deixis_Dist {
+    pattern { X [Deixis=Dist] }
+    commands { del_feat X.Deixis }
+  }
+
+  rule Person_on_PART {
+    pattern { X [Person, upos=PART] }
+    commands { del_feat X.Person }
+  }
+  rule PronType_on_PART_AUX {
+    pattern { X [PronType, upos=PART|AUX] }
+    commands { del_feat X.PronType }
+  }
+  rule Mood_on_AUX {
+    pattern { X [Mood, upos=AUX] }
+    commands { del_feat X.Mood }
+  }
+
+  rule ExtPos_CCONJ {
+    pattern { X [ExtPos=CCONJ] }
+    commands { del_feat X.ExtPos }
+  }
+
+
 }

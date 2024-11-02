@@ -23,4 +23,11 @@ package ht_post {
       e_te.label = aux;
     }
   }
+
+  % valid 2.15
+  % convertion produce invalid obj:R --> restore iobj like in UD 2.14
+  rule obj_R {
+    pattern { e:X -[obj:R]-> Y }
+    commands { e.label = iobj }
+  }
 }

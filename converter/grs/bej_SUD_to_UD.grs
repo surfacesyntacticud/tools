@@ -126,4 +126,9 @@ package bej_valid {
     commands { e.label=dep }
   }
 
+  rule case_children {
+    pattern { e: X -[case]-> Y; Y -[dep:comp]-> Z }
+    commands { e.label=dep }
+
+  }
 }

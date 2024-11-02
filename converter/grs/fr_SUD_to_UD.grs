@@ -212,14 +212,16 @@ rule FR_spoken_tilde {
   }
 }
 
-rule FR_det_discourse {
-  pattern { X -[det]-> Y; e: Y -[discourse]-> Z }
-  commands { 
-    del_edge e; add_edge X -[discourse]-> Z;
-    shift_out Y =[punct]=> X
+package remove_Cxn { 
+  rule Cxn {
+    pattern { X [Cxn] }
+    commands { del_feat X.Cxn }
+  }
+  rule CxnElt {
+    pattern { X [CxnElt] }
+    commands { del_feat X.CxnElt }
   }
 }
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Main strategy for converting any SUD French annotation into a UD annotation.
@@ -231,7 +233,7 @@ strat fr_main{
     Onf(fix_punct),
     Onf(FR_discontinuous_MWE),
     Onf(FR_spoken_tilde),
-    Onf(FR_det_discourse),
+    Onf(remove_Cxn)
   )
 }
 
