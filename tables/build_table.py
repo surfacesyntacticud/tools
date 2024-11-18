@@ -38,7 +38,7 @@ parser.add_argument("basedir", help = "The main folder where all corpora are sto
 parser.add_argument("columns", help = "Must be one either of the values 'DEPS', 'UDEPS', 'DEEP', 'SUBREL:xxx (where xxx is a udep), 'META', 'FEATS', 'MISC', 'FEAT:xxx' (where xxx is a feature name)")
 parser.add_argument("-f", "--filter", help = "The template for selecting treebanks", default="*")
 parser.add_argument("-o", "--out_file", help = "The name of the output json file")
-parser.add_argument("-s", "--suffix", default="@2.14", help = "The suffix used in Grew-match naming of the corpus")
+parser.add_argument("-s", "--suffix", default="@2.15", help = "The suffix used in Grew-match naming of the corpus")
 parser.add_argument("-c", "--collection", help = "The name of the collection of corpora")
 parser.add_argument("-q", "--quiet", action="store_true", default = False, help = "turn off the progession info printing")
 args=parser.parse_args()

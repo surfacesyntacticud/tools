@@ -1,5 +1,5 @@
-UD=/users/guillaum/resources/ud-treebanks-v2.14
-SUD=/users/guillaum/resources/sud-treebanks-v2.14
+UD=/users/guillaum/resources/ud-treebanks-v2.15
+SUD=/users/guillaum/resources/sud-treebanks-v2.15
 
 FEAT_LIST=PronType Gender VerbForm NumType Animacy Mood Poss NounClass Tense Reflex Number Aspect Foreign Case Voice Abbr Definite Evident Typo Degree Polarity Person Polite Clusivity
 UD_LIST=acl advcl advmod amod appos _aux case cc ccomp clf compound conj cop csubj dep det discourse dislocated expl fixed flat goeswith iobj list mark nmod nsubj nummod obj obl orphan parataxis punct reparandum root vocative xcomp
@@ -23,34 +23,34 @@ count:
 
 build_meta:
 	mkdir -p meta
-	python build_table.py -c "UD 2.14" -f "${FILTER}" -o meta/META.json ${UD} META
+	python build_table.py -c "UD 2.15" -f "${FILTER}" -o meta/META.json ${UD} META
 
 build_sud_deps:
 	mkdir -p sud_deps
-	python build_table.py -c "SUD 2.14" -f "${FILTER}" -o sud_deps/DEPS.json ${SUD} DEPS
-	python build_table.py -c "SUD 2.14" -f "${FILTER}" -o sud_deps/UDEPS.json ${SUD} UDEPS
-	python build_table.py -c "SUD 2.14" -f "${FILTER}" -o sud_deps/DEEP.json ${SUD} DEEP
+	python build_table.py -c "SUD 2.15" -f "${FILTER}" -o sud_deps/DEPS.json ${SUD} DEPS
+	python build_table.py -c "SUD 2.15" -f "${FILTER}" -o sud_deps/UDEPS.json ${SUD} UDEPS
+	python build_table.py -c "SUD 2.15" -f "${FILTER}" -o sud_deps/DEEP.json ${SUD} DEEP
 	@for udep in ${SUD_LIST} ; do \
 		echo "================= Building table for udep: $$udep =================" ; \
-		python build_table.py -c "SUD 2.14" -f "${FILTER}" -o sud_deps/$$udep.json ${SUD} SUBREL:$$udep ; \
+		python build_table.py -c "SUD 2.15" -f "${FILTER}" -o sud_deps/$$udep.json ${SUD} SUBREL:$$udep ; \
 	done
 
 build_ud_deps:
 	mkdir -p ud_deps
-	python build_table.py -c "UD 2.14" -f "${FILTER}" -o ud_deps/DEPS.json ${UD} DEPS
-	python build_table.py -c "UD 2.14" -f "${FILTER}" -o ud_deps/UDEPS.json ${UD} UDEPS
+	python build_table.py -c "UD 2.15" -f "${FILTER}" -o ud_deps/DEPS.json ${UD} DEPS
+	python build_table.py -c "UD 2.15" -f "${FILTER}" -o ud_deps/UDEPS.json ${UD} UDEPS
 	@for udep in ${UD_LIST} ; do \
 		echo "================= Building table for udep: $$udep =================" ; \
-		python build_table.py -c "UD 2.14" -f "${FILTER}" -o ud_deps/$$udep.json ${UD} SUBREL:$$udep ; \
+		python build_table.py -c "UD 2.15" -f "${FILTER}" -o ud_deps/$$udep.json ${UD} SUBREL:$$udep ; \
 	done
 
 build_ud_feats:
 	mkdir -p ud_feats
-	python build_table.py -c "UD 2.14" -f "${FILTER}" -o ud_feats/FEATS.json ${UD} FEATS
-	python build_table.py -c "UD 2.14" -f "${FILTER}" -o ud_feats/MISC.json ${UD} MISC
+	python build_table.py -c "UD 2.15" -f "${FILTER}" -o ud_feats/FEATS.json ${UD} FEATS
+	python build_table.py -c "UD 2.15" -f "${FILTER}" -o ud_feats/MISC.json ${UD} MISC
 	@for feat in ${FEAT_LIST} ; do \
 		echo "================= Building table for feature: $$feat =================" ; \
-		python build_table.py -c "UD 2.14" -f "${FILTER}" -o ud_feats/$$feat.json ${UD} FEAT:$$feat ; \
+		python build_table.py -c "UD 2.15" -f "${FILTER}" -o ud_feats/$$feat.json ${UD} FEAT:$$feat ; \
 	done
 
 purge:
