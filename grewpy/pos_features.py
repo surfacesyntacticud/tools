@@ -91,11 +91,11 @@ if __name__ == '__main__':
   features.sort()
 
   def cell_fct(upos,feat): 
-    return corpus.count(Request(f'X[upos={upos}, {feat}]'))
+    return corpus.count(Request(f'pattern {{X[upos={upos}, {feat}]}}'))
   def row_fct(upos):
-    return corpus.count(Request(f'X[upos={upos}]'))
+    return corpus.count(Request(f'pattern {{X[upos={upos}]}}'))
   def col_fct(feat):
-    return corpus.count(Request(f'X[{feat}]'))
+    return corpus.count(Request(f'pattern {{X[{feat}]}}'))
   table = build_table(ud_tagset, features, cell_fct, row_fct, col_fct)
   table.update ({
     "kind": "DC",
