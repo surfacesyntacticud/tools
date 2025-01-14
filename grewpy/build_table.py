@@ -105,7 +105,7 @@ def table_TBC(args):
         data = json.load(f)
         (grew_request, text_request) = request_of_json (data)
     else:
-      grew_request = Request.parse (args.request)
+      grew_request = Request(args.request)
       text_request = args.request
   else:
     raise ValueError(f"Missing --request")
@@ -191,7 +191,7 @@ def table_DC(args):
         data = json.load(f)
         (grew_request, text_request) = request_of_json (data)
     else:
-      grew_request = Request.parse (args.request)
+      grew_request = Request(args.request)
       text_request = args.request
   else:
     raise ValueError(f"Missing --request")
