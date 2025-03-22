@@ -4,12 +4,29 @@ import argparse
 import json
 import datetime
 from grewpy import Request, Corpus, set_config
+import re
+import glob
+
+def replace_env_variables(input_string):
+    # Define a regex pattern to match the format ${VAR}
+    pattern = r'\$\{(\w+)\}'
+    
+    # Function to replace matched variable with its environment value
+    def replace_variable(match):
+        var_name = match.group(1)  # Extract the variable name
+        return os.getenv(var_name)  # Return the value or empty string if not found
+
+    # Use re.sub to replace all occurrences of the pattern
+    result = re.sub(pattern, replace_variable, input_string)
+    return result
+
+
 
 def treebanks(args):
   if args.kind in ["TBR", "TBC"] and args.treebanks:
     with open(args.treebanks, "rb") as f:
       data = json.load(f)
-      return data["corpora"]
+      return data
   else:
     raise ValueError(f"Missing --treebanks")
 
@@ -23,10 +40,13 @@ def request_of_json (data):
   return (grew_request, text_request)
 
 def load_corpus (corpus_desc):
-  corpus_id = corpus_desc["id"] 
-  directory = corpus_desc["directory"] 
+  corpus_id = corpus_desc["id"]
+  directory = replace_env_variables(corpus_desc["directory"])
   if "files" in corpus_desc:
-    full_names = [os.path.join(directory, file) for file in corpus_desc["files"]]
+    if isinstance (corpus_desc["files"], str):
+      full_names = glob.glob(f'{directory}/*{corpus_desc["files"]}')
+    else:
+      full_names = [os.path.join(directory, file) for file in corpus_desc["files"]]
     return (corpus_id, Corpus(full_names))
   else:
     return (corpus_id, Corpus (directory))
@@ -41,15 +61,16 @@ def table_TBR(args):
     data_requests = json.load(f)
   grew_requests = dict()
   text_requests = dict()
-  for request in data_requests:
-    id = request["id"]
+  for id, request in data_requests.items():
     (grew_request, text_request) = request_of_json (request)
     grew_requests[id] = grew_request
     text_requests[id] = text_request
 
   corpora = treebanks(args)
+  size = len(corpora)
   main_dict = {}
   for corpus_desc in corpora:
+    print (f'[{len(main_dict)+1}/{size}] -> {corpus_desc["id"]}', file=sys.stderr)
     (corpus_id, corpus) = load_corpus (corpus_desc)
     full_dict = { id: corpus.count(grew_requests[id]) for id in grew_requests }
     main_dict[corpus_id] = { id: full_dict[id] for id in full_dict if full_dict[id]>0 }

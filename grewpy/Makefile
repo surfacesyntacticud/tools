@@ -34,7 +34,8 @@ parseme_12_valid:
 	python3 build_table.py TBR \
 		--instance https://parseme.grew.fr \
 		--title "## Parseme 1.2 validation" \
-		--treebanks ${GREW_MATCH_CONFIG}/corpora/parseme_1.2.json \
+		--timestamp \
+		--treebanks ${CORPUSBANK}/parseme_1.2.json \
 		--requests parseme/validation_req.json \
 		> html/parseme/valid@1.2.json
 
@@ -42,15 +43,26 @@ parseme_13_valid:
 	python3 build_table.py TBR \
 		--instance https://parseme.grew.fr \
 		--title "## Parseme 1.3 validation" \
-		--treebanks ${GREW_MATCH_CONFIG}/corpora/parseme_1.3.json \
+		--timestamp \
+		--treebanks ${CORPUSBANK}/parseme_1.3.json \
 		--requests parseme/validation_req.json \
 		> html/parseme/valid@1.3.json
+
+parseme_latest_valid:
+	python3 build_table.py TBR \
+		--instance https://parseme.grew.fr \
+		--title "## Parseme latest validation" \
+		--timestamp \
+		--treebanks ${CORPUSBANK}/parseme_latest.json \
+		--requests parseme/validation_req.json \
+		> html/parseme/valid@latest.json
 
 parseme_12_labels:
 	python3 build_table.py TBC \
 		--instance https://parseme.grew.fr \
 		--title "## Parseme 1.2 sorted by labels" \
-		--treebanks ${GREW_MATCH_CONFIG}/corpora/parseme_1.2.json \
+		--timestamp \
+		--treebanks ${CORPUSBANK}/parseme_1.2.json \
 		--request parseme/label_req.json \
 		--clustering_key MWE.label \
 		--total \
@@ -60,17 +72,30 @@ parseme_13_labels:
 	python3 build_table.py TBC \
 		--instance https://parseme.grew.fr \
 		--title "## Parseme 1.3 sorted by labels" \
-		--treebanks ${GREW_MATCH_CONFIG}/corpora/parseme_1.3.json \
+		--timestamp \
+		--treebanks ${CORPUSBANK}/parseme_1.3.json \
 		--request parseme/label_req.json \
 		--clustering_key MWE.label \
 		--total \
 		> html/parseme/labels@1.3.json
 
+parseme_latest_labels:
+	python3 build_table.py TBC \
+		--instance https://parseme.grew.fr \
+		--title "## Parseme latest sorted by labels" \
+		--timestamp \
+		--treebanks ${CORPUSBANK}/parseme_latest.json \
+		--request parseme/label_req.json \
+		--clustering_key MWE.label \
+		--total \
+		> html/parseme/labels@latest.json
+
 parseme_12_sizes:
 	python3 build_table.py TBC \
 		--instance https://parseme.grew.fr \
 		--title "## Parseme 1.2 sorted by size (nb of tokens)" \
-		--treebanks ${GREW_MATCH_CONFIG}/corpora/parseme_1.3.json \
+		--timestamp \
+		--treebanks ${CORPUSBANK}/parseme_1.3.json \
 		--request parseme/label_req.json \
 		--clustering_key MWE.__out__ \
 		--total \
@@ -80,16 +105,29 @@ parseme_13_sizes:
 	python3 build_table.py TBC \
 		--instance https://parseme.grew.fr \
 		--title "## Parseme 1.3 sorted by size (nb of tokens)" \
-		--treebanks ${GREW_MATCH_CONFIG}/corpora/parseme_1.3.json \
+		--timestamp \
+		--treebanks ${CORPUSBANK}/parseme_1.3.json \
 		--request parseme/label_req.json \
 		--clustering_key MWE.__out__ \
 		--total \
 		> html/parseme/sizes@1.3.json
 
+parseme_latest_sizes:
+	python3 build_table.py TBC \
+		--instance https://parseme.grew.fr \
+		--title "## Parseme latest sorted by size (nb of tokens)" \
+		--timestamp \
+		--treebanks ${CORPUSBANK}/parseme_latest.json \
+		--request parseme/label_req.json \
+		--clustering_key MWE.__out__ \
+		--total \
+		> html/parseme/sizes@latest.json
+
 label_upos_French-GSD:
 	python3 build_table.py DC \
 		--treebank "{\"SUD_French-GSD@2.15\": \"${SUD}/SUD_French-GSD\"}" \
 		--title "## edge label and dependant UPOS (SUD_French-GSD@2.15)" \
+		--timestamp \
 		--request "edge.json" \
 		--row_key "e.label" \
 		--col_key "N.ExtPos/upos" \
@@ -99,6 +137,7 @@ amb_lemma_French-GSD:
 	python3 build_table.py DC \
 		--treebank "{\"SUD_French-GSD@2.15\": \"${SUD}/SUD_French-GSD\"}" \
 		--title "## ambiguous lemmas UPOS (SUD_French-GSD@2.15)" \
+		--timestamp \
 		--request "lemma.json" \
 		--row_key "N.lemma" \
 		--col_key "N.upos" \
@@ -114,10 +153,10 @@ subrel:
 	python3 build_table.py TBC \
 		--instance https://universal.grew.fr \
 		--config sud \
-		--treebanks ${GREW_MATCH_CONFIG}/corpora/sud_native.json \
+		--treebanks ${CORPUSBANK}/sud_latest.json \
 		--title "## subrel usage in native SUD" \
-		--request sud/subrel.json \
 		--timestamp \
+		--request sud/subrel.json \
 		--clustering_key e.2 \
 		--total \
 		> html/sud/subrel.json
@@ -126,10 +165,10 @@ deep:
 	python3 build_table.py TBC \
 		--instance https://universal.grew.fr \
 		--config sud \
-		--treebanks ${GREW_MATCH_CONFIG}/corpora/sud_native.json \
+		--treebanks ${CORPUSBANK}/sud_latest.json \
 		--title "## subrel usage in native SUD" \
-		--request sud/deep.json \
 		--timestamp \
+		--request sud/deep.json \
 		--clustering_key e.deep \
 		--total \
 		> html/sud/deep.json
@@ -139,6 +178,7 @@ run_test:
 		--config sud \
 		--instance https://universal.grew.fr \
 		--title "## TEST 2 Treebanks / multi-request" \
+		--timestamp \
 		--treebanks test/two_treebanks.json \
 		--requests test/requests.json \
 		> html/test/test_TBR.json
@@ -148,6 +188,7 @@ gl:
 		--config sud \
 		--instance https://universal.grew.fr \
 		--title "## Guidelines table" \
+		--timestamp \
 		--treebanks /Users/guillaum/github/surfacesyntacticud/guidelines/tools/french/french_table_json/sud_french.json \
 		--requests /Users/guillaum/github/surfacesyntacticud/guidelines/tools/french/french_request_json/request_output_french_subj.json \
 		# > html/test/test_TBR.json
