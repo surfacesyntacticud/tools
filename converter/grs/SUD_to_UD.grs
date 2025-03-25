@@ -631,6 +631,15 @@ package sub_relations {
     commands {e.1=obl; e.2=arg}
   }
 
+  % extension lmod and tmod are used in Bokota and Ika
+  % Conversion in UD relations:
+  % - obl:lmod --> https://universaldependencies.org/u/dep/obl-lmod.html
+  % - obl:tmod --> https://universaldependencies.org/u/dep/obl-tmod.html
+  rule obl_lmod {
+    pattern { e:H -[1=mod,2=lmod|tmod]-> D }
+    commands {e.1=obl }
+  }
+
   rule xcomp{
     pattern{
       e:H -[comp:obj|comp:obl|comp:pred]-> D;
