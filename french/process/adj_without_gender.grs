@@ -1,0 +1,9 @@
+strat main { Onf (adj_without_gender) }
+rule adj_without_gender (lex from "adj_without_gender.lex") {
+
+pattern { X[upos=ADJ, lemma=lex.adj, Gender] }
+commands {
+    X.Gender__ctxt = X.Gender;
+    del_feat X.Gender
+    }
+}

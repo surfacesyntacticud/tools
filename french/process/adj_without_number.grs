@@ -1,0 +1,9 @@
+strat main { Onf (adj_without_number) }
+rule adj_without_number (lex from "adj_without_number.lex") {
+
+pattern { X[upos=ADJ, lemma=lex.adj, Number] }
+commands {
+    X.Number__ctxt = X.Number;
+    del_feat X.Number
+    }
+}

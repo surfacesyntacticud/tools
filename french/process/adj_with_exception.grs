@@ -1,0 +1,10 @@
+strat main { Onf (adj_with_exception) }
+rule adj_with_exception (lex from "adj_with_exception.lex") {
+
+pattern { X[upos=ADJ, lemma=lex.adj, Gender="Masc", Number] }
+commands {
+    X.Number__ctxt = X.Number;
+    del_feat X.Number
+    }
+}
+
