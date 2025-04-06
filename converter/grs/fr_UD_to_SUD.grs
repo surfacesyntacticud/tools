@@ -5,29 +5,30 @@ include "UD_to_SUD.grs"
 % Relations in SUD that are determined from UD relations with rules specific to French.
 package FR_relations {
 
-% When a NUM D depends on a word G in a NUMMOD relation and when D precedes G, D is a determiner of G.
-% Ex :  fr-ud-train_05544 -  Paris génère chaque jour, par temps sec, entre 800.000 et 900.000 m3 d'eaux usées.
+  % When a NUM D depends on a word G in a NUMMOD relation and when D precedes G, D is a determiner of G.
+  % Ex :  fr-ud-train_05544 -  Paris génère chaque jour, par temps sec, entre 800.000 et 900.000 m3 d'eaux usées.
   rule nummod_det{
     pattern{e:H -[nummod]-> D; D << H}
     without{H -[det]-> *}
     commands{ del_edge e; add_edge H -[det]-> D}
   }
 
-% The subject SUBJ1 of a verb is repeated in the form of a personal pronoun SUBJ2.
-% Ex: Jean vient-il ?
-% Ex : Jean a-t-il été payé ?
-%Ex: UD_French-GSD fr-ud-dev_00269 - ...Maria se suicide-t-elle ...
+  % The subject SUBJ1 of a verb is repeated in the form of a personal pronoun SUBJ2.
+  % Ex: Jean vient-il ?
+  % Ex : Jean a-t-il été payé ?
+  %Ex: UD_French-GSD fr-ud-dev_00269 - ...Maria se suicide-t-elle ...
   rule repeat_subj{
     pattern{
-     V -[1=csubj|nsubj]->  SUBJ1;
-     d:V -[expl:subj]-> SUBJ2; SUBJ2[upos=PRON, lemma=il];
-     SUBJ1 << V; SUBJ1 << SUBJ2}
+      V -[1=csubj|nsubj]->  SUBJ1;
+      d:V -[expl:subj]-> SUBJ2; SUBJ2[upos=PRON, lemma=il];
+      SUBJ1 << V; SUBJ1 << SUBJ2
+    }
     without{SUBJ1[PronType=Int|Rel,lemma=que]} % Ex: Qu'arrive-t-il ? - la mésaventure qu'il m'est arrivée
-    without{ V -[mark]-> C; SUBJ1 << C}%Ex:  UD_French-GSD  fr-ud-dev_01470 - une autre façon[SUBJ1] de le voir est qu'[C]il n'existe[V] pas de foncteur
+    without{ V -[mark]-> C; SUBJ1 << C} %Ex: UD_French-GSD fr-ud-dev_01470 - une autre façon[SUBJ1] de le voir est qu'[C]il n'existe[V] pas de foncteur
     commands{del_edge d; add_edge V -[subj@expl]-> SUBJ2;}
   }
 
-% Pronouns "dont and "en" dependent on nominals are processes as all noun complements.
+  % Pronouns "dont and "en" dependent on nominals are processes as all noun complements.
   rule udep_dont-en{
     pattern{ e:H -[nmod]-> D; D[upos=PRON, lemma=dont|en]}
     commands{del_edge e; add_edge H -[udep]-> D}
@@ -67,27 +68,27 @@ package FR_relations {
 % ---------------------------------------------------------------------------------------------
 % Ex: UD_French-GSD fr-ud-test_00057 - Dans les sixties, ce n'était[D] pas comme[D1] aujourd'hui[H].
 package FR_set_level {
-  rule gen{
-    pattern{d:H -[1=aux|case|cop|mark, !level]-> D }
-    without{d.1=cop; H -[1=aux|mark]-> D1; H << D1; D1 << D}
-    commands{d.level=20}
+  rule gen {
+    pattern { d:H -[1=aux|case|cop|mark, !level]-> D }
+    without { d.1=cop; H -[1=aux|mark]-> D1; H << D1; D1 << D }
+    commands { d.level=20 }
   }
   
   rule cop{
     pattern{
       d:H -[1=cop, !level]-> D;
-      H -[1=aux|mark]-> D1; H << D1; D1 << D}
-    commands {d.level= 10 }
+      H -[1=aux|mark]-> D1; H << D1; D1 << D
+    }
+    commands { d.level= 10 }
   }
-     
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % The source of some relations must rise from the old head D to the new head H in cases specific to French.
 package FR_shift_out_edges{
 
-% Judgment adverbs rise from verbs to their auxiliaries.
-% Ex: Il a certes beaucoup travaillé. - il est certes un bon travailleur.
+  % Judgment adverbs rise from verbs to their auxiliaries.
+  % Ex: Il a certes beaucoup travaillé. - il est certes un bon travailleur.
   rule adv-judgment_aux(lex from "lexicons/adv_judgment.lp") {
     pattern{
       H[upos=AUX];H -[1=comp,2=aux|pred]-> D;
@@ -98,8 +99,8 @@ package FR_shift_out_edges{
     commands{add_edge H -[mod]-> ADV; del_edge e}
   }
 
-% Judgment adverbs rise from the adposition objects to their adposition.
-% Ex: il est en vacances heureusement.
+  % Judgment adverbs rise from the adposition objects to their adposition.
+  % Ex: il est en vacances heureusement.
   rule adv-judgment_prep(lex from "lexicons/adv_judgment.lp") {
     pattern{
       H[upos=ADP];H -[1=comp,2=obj]-> D; D[upos <> AUX|VERB];
@@ -110,8 +111,8 @@ package FR_shift_out_edges{
     commands{add_edge H -[mod]-> ADV; del_edge e}
   }
 
-% Judgment adverbial locutions rise from verbs to their auxiliaries.
-% Ex : Il a été mon directeur par ailleurs.
+  % Judgment adverbial locutions rise from verbs to their auxiliaries.
+  % Ex : Il a été mon directeur par ailleurs.
   rule adv-loc-judgment_aux(lex from "lexicons/advloc_judgment.lp") {
     pattern{
       H[upos=AUX];H -[1=comp,2=aux|pred]-> D;
@@ -125,8 +126,8 @@ package FR_shift_out_edges{
     commands{add_edge H -[mod]-> ADV; del_edge e}
   }
 
-% Judgment adverbial locutions rise from the adposition objects to their adposition.
-% Ex: Il a été en congé par ailleurs.
+  % Judgment adverbial locutions rise from the adposition objects to their adposition.
+  % Ex: Il a été en congé par ailleurs.
   rule adv-loc-judgment_prep(lex from "lexicons/advloc_judgment.lp") {
     pattern{
       H[upos=ADP];H -[1=comp,2=obj]-> D; D[upos <> AUX|VERB];
@@ -140,8 +141,8 @@ package FR_shift_out_edges{
     commands{add_edge H -[mod]-> ADV; del_edge e}
   }
 
-% Tense adverbs rise from verbs to their auxiliaries.
-% Il a été malade hier.
+  % Tense adverbs rise from verbs to their auxiliaries.
+  % Il a été malade hier.
   rule adv-tense_aux(lex from "lexicons/adv_tense.lp") {
     pattern{
       H[upos=AUX];H -[1=comp,2=aux|pred]-> D;
@@ -152,8 +153,8 @@ package FR_shift_out_edges{
     commands{add_edge H -[mod]-> ADV; del_edge e}
   }
 
-% Tense adverbs rise from the adposition objects to their adposition.
-% Il a été en congé hier.
+  % Tense adverbs rise from the adposition objects to their adposition.
+  % Il a été en congé hier.
   rule adv-tense_prep(lex from "lexicons/adv_tense.lp") {
     pattern{
       H[upos=ADP];H -[comp:obj]-> D;  D[upos <> AUX|VERB];
@@ -164,8 +165,8 @@ package FR_shift_out_edges{
     commands{add_edge H -[mod]-> ADV; del_edge e}
   }
 
-% Conj relations when the conjunct heads are adjectives.
-% Ex: French-GSD fr-ud-test_00091 - Le ras-le-bol fut général, la mobilisation inédite.
+  % Conj relations when the conjunct heads are adjectives.
+  % Ex: French-GSD fr-ud-test_00091 - Le ras-le-bol fut général, la mobilisation inédite.
   rule conj_adj{
     pattern{
       H -[comp:pred]-> D;  H << D;
@@ -179,8 +180,8 @@ package FR_shift_out_edges{
     }
   }
 
-% passive constructions in the form "se" + "faire" + INF
-% Ex: French-GSD fr-ud-test_00058 - Sidi M'hamed Deddeche et Amgid Sidi Ahmed, deux activistes pacifistes des territoires occupés comme Mme Haïder, s'[SE]étaient-ils fait[AUX] arrêter[INF] mercredi dernier à l'entrée de Smara,
+  % passive constructions in the form "se" + "faire" + INF
+  % Ex: French-GSD fr-ud-test_00058 - Sidi M'hamed Deddeche et Amgid Sidi Ahmed, deux activistes pacifistes des territoires occupés comme Mme Haïder, s'[SE]étaient-ils fait[AUX] arrêter[INF] mercredi dernier à l'entrée de Smara,
   rule se_faire_passive{
     pattern{
       AUX[upos=AUX,lemma=faire];
@@ -191,8 +192,8 @@ package FR_shift_out_edges{
     commands{del_edge d; add_edge AUX -[comp@pass]-> SE}
   }
   
-% constructions in the form SUBJ + de  + INF.
-%Ex: French-GSD fr-ud-train_11118 - » et Secombe de répondre : « De quelle couleur ?
+  % constructions in the form SUBJ + de  + INF.
+  % Ex: French-GSD fr-ud-train_11118 - » et Secombe de répondre : « De quelle couleur ?
   rule subj_de_inf{
     pattern{
       INF[upos=AUX|VERB];
@@ -202,9 +203,8 @@ package FR_shift_out_edges{
     commands{add_edge f:DE -> SUBJ; f.label=e.label; del_edge e}
   }
 
-
-% constructions with a predicative complement PRED of an elided copula and a clause, which is the subject of PRED introduced with a complementizer CPL. The subject is converted into a direct object.
-%Ex: French-GSD fr-ud-train-10087 - Difficile d'imaginer pire !
+  % constructions with a predicative complement PRED of an elided copula and a clause, which is the subject of PRED introduced with a complementizer CPL. The subject is converted into a direct object.
+  % Ex: French-GSD fr-ud-train-10087 - Difficile d'imaginer pire !
   rule pred_cpl_verb{
     pattern{
       e:PRED -[subj]-> CPL; CPL[upos=ADP|SCONJ,lemma="à"|de|que];
@@ -213,8 +213,8 @@ package FR_shift_out_edges{
     commands{del_edge e; add_edge PRED -[comp:obj@agent]-> CPL}
   }
 
-% constructions with a predicative complement PRED of an elided copula and a clause without compementizer, which is the subject of PRED. The subject is converted into a direct object.
-%Ex: French-GSD fr-ud-train-08722 - Maintenant, reste à voir comment Orange réagira.
+  % constructions with a predicative complement PRED of an elided copula and a clause without compementizer, which is the subject of PRED. The subject is converted into a direct object.
+  % Ex: French-GSD fr-ud-train-08722 - Maintenant, reste à voir comment Orange réagira.
   rule pred_verb{
     pattern{
       e:PRED -[subj]-> V; PRED << V; V[upos=AUX|VERB,VerbForm=Fin]}
@@ -222,15 +222,15 @@ package FR_shift_out_edges{
     commands{del_edge e; add_edge PRED -[comp:obj@agent]-> V}
   }
 
-%Ex: French-GSD fr-ud-train_01439 - Mais ce n'est que quand il est[D] bien trop tard[H] et que son œuvre détruit tout ce qui avait de l'importance pour lui qu'[N]il commence confusément à réaliser
-    rule comp_cleft{
-      pattern {
-        H -[1=cop|aux|case|mark,REV=Yes]-> D;
-        e: D -[comp:cleft]-> N;}
-      without { N[InTitle=Yes] } % French-GSD fr-ud-train_13022 - ...très connu dans les rôles de Bo Duke de Shérif, fais-moi peur !
-      without{H -[1=mark, REV=Yes]-> D; D -[subj@expl]-> S; S[upos=PRON, lemma=ce];D -[1=cop]-> *}
-      commands { add_edge f: H -> N; f.label = e.label; del_edge e }
-    }
+  %Ex: French-GSD fr-ud-train_01439 - Mais ce n'est que quand il est[D] bien trop tard[H] et que son œuvre détruit tout ce qui avait de l'importance pour lui qu'[N]il commence confusément à réaliser
+  rule comp_cleft{
+    pattern {
+      H -[1=cop|aux|case|mark,REV=Yes]-> D;
+      e: D -[comp:cleft]-> N;}
+    without { N[InTitle=Yes] } % French-GSD fr-ud-train_13022 - ...très connu dans les rôles de Bo Duke de Shérif, fais-moi peur !
+    without{H -[1=mark, REV=Yes]-> D; D -[subj@expl]-> S; S[upos=PRON, lemma=ce];D -[1=cop]-> *}
+    commands { add_edge f: H -> N; f.label = e.label; del_edge e }
+  }
 
 }
 
@@ -238,7 +238,7 @@ package FR_shift_out_edges{
 % Some relations have moved up from the old head D to the new head H incorrectly in specific cases in French. The move must be cancelled.
 package FR_shift_out_back_edges{
 
-% UDEP relations targeting the pronouns "dont" and "en" must move from the auxiliaries to their argument.
+  % UDEP relations targeting the pronouns "dont" and "en" must move from the auxiliaries to their argument.
   rule dont-en_aux{
     pattern {
       H[upos=AUX];
@@ -251,8 +251,8 @@ package FR_shift_out_back_edges{
     commands{add_edge f: D -> D1; f.label=e.label; del_edge e}
   }
 
-% UDEP relations targeting the pronouns "dont" and "en" must move from the adpositions to their object.
-% Ex: fr-ud-train_00459 - Elle fait partie de le Freedom Group dont Cerberus Capital Management est un de les actionnaires depuis 2009.
+  % UDEP relations targeting the pronouns "dont" and "en" must move from the adpositions to their object.
+  % Ex: fr-ud-train_00459 - Elle fait partie de le Freedom Group dont Cerberus Capital Management est un de les actionnaires depuis 2009.
   rule dont_en_adp{
     pattern {
       H[upos=ADP];
@@ -263,7 +263,7 @@ package FR_shift_out_back_edges{
     commands{add_edge f: D -> D1;f.label=e.label; del_edge e}
   }
 
-% Quantity adverbs that are modifiers must move from the auxiliaries to their argument.
+  % Quantity adverbs that are modifiers must move from the auxiliaries to their argument.
   rule adv-quant_aux(lex from "lexicons/adv_quant.lp"){
     pattern{
       H[upos=AUX]; H -[1=comp,2=aux|pred]-> D;
@@ -274,7 +274,7 @@ package FR_shift_out_back_edges{
     commands{add_edge D -[mod]-> D1;del_edge e}
   }
 
-% Quantity adverbial locutions that are modifiers must move from the auxiliaries to their argument.
+  % Quantity adverbial locutions that are modifiers must move from the auxiliaries to their argument.
   rule advloc-quant_aux(lex from "lexicons/advloc_quant.lp"){
     pattern{
       H[upos=AUX]; H -[1=comp,2=aux|pred]-> D;
@@ -288,7 +288,7 @@ package FR_shift_out_back_edges{
     commands{add_edge D -[mod]-> D1;del_edge e}
   }
 
-% Manner adverbs that are modifiers must move from the auxiliaries to their argument.
+  % Manner adverbs that are modifiers must move from the auxiliaries to their argument.
   rule adv-manner_aux(lex from "lexicons/adv_manner.lp"){
     pattern{
       H[upos=AUX];H -[1=comp,2=aux|pred]-> D;
@@ -298,7 +298,7 @@ package FR_shift_out_back_edges{
     commands{add_edge D -[mod]-> D1;del_edge e}
   }
 
-% Neagtion adverbs that are modifiers must move from the auxiliaries to their argument.
+  % Negation adverbs that are modifiers must move from the auxiliaries to their argument.
   rule adv-neg_aux{
     pattern{
       H[upos=AUX];H -[1=comp,2=aux|pred]-> D;
@@ -308,7 +308,7 @@ package FR_shift_out_back_edges{
     commands{add_edge D -[mod]-> D1;del_edge e}
   }
 
-% Adverb "aussi used as a quantity adverb must move from the auxiliaries to their argument.
+  % Adverb "aussi used as a quantity adverb must move from the auxiliaries to their argument.
   rule aux_aussi_comp{
     pattern{
       H[upos=AUX];H -[1=comp,2=pred]-> D;  D[upos=ADJ|ADV];
@@ -325,7 +325,7 @@ package FR_shift_out_back_edges{
 % Mark some left dependents of a coordination with the feature Shared=Yes.
 package FR_shared_left_conj-dep{
 
-% Shared adverbs
+  % Shared adverbs
   rule adv{
     pattern {
       d1:C1 -[1=conj]-> C2;
@@ -341,7 +341,7 @@ combien
 que
 #END
 
-% Shared determiners
+  % Shared determiners
   rule det{
     pattern{
       d1:C1 -[1=conj]-> C2;
@@ -353,8 +353,8 @@ que
     commands{D1.Shared=Yes}
   }
 
-% Shared interrogative and relative pronouns.
-% Ex: SUD_French-GSD fr-ud-dev_00647 - ... plusieurs autres pays dont le Canada et la Nouvelle-Zélande ...
+  % Shared interrogative and relative pronouns.
+  % Ex: SUD_French-GSD fr-ud-dev_00647 - ... plusieurs autres pays dont le Canada et la Nouvelle-Zélande ...
   rule int-rel-pron{
     pattern{
       d1:C1 -[1=conj]-> C2;
@@ -364,14 +364,13 @@ que
     without{ C2 -> D2; D2[PronType=Int|Rel]; D2 << C2}
     commands{D1.Shared=Yes}
   }
-  
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Some left dependents of the first conjunct of a coordination are not shared by all conjuncts.
 package FR_unshared_left_conj-dep{
 
-% Unshared attributive adjectives
+  % Unshared attributive adjectives
   rule attr_adj{
     pattern {
       d1:C1 -[1=conj]-> C2; C1[upos=NOUN|PRON];
@@ -383,8 +382,8 @@ package FR_unshared_left_conj-dep{
     commands{D1.Shared=No}
   }
 
-% Unshared modifiers.
-% Ex: SUD_French-GSD fr-ud-train_08681 - Son cabinet est très[D] agréable[C1] et chaleureux[C2].
+  % Unshared modifiers.
+  % Ex: SUD_French-GSD fr-ud-train_08681 - Son cabinet est très[D] agréable[C1] et chaleureux[C2].
   rule mod {
     pattern {
       d1:C1 -[1=conj]-> C2;
@@ -418,7 +417,7 @@ trop	ADV
 ultra	ADV
 #END
 
-% Repeated complenmentizer in a coordination.
+  % Repeated complementizer in a coordination.
   rule rep_conj{
     pattern{
       d1:C1 -[1=conj]-> C2;
@@ -430,8 +429,8 @@ ultra	ADV
     commands{CPL1.Shared=No}
   }
 
-% Repeated conjunction of coordination.
-% Ex: SUD_French-GSD fr-ud-dev_01116 - En effet, plus la proximité génétique est grande, plus il devrait y avoir d'amibes prêtes à se sacrifier ...
+  % Repeated conjunction of coordination.
+  % Ex: SUD_French-GSD fr-ud-dev_01116 - En effet, plus la proximité génétique est grande, plus il devrait y avoir d'amibes prêtes à se sacrifier ...
   rule rep_conj_dep{
     pattern{
       d1:C1 -[1=conj]-> C2;
@@ -442,8 +441,9 @@ ultra	ADV
     without{d2: C -> C1; d2.label="conj@emb"; d1.label=conj} % C1 is the first conjunct of the coordination.
     commands{D1.Shared=Yes}
   }
-% The second conjunct is introduced by the conjunction "car".
-% Ex: SUD_French-GSD fr-ud-train_05527 - En[D] plus il m'a[C1] expliqué les résultats, car je n'y connais[C2] rien en électricité.
+
+  % The second conjunct is introduced by the conjunction "car".
+  % Ex: SUD_French-GSD fr-ud-train_05527 - En[D] plus il m'a[C1] expliqué les résultats, car je n'y connais[C2] rien en électricité.
   rule car{
     pattern{
       d1:C1 -[1=conj]-> C2;
@@ -460,7 +460,7 @@ ultra	ADV
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % The conversion of "suite à", "face à" are invalid ('advmod' should be 'ADV' but it is 'NOUN'). To avoid this, we transform these phrase into idiom in the SUDto UD conversion. In the reverse conversion, we make the reverse transformation.
 package FR_noun_adv{
-% The phrase is restructured.
+  % The phrase is restructured.
   rule adp_to_adv (lex from "lexicons/noun_adv_prep.lp"){
     pattern{
       N[upos=NOUN, lemma=lex.noun, ExtPos=ADP, Idiom=Yes];
@@ -473,7 +473,7 @@ package FR_noun_adv{
       del_edge e; add_edge P -[comp:obj]-> N1}  
   }
 
-% If the phrase is an UDEP dependent of a governor, it becomes a MOD dependent.
+  % If the phrase is an UDEP dependent of a governor, it becomes a MOD dependent.
   rule udep_to_mod (lex from "lexicons/noun_adv_prep.lp"){
     pattern{
       N[upos=NOUN, lemma=lex.noun, ExtPos=ADV];
@@ -481,7 +481,7 @@ package FR_noun_adv{
     commands{del_edge e; add_edge H -[mod]-> N}  
   }
 
-% If the noun in the phrase is shared by a coordination, it is no longer shared.
+  % If the noun in the phrase is shared by a coordination, it is no longer shared.
   rule shared_dep (lex from "lexicons/noun_adv_prep.lp"){
     pattern{
       N[upos=NOUN, lemma=lex.noun, ExtPos=ADV];

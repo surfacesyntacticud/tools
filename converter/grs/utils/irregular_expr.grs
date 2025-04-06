@@ -1,4 +1,5 @@
-% The "irregular_expr.grs" file includes packages applying a specific treatment to idioms, titles and converted words. What they have in common is the fact that their syntactic behaviour towards the outside world is not regular.
+% The "irregular_expr.grs" file includes packages applying a specific treatment to idioms, titles and converted words.
+% What they have in common is the fact that their syntactic behaviour towards the outside world is not regular.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % The package [add_edges] turns all features InIdiom (resp. InTitle) into a edge IDIOM (resp. TITLE) from the head to internal nodes of irregular expressions.
@@ -119,11 +120,11 @@ package ext_dep {
   rule title {
     pattern { H -[TITLE]-> N; e: N -> M;}
     without { H -[TITLE]-> M; }
-     without{ * -[TITLE]-> M}
-   commands {
-     add_edge f:H->M; f.label = e.label;
-     del_edge e;
-   }
+    without{ * -[TITLE]-> M}
+    commands {
+      add_edge f:H->M; f.label = e.label;
+      del_edge e;
+    }
   }
 }
 
@@ -143,50 +144,53 @@ strat specific_expr_init {
 % replace edges IDIOM, TITLE by features
 package del_edges {
 
-% The IDIOM dependency to the head H of the idiom is replaced by feature Idiom = Yes. The POS of H becomes the POS of the idiom and the old POS of H is kept in InitPos feature.
+  % The IDIOM dependency to the head H of the idiom is replaced by feature Idiom = Yes. The POS of H becomes the POS of the idiom and the old POS of H is kept in InitPos feature.
   rule idiom_head {
     pattern { I[Idiom]; I -[HEAD]-> H; d:I -[IDIOM]-> H; }
     commands {
       del_edge d;  H.Idiom = Yes;
-      H.InitPos = H.upos; H.upos = I.upos}
+      H.InitPos = H.upos; H.upos = I.upos
+    }
   }
 
-% All IDIOM dependencies to tokens that are not the head of the idiom are replaced by feature InIdiom = Yes
+  % All IDIOM dependencies to tokens that are not the head of the idiom are replaced by feature InIdiom = Yes
   rule idiom {
     pattern { d:I -[IDIOM]-> H }
     without { I -[HEAD]-> H }
-    commands{del_edge d; H.InIdiom = Yes}
+    commands {del_edge d; H.InIdiom = Yes}
   }
 
-% The TITLE dependency to the head H of the title is replaced by feature Idiom = Yes.  The POS of H becomes the POS of the title and the old POS of H is kept in InitPos feature.
+  % The TITLE dependency to the head H of the title is replaced by feature Idiom = Yes.  The POS of H becomes the POS of the title and the old POS of H is kept in InitPos feature.
   rule title_head {
     pattern { T[Title]; T -[HEAD]-> H; d:T -[TITLE]-> H }
     commands {
       del_edge d; H.Title = Yes;
-      H.InitPos = H.upos; H.upos = T.upos}
+      H.InitPos = H.upos; H.upos = T.upos
+    }
   }
 
-% All TITLE dependencies to tokens that are not the head of the title are replaced by feature InIdiom = Yes
+  % All TITLE dependencies to tokens that are not the head of the title are replaced by feature InIdiom = Yes
   rule title {
     pattern {d:T -[TITLE]-> H }
     without { T -[HEAD]-> H }
-    without{T -[HEAD]-> H1; H1 -[HEAD]-> H; H1[Idiom=Yes]}
+    without {T -[HEAD]-> H1; H1 -[HEAD]-> H; H1[Idiom=Yes]}
     commands {del_edge d; H.InTitle = Yes}
   }
 
-% The title head is also an idiom head.
+  % The title head is also an idiom head.
   rule title_idiom {
     pattern {d:T -[TITLE]-> H;T -[HEAD]-> H1; H1 -[HEAD]-> H; H[Idiom=Yes]  }
     without { T -[HEAD]-> H }
     commands {del_edge d}
   }
 
-% The POS of a word was converted into another POS.
+  % The POS of a word was converted into another POS.
   rule conv_head {
     pattern { C -[HEAD]-> H; d:C -[CONV]-> H }
     commands {
       del_edge d;
-       H.InitPos = H.upos; H.upos = C.upos}
+      H.InitPos = H.upos; H.upos = C.upos
+    }
   }
 }
 

@@ -58,30 +58,29 @@ package ha_post {
 }
 
 
-  rule fixed_children {
-    pattern {
-      X -[fixed]-> Y; 
-      e: Y -> Z;
-    }
-    commands {
-      add_edge f: X -> Z;
-      f.label = e.label;
-      del_edge e;
-    }
+rule fixed_children {
+  pattern {
+    X -[fixed]-> Y; 
+    e: Y -> Z;
   }
-
-  rule case_children {
-    pattern {
-      X -[case]-> Y; 
-      e: Y -[^fixed]-> Z;
-    }
-    commands {
-      add_edge f: X -> Z;
-      f.label = e.label;
-      del_edge e;
-    }
+  commands {
+    add_edge f: X -> Z;
+    f.label = e.label;
+    del_edge e;
   }
+}
 
+rule case_children {
+  pattern {
+    X -[case]-> Y; 
+    e: Y -[^fixed]-> Z;
+  }
+  commands {
+    add_edge f: X -> Z;
+    f.label = e.label;
+    del_edge e;
+  }
+}
 
 
 rule tmp_escape_aux_cop {
@@ -101,20 +100,22 @@ package foreign {
     commands { X.upos=X; Y.upos=X }
   }
 
- rule DefiniteX {
+  rule DefiniteX {
     pattern { X -[flat:foreign]-> Y; X[Definite] }
     commands { del_feat X.Definite }
   }
- rule DefiniteY {
+
+  rule DefiniteY {
     pattern { X -[flat:foreign]-> Y; Y[Definite] }
     commands { del_feat Y.Definite }
   }
 
- rule Foreign_X {
+  rule Foreign_X {
     pattern { X -[flat:foreign]-> Y; X[!Foreign] }
     commands { X.Foreign = Yes }
   }
- rule Foreign_Y {
+
+  rule Foreign_Y {
     pattern { X -[flat:foreign]-> Y; Y[!Foreign] }
     commands { Y.Foreign = Yes }
   }
@@ -151,10 +152,12 @@ package valid_215 {
     pattern { X [Person, upos=PART] }
     commands { del_feat X.Person }
   }
+
   rule PronType_on_PART_AUX {
     pattern { X [PronType, upos=PART|AUX] }
     commands { del_feat X.PronType }
   }
+
   rule Mood_on_AUX {
     pattern { X [Mood, upos=AUX] }
     commands { del_feat X.Mood }
@@ -164,6 +167,4 @@ package valid_215 {
     pattern { X [ExtPos=CCONJ] }
     commands { del_feat X.ExtPos }
   }
-
-
 }

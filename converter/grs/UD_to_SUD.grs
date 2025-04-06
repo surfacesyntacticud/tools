@@ -14,7 +14,7 @@ strat main {
     reverse_relations.main, % Reversing aux, case, cop and mark relations.
     Onf (minimize_right_conj-dep), % Package MINIMIZE_CONJ_DEP must follow strategy REVERSE_RELATIONS.MAIN because the shared dependents can depend on relation inversions.Moreover, a dependance can shift from a coordination to an ascendant. Ex: fr-ud-dev_00446 -entre 3 et 6 généralement
     Onf (add_conj_emb), % Package ADD_CONJ_EMB must follow REVERSE_RELATIONS.MAIN because it depends on head changes ; Ex: UD_French-GSD fr-ud-dev_00751
-    Onf (chained_relations),% Package CHAINED_RELATIONS must follow package SHIFT_RULES because it can entail a wrong coordination between two elements because of errors in head changes (UD_French-GS: fr-ud-dev_00131).
+    Onf (chained_relations), % Package CHAINED_RELATIONS must follow package SHIFT_RULES because it can entail a wrong coordination between two elements because of errors in head changes (UD_French-GS: fr-ud-dev_00131).
     specific_expr_close, % Closing a specific treatment for MWE, titles and translated words.
     Onf(shared_left_conj-dep), % Package SHARED_LEFT_CONJ-DEP must follow strategy REVERSE_RELATIONS.MAIN because this strategy transforms some dependents into governors, for which the Shared feature is not relevant. It must also follow strategy SPECIFIC_EXPR_ClOSE because idioms must be annotated in the definitive manner.
     Onf(unshared_left_conj-dep),
@@ -866,7 +866,6 @@ rule add_conj_emb{
   commands {
     del_edge e; add_edge N2 -[conj:coord@emb]-> N3;
   }
-
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

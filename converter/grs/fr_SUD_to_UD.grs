@@ -8,11 +8,13 @@ package FR_init {
     pattern {
       N1 [lemma=lex.noun, upos=NOUN, ExtPos=ADV];
       N2 [lemma=lex.prep];
-      e:N1 -[comp:obl]-> N2}
+      e:N1 -[comp:obl]-> N2
+    }
     commands {
       N1.ExtPos = ADP; N1.Idiom = Yes;
       N2.InIdiom = Yes;
-      del_edge e; add_edge N1 -[comp:obj]-> N2}
+      del_edge e; add_edge N1 -[comp:obj]-> N2
+    }
   }
 #BEGIN lex
 noun	prep
@@ -38,8 +40,8 @@ histoire	de
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % French pronominal verbs are considered as idioms. In the conversion to UD, their idiomatic characteristic is removed.
 package FR_pron_verb{
-% The pronominal verb has a unique clitic pronoun marking its pronominal feature.
-% Ex: les gens s'enfuient.
+  % The pronominal verb has a unique clitic pronoun marking its pronominal feature.
+  % Ex: les gens s'enfuient.
   rule verb1{
     pattern{
       V[upos=VERB,ExtPos=VERB, Idiom=Yes];
@@ -50,8 +52,8 @@ package FR_pron_verb{
       del_feat PRON.InIdiom}
   }
 
-% The pronominal verb has two clitic pronouns marking its pronominal feature.
-% Ex: ils s'en prennent aux plus faibles.
+  % The pronominal verb has two clitic pronouns marking its pronominal feature.
+  % Ex: ils s'en prennent aux plus faibles.
   rule verb2{
     pattern{
       V[upos=VERB,ExtPos=VERB, Idiom=Yes];
@@ -67,8 +69,8 @@ package FR_pron_verb{
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Re-labelling of MOD relations specific to French
 package FR_mod {
-% Adjectival, verbal or nominal expressions that are hightlighted at the beginning of a clause are considered as incomplete clauses.
-% Ex: fr-ud-dev_00407 - Spécialiste des six jours, il a remporté 38 compétitions entre 1931 et 1942.
+  % Adjectival, verbal or nominal expressions that are hightlighted at the beginning of a clause are considered as incomplete clauses.
+  % Ex: fr-ud-dev_00407 - Spécialiste des six jours, il a remporté 38 compétitions entre 1931 et 1942.
   rule left_extraposition(lex from "lexicons/noun_adv.lp") {
     pattern{
       APP[upos=ADJ|NOUN|PROPN|VERB];
@@ -89,8 +91,8 @@ package FR_mod {
     commands{ del_edge e; add_edge V -[advcl]-> APP}
   }
 
-% Nouns behaving as circumstancial complements and heads of modifiers in the form of adverbial clauses.
-% Ex: Il pleut cette année comme l'an dernier.
+  % Nouns behaving as circumstancial complements and heads of modifiers in the form of adverbial clauses.
+  % Ex: Il pleut cette année comme l'an dernier.
   rule conj_adv-noun(lex from "lexicons/noun_adv.lp") {
     pattern{
       N[upos=NOUN,lemma=lex.noun];
@@ -100,7 +102,7 @@ package FR_mod {
     commands{e.1=mark}
   }
 
-% Numbers that follow a measure unity
+  % Numbers that follow a measure unity
   rule unity_num(lex from "lexicons/noun_measure_unit.lp"){
     pattern{D[upos=NUM]; H[lemma=lex.unity]; e:H -[mod]-> D }
     commands{del_edge e; add_edge H -[nummod]-> D}
@@ -111,7 +113,7 @@ package FR_mod {
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Re-labelling of UDEP relations specific to French
 package FR_udep {
-% Expressions in the form "quelque/grand chose de" + ADJ
+  % Expressions in the form "quelque/grand chose de" + ADJ
   rule chose_de_adj{
     pattern{
       H[upos=PRON]; D[lemma=chose]; H -[HEAD]-> D;
@@ -122,7 +124,7 @@ package FR_udep {
     commands{ del_edge e; add_edge H -[amod]-> D1}
   }
 
-% Expressions in the form "rien de" + ADJ
+  % Expressions in the form "rien de" + ADJ
   rule rien_de_adj{
     pattern{
       H[upos=NOUN|PRON,lemma=rien]; D[upos=ADJ]; e: H -[mod]-> D;
@@ -130,14 +132,13 @@ package FR_udep {
     }
     commands{ del_edge e; add_edge H -[amod]-> D}
   }
-
 }
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Re-labelling of subject relations specific to French.
 package FR_subj {
-% Subjects of passive participles without auxiliary.
+  % Subjects of passive participles without auxiliary.
   rule nsubj_pass (lex from "lexicons/verb_passivable.lp") {
     pattern {e:V -[nsubj]-> S; V [VerbForm=Part,Tense=Past,lemma=lex.verb] }
     without {* -[1=aux]-> V}
@@ -148,7 +149,10 @@ package FR_subj {
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Main strategy for converting any SUD French annotation into a UDplus annotation.
-%The UDplus schema is in accordance the UD schema with additional information. It distinguishes between two types of idioms: idioms without syntactic structure are annotated with fixed relations according to the UD guidelines; idioms with a syntactic structure are annotated like any ordinary expression but their head is marked  with the feature Idiom=Yes; it also contains a feature ExtPos, which denotes the element’s function within the wider sentence; the other components of the idiom contain the feature InIdiom=Yes.
+% The UDplus schema is in accordance the UD schema with additional information.
+% It distinguishes between two types of idioms: idioms without syntactic structure are annotated with fixed relations according to the UD guidelines;
+% idioms with a syntactic structure are annotated like any ordinary expression but their head is marked  with the feature Idiom=Yes;
+% it also contains a feature ExtPos, which denotes the element’s function within the wider sentence; the other components of the idiom contain the feature InIdiom=Yes.
 % For the sake of uniformity, the use of features Idiom, ExtPos an InIdiom is extended to idioms without syntactic structure.
 strat FR_main_UDplus{
   Seq(

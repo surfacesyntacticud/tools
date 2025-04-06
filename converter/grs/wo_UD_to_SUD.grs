@@ -31,12 +31,13 @@ package wo_pos_labels {
     pattern { A[lemma="woon", upos = AUX] }
     commands { A.upos=PART; }
   }
-rule woon2_pos {
+
+  rule woon2_pos {
     pattern { A[lemma="woon", upos = VERB] }
     commands { A.upos=AUX; }
   }
 
-   rule daldi_pos {
+  rule daldi_pos {
     pattern { A[form="daldi", upos <> AUX] }
     commands { A.upos=AUX ; }
   }
@@ -57,13 +58,13 @@ rule woon2_pos {
   }
 }
 
-  package wo_dep_labels {
+package wo_dep_labels {
   rule woon {
     pattern { e: V -[1=aux]-> A; A[lemma="woon"] }
     commands { del_edge e; add_edge V-[mod@tense]->A }
     }
 
-rule woon2 {
+  rule woon2 {
     pattern { e: V -[1=obj|obl]-> N; V[lemma="woon"] }
     commands { del_edge e; add_edge V-[comp:pred]->N }
     }

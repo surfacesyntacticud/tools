@@ -16,14 +16,14 @@ rule propagate{
 
 % Mark the leftmost component of the MWE with fix=First.
 package first {
-% The leftmost component is the head of the MWE
+  % The leftmost component is the head of the MWE
   rule head_first {
     pattern { N[fix=Head] }
     without { M[fix]; M < N }
     commands { N.fix=First }
   }
 
-% The leftmost component is not the head of the MWE.
+  % The leftmost component is not the head of the MWE.
   rule head_not_first {
     pattern { N[fix=Part]; H[fix=Head, Idiom=Yes]; }
     without { H < N }
@@ -32,7 +32,8 @@ package first {
       N.fix=First;
       N.ExtPos = H.ExtPos; del_feat H.ExtPos;
       N.Idiom = Yes; del_feat H.Idiom;
-      shift H ==> N}
+      shift H ==> N
+    }
   }
 }
 
