@@ -564,16 +564,10 @@ package sub_relations {
     commands {e.1=nsubj; e.2=pass; del_feat e.deep}
   }
 
-% added for Naija
-  rule nummod_det {
-    pattern { e:H -[1=det, 2=num]-> D; }
-    commands { e.1=nummod; e.2=det}
-  }
-
-% added for Naija
-  rule nummod_mod {
-    pattern { e:H -[1=mod, 2=num]-> D; }
-    commands { e.1=nummod; e.2=mod}
+  % Hausa, Naija, Zaar
+  rule nummod {
+    pattern { e:H -[1=det|mod, 2=num]-> D; }
+    commands { e.1=nummod; del_feat e.2 }
   }
 
    rule obj_nom{

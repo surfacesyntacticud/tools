@@ -41,16 +41,12 @@ package ha_pre {
 
 % TMP rule for 2.11 --> remove non documented extension
 package ha_post {
-%  rule parataxis {
-%    pattern { e: N -[1=parataxis, 2=*]-> M }
-%    commands { del_feat e.2 }
-%  }
   rule dislocated_conj {
     pattern { e: N -[1=dislocated|conj|nmod, 2=*]-> M }
     commands { del_feat e.2 }
   }
   rule missing_extension {
-    pattern { e: N -[dep:comp|flat:num|obj:lvc|obl:mod|nummod:mod|advmod:emp]-> M }
+    pattern { e: N -[dep:comp|flat:num|obj:lvc|obl:mod]-> M }
     commands { del_feat e.2 }
   }
 
