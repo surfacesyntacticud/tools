@@ -7,8 +7,6 @@ strat main {
   )
 }
 
-
-
 package init {
   rule pref {
     pattern { X[form=re".+-"]; }
@@ -43,6 +41,7 @@ package init {
     pattern { X1 [upos, AlignEnd]; X2 [upos, !AlignBegin]; X1 < X2 }
     commands { X2.AlignBegin = X1.AlignEnd }
   }
+
   rule AlignEnd {
     pattern { X1 [upos, !AlignEnd]; X2 [upos, AlignBegin]; X1 < X2 }
     commands { X1.AlignEnd = X2.AlignBegin }
@@ -70,7 +69,7 @@ package p {
   rule fwd_DerAff {
     pattern { 
       X1[nWord]; X2[nWord]; X1 < X2; X1.nWord = X2.nWord; X1 -> X2;
-      X2[TokenType=DerAff, DepPos]
+      X2[TokenType=DerAff, DerPos]
     }
     commands {
       X1.form = X1.form + X2.form;                      % concatenate the surface form

@@ -1,0 +1,85 @@
+strat main {
+  Seq (
+    Onf (init),
+    Onf (aff),
+    Onf (word),
+  )
+}
+
+package init {
+  rule init_mseg {
+    pattern { X[form <> "__0__", !MSeg ] }
+    commands { X.MSeg = X.form }
+  }
+  rule init_gloss {
+    pattern { X[!Gloss, GE ] }
+    commands { X.Gloss = X.GE; del_feat X.GE; }
+  }
+  rule init_mgloss {
+    pattern { X[Gloss, !MGloss ] }
+    commands { X.MGloss = X.Gloss }
+  }
+
+  rule AlignBegin {
+    pattern { X1 [upos, AlignEnd]; X2 [upos, !AlignBegin]; X1 < X2 }
+    commands { X2.AlignBegin = X1.AlignEnd }
+  }
+
+  rule AlignEnd {
+    pattern { X1 [upos, !AlignEnd]; X2 [upos, AlignBegin]; X1 < X2 }
+    commands { X1.AlignEnd = X2.AlignBegin }
+  }
+}
+
+package aff {
+  rule pref {
+    pattern { X1 [form=re".*-"]|[form="ZERO"]; X2 [form]; X1 < X2 }
+    commands {
+      X2.form = X1.form + X2.form;                      % concatenate the surface form
+      X2.wordform = X1.wordform + X2.wordform;          % concatenate the surface form
+      prepend_feats "_" X1 =[re"Translit\|Tone"]=> X2;  % concatenate the surface Translit and Tone
+      prepend_feats "-" X1 =[re"MGloss"]=> X2;
+      prepend_feats X1 =[re"MSeg"]=> X2;
+      shift X1 ==> X2;
+      X2.AlignBegin = X1.AlignBegin;
+      del_node X1;
+    }
+  }
+
+  rule suff {
+    pattern { X1 [form]; X2 [form=re"-.*"]; X1 < X2 }
+    commands {
+      X2.form = X1.form + X2.form;                      % concatenate the surface form
+      X2.wordform = X1.wordform + X2.wordform;          % concatenate the surface form
+      append_feats "_" X2 =[re"Translit\|Tone"]=> X1;   % concatenate the surface Translit and Tone
+      append_feats "-" X1 =[re"MGloss"]=> X2;
+      append_feats X1 =[re"MSeg"]=> X2;
+      shift X2 ==> X1;
+      X1.AlignEnd = X2.AlignEnd;
+      del_node X2;
+    }
+  }
+}
+
+package word {
+  rule final_word {
+    pattern { X [Word, nWord] }
+    without { X0[nWord]; X0 < X; X0.nWord = X.nWord }
+    without { X1[nWord]; X < X1; X1.nWord = X.nWord }
+    commands { X.form = X.Word; del_feat X.Word }
+  }
+
+  rule pre_clitic {
+    pattern { X1[Word, form <> re"=.*"]; X2 [form = re"=.*"]; X1 < X2; }
+    commands {
+      X1.form = "#" + X1.Word; del_feat X1.Word;
+    }
+  }
+
+  rule clitic {
+    pattern { X2 [Word, form = re"=.*"]; }
+    commands {
+      del_feat X2.Word;
+    }
+  }
+}
