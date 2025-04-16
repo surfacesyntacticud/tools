@@ -159,6 +159,8 @@ package p {
       X1[upos=CCONJ|SCONJ|DET|AUX|X|PRON]; % if two pron --> "keep" the second one
       e: H -> X1; f: X1 -> D;
     }
+    without { X1 -> X2 }
+    without { X2 -> X1 }
     commands {
       add_edge g: H -> D; g.label = e.label;
       del_edge f;
@@ -191,6 +193,8 @@ package p {
       X2[upos=CCONJ|SCONJ|DET|AUX|X];
       e: H -> X2; f: X2 -> D;
     }
+    without { X1 -> X2 }
+    without { X2 -> X1 }
     commands {
       add_edge g: H -> D; g.label = e.label;
       del_edge f;

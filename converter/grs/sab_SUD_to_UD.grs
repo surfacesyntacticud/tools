@@ -1,0 +1,28 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+include "SUD_to_UD.grs"
+
+strat sab_SUD_to_UD_main {
+  Seq (
+    Onf (sab_pre),
+    u_main,
+    Onf (sab_post),
+  )
+}
+
+package sab_pre {
+  rule comp {
+    pattern { e: X -[comp]-> Y }
+    commands { e.label = "comp:obj" }
+  }
+}
+
+package sab_post {
+  rule remove_extensions {
+    pattern { e: X -[1=cop, 2=*]-> Y }
+    commands { del_feat e.2}
+  }
+}
+
+
+
+

@@ -1,0 +1,36 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+include "SUD_to_UD.grs"
+
+strat arh_SUD_to_UD_main {
+  Seq (
+    Onf (arh_pre),
+    u_main,
+    Onf (arh_post),
+  )
+}
+
+package arh_pre {
+  rule comp {
+    pattern { e: X -[comp]-> Y }
+    commands { e.label = "comp:obj" }
+  }
+
+  rule not_aux {
+    pattern { X [upos=AUX, form="ni"|"bina"|"para"]; X -[1=comp,2=aux]-> Y } 
+    commmands {
+      X.upos=part
+      e.label=mod
+    }
+  }
+}
+
+package arh_post {
+  rule remove_extensions {
+    pattern { e: X -[1=cop, 2=*]-> Y }
+    commands { del_feat e.2}
+  }
+}
+
+
+
+
