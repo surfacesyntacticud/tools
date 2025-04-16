@@ -16,9 +16,9 @@ package arh_pre {
   }
 
   rule not_aux {
-    pattern { X [upos=AUX, form="ni"|"bina"|"para"]; X -[1=comp,2=aux]-> Y } 
-    commmands {
-      X.upos=part
+    pattern { X [upos=AUX, form="ni"|"bina"|"para"]; e: X -[1=comp,2=aux]-> Y }
+    commands {
+      X.upos=PART;
       e.label=mod
     }
   }
