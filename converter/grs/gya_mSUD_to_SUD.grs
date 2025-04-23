@@ -40,7 +40,7 @@ package aff {
       prepend_feats "_" X1 =[re"Translit\|Tone"]=> X2;  % concatenate the surface Translit and Tone
       prepend_feats "-" X1 =[re"MGloss"]=> X2;
       prepend_feats X1 =[re"MSeg"]=> X2;
-      shift X1 ==> X2;
+      shift_out X1 ==> X2;
       X2.AlignBegin = X1.AlignBegin;
       del_node X1;
     }
@@ -54,7 +54,7 @@ package aff {
       append_feats "_" X2 =[re"Translit\|Tone"]=> X1;   % concatenate the surface Translit and Tone
       append_feats "-" X1 =[re"MGloss"]=> X2;
       append_feats X1 =[re"MSeg"]=> X2;
-      shift X2 ==> X1;
+      shift_out X2 ==> X1;
       X1.AlignEnd = X2.AlignEnd;
       del_node X2;
     }
@@ -69,17 +69,23 @@ package word {
     commands { X.form = X.Word; del_feat X.Word }
   }
 
-  rule pre_clitic {
-    pattern { X1[Word, form <> re"=.*"]; X2 [form = re"=.*"]; X1 < X2; }
+  rule simple_clitic {
+    pattern {
+      X1 [upos]; X2 [upos, Word]; X3 [form=re"=.*"];
+      X1 < X2; X2 < X3;
+      X1.nWord <> X2.nWord; X2.nWord = X3.nWord; 
+    }
     commands {
-      X1.form = "#" + X1.Word; del_feat X1.Word;
+      X2.form = X2.lemma;
+      del_feat X2.Word
     }
   }
+}
 
-  rule clitic {
-    pattern { X2 [Word, form = re"=.*"]; }
-    commands {
-      del_feat X2.Word;
-    }
+
+rule backoff_clitic {
+  pattern { X[Word]; }
+  commands {
+    X.form = "@" + X.Word; del_feat X.Word;
   }
 }
