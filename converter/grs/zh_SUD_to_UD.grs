@@ -6,7 +6,7 @@ strat zh_SUD_to_UD_main {
     Onf (zh_pre),
     Onf (comp),
     u_main,
-    Onf (zh_post)
+    Onf (zh_post),
   )
 }
 
@@ -192,7 +192,7 @@ package zh_post {
       YOU[form="有"];
       e: YOU-[advcl:cleft]->CLEFT;
       e2: YOU-[obj]->OBJ;
-    }
+    } 
     commands {
       del_edge e;
       add_edge f: OBJ -> CLEFT;
@@ -209,6 +209,14 @@ package zh_post {
       e.label = "advmod";
     }
   }
+
+  rule clf {
+    pattern { X -[clf]-> Y; e: Y -[^advmod|obl|goeswith|fixed|reparandum|conj|cc|punct]-> Z }
+    commands {
+      add_edge f: X -> Z; f.label = e.label;
+      del_edge e;
+      del_edge X -[clf]-> Y;
+      add_edge Z -[clf]-> Y;
+    }
+  }
 }
-
-
