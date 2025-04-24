@@ -15,6 +15,11 @@ package arh_pre {
     commands { e.label = "comp:obj" }
   }
 
+  rule comp_pred {
+    pattern { e: X -[1=comp, 2=pred, deep=*]-> Y }
+    commands { del_feat e.deep }
+  }
+
   rule not_aux {
     pattern { X [upos=AUX, form="ni"|"bina"|"para"]; e: X -[1=comp,2=aux]-> Y }
     commands {

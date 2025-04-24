@@ -2,6 +2,7 @@
 strat mSUD_to_SUD_main { 
   Seq (
     Onf (mSUD_to_SUD_init),
+    Onf (type),
     Onf (fusion),
     Onf (mSUD_to_SUD_final),
   )
@@ -27,22 +28,7 @@ package mSUD_to_SUD_init {
 }
 
 
-package fusion {
-  % The rule [up_type_m] ensures that there is word-level dependency above a morph-level dependency
-  % If such a pattern in found, the relation goes up in the tree
-  % WARNING: may have unexpected effect if a /m is missing (cf Pesh)
-  rule up_type_m {
-    pattern { 
-      X1 -[type=m]-> X2;
-      e: X2 -[!type]-> X3;
-    }
-    commands {
-      add_edge f:X1 -> X3;
-      f.label = e.label;
-      del_edge e
-    }
-  }
-
+package type {
   rule missing_m_pref_fwd {
     pattern { X[form=re".+-"]; Y[]; X < Y; e: X -[!type]-> Y; }
     commands { e.type=m }
@@ -59,21 +45,39 @@ package fusion {
     pattern { X[]; Y[form = re"-.+"]; X < Y; e: Y -[!type]-> X; }
     commands { e.type=m }
   }
+}
+
+package fusion {
+  % The rule [up_type_m] ensures that there is word-level dependency above a morph-level dependency
+  % If such a pattern in found, the relation goes up in the tree
+  % WARNING: may have unexpected effect if a /m is missing (cf Pesh)
+  rule up_type_m {
+    pattern { 
+      X1 -[type=m]-> X2;
+      e: X2 -[!type]-> X3;
+    }
+    commands {
+      add_edge f:X1 -> X3;
+      f.label = e.label;
+      del_edge e
+    }
+  }
+
 
   rule pref_final_pos_r {
-    pattern { X1[form=re".+-"]; X2[upos]; X1 < X2; X1 -[type=m]-> X2; X1 [!FinalPos]; X2 [!FinalPos] }
+    pattern { X1[form=re".+-"]; X2[upos, form <> re".+-"]; X1 < X2; X1 -[type=m]-> X2; X1 [!FinalPos]; X2 [!FinalPos] }
     commands { X2.FinalPos = X2.upos }
   }
   rule pref_final_pos_l {
-    pattern { X1[form=re".+-"]; X2[upos]; X1 < X2; X2 -[type=m]-> X1; X1 [!FinalPos]; X2 [!FinalPos] }
+    pattern { X1[form=re".+-"]; X2[upos, form <> re".+-"]; X1 < X2; X2 -[type=m]-> X1; X1 [!FinalPos]; X2 [!FinalPos] }
     commands { X2.FinalPos = X2.upos }
   }
   rule suff_final_pos_r {
-    pattern { X1[upos]; X2[form=re"-.+"]; X1 < X2; X1 -[type=m]-> X2; X1 [!FinalPos]; X2 [!FinalPos] }
+    pattern { X1[upos, form <> re"-.+"]; X2[form=re"-.+"]; X1 < X2; X1 -[type=m]-> X2; X1 [!FinalPos]; X2 [!FinalPos] }
     commands { X1.FinalPos = X1.upos }
   }
   rule suff_final_pos_l {
-    pattern { X1[upos]; X2[form=re"-.+"]; X1 < X2; X2 -[type=m]-> X1; X1 [!FinalPos]; X2 [!FinalPos] }
+    pattern { X1[upos, form <> re"-.+"]; X2[form=re"-.+"]; X1 < X2; X2 -[type=m]-> X1; X1 [!FinalPos]; X2 [!FinalPos] }
     commands { X1.FinalPos = X1.upos }
   }
 
@@ -92,26 +96,26 @@ package fusion {
 
   rule rm_hyphen1 {
     pattern { X1[form=re".+-"]; X2[]; X1 < X2; X1 -[type=m]-> X2 }
-    without { X2 -> * }
-    without { X1 [!FinalPos]; X2 [!FinalPos]; }
+    % without { X2 -> * }
+    without { X2 [!FinalPos];  }
     commands { X1.form = X1.form[:-1]; X1.wordform = X1.wordform[:-1] }
   }
   rule rm_hyphen2 {
     pattern { X1[form=re".+-"]; X2[]; X1 < X2; X2 -[type=m]-> X1 }
-    without { X1 -> * }
-    without { X1 [!FinalPos]; X2 [!FinalPos]; }
+    % without { X1 -> * }
+    without { X2 [!FinalPos];  }
     commands { X1.form = X1.form[:-1]; X1.wordform = X1.wordform[:-1] }
   }
   rule rm_hyphen3 {
     pattern { X1[]; X2[form=re"-.+"]; X1 < X2; X1 -[type=m]-> X2 }
-    without { X2 -> * }
-    without { X1 [!FinalPos]; X2 [!FinalPos]; }
+    % without { X2 -> * }
+    without {  X1 [!FinalPos]; }
     commands { X2.form = X2.form[1:]; X2.wordform = X2.wordform[1:] }
   }
   rule rm_hyphen4 {
     pattern { X1[]; X2[form=re"-.+"]; X1 < X2; X2 -[type=m]-> X1 }
-    without { X1 -> * }
-    without { X1 [!FinalPos]; X2 [!FinalPos]; }
+    % without { X1 -> * }
+    without { X1 [!FinalPos]; }
     commands { X2.form = X2.form[1:]; X2.wordform = X2.wordform[1:] }
   }
 
@@ -135,7 +139,7 @@ package fusion {
       X1[FinalPos]; X2[!FinalPos]; X1 < X2;             % bigram X1 X2
       X1 -[type=m]-> X2;                                % X2 is attached with the /m extension
     }
-    without { X2 -> * }                                 % X2 is a leaf (force application order)
+    % without { X2 -> * }                                 % X2 is a leaf (force application order)
     without { X1[form=re".+-"] }
     without { X2[form=re"-.+"] }
     without { X1.AlignEnd <> X2.AlignEnd }
@@ -146,6 +150,7 @@ package fusion {
       append_feats "_" X2 =[re"Translit\|Tone"]=> X1;   % concatenate the surface Translit and Tone
       append_feats X2 =[re"Gloss\|Rx"]=> X1;
       X1.upos = X1.FinalPos; del_feat X1.FinalPos;
+      shift_out X2 ==> X1;
       del_node X2;
     }
   }
@@ -155,7 +160,7 @@ package fusion {
       X1[!FinalPos]; X2[FinalPos]; X1 < X2;             % bigram X1 X2
       X1 -[type=m]-> X2;                                % X2 is attached with the /m extension
     }
-    without { X2 -> * }                                 % X2 is a leaf (force application order)
+    % without { X2 -> * }                                 % X2 is a leaf (force application order)
     without { X1[form=re".+-"] }
     without { X2[form=re"-.+"] }
     without { X1.AlignEnd <> X2.AlignEnd }
@@ -165,7 +170,8 @@ package fusion {
       X1.lemma = X1.lemma + X2.lemma;                   % concatenate the surface lemma
       append_feats "_" X2 =[re"Translit\|Tone"]=> X1;   % concatenate the surface Translit and Tone
       append_feats X2 =[re"Gloss\|Rx"]=> X1;
-      X1.upos = X2.FinalPos; 
+      X1.upos = X2.FinalPos;
+      shift_out X2 ==> X1;
       del_node X2;
     }
   }
@@ -175,7 +181,7 @@ package fusion {
       X1[FinalPos]; X2[!FinalPos]; X1 < X2;             % bigram X1 X2
       X2 -[type=m]-> X1;                                % X1 is attached with the /m extension
     }
-    without { X1 -> * }                                 % X1 is a leaf (force application order)
+    %without { X1 -> * }                                 % X1 is a leaf (force application order)
     without { X1[form=re".+-"] }
     without { X2[form=re"-.+"] }
     without { X1.AlignBegin <> X2.AlignBegin }
@@ -185,7 +191,8 @@ package fusion {
       X2.lemma = X1.lemma + X2.lemma;                   % concatenate the surface lemma
       prepend_feats "_" X1 =[re"Translit\|Tone"]=> X2;  % concatenate the surface Translit and Tone
       prepend_feats X1 =[re"Gloss\|Rx"]=> X2;
-      X2.upos = X1.FinalPos; 
+      X2.upos = X1.FinalPos;
+      shift_out X1 ==> X2;
       del_node X1;
     }
   }
@@ -194,7 +201,7 @@ package fusion {
       X1[!FinalPos]; X2[FinalPos]; X1 < X2;             % bigram X1 X2
       X2 -[type=m]-> X1;                                % X1 is attached with the /m extension
     }
-    without { X1 -> * }                                 % X1 is a leaf (force application order)
+    % without { X1 -> * }                                 % X1 is a leaf (force application order)
     without { X1[form=re".+-"] }
     without { X2[form=re"-.+"] }
     without { X1.AlignBegin <> X2.AlignBegin }
@@ -205,6 +212,7 @@ package fusion {
       prepend_feats "_" X1 =[re"Translit\|Tone"]=> X2;  % concatenate the surface Translit and Tone
       prepend_feats X1 =[re"Gloss\|Rx"]=> X2;
       X2.upos = X2.FinalPos; del_feat X2.FinalPos;
+      shift_out X1 ==> X2;
       del_node X1;
     }
   }
