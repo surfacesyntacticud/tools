@@ -97,25 +97,25 @@ package fusion {
   rule rm_hyphen1 {
     pattern { X1[form=re".+-"]; X2[]; X1 < X2; X1 -[type=m]-> X2 }
     % without { X2 -> * }
-    without { X2 [!FinalPos];  }
+    without { X1 [!FinalPos]; X2 [!FinalPos]; }
     commands { X1.form = X1.form[:-1]; X1.wordform = X1.wordform[:-1] }
   }
   rule rm_hyphen2 {
     pattern { X1[form=re".+-"]; X2[]; X1 < X2; X2 -[type=m]-> X1 }
     % without { X1 -> * }
-    without { X2 [!FinalPos];  }
+    without { X1 [!FinalPos]; X2 [!FinalPos]; }
     commands { X1.form = X1.form[:-1]; X1.wordform = X1.wordform[:-1] }
   }
   rule rm_hyphen3 {
     pattern { X1[]; X2[form=re"-.+"]; X1 < X2; X1 -[type=m]-> X2 }
     % without { X2 -> * }
-    without {  X1 [!FinalPos]; }
+    without { X1 [!FinalPos]; X2 [!FinalPos]; }
     commands { X2.form = X2.form[1:]; X2.wordform = X2.wordform[1:] }
   }
   rule rm_hyphen4 {
     pattern { X1[]; X2[form=re"-.+"]; X1 < X2; X2 -[type=m]-> X1 }
     % without { X1 -> * }
-    without { X1 [!FinalPos]; }
+    without { X1 [!FinalPos]; X2 [!FinalPos]; }
     commands { X2.form = X2.form[1:]; X2.wordform = X2.wordform[1:] }
   }
 
