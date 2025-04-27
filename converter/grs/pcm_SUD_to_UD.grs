@@ -61,17 +61,6 @@ package pcm_pre {
       M.Scrap=Yes;
     }
   }
-
-  % Macrosyntax tokens are annotated with `upos=PUNCT` and with relation `punct` in SUD.
-  % The conversion to UD builds invalid UD structures (non projectivity).
-  % We change macrosyntax annotations with `upos=X` and relation `unk`
-  rule PUNCT_to_X {
-    pattern { e: N -[punct]-> P; P [upos=PUNCT]  }
-    commands { 
-      e.1 = unk;
-      P.upos=X;
-    }
-  }
 }
 
 package pcm_post {
@@ -206,11 +195,25 @@ package pcm_post {
     }
   }
 
-  % ExtPos on English produce validation errors, we remove them (18 occurrences in 2.13)
-  rule english_extpos {
-    pattern { N [ExtPos, Lang=en]; }
-    commands { del_feat N.ExtPos }
+package ud_validation_2_16 {
+  rule punct_in_fixed {
+    pattern { X1 [form="tay"]; X2 [form="|r", upos=PUNCT]; X3 [form="tay"]; X1 < X2; X2 < X3 }
+    commands { X2.upos=X }
   }
+
+  rule extpos_en1 {
+    pattern { X1 [form="had", upos=AUX]; X2 [form="it"]; X3 [form="been"]; X1 < X2; X2 < X3 }
+    commands { X1.upos=VERB; X1.ExtPos=ADP }
+  }
+
+  rule extpos_en2 {
+    pattern { e:H -> X1; X1 [form="may", upos=AUX]; X2 [form="be"]; X1 < X2 }
+    commands { 
+      X1.upos=VERB; X1.ExtPos=ADP; % values compatible with https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl?lcode=en&feature=ExtPos
+      e.label = dep; % Avoid a validation error for advmod
+    }
+  }
+}
 
   strat main {
     Seq (
@@ -223,7 +226,7 @@ package pcm_post {
       Onf (dep_comp),
       Onf (double_subj),
       Onf (remove_ext_final),
-      Onf (english_extpos),
+      Onf (ud_validation_2_16),
     )
   }
 }
