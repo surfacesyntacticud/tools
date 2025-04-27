@@ -32,6 +32,11 @@ package say_pre {
       del_feat e.deep
     }
   }
+
+  rule foreign_no_extpos {
+    pattern { X[Foreign=Yes, ExtPos] }
+    commands { del_feat X.ExtPos }
+  }
 }
 
 % TODO: Hausa in now in UD: to update
@@ -71,10 +76,6 @@ package say_post {
   rule Case {
     pattern { N[Case] }
     commands { del_feat N.Case }
-  }
-  rule ExtPos {
-    pattern { N[ExtPos] }
-    commands { del_feat N.ExtPos }
   }
   rule NumType {
     pattern { N[NumType] }
