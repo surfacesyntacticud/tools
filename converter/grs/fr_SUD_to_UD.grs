@@ -35,6 +35,11 @@ histoire	de
       add_edge N -[comp:obj]-> CL;
     }
   }
+
+  rule no_extpos_on_num {
+    pattern { X[upos=NUM, ExtPos] }
+    commands { del_feat X.ExtPos }
+  }
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -183,15 +188,21 @@ strat FR_main_UDplus{
     Onf (final),
     specific_expr_close,
     Onf(extpos),
-    Onf(no_extpos_with_lang) % avoid UD validation errors
+    Onf(FR_final) % avoid UD validation errors
   )
 }
 
-rule no_extpos_with_lang {
-  pattern { N [ExtPos, Lang] }
-  commands { del_feat N.ExtPos }
-}
+package FR_final {
+  rule ExtPos_lang {
+    pattern { N [ExtPos, Lang] }
+    commands { del_feat N.ExtPos }
+  }
 
+  rule dislocated {
+    pattern { e: X -[1=dislocated, 2=*]-> Y }
+    commands { del_feat e.2 }
+  }
+}
 
 % In GSD, there are 3 discontinuous MWEs (in parenthesis, the insered span):
 % * [fr-ud-train_07306] …et face (à la fois) aux Alliés…
@@ -237,7 +248,6 @@ strat fr_main{
     Onf(fix_punct),
     Onf(FR_discontinuous_MWE),
     Onf(FR_spoken_tilde),
-    Onf(remove_Cxn)
+    Onf(remove_Cxn),
   )
 }
-
