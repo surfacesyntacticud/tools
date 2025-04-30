@@ -1,5 +1,35 @@
 include "mSUD_to_SUD.grs"
 
 strat yrk_mSUD_to_SUD_main {
-	mSUD_to_SUD_main
+	Seq (
+		Onf(yrk_pre),
+		mSUD_to_SUD_main
+
+	)
 }
+
+package yrk_pre {
+	rule noise {
+		pattern { e: X -[noise]-> Y }
+		commands {
+			e.label = punct;
+			Y.upos=PUNCT;
+		}
+	}
+
+	rule comp {
+		pattern { e: X -[comp]-> Y }
+		commands {
+			e.label = "comp:obj";
+		}
+	}
+
+	rule double_hyphen {
+		pattern { X1 [form=re".*-"]; X2 [form=re"-.*"]; X1 < X2 }
+		commands {
+			X1.form = X1.form[:-1];
+			X1.wordform = X1.form;
+		}
+	}
+}
+
