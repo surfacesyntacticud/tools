@@ -149,7 +149,6 @@ package fusion {
       X1.form = X1.form + X2.form;                      % concatenate the surface form
       X1.wordform = X1.wordform + X2.wordform;          % concatenate the surface form
       X1.lemma = X1.lemma + X2.lemma;                   % concatenate the surface lemma
-      append_feats "_" X2 =[re"Translit\|Tone"]=> X1;   % concatenate the surface Translit and Tone
       append_feats X2 =[re"Gloss\|Rx"]=> X1;
       X1.upos = X1.FinalPos; del_feat X1.FinalPos;
       shift_out X2 ==> X1;
@@ -170,7 +169,6 @@ package fusion {
       X1.form = X1.form + X2.form;                      % concatenate the surface form
       X1.wordform = X1.wordform + X2.wordform;          % concatenate the surface form
       X1.lemma = X1.lemma + X2.lemma;                   % concatenate the surface lemma
-      append_feats "_" X2 =[re"Translit\|Tone"]=> X1;   % concatenate the surface Translit and Tone
       append_feats X2 =[re"Gloss\|Rx"]=> X1;
       X1.upos = X2.FinalPos;
       shift_out X2 ==> X1;
@@ -191,7 +189,6 @@ package fusion {
       X2.form = X1.form + X2.form;                      % concatenate the surface form
       X2.wordform = X1.wordform + X2.wordform;          % concatenate the surface form
       X2.lemma = X1.lemma + X2.lemma;                   % concatenate the surface lemma
-      prepend_feats "_" X1 =[re"Translit\|Tone"]=> X2;  % concatenate the surface Translit and Tone
       prepend_feats X1 =[re"Gloss\|Rx"]=> X2;
       X2.upos = X1.FinalPos;
       shift_out X1 ==> X2;
@@ -211,7 +208,6 @@ package fusion {
       X2.form = X1.form + X2.form;                      % concatenate the surface form
       X2.wordform = X1.wordform + X2.wordform;          % concatenate the surface form
       X2.lemma = X1.lemma + X2.lemma;                   % concatenate the surface lemma
-      prepend_feats "_" X1 =[re"Translit\|Tone"]=> X2;  % concatenate the surface Translit and Tone
       prepend_feats X1 =[re"Gloss\|Rx"]=> X2;
       X2.upos = X2.FinalPos; del_feat X2.FinalPos;
       shift_out X1 ==> X2;
