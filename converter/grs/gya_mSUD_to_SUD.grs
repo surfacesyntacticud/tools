@@ -3,6 +3,7 @@ strat main {
     Onf (init),
     Onf (aff),
     Onf (word),
+    Onf (post_word),
   )
 }
 
@@ -49,11 +50,11 @@ package aff {
   rule suff {
     pattern { X1 [form]; X2 [form=re"-.*"]; X1 < X2 }
     commands {
-      X2.form = X1.form + X2.form;                      % concatenate the surface form
-      X2.wordform = X1.wordform + X2.wordform;          % concatenate the surface form
+      X1.form = X1.form + X2.form;                      % concatenate the surface form
+      X1.wordform = X1.wordform + X2.wordform;          % concatenate the surface form
       append_feats "_" X2 =[re"Translit\|Tone"]=> X1;   % concatenate the surface Translit and Tone
-      append_feats "-" X1 =[re"MGloss"]=> X2;
-      append_feats X1 =[re"MSeg"]=> X2;
+      append_feats "-" X2 =[re"MGloss"]=> X1;
+      append_feats X2 =[re"MSeg"]=> X1;
       shift_out X2 ==> X1;
       X1.AlignEnd = X2.AlignEnd;
       del_node X2;
@@ -66,7 +67,7 @@ package word {
     pattern { X [Word, nWord] }
     without { X0[nWord]; X0 < X; X0.nWord = X.nWord }
     without { X1[nWord]; X < X1; X1.nWord = X.nWord }
-    commands { X.form = X.Word; del_feat X.Word }
+    commands { X.form = X.Word; X.wordform = X.Word; del_feat X.Word }
   }
 
   rule simple_clitic {
@@ -83,9 +84,20 @@ package word {
 }
 
 
-rule backoff_clitic {
-  pattern { X[Word]; }
-  commands {
-    X.form = "@" + X.Word; del_feat X.Word;
+package post_word {
+  rule H {
+    pattern { X [ form = re".*-H",  wordform = re".*-H"] }
+    commands {
+      X.form = X.form[:-2];
+      X.wordform = X.wordform[:-2];
+    }
+  }
+
+  rule HV {
+    pattern { X [ form = re".*-HV",  wordform = re".*-HV"] }
+    commands {
+      X.form = X.form[:-3];
+      X.wordform = X.wordform[:-3];
+    }
   }
 }
