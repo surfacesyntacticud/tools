@@ -72,7 +72,7 @@
             <div class="alert alert-danger" role="alert" v-if='alert != ""' v-html="alert"></div>
 
             <p>This page proposes a set of tables which describe the global usage of dependency relations, features and
-              feature values in the treebanks from the <a href="http://universaldependencies.org/">UD</a> and <a href="https://surfacesyntacticud.github.io/">SUD</a> projects (version 2.14).</p>
+              feature values in the treebanks from the <a href="http://universaldependencies.org/">UD</a> and <a href="https://surfacesyntacticud.github.io/">SUD</a> projects (version 2.16).</p>
       
             <p>See the 
               <a href="https://github.com/surfacesyntacticud/tools/blob/master/tables/README.md">README</a>
@@ -123,6 +123,39 @@
                 <a href="?data=meta/META">
                   <div class="card">
                     <div class="card-header">Metadata in UD ({{count["meta"]}} table)</div>
+                    <div class="card-body" style="text-align: center;">
+                      <img src="https://universaldependencies.org/logos/logo-ud.png" style="height: 50px;" alt="UD">
+                    </div>
+                  </div>
+                </a>
+              </div>
+            </div>
+
+            <div class="row" style="margin-bottom: 20px;">
+              <div class="col-sm-4">
+                <a href="?data=SP_ud_feats/FEATS">
+                  <div class="card">
+                    <div class="card-header">Features in Spoken_UD ({{count["SP_ud_feats"]}} tables)</div>
+                    <div class="card-body" style="text-align: center;">
+                      <img src="https://universaldependencies.org/logos/logo-ud.png" style="height: 50px;" alt="UD">
+                    </div>
+                  </div>
+                </a>
+              </div>
+              <div class="col-sm-4">
+                <a href="?data=SP_meta/META">
+                  <div class="card">
+                    <div class="card-header">Metadata in Spoken_UD ({{count["SP_meta"]}} table)</div>
+                    <div class="card-body" style="text-align: center;">
+                      <img src="https://universaldependencies.org/logos/logo-ud.png" style="height: 50px;" alt="UD">
+                    </div>
+                  </div>
+                </a>
+              </div>
+              <div class="col-sm-4">
+                <a href="?data=SP_ud_deps/DEPS">
+                  <div class="card">
+                    <div class="card-header">Dependencies in Spoken_UD ({{count["SP_ud_deps"]}} tables)</div>
                     <div class="card-body" style="text-align: center;">
                       <img src="https://universaldependencies.org/logos/logo-ud.png" style="height: 50px;" alt="UD">
                     </div>

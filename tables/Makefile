@@ -14,6 +14,9 @@ selfdoc:
 	@echo "make build_ud_deps"
 	@echo "make build_ud_feats"
 	@echo "make build_meta"
+	@echo "make build_SP_ud_deps"
+	@echo "make build_SP_ud_feats"
+	@echo "make build_SP_meta"
 	@echo "make count"
 
 
@@ -55,7 +58,7 @@ build_SP_ud_deps:
 	python build_table.py -c "SP_UD 2.16" -f "${FILTER}" -o SP_ud_deps/UDEPS.json ${SP_UD} UDEPS
 	@for udep in ${UD_LIST} ; do \
 		echo "================= Building table for udep: $$udep =================" ; \
-		python build_table.py -c "SP_UD 2.16" -f "${FILTER}" -o ud_deps/$$udep.json ${SP_UD} SUBREL:$$udep ; \
+		python build_table.py -c "SP_UD 2.16" -f "${FILTER}" -o SP_ud_deps/$$udep.json ${SP_UD} SUBREL:$$udep ; \
 	done
 
 build_ud_feats:
@@ -67,13 +70,13 @@ build_ud_feats:
 		python build_table.py -c "UD 2.16" -f "${FILTER}" -o ud_feats/$$feat.json ${UD} FEAT:$$feat ; \
 	done
 
-build_ud_feats:
+build_SP_ud_feats:
 	mkdir -p SP_ud_feats
 	python build_table.py -c "SP_UD 2.16" -f "${FILTER}" -o SP_ud_feats/FEATS.json ${SP_UD} FEATS
 	python build_table.py -c "SP_UD 2.16" -f "${FILTER}" -o SP_ud_feats/MISC.json ${SP_UD} MISC
 	@for feat in ${FEAT_LIST} ; do \
 		echo "================= Building table for feature: $$feat =================" ; \
-		python build_table.py -c "SP_UD 2.16" -f "${FILTER}" -o ud_feats/$$feat.json ${SP_UD} FEAT:$$feat ; \
+		python build_table.py -c "SP_UD 2.16" -f "${FILTER}" -o SP_ud_feats/$$feat.json ${SP_UD} FEAT:$$feat ; \
 	done
 
 purge:
