@@ -2,7 +2,7 @@ import glob
 import json
 import os
 
-collections = ["meta", "ud_deps", "sud_deps", "ud_feats", "SP_ud_meta", "SP_ud_deps", "SP_ud_feats"]
+collections = ["meta", "ud_deps", "sud_deps", "ud_feats", "SP_meta", "SP_ud_deps", "SP_ud_feats"]
 
 dict={}
 
