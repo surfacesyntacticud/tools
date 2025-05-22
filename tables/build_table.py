@@ -11,9 +11,9 @@ from xml.dom.expatbuilder import parseString
 # The list of features used in UD 2.16 is needed or generated the right Grew pattern for the MISC case
 # See: https://grew.fr/doc/conllu/#how-the-misc-field-is-handled-by-grew
 ud_feats_2_16 = [
-    "Abbr", "Accomp", "AdjType", "AdpType", "AdvType", "Advlz", "Agglutination", "Also", "Analyt", "Animacy", "Animacy[gram]", "Animacy[obj]", "Aspect", 
-    "Assoc", "BadStyle", 
-    "Case", "Caus", "Cfm", "Clas", "Class", 
+    "Abbr", "Accomp", "AdjType", "AdpType", "AdvType", "Advlz", "Agglutination", "Also", "Analyt", "Animacy", "Animacy[gram]", "Animacy[obj]", "Aspect",
+    "Assoc", "BadStyle",
+    "Case", "Caus", "Cfm", "Clas", "Class",
     "CleftType", "Clitic", "Clusivity", "Clusivity[obj]", "Clusivity[psor]", "Clusivity[subj]", "Compound", "Comt", "Conces",
     "ConjType", "Connegative", "Contrast", "Contv", "Corf", "Decl", "Definite", "Definitizer", "Degree", "Deixis",
     "DeixisRef", "Deixis[psor]", "Delib", "Deo", "Derivation", "Determ", "Detrans", "Dev", "Dialect", "Dist", "Dyn", "Echo", "Emph",
@@ -29,13 +29,13 @@ ud_feats_2_16 = [
     "Person[refl]", "Person[ro]", "Person[subj]", "Polarity", "Polite", "Polite[abs]", "Polite[dat]", "Polite[erg]", "Position", "Poss", "Possessed", "Pred",
     "Prefix", "PrepCase", "PrepForm", "Priv", "PronClass", "PronType", "Proper", "Prp", "PunctSide", "PunctType", "Purp", "RcpType", "Recip", "Red", "Redup",
     "Reflex", "Reflex[obj]", "Reflex[subj]", "Rel", "Reln", "RelType", "Report", "Speech", "Strength", "Style", "Subcat", "SubForm", "SubGender", "Subord",
-    "Subordinative", "Tense", "Top", "Trans", "Tv", "Typo", "Uninflect", "Valency", "Variant", "Ventive", "VerbClass", "VerbForm", "VerbStem", "VerbType", "Voice", 
+    "Subordinative", "Tense", "Top", "Trans", "Tv", "Typo", "Uninflect", "Valency", "Variant", "Ventive", "VerbClass", "VerbForm", "VerbStem", "VerbType", "Voice",
     "Shared"
   ]
 
 
 
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(add_help=True)
 parser.add_argument("basedir", help = "The main folder where all corpora are stored as subdirs")
 parser.add_argument("columns", help = "Must be one either of the values 'DEPS', 'UDEPS', 'DEEP', 'SUBREL:xxx (where xxx is a udep), 'META', 'FEATS', 'MISC', 'FEAT:xxx' (where xxx is a feature name)")
 parser.add_argument("-f", "--filter", help = "The template for selecting treebanks", default="*")
@@ -90,7 +90,7 @@ def add_corpus (corpus):
     else:
         raise Exception('Unknonwn column definition', args.columns)
     raw = subprocess.run([command], capture_output=True, shell=True, encoding='UTF-8')
-    column_cpt = 0 
+    column_cpt = 0
     for line in raw.stdout.split("\n"):
         fields = line.strip().split(" ")
         if len(fields) >= 2:
@@ -108,7 +108,7 @@ for corpus in corpus_list:
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------------
 # ==== Step 3 ====
-# build [key_list]: the list of couple (feature_name, nb_of_corpora_using_this_feature), 
+# build [key_list]: the list of couple (feature_name, nb_of_corpora_using_this_feature),
 
 # sorted by decreasing order of nb_of_corpora_using_this_feature
 # Compute from data in [dict], how many corpora use the feature [feat]
@@ -116,7 +116,7 @@ def nb_corpora(feat):
     cpt = 0
     for corpus in dict:
         if feat in dict[corpus]:
-            cpt += 1 
+            cpt += 1
     return cpt
 
 # Compute a set [keys] with the union of all corpora keys (will be the columns)
@@ -203,7 +203,7 @@ def build_row(corpus):
 
 grid = {
     "title": title(args.columns) + (" ••• " + args.collection) if args.collection != None else "",
-    "grew_match": 
+    "grew_match":
         {feat: {
             "code": pattern(feat)[0],
             "key": pattern(feat)[1],
