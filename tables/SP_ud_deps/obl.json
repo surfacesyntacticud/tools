@@ -6,14 +6,21 @@
         "pattern {M -[1=obl,!2]-> N}"
       ],
       "key": null,
-      "users": 28
+      "users": 32
     },
     "obl:arg": {
       "code": [
         "pattern {M -[1=obl,2=arg]-> N}"
       ],
       "key": null,
-      "users": 11
+      "users": 14
+    },
+    "obl:mod": {
+      "code": [
+        "pattern {M -[1=obl,2=mod]-> N}"
+      ],
+      "key": null,
+      "users": 8
     },
     "obl:agent": {
       "code": [
@@ -22,33 +29,33 @@
       "key": null,
       "users": 7
     },
-    "obl:mod": {
+    "obl:tmod": {
       "code": [
-        "pattern {M -[1=obl,2=mod]-> N}"
+        "pattern {M -[1=obl,2=tmod]-> N}"
       ],
       "key": null,
-      "users": 6
+      "users": 7
     },
     "obl:unmarked": {
       "code": [
         "pattern {M -[1=obl,2=unmarked]-> N}"
       ],
       "key": null,
-      "users": 4
+      "users": 5
     },
-    "obl:tmod": {
+    "obl:lmod": {
       "code": [
-        "pattern {M -[1=obl,2=tmod]-> N}"
+        "pattern {M -[1=obl,2=lmod]-> N}"
       ],
       "key": null,
-      "users": 4
+      "users": 3
     },
-    "obl:cmp": {
+    "obl:npmod": {
       "code": [
-        "pattern {M -[1=obl,2=cmp]-> N}"
+        "pattern {M -[1=obl,2=npmod]-> N}"
       ],
       "key": null,
-      "users": 1
+      "users": 2
     },
     "obl:patient": {
       "code": [
@@ -57,16 +64,9 @@
       "key": null,
       "users": 1
     },
-    "obl:npmod": {
+    "obl:cmp": {
       "code": [
-        "pattern {M -[1=obl,2=npmod]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "obl:lmod": {
-      "code": [
-        "pattern {M -[1=obl,2=lmod]-> N}"
+        "pattern {M -[1=obl,2=cmp]-> N}"
       ],
       "key": null,
       "users": 1
@@ -82,36 +82,36 @@
       "headerName": "obl:arg"
     },
     {
-      "field": "obl:agent",
-      "headerName": "obl:agent"
-    },
-    {
       "field": "obl:mod",
       "headerName": "obl:mod"
     },
     {
-      "field": "obl:unmarked",
-      "headerName": "obl:unmarked"
+      "field": "obl:agent",
+      "headerName": "obl:agent"
     },
     {
       "field": "obl:tmod",
       "headerName": "obl:tmod"
     },
     {
-      "field": "obl:cmp",
-      "headerName": "obl:cmp"
+      "field": "obl:unmarked",
+      "headerName": "obl:unmarked"
     },
     {
-      "field": "obl:patient",
-      "headerName": "obl:patient"
+      "field": "obl:lmod",
+      "headerName": "obl:lmod"
     },
     {
       "field": "obl:npmod",
       "headerName": "obl:npmod"
     },
     {
-      "field": "obl:lmod",
-      "headerName": "obl:lmod"
+      "field": "obl:patient",
+      "headerName": "obl:patient"
+    },
+    {
+      "field": "obl:cmp",
+      "headerName": "obl:cmp"
     }
   ],
   "cells": [
@@ -143,6 +143,47 @@
         0.042126980577886636
       ],
       "treebank": "UD_Slovenian-SST@2.16"
+    },
+    {
+      "obl:arg": [
+        151,
+        1.6236559139784945,
+        0.23195084485407066
+      ],
+      "obl:mod": [
+        2,
+        0.021505376344086023,
+        0.0030721966205837174
+      ],
+      "treebank": "UD_Nenets-Tundra@2.16"
+    },
+    {
+      "obl": [
+        1,
+        0.0024630541871921183,
+        0.00036859565057132326
+      ],
+      "obl:arg": [
+        127,
+        0.312807881773399,
+        0.04681164762255805
+      ],
+      "obl:lmod": [
+        100,
+        0.24630541871921183,
+        0.036859565057132324
+      ],
+      "obl:mod": [
+        26,
+        0.06403940886699508,
+        0.009583486914854404
+      ],
+      "obl:tmod": [
+        29,
+        0.07142857142857142,
+        0.010689273866568375
+      ],
+      "treebank": "UD_Bokota-ChibErgIS@2.16"
     },
     {
       "obl": [
@@ -220,6 +261,29 @@
         0.003612987987987988
       ],
       "treebank": "UD_English-ESLSpok@2.16"
+    },
+    {
+      "obl": [
+        5614,
+        0.15281596210904538,
+        0.024789155296507263
+      ],
+      "obl:npmod": [
+        229,
+        0.006233497563764053,
+        0.0010111714575882014
+      ],
+      "obl:tmod": [
+        492,
+        0.013392492582410103,
+        0.0021724731752550005
+      ],
+      "obl:unmarked": [
+        3,
+        8.166154013664697e-05,
+        1.3246787653993906e-05
+      ],
+      "treebank": "UD_English-CHILDES@2.16"
     },
     {
       "obl": [
@@ -306,6 +370,29 @@
     },
     {
       "obl": [
+        1,
+        0.002277904328018223,
+        0.0002698327037236913
+      ],
+      "obl:arg": [
+        65,
+        0.1480637813211845,
+        0.017539125742039936
+      ],
+      "obl:lmod": [
+        38,
+        0.08656036446469248,
+        0.01025364274150027
+      ],
+      "obl:tmod": [
+        3,
+        0.00683371298405467,
+        0.0008094981111710739
+      ],
+      "treebank": "UD_Ika-ChibErgIS@2.16"
+    },
+    {
+      "obl": [
         2,
         0.0006232471174820816,
         4.520591293341169e-05
@@ -326,6 +413,14 @@
         0.025179693503910312
       ],
       "treebank": "UD_French-Rhapsodie@2.16"
+    },
+    {
+      "obl": [
+        178,
+        0.6592592592592592,
+        0.04091013560101126
+      ],
+      "treebank": "UD_Greek-Cretan@2.16"
     },
     {
       "obl": [

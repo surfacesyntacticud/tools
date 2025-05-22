@@ -6,18 +6,25 @@
         "pattern {M -[1=compound,!2]-> N}"
       ],
       "key": null,
-      "users": 22
+      "users": 26
     },
     "compound:prt": {
       "code": [
         "pattern {M -[1=compound,2=prt]-> N}"
       ],
       "key": null,
-      "users": 7
+      "users": 8
     },
     "compound:svc": {
       "code": [
         "pattern {M -[1=compound,2=svc]-> N}"
+      ],
+      "key": null,
+      "users": 6
+    },
+    "compound:redup": {
+      "code": [
+        "pattern {M -[1=compound,2=redup]-> N}"
       ],
       "key": null,
       "users": 5
@@ -29,23 +36,9 @@
       "key": null,
       "users": 5
     },
-    "compound:redup": {
+    "compound:ext": {
       "code": [
-        "pattern {M -[1=compound,2=redup]-> N}"
-      ],
-      "key": null,
-      "users": 3
-    },
-    "compound:vo": {
-      "code": [
-        "pattern {M -[1=compound,2=vo]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "compound:vv": {
-      "code": [
-        "pattern {M -[1=compound,2=vv]-> N}"
+        "pattern {M -[1=compound,2=ext]-> N}"
       ],
       "key": null,
       "users": 1
@@ -53,6 +46,13 @@
     "compound:affix": {
       "code": [
         "pattern {M -[1=compound,2=affix]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "compound:vo": {
+      "code": [
+        "pattern {M -[1=compound,2=vo]-> N}"
       ],
       "key": null,
       "users": 1
@@ -78,9 +78,9 @@
       "key": null,
       "users": 1
     },
-    "compound:ext": {
+    "compound:vv": {
       "code": [
-        "pattern {M -[1=compound,2=ext]-> N}"
+        "pattern {M -[1=compound,2=vv]-> N}"
       ],
       "key": null,
       "users": 1
@@ -100,24 +100,24 @@
       "headerName": "compound:svc"
     },
     {
-      "field": "compound:lvc",
-      "headerName": "compound:lvc"
-    },
-    {
       "field": "compound:redup",
       "headerName": "compound:redup"
     },
     {
-      "field": "compound:vo",
-      "headerName": "compound:vo"
+      "field": "compound:lvc",
+      "headerName": "compound:lvc"
     },
     {
-      "field": "compound:vv",
-      "headerName": "compound:vv"
+      "field": "compound:ext",
+      "headerName": "compound:ext"
     },
     {
       "field": "compound:affix",
       "headerName": "compound:affix"
+    },
+    {
+      "field": "compound:vo",
+      "headerName": "compound:vo"
     },
     {
       "field": "compound:dir",
@@ -132,8 +132,8 @@
       "headerName": "compound:nn"
     },
     {
-      "field": "compound:ext",
-      "headerName": "compound:ext"
+      "field": "compound:vv",
+      "headerName": "compound:vv"
     }
   ],
   "cells": [
@@ -155,6 +155,22 @@
     },
     {
       "treebank": "UD_Slovenian-SST@2.16"
+    },
+    {
+      "treebank": "UD_Nenets-Tundra@2.16"
+    },
+    {
+      "compound": [
+        6,
+        0.014778325123152709,
+        0.0022115739034279398
+      ],
+      "compound:svc": [
+        7,
+        0.017241379310344827,
+        0.002580169553999263
+      ],
+      "treebank": "UD_Bokota-ChibErgIS@2.16"
     },
     {
       "compound:svc": [
@@ -207,6 +223,19 @@
         0.002815315315315315
       ],
       "treebank": "UD_English-ESLSpok@2.16"
+    },
+    {
+      "compound": [
+        2081,
+        0.05664588834145412,
+        0.009188855035987107
+      ],
+      "compound:prt": [
+        1550,
+        0.042191795737267605,
+        0.006844173621230185
+      ],
+      "treebank": "UD_English-CHILDES@2.16"
     },
     {
       "compound": [
@@ -278,11 +307,37 @@
     },
     {
       "compound": [
+        3,
+        0.00683371298405467,
+        0.0008094981111710739
+      ],
+      "compound:redup": [
+        10,
+        0.022779043280182234,
+        0.002698327037236913
+      ],
+      "treebank": "UD_Ika-ChibErgIS@2.16"
+    },
+    {
+      "compound": [
         51,
         0.015892801495793082,
         0.001152750779801998
       ],
       "treebank": "UD_French-Rhapsodie@2.16"
+    },
+    {
+      "compound": [
+        18,
+        0.06666666666666667,
+        0.004136980004596644
+      ],
+      "compound:redup": [
+        6,
+        0.022222222222222223,
+        0.001378993334865548
+      ],
+      "treebank": "UD_Greek-Cretan@2.16"
     },
     {
       "compound": [

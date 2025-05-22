@@ -1,18 +1,25 @@
 {
   "title": "## Usage of features in `FEATS` CoNLL column \u2022\u2022\u2022 SP_UD 2.16",
   "grew_match": {
-    "PronType": {
-      "code": [
-        "pattern { N [PronType] }"
-      ],
-      "key": "N.PronType",
-      "users": 25
-    },
     "VerbForm": {
       "code": [
         "pattern { N [VerbForm] }"
       ],
       "key": "N.VerbForm",
+      "users": 26
+    },
+    "PronType": {
+      "code": [
+        "pattern { N [PronType] }"
+      ],
+      "key": "N.PronType",
+      "users": 26
+    },
+    "Person": {
+      "code": [
+        "pattern { N [Person] }"
+      ],
+      "key": "N.Person",
       "users": 25
     },
     "Number": {
@@ -20,13 +27,13 @@
         "pattern { N [Number] }"
       ],
       "key": "N.Number",
-      "users": 24
+      "users": 25
     },
-    "Person": {
+    "Polarity": {
       "code": [
-        "pattern { N [Person] }"
+        "pattern { N [Polarity] }"
       ],
-      "key": "N.Person",
+      "key": "N.Polarity",
       "users": 24
     },
     "Case": {
@@ -34,34 +41,34 @@
         "pattern { N [Case] }"
       ],
       "key": "N.Case",
-      "users": 22
+      "users": 24
     },
     "Tense": {
       "code": [
         "pattern { N [Tense] }"
       ],
       "key": "N.Tense",
-      "users": 22
+      "users": 23
     },
     "Mood": {
       "code": [
         "pattern { N [Mood] }"
       ],
       "key": "N.Mood",
-      "users": 22
-    },
-    "Polarity": {
-      "code": [
-        "pattern { N [Polarity] }"
-      ],
-      "key": "N.Polarity",
-      "users": 22
+      "users": 23
     },
     "Definite": {
       "code": [
         "pattern { N [Definite] }"
       ],
       "key": "N.Definite",
+      "users": 20
+    },
+    "Gender": {
+      "code": [
+        "pattern { N [Gender] }"
+      ],
+      "key": "N.Gender",
       "users": 18
     },
     "Reflex": {
@@ -71,32 +78,32 @@
       "key": "N.Reflex",
       "users": 17
     },
-    "Gender": {
+    "Voice": {
       "code": [
-        "pattern { N [Gender] }"
+        "pattern { N [Voice] }"
       ],
-      "key": "N.Gender",
-      "users": 17
+      "key": "N.Voice",
+      "users": 16
     },
     "NumType": {
       "code": [
         "pattern { N [NumType] }"
       ],
       "key": "N.NumType",
-      "users": 15
-    },
-    "Voice": {
-      "code": [
-        "pattern { N [Voice] }"
-      ],
-      "key": "N.Voice",
-      "users": 15
+      "users": 16
     },
     "Degree": {
       "code": [
         "pattern { N [Degree] }"
       ],
       "key": "N.Degree",
+      "users": 16
+    },
+    "ExtPos": {
+      "code": [
+        "pattern { N [ExtPos] }"
+      ],
+      "key": "N.ExtPos",
       "users": 15
     },
     "Poss": {
@@ -104,28 +111,21 @@
         "pattern { N [Poss] }"
       ],
       "key": "N.Poss",
-      "users": 14
-    },
-    "ExtPos": {
-      "code": [
-        "pattern { N [ExtPos] }"
-      ],
-      "key": "N.ExtPos",
-      "users": 13
+      "users": 15
     },
     "Aspect": {
       "code": [
         "pattern { N [Aspect] }"
       ],
       "key": "N.Aspect",
-      "users": 12
+      "users": 13
     },
     "Foreign": {
       "code": [
         "pattern { N [Foreign] }"
       ],
       "key": "N.Foreign",
-      "users": 12
+      "users": 13
     },
     "Number[psor]": {
       "code": [
@@ -139,7 +139,7 @@
         "pattern { N [Typo] }"
       ],
       "key": "N.Typo",
-      "users": 7
+      "users": 8
     },
     "Person[psor]": {
       "code": [
@@ -162,18 +162,18 @@
       "key": "N.Abbr",
       "users": 5
     },
-    "NumForm": {
-      "code": [
-        "pattern { N [NumForm] }"
-      ],
-      "key": "N.NumForm",
-      "users": 5
-    },
     "NounType": {
       "code": [
         "pattern { N [NounType] }"
       ],
       "key": "N.NounType",
+      "users": 5
+    },
+    "NumForm": {
+      "code": [
+        "pattern { N [NumForm] }"
+      ],
+      "key": "N.NumForm",
       "users": 5
     },
     "Deixis": {
@@ -183,25 +183,11 @@
       "key": "N.Deixis",
       "users": 4
     },
-    "Polite": {
-      "code": [
-        "pattern { N [Polite] }"
-      ],
-      "key": "N.Polite",
-      "users": 3
-    },
     "VerbType": {
       "code": [
         "pattern { N [VerbType] }"
       ],
       "key": "N.VerbType",
-      "users": 3
-    },
-    "Number[subj]": {
-      "code": [
-        "pattern { N [Number__subj] }"
-      ],
-      "key": "N.Number__subj",
       "users": 3
     },
     "AdvType": {
@@ -211,53 +197,32 @@
       "key": "N.AdvType",
       "users": 3
     },
-    "Animacy[obj]": {
+    "Polite": {
       "code": [
-        "pattern { N [Animacy__obj] }"
+        "pattern { N [Polite] }"
       ],
-      "key": "N.Animacy__obj",
-      "users": 2
-    },
-    "Person[obj]": {
-      "code": [
-        "pattern { N [Person__obj] }"
-      ],
-      "key": "N.Person__obj",
-      "users": 2
-    },
-    "Person[subj]": {
-      "code": [
-        "pattern { N [Person__subj] }"
-      ],
-      "key": "N.Person__subj",
-      "users": 2
-    },
-    "Subcat": {
-      "code": [
-        "pattern { N [Subcat] }"
-      ],
-      "key": "N.Subcat",
-      "users": 2
+      "key": "N.Polite",
+      "users": 3
     },
     "Animacy": {
       "code": [
         "pattern { N [Animacy] }"
       ],
       "key": "N.Animacy",
-      "users": 2
+      "users": 3
     },
-    "Number[obj]": {
+    "Number[subj]": {
       "code": [
-        "pattern { N [Number__obj] }"
+        "pattern { N [Number__subj] }"
       ],
-      "key": "N.Number__obj",
-      "users": 2
+      "key": "N.Number__subj",
+      "users": 3
     },
-    "Gender[psor]": {
+    "Variant": {
       "code": [
-        "pattern { N [Gender__psor] }"
+        "pattern { N [Variant] }"
       ],
-      "key": "N.Gender__psor",
+      "key": "N.Variant",
       "users": 2
     },
     "Movement": {
@@ -267,11 +232,18 @@
       "key": "N.Movement",
       "users": 2
     },
-    "Variant": {
+    "Gender[psor]": {
       "code": [
-        "pattern { N [Variant] }"
+        "pattern { N [Gender__psor] }"
       ],
-      "key": "N.Variant",
+      "key": "N.Gender__psor",
+      "users": 2
+    },
+    "Person[obj]": {
+      "code": [
+        "pattern { N [Person__obj] }"
+      ],
+      "key": "N.Person__obj",
       "users": 2
     },
     "Emph": {
@@ -281,11 +253,25 @@
       "key": "N.Emph",
       "users": 2
     },
+    "Number[obj]": {
+      "code": [
+        "pattern { N [Number__obj] }"
+      ],
+      "key": "N.Number__obj",
+      "users": 2
+    },
     "Style": {
       "code": [
         "pattern { N [Style] }"
       ],
       "key": "N.Style",
+      "users": 2
+    },
+    "Person[subj]": {
+      "code": [
+        "pattern { N [Person__subj] }"
+      ],
+      "key": "N.Person__subj",
       "users": 2
     },
     "Evident": {
@@ -295,60 +281,25 @@
       "key": "N.Evident",
       "users": 2
     },
-    "Clusivity": {
+    "Animacy[obj]": {
       "code": [
-        "pattern { N [Clusivity] }"
+        "pattern { N [Animacy__obj] }"
       ],
-      "key": "N.Clusivity",
-      "users": 1
+      "key": "N.Animacy__obj",
+      "users": 2
     },
-    "CleftType": {
+    "Subcat": {
       "code": [
-        "pattern { N [CleftType] }"
+        "pattern { N [Subcat] }"
       ],
-      "key": "N.CleftType",
-      "users": 1
+      "key": "N.Subcat",
+      "users": 2
     },
-    "PunctSide": {
+    "Connegative": {
       "code": [
-        "pattern { N [PunctSide] }"
+        "pattern { N [Connegative] }"
       ],
-      "key": "N.PunctSide",
-      "users": 1
-    },
-    "Number[io]": {
-      "code": [
-        "pattern { N [Number__io] }"
-      ],
-      "key": "N.Number__io",
-      "users": 1
-    },
-    "Number[abs]": {
-      "code": [
-        "pattern { N [Number__abs] }"
-      ],
-      "key": "N.Number__abs",
-      "users": 1
-    },
-    "PrepCase": {
-      "code": [
-        "pattern { N [PrepCase] }"
-      ],
-      "key": "N.PrepCase",
-      "users": 1
-    },
-    "Gender[abs]": {
-      "code": [
-        "pattern { N [Gender__abs] }"
-      ],
-      "key": "N.Gender__abs",
-      "users": 1
-    },
-    "PunctType": {
-      "code": [
-        "pattern { N [PunctType] }"
-      ],
-      "key": "N.PunctType",
+      "key": "N.Connegative",
       "users": 1
     },
     "AdpType": {
@@ -358,39 +309,25 @@
       "key": "N.AdpType",
       "users": 1
     },
-    "Nomzr": {
+    "Clitic": {
       "code": [
-        "pattern { N [Nomzr] }"
+        "pattern { N [Clitic] }"
       ],
-      "key": "N.Nomzr",
+      "key": "N.Clitic",
       "users": 1
     },
-    "Number[erg]": {
+    "PunctType": {
       "code": [
-        "pattern { N [Number__erg] }"
+        "pattern { N [PunctType] }"
       ],
-      "key": "N.Number__erg",
+      "key": "N.PunctType",
       "users": 1
     },
-    "Gender[erg]": {
+    "Derivation": {
       "code": [
-        "pattern { N [Gender__erg] }"
+        "pattern { N [Derivation] }"
       ],
-      "key": "N.Gender__erg",
-      "users": 1
-    },
-    "Form": {
-      "code": [
-        "pattern { N [Form] }"
-      ],
-      "key": "N.Form",
-      "users": 1
-    },
-    "Connegative": {
-      "code": [
-        "pattern { N [Connegative] }"
-      ],
-      "key": "N.Connegative",
+      "key": "N.Derivation",
       "users": 1
     },
     "Caus": {
@@ -407,53 +344,32 @@
       "key": "N.Prefix",
       "users": 1
     },
-    "Person[io]": {
+    "Clusivity": {
       "code": [
-        "pattern { N [Person__io] }"
+        "pattern { N [Clusivity] }"
       ],
-      "key": "N.Person__io",
+      "key": "N.Clusivity",
       "users": 1
     },
-    "HebBinyan": {
+    "Number[erg]": {
       "code": [
-        "pattern { N [HebBinyan] }"
+        "pattern { N [Number__erg] }"
       ],
-      "key": "N.HebBinyan",
+      "key": "N.Number__erg",
       "users": 1
     },
-    "Clitic": {
+    "Gender[abs]": {
       "code": [
-        "pattern { N [Clitic] }"
+        "pattern { N [Gender__abs] }"
       ],
-      "key": "N.Clitic",
+      "key": "N.Gender__abs",
       "users": 1
     },
-    "Person[abs]": {
+    "Number[io]": {
       "code": [
-        "pattern { N [Person__abs] }"
+        "pattern { N [Number__io] }"
       ],
-      "key": "N.Person__abs",
-      "users": 1
-    },
-    "RelType": {
-      "code": [
-        "pattern { N [RelType] }"
-      ],
-      "key": "N.RelType",
-      "users": 1
-    },
-    "Int": {
-      "code": [
-        "pattern { N [Int] }"
-      ],
-      "key": "N.Int",
-      "users": 1
-    },
-    "VerbClass": {
-      "code": [
-        "pattern { N [VerbClass] }"
-      ],
-      "key": "N.VerbClass",
+      "key": "N.Number__io",
       "users": 1
     },
     "Gender[io]": {
@@ -463,11 +379,18 @@
       "key": "N.Gender__io",
       "users": 1
     },
-    "Derivation": {
+    "Number[abs]": {
       "code": [
-        "pattern { N [Derivation] }"
+        "pattern { N [Number__abs] }"
       ],
-      "key": "N.Derivation",
+      "key": "N.Number__abs",
+      "users": 1
+    },
+    "RelType": {
+      "code": [
+        "pattern { N [RelType] }"
+      ],
+      "key": "N.RelType",
       "users": 1
     },
     "Person[erg]": {
@@ -477,30 +400,111 @@
       "key": "N.Person__erg",
       "users": 1
     },
+    "Form": {
+      "code": [
+        "pattern { N [Form] }"
+      ],
+      "key": "N.Form",
+      "users": 1
+    },
+    "VerbClass": {
+      "code": [
+        "pattern { N [VerbClass] }"
+      ],
+      "key": "N.VerbClass",
+      "users": 1
+    },
+    "Person[abs]": {
+      "code": [
+        "pattern { N [Person__abs] }"
+      ],
+      "key": "N.Person__abs",
+      "users": 1
+    },
+    "PrepCase": {
+      "code": [
+        "pattern { N [PrepCase] }"
+      ],
+      "key": "N.PrepCase",
+      "users": 1
+    },
+    "Int": {
+      "code": [
+        "pattern { N [Int] }"
+      ],
+      "key": "N.Int",
+      "users": 1
+    },
+    "Person[io]": {
+      "code": [
+        "pattern { N [Person__io] }"
+      ],
+      "key": "N.Person__io",
+      "users": 1
+    },
     "RcpType": {
       "code": [
         "pattern { N [RcpType] }"
       ],
       "key": "N.RcpType",
       "users": 1
+    },
+    "Gender[erg]": {
+      "code": [
+        "pattern { N [Gender__erg] }"
+      ],
+      "key": "N.Gender__erg",
+      "users": 1
+    },
+    "CleftType": {
+      "code": [
+        "pattern { N [CleftType] }"
+      ],
+      "key": "N.CleftType",
+      "users": 1
+    },
+    "HebBinyan": {
+      "code": [
+        "pattern { N [HebBinyan] }"
+      ],
+      "key": "N.HebBinyan",
+      "users": 1
+    },
+    "PunctSide": {
+      "code": [
+        "pattern { N [PunctSide] }"
+      ],
+      "key": "N.PunctSide",
+      "users": 1
+    },
+    "Nomzr": {
+      "code": [
+        "pattern { N [Nomzr] }"
+      ],
+      "key": "N.Nomzr",
+      "users": 1
     }
   },
   "columns": [
+    {
+      "field": "VerbForm",
+      "headerName": "VerbForm"
+    },
     {
       "field": "PronType",
       "headerName": "PronType"
     },
     {
-      "field": "VerbForm",
-      "headerName": "VerbForm"
+      "field": "Person",
+      "headerName": "Person"
     },
     {
       "field": "Number",
       "headerName": "Number"
     },
     {
-      "field": "Person",
-      "headerName": "Person"
+      "field": "Polarity",
+      "headerName": "Polarity"
     },
     {
       "field": "Case",
@@ -515,40 +519,36 @@
       "headerName": "Mood"
     },
     {
-      "field": "Polarity",
-      "headerName": "Polarity"
-    },
-    {
       "field": "Definite",
       "headerName": "Definite"
-    },
-    {
-      "field": "Reflex",
-      "headerName": "Reflex"
     },
     {
       "field": "Gender",
       "headerName": "Gender"
     },
     {
-      "field": "NumType",
-      "headerName": "NumType"
+      "field": "Reflex",
+      "headerName": "Reflex"
     },
     {
       "field": "Voice",
       "headerName": "Voice"
     },
     {
+      "field": "NumType",
+      "headerName": "NumType"
+    },
+    {
       "field": "Degree",
       "headerName": "Degree"
     },
     {
-      "field": "Poss",
-      "headerName": "Poss"
-    },
-    {
       "field": "ExtPos",
       "headerName": "ExtPos"
+    },
+    {
+      "field": "Poss",
+      "headerName": "Poss"
     },
     {
       "field": "Aspect",
@@ -579,136 +579,100 @@
       "headerName": "Abbr"
     },
     {
-      "field": "NumForm",
-      "headerName": "NumForm"
-    },
-    {
       "field": "NounType",
       "headerName": "NounType"
+    },
+    {
+      "field": "NumForm",
+      "headerName": "NumForm"
     },
     {
       "field": "Deixis",
       "headerName": "Deixis"
     },
     {
-      "field": "Polite",
-      "headerName": "Polite"
-    },
-    {
       "field": "VerbType",
       "headerName": "VerbType"
-    },
-    {
-      "field": "Number[subj]",
-      "headerName": "Number[subj]"
     },
     {
       "field": "AdvType",
       "headerName": "AdvType"
     },
     {
-      "field": "Animacy[obj]",
-      "headerName": "Animacy[obj]"
-    },
-    {
-      "field": "Person[obj]",
-      "headerName": "Person[obj]"
-    },
-    {
-      "field": "Person[subj]",
-      "headerName": "Person[subj]"
-    },
-    {
-      "field": "Subcat",
-      "headerName": "Subcat"
+      "field": "Polite",
+      "headerName": "Polite"
     },
     {
       "field": "Animacy",
       "headerName": "Animacy"
     },
     {
-      "field": "Number[obj]",
-      "headerName": "Number[obj]"
-    },
-    {
-      "field": "Gender[psor]",
-      "headerName": "Gender[psor]"
-    },
-    {
-      "field": "Movement",
-      "headerName": "Movement"
+      "field": "Number[subj]",
+      "headerName": "Number[subj]"
     },
     {
       "field": "Variant",
       "headerName": "Variant"
     },
     {
+      "field": "Movement",
+      "headerName": "Movement"
+    },
+    {
+      "field": "Gender[psor]",
+      "headerName": "Gender[psor]"
+    },
+    {
+      "field": "Person[obj]",
+      "headerName": "Person[obj]"
+    },
+    {
       "field": "Emph",
       "headerName": "Emph"
+    },
+    {
+      "field": "Number[obj]",
+      "headerName": "Number[obj]"
     },
     {
       "field": "Style",
       "headerName": "Style"
     },
     {
+      "field": "Person[subj]",
+      "headerName": "Person[subj]"
+    },
+    {
       "field": "Evident",
       "headerName": "Evident"
     },
     {
-      "field": "Clusivity",
-      "headerName": "Clusivity"
+      "field": "Animacy[obj]",
+      "headerName": "Animacy[obj]"
     },
     {
-      "field": "CleftType",
-      "headerName": "CleftType"
+      "field": "Subcat",
+      "headerName": "Subcat"
     },
     {
-      "field": "PunctSide",
-      "headerName": "PunctSide"
-    },
-    {
-      "field": "Number[io]",
-      "headerName": "Number[io]"
-    },
-    {
-      "field": "Number[abs]",
-      "headerName": "Number[abs]"
-    },
-    {
-      "field": "PrepCase",
-      "headerName": "PrepCase"
-    },
-    {
-      "field": "Gender[abs]",
-      "headerName": "Gender[abs]"
-    },
-    {
-      "field": "PunctType",
-      "headerName": "PunctType"
+      "field": "Connegative",
+      "headerName": "Connegative"
     },
     {
       "field": "AdpType",
       "headerName": "AdpType"
     },
     {
-      "field": "Nomzr",
-      "headerName": "Nomzr"
+      "field": "Clitic",
+      "headerName": "Clitic"
     },
     {
-      "field": "Number[erg]",
-      "headerName": "Number[erg]"
+      "field": "PunctType",
+      "headerName": "PunctType"
     },
     {
-      "field": "Gender[erg]",
-      "headerName": "Gender[erg]"
-    },
-    {
-      "field": "Form",
-      "headerName": "Form"
-    },
-    {
-      "field": "Connegative",
-      "headerName": "Connegative"
+      "field": "Derivation",
+      "headerName": "Derivation"
     },
     {
       "field": "Caus",
@@ -719,48 +683,84 @@
       "headerName": "Prefix"
     },
     {
-      "field": "Person[io]",
-      "headerName": "Person[io]"
+      "field": "Clusivity",
+      "headerName": "Clusivity"
     },
     {
-      "field": "HebBinyan",
-      "headerName": "HebBinyan"
+      "field": "Number[erg]",
+      "headerName": "Number[erg]"
     },
     {
-      "field": "Clitic",
-      "headerName": "Clitic"
+      "field": "Gender[abs]",
+      "headerName": "Gender[abs]"
     },
     {
-      "field": "Person[abs]",
-      "headerName": "Person[abs]"
-    },
-    {
-      "field": "RelType",
-      "headerName": "RelType"
-    },
-    {
-      "field": "Int",
-      "headerName": "Int"
-    },
-    {
-      "field": "VerbClass",
-      "headerName": "VerbClass"
+      "field": "Number[io]",
+      "headerName": "Number[io]"
     },
     {
       "field": "Gender[io]",
       "headerName": "Gender[io]"
     },
     {
-      "field": "Derivation",
-      "headerName": "Derivation"
+      "field": "Number[abs]",
+      "headerName": "Number[abs]"
+    },
+    {
+      "field": "RelType",
+      "headerName": "RelType"
     },
     {
       "field": "Person[erg]",
       "headerName": "Person[erg]"
     },
     {
+      "field": "Form",
+      "headerName": "Form"
+    },
+    {
+      "field": "VerbClass",
+      "headerName": "VerbClass"
+    },
+    {
+      "field": "Person[abs]",
+      "headerName": "Person[abs]"
+    },
+    {
+      "field": "PrepCase",
+      "headerName": "PrepCase"
+    },
+    {
+      "field": "Int",
+      "headerName": "Int"
+    },
+    {
+      "field": "Person[io]",
+      "headerName": "Person[io]"
+    },
+    {
       "field": "RcpType",
       "headerName": "RcpType"
+    },
+    {
+      "field": "Gender[erg]",
+      "headerName": "Gender[erg]"
+    },
+    {
+      "field": "CleftType",
+      "headerName": "CleftType"
+    },
+    {
+      "field": "HebBinyan",
+      "headerName": "HebBinyan"
+    },
+    {
+      "field": "PunctSide",
+      "headerName": "PunctSide"
+    },
+    {
+      "field": "Nomzr",
+      "headerName": "Nomzr"
     }
   ],
   "cells": [
@@ -1069,6 +1069,22 @@
       "treebank": "UD_Slovenian-SST@2.16"
     },
     {
+      "treebank": "UD_Nenets-Tundra@2.16"
+    },
+    {
+      "Foreign": [
+        109,
+        0.2684729064039409,
+        0.04017692591227424
+      ],
+      "Polarity": [
+        26,
+        0.06403940886699508,
+        0.009583486914854404
+      ],
+      "treebank": "UD_Bokota-ChibErgIS@2.16"
+    },
+    {
       "Aspect": [
         1362,
         1.7850589777195283,
@@ -1359,6 +1375,19 @@
     },
     {
       "treebank": "UD_English-ESLSpok@2.16"
+    },
+    {
+      "ExtPos": [
+        151,
+        0.0041102975202112315,
+        0.00066675497858436
+      ],
+      "Typo": [
+        27,
+        0.0007349538612298228,
+        0.00011922108888594516
+      ],
+      "treebank": "UD_English-CHILDES@2.16"
     },
     {
       "Abbr": [
@@ -1839,6 +1868,24 @@
       "treebank": "UD_Northwest_Gbaya-Autogramm@2.16"
     },
     {
+      "Animacy": [
+        162,
+        0.3690205011389522,
+        0.04371289800323799
+      ],
+      "Case": [
+        258,
+        0.5876993166287016,
+        0.06961683756071235
+      ],
+      "Definite": [
+        162,
+        0.3690205011389522,
+        0.04371289800323799
+      ],
+      "treebank": "UD_Ika-ChibErgIS@2.16"
+    },
+    {
       "Definite": [
         3760,
         1.1717045808663136,
@@ -1925,6 +1972,89 @@
         0.12978617603182496
       ],
       "treebank": "UD_French-Rhapsodie@2.16"
+    },
+    {
+      "Aspect": [
+        713,
+        2.640740740740741,
+        0.16387037462652262
+      ],
+      "Case": [
+        1958,
+        7.2518518518518515,
+        0.45001149161112386
+      ],
+      "Definite": [
+        571,
+        2.1148148148148147,
+        0.13123419903470468
+      ],
+      "Degree": [
+        75,
+        0.2777777777777778,
+        0.01723741668581935
+      ],
+      "ExtPos": [
+        33,
+        0.12222222222222222,
+        0.0075844633417605145
+      ],
+      "Gender": [
+        1860,
+        6.888888888888889,
+        0.42748793380831995
+      ],
+      "Mood": [
+        713,
+        2.640740740740741,
+        0.16387037462652262
+      ],
+      "NumType": [
+        27,
+        0.1,
+        0.006205470006894967
+      ],
+      "Number": [
+        2675,
+        9.907407407407407,
+        0.6148011951275569
+      ],
+      "Person": [
+        1055,
+        3.9074074074074074,
+        0.24247299471385889
+      ],
+      "Polarity": [
+        72,
+        0.26666666666666666,
+        0.016547920018386578
+      ],
+      "Poss": [
+        132,
+        0.4888888888888889,
+        0.030337853367042058
+      ],
+      "PronType": [
+        1099,
+        4.07037037037037,
+        0.2525856125028729
+      ],
+      "Tense": [
+        600,
+        2.2222222222222223,
+        0.1378993334865548
+      ],
+      "VerbForm": [
+        739,
+        2.737037037037037,
+        0.16984601241094002
+      ],
+      "Voice": [
+        737,
+        2.72962962962963,
+        0.16938634796598484
+      ],
+      "treebank": "UD_Greek-Cretan@2.16"
     },
     {
       "AdvType": [
