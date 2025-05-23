@@ -1,30 +1,10 @@
 {
   "title": "## Usage of dependency relations (without subtypes) \u2022\u2022\u2022 SP_UD 2.16",
+  "instance": "spoken",
   "grew_match": {
-    "nmod": {
+    "root": {
       "code": [
-        "pattern {M -[1=nmod]-> N}"
-      ],
-      "key": null,
-      "users": 34
-    },
-    "obj": {
-      "code": [
-        "pattern {M -[1=obj]-> N}"
-      ],
-      "key": null,
-      "users": 34
-    },
-    "advmod": {
-      "code": [
-        "pattern {M -[1=advmod]-> N}"
-      ],
-      "key": null,
-      "users": 34
-    },
-    "obl": {
-      "code": [
-        "pattern {M -[1=obl]-> N}"
+        "pattern {M -[1=root]-> N}"
       ],
       "key": null,
       "users": 34
@@ -36,9 +16,23 @@
       "key": null,
       "users": 34
     },
-    "root": {
+    "advmod": {
       "code": [
-        "pattern {M -[1=root]-> N}"
+        "pattern {M -[1=advmod]-> N}"
+      ],
+      "key": null,
+      "users": 34
+    },
+    "nmod": {
+      "code": [
+        "pattern {M -[1=nmod]-> N}"
+      ],
+      "key": null,
+      "users": 34
+    },
+    "obl": {
+      "code": [
+        "pattern {M -[1=obl]-> N}"
       ],
       "key": null,
       "users": 34
@@ -46,6 +40,13 @@
     "nsubj": {
       "code": [
         "pattern {M -[1=nsubj]-> N}"
+      ],
+      "key": null,
+      "users": 34
+    },
+    "obj": {
+      "code": [
+        "pattern {M -[1=obj]-> N}"
       ],
       "key": null,
       "users": 34
@@ -64,9 +65,9 @@
       "key": null,
       "users": 33
     },
-    "mark": {
+    "amod": {
       "code": [
-        "pattern {M -[1=mark]-> N}"
+        "pattern {M -[1=amod]-> N}"
       ],
       "key": null,
       "users": 32
@@ -78,16 +79,16 @@
       "key": null,
       "users": 32
     },
-    "aux": {
+    "mark": {
       "code": [
-        "pattern {M -[1=aux]-> N}"
+        "pattern {M -[1=mark]-> N}"
       ],
       "key": null,
       "users": 32
     },
-    "amod": {
+    "aux": {
       "code": [
-        "pattern {M -[1=amod]-> N}"
+        "pattern {M -[1=aux]-> N}"
       ],
       "key": null,
       "users": 32
@@ -98,6 +99,13 @@
       ],
       "key": null,
       "users": 32
+    },
+    "punct": {
+      "code": [
+        "pattern {M -[1=punct]-> N}"
+      ],
+      "key": null,
+      "users": 31
     },
     "nummod": {
       "code": [
@@ -113,13 +121,6 @@
       "key": null,
       "users": 31
     },
-    "punct": {
-      "code": [
-        "pattern {M -[1=punct]-> N}"
-      ],
-      "key": null,
-      "users": 31
-    },
     "discourse": {
       "code": [
         "pattern {M -[1=discourse]-> N}"
@@ -127,16 +128,16 @@
       "key": null,
       "users": 31
     },
-    "xcomp": {
+    "parataxis": {
       "code": [
-        "pattern {M -[1=xcomp]-> N}"
+        "pattern {M -[1=parataxis]-> N}"
       ],
       "key": null,
       "users": 30
     },
-    "parataxis": {
+    "xcomp": {
       "code": [
-        "pattern {M -[1=parataxis]-> N}"
+        "pattern {M -[1=xcomp]-> N}"
       ],
       "key": null,
       "users": 30
@@ -148,13 +149,6 @@
       "key": null,
       "users": 30
     },
-    "cop": {
-      "code": [
-        "pattern {M -[1=cop]-> N}"
-      ],
-      "key": null,
-      "users": 29
-    },
     "conj": {
       "code": [
         "pattern {M -[1=conj]-> N}"
@@ -162,12 +156,12 @@
       "key": null,
       "users": 29
     },
-    "reparandum": {
+    "cop": {
       "code": [
-        "pattern {M -[1=reparandum]-> N}"
+        "pattern {M -[1=cop]-> N}"
       ],
       "key": null,
-      "users": 28
+      "users": 29
     },
     "compound": {
       "code": [
@@ -176,9 +170,16 @@
       "key": null,
       "users": 28
     },
-    "csubj": {
+    "reparandum": {
       "code": [
-        "pattern {M -[1=csubj]-> N}"
+        "pattern {M -[1=reparandum]-> N}"
+      ],
+      "key": null,
+      "users": 28
+    },
+    "appos": {
+      "code": [
+        "pattern {M -[1=appos]-> N}"
       ],
       "key": null,
       "users": 27
@@ -190,9 +191,9 @@
       "key": null,
       "users": 27
     },
-    "appos": {
+    "csubj": {
       "code": [
-        "pattern {M -[1=appos]-> N}"
+        "pattern {M -[1=csubj]-> N}"
       ],
       "key": null,
       "users": 27
@@ -263,32 +264,32 @@
   },
   "columns": [
     {
-      "field": "nmod",
-      "headerName": "nmod"
-    },
-    {
-      "field": "obj",
-      "headerName": "obj"
-    },
-    {
-      "field": "advmod",
-      "headerName": "advmod"
-    },
-    {
-      "field": "obl",
-      "headerName": "obl"
+      "field": "root",
+      "headerName": "root"
     },
     {
       "field": "ccomp",
       "headerName": "ccomp"
     },
     {
-      "field": "root",
-      "headerName": "root"
+      "field": "advmod",
+      "headerName": "advmod"
+    },
+    {
+      "field": "nmod",
+      "headerName": "nmod"
+    },
+    {
+      "field": "obl",
+      "headerName": "obl"
     },
     {
       "field": "nsubj",
       "headerName": "nsubj"
+    },
+    {
+      "field": "obj",
+      "headerName": "obj"
     },
     {
       "field": "case",
@@ -299,24 +300,28 @@
       "headerName": "advcl"
     },
     {
-      "field": "mark",
-      "headerName": "mark"
+      "field": "amod",
+      "headerName": "amod"
     },
     {
       "field": "cc",
       "headerName": "cc"
     },
     {
+      "field": "mark",
+      "headerName": "mark"
+    },
+    {
       "field": "aux",
       "headerName": "aux"
     },
     {
-      "field": "amod",
-      "headerName": "amod"
-    },
-    {
       "field": "flat",
       "headerName": "flat"
+    },
+    {
+      "field": "punct",
+      "headerName": "punct"
     },
     {
       "field": "nummod",
@@ -327,52 +332,48 @@
       "headerName": "det"
     },
     {
-      "field": "punct",
-      "headerName": "punct"
-    },
-    {
       "field": "discourse",
       "headerName": "discourse"
-    },
-    {
-      "field": "xcomp",
-      "headerName": "xcomp"
     },
     {
       "field": "parataxis",
       "headerName": "parataxis"
     },
     {
-      "field": "acl",
-      "headerName": "acl"
+      "field": "xcomp",
+      "headerName": "xcomp"
     },
     {
-      "field": "cop",
-      "headerName": "cop"
+      "field": "acl",
+      "headerName": "acl"
     },
     {
       "field": "conj",
       "headerName": "conj"
     },
     {
-      "field": "reparandum",
-      "headerName": "reparandum"
+      "field": "cop",
+      "headerName": "cop"
     },
     {
       "field": "compound",
       "headerName": "compound"
     },
     {
-      "field": "csubj",
-      "headerName": "csubj"
+      "field": "reparandum",
+      "headerName": "reparandum"
+    },
+    {
+      "field": "appos",
+      "headerName": "appos"
     },
     {
       "field": "dislocated",
       "headerName": "dislocated"
     },
     {
-      "field": "appos",
-      "headerName": "appos"
+      "field": "csubj",
+      "headerName": "csubj"
     },
     {
       "field": "dep",
@@ -578,7 +579,7 @@
         0.22981366459627328,
         0.013883677298311446
       ],
-      "treebank": "UD_Gheg-GPS@2.16"
+      "treebank": "SP_UD_Gheg-GPS@2.16"
     },
     {
       "acl": [
@@ -756,7 +757,7 @@
         0.23829344432882413,
         0.010252660169833002
       ],
-      "treebank": "UD_Hebrew-IAHLTknesset@2.16"
+      "treebank": "SP_UD_Hebrew-IAHLTknesset@2.16"
     },
     {
       "acl": [
@@ -929,7 +930,7 @@
         0.10178075477863094,
         0.006331751242466436
       ],
-      "treebank": "UD_Slovenian-SST@2.16"
+      "treebank": "SP_UD_Slovenian-SST@2.16"
     },
     {
       "advmod": [
@@ -1027,7 +1028,7 @@
         1.0,
         0.14285714285714285
       ],
-      "treebank": "UD_Nenets-Tundra@2.16"
+      "treebank": "SP_UD_Nenets-Tundra@2.16"
     },
     {
       "acl": [
@@ -1165,7 +1166,7 @@
         0.05665024630541872,
         0.008477699963140435
       ],
-      "treebank": "UD_Bokota-ChibErgIS@2.16"
+      "treebank": "SP_UD_Bokota-ChibErgIS@2.16"
     },
     {
       "acl": [
@@ -1303,7 +1304,7 @@
         0.06290956749672345,
         0.0040164003012300225
       ],
-      "treebank": "UD_Beja-Autogramm@2.16"
+      "treebank": "SP_UD_Beja-Autogramm@2.16"
     },
     {
       "acl": [
@@ -1471,7 +1472,7 @@
         0.24351585014409222,
         0.015798452873402043
       ],
-      "treebank": "UD_French-ParisStories@2.16"
+      "treebank": "SP_UD_French-ParisStories@2.16"
     },
     {
       "acl": [
@@ -1644,7 +1645,7 @@
         0.18829131046423547,
         0.01235470792476409
       ],
-      "treebank": "UD_Naija-NSC@2.16"
+      "treebank": "SP_UD_Naija-NSC@2.16"
     },
     {
       "acl": [
@@ -1817,7 +1818,7 @@
         0.17456896551724138,
         0.01900337837837838
       ],
-      "treebank": "UD_English-ESLSpok@2.16"
+      "treebank": "SP_UD_English-ESLSpok@2.16"
     },
     {
       "acl": [
@@ -1995,7 +1996,7 @@
         0.12709257696600157,
         0.020616417185499183
       ],
-      "treebank": "UD_English-CHILDES@2.16"
+      "treebank": "SP_UD_English-CHILDES@2.16"
     },
     {
       "acl": [
@@ -2153,7 +2154,7 @@
         0.2723076923076923,
         0.010446175637393768
       ],
-      "treebank": "UD_Greek-GDT@2.16"
+      "treebank": "SP_UD_Greek-GDT@2.16"
     },
     {
       "acl": [
@@ -2306,7 +2307,7 @@
         0.14100185528756956,
         0.00941409637061811
       ],
-      "treebank": "UD_Spanish-COSER@2.16"
+      "treebank": "SP_UD_Spanish-COSER@2.16"
     },
     {
       "advcl": [
@@ -2379,7 +2380,7 @@
         1.0,
         0.14545454545454545
       ],
-      "treebank": "UD_Soi-AHA@2.16"
+      "treebank": "SP_UD_Soi-AHA@2.16"
     },
     {
       "acl": [
@@ -2542,7 +2543,7 @@
         0.17113733905579398,
         0.018040945594389776
       ],
-      "treebank": "UD_Zaar-Autogramm@2.16"
+      "treebank": "SP_UD_Zaar-Autogramm@2.16"
     },
     {
       "acl": [
@@ -2715,7 +2716,7 @@
         0.5277777777777778,
         0.02652396463471382
       ],
-      "treebank": "UD_English-GENTLE@2.16"
+      "treebank": "SP_UD_English-GENTLE@2.16"
     },
     {
       "acl": [
@@ -2853,7 +2854,7 @@
         0.007444168734491315,
         0.0011139992573338284
       ],
-      "treebank": "UD_Northwest_Gbaya-Autogramm@2.16"
+      "treebank": "SP_UD_Northwest_Gbaya-Autogramm@2.16"
     },
     {
       "acl": [
@@ -3011,7 +3012,7 @@
         0.07972665148063782,
         0.009444144630329197
       ],
-      "treebank": "UD_Ika-ChibErgIS@2.16"
+      "treebank": "SP_UD_Ika-ChibErgIS@2.16"
     },
     {
       "acl": [
@@ -3184,7 +3185,7 @@
         0.17108133374883142,
         0.01240902310022151
       ],
-      "treebank": "UD_French-Rhapsodie@2.16"
+      "treebank": "SP_UD_French-Rhapsodie@2.16"
     },
     {
       "acl": [
@@ -3347,7 +3348,7 @@
         0.08518518518518518,
         0.005286141116984601
       ],
-      "treebank": "UD_Greek-Cretan@2.16"
+      "treebank": "SP_UD_Greek-Cretan@2.16"
     },
     {
       "acl": [
@@ -3500,7 +3501,7 @@
         0.08396946564885496,
         0.010292397660818714
       ],
-      "treebank": "UD_Pesh-ChibErgIS@2.16"
+      "treebank": "SP_UD_Pesh-ChibErgIS@2.16"
     },
     {
       "acl": [
@@ -3658,7 +3659,7 @@
         0.14940239043824702,
         0.010777410547492455
       ],
-      "treebank": "UD_Cantonese-HK@2.16"
+      "treebank": "SP_UD_Cantonese-HK@2.16"
     },
     {
       "acl": [
@@ -3826,7 +3827,7 @@
         0.14743589743589744,
         0.008649636016869477
       ],
-      "treebank": "UD_Turkish_German-SAGT@2.16"
+      "treebank": "SP_UD_Turkish_German-SAGT@2.16"
     },
     {
       "acl": [
@@ -4009,7 +4010,7 @@
         0.1971316818774446,
         0.014313573281329876
       ],
-      "treebank": "UD_English-GUM@2.16"
+      "treebank": "SP_UD_English-GUM@2.16"
     },
     {
       "acl": [
@@ -4172,7 +4173,7 @@
         0.04008016032064128,
         0.005151983513652756
       ],
-      "treebank": "UD_Highland_Puebla_Nahuatl-ITML@2.16"
+      "treebank": "SP_UD_Highland_Puebla_Nahuatl-ITML@2.16"
     },
     {
       "acl": [
@@ -4300,7 +4301,7 @@
         0.057971014492753624,
         0.00516795865633075
       ],
-      "treebank": "UD_Western_Sierra_Puebla_Nahuatl-ITML@2.16"
+      "treebank": "SP_UD_Western_Sierra_Puebla_Nahuatl-ITML@2.16"
     },
     {
       "advcl": [
@@ -4388,7 +4389,7 @@
         1.0,
         0.1282051282051282
       ],
-      "treebank": "UD_Nayini-AHA@2.16"
+      "treebank": "SP_UD_Nayini-AHA@2.16"
     },
     {
       "acl": [
@@ -4566,7 +4567,7 @@
         0.0775,
         0.008313220702601234
       ],
-      "treebank": "UD_Frisian_Dutch-Fame@2.16"
+      "treebank": "SP_UD_Frisian_Dutch-Fame@2.16"
     },
     {
       "acl": [
@@ -4709,7 +4710,7 @@
         0.12244897959183673,
         0.018404907975460124
       ],
-      "treebank": "UD_Abaza-ATB@2.16"
+      "treebank": "SP_UD_Abaza-ATB@2.16"
     },
     {
       "acl": [
@@ -4877,7 +4878,7 @@
         0.19626168224299065,
         0.018189692507579038
       ],
-      "treebank": "UD_Komi_Zyrian-IKDP@2.16"
+      "treebank": "SP_UD_Komi_Zyrian-IKDP@2.16"
     },
     {
       "acl": [
@@ -5040,7 +5041,7 @@
         0.12930135557872785,
         0.017003770997600275
       ],
-      "treebank": "UD_Hausa-SouthernAutogramm@2.16"
+      "treebank": "SP_UD_Hausa-SouthernAutogramm@2.16"
     },
     {
       "acl": [
@@ -5203,7 +5204,7 @@
         1.4453911696359412,
         0.08306993723011175
       ],
-      "treebank": "UD_Scottish_Gaelic-ARCOSG@2.16"
+      "treebank": "SP_UD_Scottish_Gaelic-ARCOSG@2.16"
     },
     {
       "advcl": [
@@ -5291,7 +5292,7 @@
         1.0,
         0.13513513513513514
       ],
-      "treebank": "UD_Khunsari-AHA@2.16"
+      "treebank": "SP_UD_Khunsari-AHA@2.16"
     },
     {
       "acl": [
@@ -5444,7 +5445,7 @@
         0.19148936170212766,
         0.019067796610169493
       ],
-      "treebank": "UD_Hausa-NorthernAutogramm@2.16"
+      "treebank": "SP_UD_Hausa-NorthernAutogramm@2.16"
     },
     {
       "acl": [
@@ -5592,7 +5593,7 @@
         0.0249003984063745,
         0.004082299150881777
       ],
-      "treebank": "UD_Chukchi-HSE@2.16"
+      "treebank": "SP_UD_Chukchi-HSE@2.16"
     }
   ]
 }

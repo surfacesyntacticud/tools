@@ -72,7 +72,7 @@
             <div class="alert alert-danger" role="alert" v-if='alert != ""' v-html="alert"></div>
 
             <p>This page proposes a set of tables which describe the global usage of dependency relations, features and
-              feature values in the treebanks from the <a href="http://universaldependencies.org/">UD</a> and <a href="https://surfacesyntacticud.github.io/">SUD</a> projects (version 2.16).</p>
+              feature values in the treebanks from the <a href="http://universaldependencies.org/">UD</a> and <a href="https://surfacesyntacticud.github.io/">SUD</a> projects.</p>
       
             <p>See the 
               <a href="https://github.com/surfacesyntacticud/tools/blob/master/tables/README.md">README</a>
@@ -82,7 +82,7 @@
               <a href="https://github.com/surfacesyntacticud/tools/tree/master/tables">Github project</a>.
              </p>
 
-            <p>Pick one of the four collections below:</p>
+            <p>Pick one of the four collections below for all (S)UD treebanks (version 2.15):</p>
 
              <div class="row" style="margin-bottom: 20px;">
               <div class="col-sm-6">
@@ -131,13 +131,15 @@
               </div>
             </div>
 
+            <p>Pick one of the three collections below for UD spoken data only (version 2.16)</p>
+
             <div class="row" style="margin-bottom: 20px;">
               <div class="col-sm-4">
                 <a href="?data=SP_ud_feats/FEATS">
                   <div class="card">
                     <div class="card-header">Features in Spoken_UD ({{count["SP_ud_feats"]}} tables)</div>
                     <div class="card-body" style="text-align: center;">
-                      <img src="https://universaldependencies.org/logos/logo-ud.png" style="height: 50px;" alt="UD">
+                      <img src="https://freepngimg.com/thumb/web_design/26904-1-speaking-file.png" style="height: 50px;" alt="UD">
                     </div>
                   </div>
                 </a>
@@ -147,7 +149,7 @@
                   <div class="card">
                     <div class="card-header">Metadata in Spoken_UD ({{count["SP_meta"]}} table)</div>
                     <div class="card-body" style="text-align: center;">
-                      <img src="https://universaldependencies.org/logos/logo-ud.png" style="height: 50px;" alt="UD">
+                      <img src="https://freepngimg.com/thumb/web_design/26904-1-speaking-file.png" style="height: 50px;" alt="UD">
                     </div>
                   </div>
                 </a>
@@ -157,7 +159,7 @@
                   <div class="card">
                     <div class="card-header">Dependencies in Spoken_UD ({{count["SP_ud_deps"]}} tables)</div>
                     <div class="card-body" style="text-align: center;">
-                      <img src="https://universaldependencies.org/logos/logo-ud.png" style="height: 50px;" alt="UD">
+                      <img src="https://freepngimg.com/thumb/web_design/26904-1-speaking-file.png" style="height: 50px;" alt="UD">
                     </div>
                   </div>
                 </a>
@@ -209,14 +211,50 @@
         </button>
       </a>
       •••
-      <a href='?data=ud/UDEPS'>
-        <a v-for="feat in features" v-bind:href='"?data=" + collection + "/" + feat'>
+      <a v-for="feat in features" v-bind:href='"?data=" + collection + "/" + feat'>
         <button 
           type="button"
           class="btn btn-sm" 
           :class="{ 'btn-warning': table==feat, 'btn-secondary' : table!=feat }">
           {{feat}}
           <span class="badge badge-light">{{ count["ud_feats/"+feat] }}</span>
+        </button>
+      </a>
+    </div>
+
+    <!---------------------------- SP_UD + FEATS ----------------------------->
+    <div v-show='collection=="SP_ud_feats"' style="margin-bottom: 10px;">
+      <a href='?data=SP_ud_feats/FEATS'>
+        <button
+          type="button"
+          class="btn btn-sm"
+          data-toggle="tooltip"
+          title="All feature names used in the column 6 in CoNLL"
+          :class="{ 'btn-warning': table=='FEATS', 'btn-secondary' : table!='FEATS' }">
+          FEATS
+          <span class="badge badge-light">{{ count["SP_ud_feats/FEATS"] }}</span>
+        </button>
+      </a>
+      •••
+      <a href='?data=SP_ud_feats/MISC'>
+        <button 
+          type="button" 
+          class="btn btn-sm" 
+          data-toggle="tooltip" 
+          title="All feature names used in the column 10 in CoNLL" 
+          :class="{ 'btn-warning': table=='MISC', 'btn-secondary' : table!='MISC' }">
+          MISC
+          <span class="badge badge-light">{{ count["SP_ud_feats/MISC"] }}</span>
+        </button>
+      </a>
+      •••
+      <a v-for="feat in features" v-bind:href='"?data=" + collection + "/" + feat'>
+        <button 
+          type="button"
+          class="btn btn-sm" 
+          :class="{ 'btn-warning': table==feat, 'btn-secondary' : table!=feat }">
+          {{feat}}
+          <span class="badge badge-light">{{ count["SP_ud_feats/"+feat] }}</span>
         </button>
       </a>
     </div>
@@ -254,6 +292,43 @@
           :class="{ 'btn-warning': table==dep, 'btn-secondary' : table!=dep }">
           {{ (dep == "_aux" ? "aux" : dep) }}
           <span class="badge badge-light">{{ count["ud_deps/"+dep] }}</span>
+        </button>
+      </a>
+    </div>
+
+    <!---------------------------- SP_UD + DEPS ----------------------------->
+    <div v-show='collection=="SP_ud_deps"' style="margin-bottom: 10px;">
+      <a href='?data=SP_ud_deps/DEPS'>
+        <button
+          type="button"
+          data-toggle="tooltip"
+          title="All deps with their subtytpe (nsubj and nsubj:pass are two different columns)." 
+          class="btn btn-sm"
+          :class="{ 'btn-warning': table=='DEPS', 'btn-secondary' : table!='DEPS' }">
+          DEPS
+          <span class="badge badge-light">{{ count["SP_ud_deps/DEPS"] }}</span>
+        </button>
+      </a>
+      •••
+      <a href='?data=SP_ud_deps/UDEPS'>
+        <button 
+          type="button"
+          data-toggle="tooltip"
+          title="Universal deps: without taking subtypes into account (nsubj and nsubj:pass are in the same column)" 
+          class="btn btn-sm"
+          :class="{ 'btn-warning': table=='UDEPS', 'btn-secondary' : table!='UDEPS' }">
+          UDEPS
+          <span class="badge badge-light">{{ count["SP_ud_deps/UDEPS"] }}</span>
+        </button>
+      </a>
+      •••
+      <a v-for="dep in ud_deps" v-bind:href='"?data=" + collection + "/" + dep'>
+        <button
+          type="button"
+          class="btn btn-sm"
+          :class="{ 'btn-warning': table==dep, 'btn-secondary' : table!=dep }">
+          {{ (dep == "_aux" ? "aux" : dep) }}
+          <span class="badge badge-light">{{ count["SP_ud_deps/"+dep] }}</span>
         </button>
       </a>
     </div>

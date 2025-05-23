@@ -40,6 +40,8 @@ parser.add_argument("basedir", help = "The main folder where all corpora are sto
 parser.add_argument("columns", help = "Must be one either of the values 'DEPS', 'UDEPS', 'DEEP', 'SUBREL:xxx (where xxx is a udep), 'META', 'FEATS', 'MISC', 'FEAT:xxx' (where xxx is a feature name)")
 parser.add_argument("-f", "--filter", help = "The template for selecting treebanks", default="*")
 parser.add_argument("-o", "--out_file", help = "The name of the output json file")
+parser.add_argument("-p", "--prefix", default="", help = "The prefix used in Grew-match naming of the corpus")
+parser.add_argument("-i", "--instance", default="universal", help = "Grew-match instance")
 parser.add_argument("-s", "--suffix", default="@2.16", help = "The suffix used in Grew-match naming of the corpus")
 parser.add_argument("-c", "--collection", help = "The name of the collection of corpora")
 parser.add_argument("-q", "--quiet", action="store_true", default = False, help = "turn off the progession info printing")
@@ -198,11 +200,12 @@ def title (x):
 
 def build_row(corpus):
     d = dict[corpus]
-    d.update({"treebank": corpus+args.suffix})
+    d.update({"treebank": args.prefix+corpus+args.suffix})
     return d
 
 grid = {
     "title": title(args.columns) + (" ••• " + args.collection) if args.collection != None else "",
+    "instance": args.instance,
     "grew_match":
         {feat: {
             "code": pattern(feat)[0],

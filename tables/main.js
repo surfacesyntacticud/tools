@@ -10,6 +10,7 @@ var app = new Vue({
     table: "",
     portal: true,
     title: "",
+    instance: "",
     alert: "",
     gridApi: null,
     cells: [],
@@ -103,6 +104,7 @@ const col0 = {
 function build_grid(data) {
   app.portal = false;
   app.title = md.render(data.title);
+  app.instance = data.instance;
   app.cells = data.cells;
   app.columns = data.columns;
   app.update_sorting(); // ensure that sorting is done on the right component
@@ -136,12 +138,13 @@ function get_before_whitespace(s) {
 function grew_match(treebank, field) {
   let pattern = global_grew_match[field]["code"];
   let corpus = get_before_whitespace(treebank);
+  let instance = app.instance;
   let get_param = "?corpus=" + corpus;
   get_param += "&pattern=" + encodeURIComponent(pattern);
   if (global_grew_match[field]["key"] != undefined) {
     get_param += "&clustering=" + encodeURIComponent(global_grew_match[field]["key"]);
   }
-  window.open('http://universal.grew.fr' + get_param, '_blank');
+  window.open('http://'+instance+'.grew.fr' + get_param, '_blank');
 }
 
 function open_modal() {

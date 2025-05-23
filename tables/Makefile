@@ -19,8 +19,9 @@ selfdoc:
 	@echo "make build_SP_meta"
 	@echo "make count"
 
-
-all: build_sud_deps build_ud_deps build_ud_feats build_meta count
+univ: build_sud_deps build_ud_deps build_ud_feats build_meta count
+spoken: build_SP_meta build_SP_ud_deps build_SP_ud_feats count
+all: univ spoken
 
 count:
 	python count.py
@@ -31,7 +32,7 @@ build_meta:
 
 build_SP_meta:
 	mkdir -p SP_meta
-	python build_table.py -c "SP_UD 2.16" -f "${FILTER}" -o SP_meta/META.json ${SP_UD} META
+	python build_table.py --instance spoken --prefix "SP_" -c "SP_UD 2.16" -f "${FILTER}" -o SP_meta/META.json ${SP_UD} META
 
 build_sud_deps:
 	mkdir -p sud_deps
@@ -54,11 +55,11 @@ build_ud_deps:
 
 build_SP_ud_deps:
 	mkdir -p SP_ud_deps
-	python build_table.py -c "SP_UD 2.16" -f "${FILTER}" -o SP_ud_deps/DEPS.json ${SP_UD} DEPS
-	python build_table.py -c "SP_UD 2.16" -f "${FILTER}" -o SP_ud_deps/UDEPS.json ${SP_UD} UDEPS
+	python build_table.py --instance spoken --prefix "SP_" -c "SP_UD 2.16" -f "${FILTER}" -o SP_ud_deps/DEPS.json ${SP_UD} DEPS
+	python build_table.py --instance spoken --prefix "SP_" -c "SP_UD 2.16" -f "${FILTER}" -o SP_ud_deps/UDEPS.json ${SP_UD} UDEPS
 	@for udep in ${UD_LIST} ; do \
 		echo "================= Building table for udep: $$udep =================" ; \
-		python build_table.py -c "SP_UD 2.16" -f "${FILTER}" -o SP_ud_deps/$$udep.json ${SP_UD} SUBREL:$$udep ; \
+		python build_table.py --instance spoken --prefix "SP_" -c "SP_UD 2.16" -f "${FILTER}" -o SP_ud_deps/$$udep.json ${SP_UD} SUBREL:$$udep ; \
 	done
 
 build_ud_feats:
@@ -72,11 +73,11 @@ build_ud_feats:
 
 build_SP_ud_feats:
 	mkdir -p SP_ud_feats
-	python build_table.py -c "SP_UD 2.16" -f "${FILTER}" -o SP_ud_feats/FEATS.json ${SP_UD} FEATS
-	python build_table.py -c "SP_UD 2.16" -f "${FILTER}" -o SP_ud_feats/MISC.json ${SP_UD} MISC
+	python build_table.py --instance spoken --prefix "SP_" -c "SP_UD 2.16" -f "${FILTER}" -o SP_ud_feats/FEATS.json ${SP_UD} FEATS
+	python build_table.py --instance spoken --prefix "SP_" -c "SP_UD 2.16" -f "${FILTER}" -o SP_ud_feats/MISC.json ${SP_UD} MISC
 	@for feat in ${FEAT_LIST} ; do \
 		echo "================= Building table for feature: $$feat =================" ; \
-		python build_table.py -c "SP_UD 2.16" -f "${FILTER}" -o SP_ud_feats/$$feat.json ${SP_UD} FEAT:$$feat ; \
+		python build_table.py --instance spoken --prefix "SP_" -c "SP_UD 2.16" -f "${FILTER}" -o SP_ud_feats/$$feat.json ${SP_UD} FEAT:$$feat ; \
 	done
 
 purge:
