@@ -157,7 +157,7 @@ def pattern (x):
     elif args.columns == "DEEP":
         return (['pattern {M -[deep=%s]-> N}' % x], None)
     elif args.columns == "META":
-        ident = re.fullmatch ("[A-Za-z_-]+", x)
+        ident = re.fullmatch ("[A-Za-z0-9_-]+", x)
         if (ident is not None):
             return (['global { %s = * }' % x], None)
         else:
