@@ -1,0 +1,11 @@
+strat main { Onf (nc_number_ctxt) }
+rule nc_number_ctxt (lex from "nc_number_ctxt.lex") {
+
+pattern { X [upos=NOUN, lemma=lex.nc, Number, !Number__ctxt] }
+commands {
+  X.Number__ctxt = X.Number;
+  del_feat X.Number
+  }
+}
+
+
