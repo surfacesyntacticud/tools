@@ -1,0 +1,11 @@
+strat main { Onf (adj_exception_fem) }
+rule adj_exception_fem (lex from "adj_exception.lex") {
+
+pattern { X[upos=ADJ, lemma=lex.adj, Gender="Fem", !Gender__ctxt, Number, !Number__ctxt] }
+commands {
+    X.Gender__ctxt = X.Gender;
+    X.Number__ctxt = X.Number;
+    del_feat X.Gender;
+    del_feat X.Number
+    }
+}

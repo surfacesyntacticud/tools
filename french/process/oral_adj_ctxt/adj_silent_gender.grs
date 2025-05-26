@@ -1,0 +1,9 @@
+strat main { Onf (adj_silent_gender) }
+rule adj_silent_gender (lex from "adj_silent_gender.lex") {
+
+pattern { X[upos=ADJ, lemma=lex.adj, Gender, !Gender__ctxt] }
+commands {
+    X.Gender__ctxt = X.Gender;
+    del_feat X.Gender;
+    }
+}

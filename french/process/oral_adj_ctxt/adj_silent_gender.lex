@@ -1,0 +1,5 @@
+adj
+%-------------
+caciqual
+conjonctival
+mal
