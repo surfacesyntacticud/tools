@@ -1,0 +1,13 @@
+strat main { Onf (part_silent) }
+rule part_silent (lex from "part_silent.lex") {
+
+pattern { X[upos=VERB, VerbForm="Part", lemma=lex.part, Gender, !Gender__ctxt, Number, !Number__ctxt] }
+commands {
+    X.Gender__ctxt = X.Gender;
+    X.Number__ctxt = X.Number;
+    del_feat X.Gender;
+    del_feat X.Number
+    }
+}
+
+

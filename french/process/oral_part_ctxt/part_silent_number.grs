@@ -1,0 +1,10 @@
+strat main { Onf (part_silent_number) }
+rule part_silent_number (lex from "part_silent_number.lex") {
+
+pattern { X[upos=VERB, VerbForm="Part", lemma=lex.part, Number, !Number__ctxt] }
+commands {
+    X.Number__ctxt = X.Number;
+    del_feat X.Number
+    }
+}
+

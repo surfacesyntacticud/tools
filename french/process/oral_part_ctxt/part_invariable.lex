@@ -1,0 +1,13 @@
+part
+%-------------
+_error
+autosuffire
+béer
+falloir
+pleuvoir
+pouvoir
+repaître
+rire
+sourire
+suffire
+être
