@@ -45,7 +45,7 @@ plural = ["p", "mp", "fp"]
 singular = ["s", "ms", "fs", "m"]
 
 # Règles
-silent = ["a", "e", "i", "o", "u", "y", "eil", "rieur"] # variations en nombre et en genre silencieuses
+silent = ["a", "e", "i", "o", "u", "y", "eil", "rieur", "r", "el", "é", "eul"] # variations en nombre et en genre silencieuses
 audible_gender = ["f", "eux", "eau", "t", "eur", "s", "n"]  # variations en genre audibles
 silent_exception_gender = ["majeur", "mineur", "meilleur"]  # exceptions de variations en genre silencieuses
 audible_number = ["al"] # variations en -aux au masculin pluriel
