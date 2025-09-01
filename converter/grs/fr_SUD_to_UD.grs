@@ -164,7 +164,8 @@ strat FR_main_UDplus{
     Onf (FR_init), % Needed for UD validation
     Onf (init),
     Onf (conjdicto),
-    Onf (shared),
+    Onf (shared_1),
+    Onf (shared_2),
     Onf (remove_shared),
     Onf (FR_pron_verb), % Specific treatment of pronominal verbs in French
     specific_expr_init,
@@ -188,7 +189,7 @@ strat FR_main_UDplus{
     Onf (final),
     specific_expr_close,
     Onf(extpos),
-    Onf(FR_final) % avoid UD validation errors
+    Onf(FR_final), % avoid UD validation errors
   )
 }
 
@@ -249,5 +250,6 @@ strat fr_main{
     Onf(FR_discontinuous_MWE),
     Onf(FR_spoken_tilde),
     Onf(remove_Cxn),
+    Onf (ud_validation), % final modification to adapt to validation errors and warnings
   )
 }

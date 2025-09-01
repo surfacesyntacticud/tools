@@ -69,7 +69,7 @@ package conjdicto {
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Dependencies of coordinations to their right  are marked in SUD with feature Shared=Yes and they are attached at the rightmost conjunct. In UD, they are attached at the head of the coordination and feature  Shared=Yes is useless.
-package shared {
+package shared_1 {
 
   % The shared dependent is directly attached at the head of the last conjunct.
   rule move_relation {
@@ -82,7 +82,9 @@ package shared {
       del_edge e
     }
   }
+}
 
+package shared_2 {
   % The shared dependent is attached at the head of the last conjunct via a COMP:OBJ relation.
   % Ex: fr-ud-train_13095 - sur 165 patients traités pour une borréliose de Lyme en phase 2 ou 3, et malgré 3 mois ou plus de traitements antibiotiques (dont au minimum deux semaines au ceftriaxone)
   rule move_compobj_distant-relation {
@@ -873,6 +875,15 @@ package final {
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+package ud_validation {
+  rule flat-foreign-upos-feats {
+    pattern { X -[flat:foreign]-> Y; X.ExtPos }
+    commands { del_feat X.ExtPos }
+  }
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Main strategy for converting any SUD annotation into a UDplus annotation.
 % The UDplus schema is in accordance the UD schema with additional information. It distinguishes between two types of idioms: idioms without syntactic structure are annotated with fixed relations according to the UD guidelines; idioms with a syntactic structure are annotated like any ordinary expression but their head is marked with the feature Idiom=Yes; it also contains a feature ExtPos, which denotes the element’s function within the wider sentence; the other components of the idiom contain the feature InIdiom=Yes.
 % For the sake of uniformity, the use of features Idiom, ExtPos an InIdiom is extended to idioms without syntactic structure.
@@ -880,7 +891,8 @@ strat main_UDplus {
   Seq (
     Onf (init),
     Onf (conjdicto),
-    Onf (shared), % Package SHARED must precede SPECIFIC_EXPR_INIT so that feature Shared=Yes is not embedded in Idiom.
+    Onf (shared_1), % Package SHARED must precede SPECIFIC_EXPR_INIT so that feature Shared=Yes is not embedded in Idiom.
+    Onf (shared_2), 
     Onf (remove_shared),
     specific_expr_init, % Initialization of a specific treatment for idioms, titles and translated words.
     Onf (nom_init),
@@ -899,7 +911,7 @@ strat main_UDplus {
     Onf(outer_copula),
     Onf (final),
     specific_expr_close, % Closing a specific treatment for idioms, titles and converted words.
-    Onf(extpos),
+    Onf (extpos),
   )
 }
 rule remove_feat_subject{
@@ -955,6 +967,7 @@ strat u_main{
     Onf(remove_feat_subject),
     Onf(remove_UDplus_subtypes),
     Onf(fix_punct),
+    Onf (ud_validation), % final modification to adapt to validation errors and warnings
   )
 }
 
