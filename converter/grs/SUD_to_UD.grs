@@ -880,6 +880,14 @@ package ud_validation {
     pattern { X -[flat:foreign]-> Y; X.ExtPos }
     commands { del_feat X.ExtPos }
   }
+
+  rule obl-should-be-nmod {
+    pattern { pX -[1=nsubj|obj|iobj|obl|vocative|dislocated|expl|nmod]-> X; X[upos=NOUN|PROPN|PRON]; e: X -[1=obl]-> Y }
+    commands { 
+      del_edge e;
+      add_edge X -[nmod]-> Y
+    }
+  }
 }
 
 
