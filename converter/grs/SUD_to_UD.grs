@@ -459,7 +459,7 @@ package sub_relations {
     commands {d.1=ccomp}
   }
 
-  rule ccomp_Haitian_Creole {
+  rule ccomp_deep_T {
     pattern { e:H -[comp:obj@T]-> D; D[!nom] }
     commands { e.label=ccomp}
   }
@@ -535,7 +535,7 @@ package sub_relations {
     commands {e.1=iobj}
   }
 
-  rule iobj_Haitian_Creole {
+  rule iobj_deep_R {
     pattern { e:H -[comp:obj@R]-> D; }
     commands { e.label=iobj}
   }
@@ -574,7 +574,7 @@ package sub_relations {
   }
 
   rule obj_nom_deep{
-    pattern { e:H -[1=comp, 2=obj, deep<>agent|pass]-> D; D[nom=y]}
+    pattern { e:H -[1=comp, 2=obj, deep<>agent|pass|R|T]-> D; D[nom=y]}
     without{ D -[1=mark]-> *}
     commands {e.1=obj; e.2=e.deep; del_feat e.deep}
   }
@@ -591,7 +591,7 @@ package sub_relations {
     commands {del_edge e; add_edge H -[obj:agent]-> D }
   }
 
-  rule obj_Haitian_Creole {
+  rule obj_deep_T {
     pattern { e:H -[comp:obj@T]-> D; D[nom=y] }
     commands { e.label=obj}
   }
