@@ -14,7 +14,11 @@ package bej_pre {
   rule intern {
     pattern { e: X -[deep=intern]-> Y }
     commands { del_feat e.deep }
+  }
 
+  rule dislocated_obj_R {
+    pattern { e: X -[dislocated:obj@R]-> Y }
+    commands { del_feat e.deep }
   }
 
   % Remove whitespaces in XPOS values
