@@ -2,7 +2,7 @@ strat bej_mSUD_to_SUD_main {
   Seq(
     Onf (dep_on_InflAff),
     Onf (right_headeed_appos),
-    Onf (init_MGloss_Mseg),
+    Onf (init_MGloss_MSeg),
     Onf (remove_bracket),
     Onf (morph2word),
     Onf (fix_features),
@@ -35,7 +35,7 @@ rule right_headeed_appos {
   }
 }
 
-package init_MGloss_Mseg {
+package init_MGloss_MSeg {
   rule gov { 
     pattern { 
       N1 [TokenType=DerAff|InflAff|Root, !MGloss, !MSeg];

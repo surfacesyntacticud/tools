@@ -3,9 +3,36 @@ include "mSUD_to_SUD.grs"
 strat yrk_mSUD_to_SUD_main {
 	Seq (
 		Onf(yrk_pre),
-		mSUD_to_SUD_main
-
+		Onf(init_MGloss_MSeg),
+		mSUD_to_SUD_main,
+		Onf(final_MGloss_MSeg),
 	)
+}
+
+% Put MGloss/MGseg on all node
+rule init_MGloss_MSeg {
+	pattern {
+		X[upos, Gloss, !MGloss, !Mseg]
+	}
+  commands {
+    X.MGloss = X.Gloss;
+    X.MSeg = X.form;
+  }
+}
+
+package final_MGloss_MSeg {
+  rule rm_MGloss {
+    pattern { X[Gloss, MGloss]; X.Gloss = X.MGloss }
+		commands { del_feat X.MGloss }
+	}
+  rule rm_Gloss {
+    pattern { X[Gloss, MGloss]; X.Gloss <> X.MGloss }
+		commands { del_feat X.Gloss }
+	}
+  rule MSeg {
+    pattern { X[form, MSeg]; X.form = X.MSeg }
+		commands { del_feat X.MSeg }
+	}
 }
 
 package yrk_pre {
