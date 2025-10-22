@@ -5,7 +5,11 @@ import json
 from grewpy import CorpusDraft, Request, Corpus, set_config
 
 parser = argparse.ArgumentParser(description="Build a Grew table listing features by UPOS")
+
 parser.add_argument("--treebank", help="a JSON string: dict from id to treebank")
+parser.add_argument("--corpus_id", help="corpus_id")
+parser.add_argument("--corpus_dir", help="corpus_dir")
+
 parser.add_argument("--output", help="output file (default is stdout)")
 parser.add_argument("-i", "--instance", help="grew-match instance", default="https://universal.grew.fr")
 parser.add_argument("-c", "--config", help="grew config")
@@ -34,7 +38,7 @@ def keep (f):
     # Feature not related to POS of the token
     return False
   elif f.startswith('Syl'):
-    # Feature used of syllables in Naija-prosody
+    # Feature used for syllables in pSUD
     return False
   else:
     # Keep everthing else
@@ -71,9 +75,11 @@ if __name__ == '__main__':
     data = json.loads(args.treebank)
     (treebank_id, treebank_loc) = data.popitem()
     corpus=Corpus(treebank_loc)
+  elif args.corpus_id and args.corpus_dir:
+    treebank_id = args.corpus_id
+    corpus=Corpus(args.corpus_dir)
   else:
-    print (f"Missing --treebank", file=sys.stderr)
-    raise ValueError
+    raise ValueError(f"Missing --treebank")
 
   # NB: we have to iterate on all graph -> CorpusDraft is much more efficient for this
   corpus_draft = CorpusDraft(corpus)

@@ -230,6 +230,9 @@ def table_DC(args):
     data = json.loads(args.treebank)
     (treebank_id, treebank_loc) = data.popitem()
     corpus=Corpus(treebank_loc)
+  elif args.corpus_id and args.corpus_dir:
+    treebank_id = args.corpus_id
+    corpus=Corpus(args.corpus_dir)
   else:
     raise ValueError(f"Missing --treebank")
 
@@ -291,7 +294,11 @@ if __name__ == '__main__':
   parser = argparse.ArgumentParser(description="Build a Grew table from a list of treebanks and a list of requests")
   parser.add_argument("kind", help="the kind of table to build: TBR (treebanks/requests), TBC (treebanks/clustering) or DC (double clustering)")
   parser.add_argument("--treebanks", help="a JSON file with the list of treebanks")
+
   parser.add_argument("--treebank", help="[DC only] a JSON string: dict from id to treebank")
+  parser.add_argument("--corpus_id", help="[DC only] corpus_id")
+  parser.add_argument("--corpus_dir", help="[DC only] corpus_dir")
+
   parser.add_argument("--requests", help="[TBR only] a JSON file with the list of requests")
   parser.add_argument("--request", help="[TBC only] a JSON file with the main request")
   parser.add_argument("--clustering_key", help="[TBC only] the key used for clustering")
