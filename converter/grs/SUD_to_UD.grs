@@ -607,6 +607,12 @@ package sub_relations {
     commands {del_edge e; add_edge H -[obl:agent]-> D }
   }
 
+  % other deep (G, L or S) used in Zaar and Hausa are convertes to obl
+  rule obl_deep_GLS {
+    pattern {e:H -[1=comp, 2=obj, deep=G|L|S]-> D; }
+    commands {del_edge e; add_edge H -[obl]-> D }
+  }
+
   % We make the hypothesis that all noun complements depend on their gouvernor with a UDEP relation.
   rule obl_arg {
     pattern { e:H -[1=comp,2=obl]-> D; D[upos <> AUX|PRON|VERB] }

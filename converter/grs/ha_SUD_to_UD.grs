@@ -9,9 +9,6 @@ strat ha_main {
     Onf (fixed_children),
     Onf (case_children),
     Onf (tmp_escape_aux_cop),
-    Onf (foreign),
-    Onf (valid_215),
-    Onf (valid_216),
   )
 }
 
@@ -42,12 +39,12 @@ package ha_pre {
 
 % TMP rule for 2.11 --> remove non documented extension
 package ha_post {
-  rule dislocated_conj {
-    pattern { e: N -[1=dislocated|conj|nmod, 2=*]-> M }
+  rule no_extension {
+    pattern { e: N -[1=dislocated|parataxis|discourse|conj|nmod, 2=*]-> M }
     commands { del_feat e.2 }
   }
   rule missing_extension {
-    pattern { e: N -[dep:comp|flat:num|obj:lvc|obl:mod]-> M }
+    pattern { e: N -[dep:comp|flat:num|obl:mod]-> M }
     commands { del_feat e.2 }
   }
 
@@ -91,88 +88,5 @@ rule tmp_escape_aux_cop {
   commands {
     X.xpos = X.lemma;
     del_feat X.lemma
-  }
-}
-
-package foreign {
- rule upos_X {
-    pattern { X -[flat:foreign]-> Y }
-    without { X.upos=X; Y.upos=X }
-    commands { X.upos=X; Y.upos=X }
-  }
-
-  rule DefiniteX {
-    pattern { X -[flat:foreign]-> Y; X[Definite] }
-    commands { del_feat X.Definite }
-  }
-
-  rule DefiniteY {
-    pattern { X -[flat:foreign]-> Y; Y[Definite] }
-    commands { del_feat Y.Definite }
-  }
-
-  rule Foreign_X {
-    pattern { X -[flat:foreign]-> Y; X[!Foreign] }
-    commands { X.Foreign = Yes }
-  }
-
-  rule Foreign_Y {
-    pattern { X -[flat:foreign]-> Y; Y[!Foreign] }
-    commands { Y.Foreign = Yes }
-  }
-}
-
-% validation 2.15
-package valid_215 {
-  rule subrels {
-    pattern { e: X -[parataxis:discourse|parataxis:top|parataxis:mod|obl:expl]-> Y }
-    commands { del_feat e.2 }
-  }
-
-  rule aux {
-    pattern { e: X -[aux]-> Y; Y[upos <> AUX] }
-    commands { e.label = dep }
-  }
-
-  rule advmod {
-    pattern { e: X -[advmod]-> Y; Y[upos = SCONJ] }
-    commands { e.label = dep }
-  }
-
-  rule Aspect_Imp {
-    pattern { X [Aspect=Imp] }
-    commands { del_feat X.Aspect }
-  }
-
-  rule Deixis_Dist {
-    pattern { X [Deixis=Dist] }
-    commands { del_feat X.Deixis }
-  }
-
-  rule Person_on_PART {
-    pattern { X [Person, upos=PART] }
-    commands { del_feat X.Person }
-  }
-
-  rule PronType_on_PART_AUX {
-    pattern { X [PronType, upos=PART|AUX] }
-    commands { del_feat X.PronType }
-  }
-
-  rule Mood_on_AUX {
-    pattern { X [Mood, upos=AUX] }
-    commands { del_feat X.Mood }
-  }
-
-  rule ExtPos_CCONJ {
-    pattern { X [ExtPos=CCONJ] }
-    commands { del_feat X.ExtPos }
-  }
-}
-
-package valid_216 {
-  rule emp {
-    pattern { e: X -[advmod:emp]-> Y }
-    commands { del_feat e.2 }
   }
 }

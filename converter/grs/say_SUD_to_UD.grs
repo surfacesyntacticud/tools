@@ -4,12 +4,9 @@ include "SUD_to_UD.grs"
 strat say_main {
   Seq (
     Onf (say_pre),
-    Onf (hausa),
-    Onf (foreign_X),
     u_main,
     Onf(say_post),
     Onf(tmp_escape_aux_cop),
-    Onf(foreign),
   )
 }
 
@@ -32,31 +29,7 @@ package say_pre {
       del_feat e.deep
     }
   }
-
-  rule foreign_no_extpos {
-    pattern { X[Foreign=Yes, ExtPos] }
-    commands { del_feat X.ExtPos }
-  }
 }
-
-% TODO: Hausa in now in UD: to update
-% The Hausa language is not in UD, hence all morph related to it should be removed.
-package hausa {
-  rule Aspect { pattern { N [Lang=ha, Aspect]} commands {del_feat N.Aspect} }
-  rule Case { pattern { N [Lang=ha, Case]} commands {del_feat N.Case} }
-  rule Definite { pattern { N [Lang=ha, Definite]} commands {del_feat N.Definite} }
-  rule Deixis { pattern { N [Lang=ha, Deixis]} commands {del_feat N.Deixis} }
-  rule Mood { pattern { N [Lang=ha, Mood]} commands {del_feat N.Mood} }
-  rule Number { pattern { N [Lang=ha, Number]} commands {del_feat N.Number} }
-  rule Person { pattern { N [Lang=ha, Person]} commands {del_feat N.Person} }
-  rule Polarity { pattern { N [Lang=ha, Polarity]} commands {del_feat N.Polarity} }
-  rule PronType { pattern { N [Lang=ha, PronType]} commands {del_feat N.PronType} }
-  rule Tense { pattern { N [Lang=ha, Tense]} commands {del_feat N.Tense} }
-  rule VerbForm { pattern { N [Lang=ha, VerbForm]} commands {del_feat N.VerbForm} }
-}
-
-rule foreign_X { pattern { N [Foreign=Yes, upos <> X]} commands {N.upos=X} }
-
 
 % TMP rule --> remove non documented extension
 package say_post {
@@ -66,6 +39,10 @@ package say_post {
   }
   rule dislocated {
     pattern { e: N -[1=dislocated, 2=*]-> M }
+    commands { del_feat e.2 }
+  }
+  rule discourse {
+    pattern { e: N -[1=discourse, 2=*]-> M }
     commands { del_feat e.2 }
   }
   rule missing_extension {
@@ -111,31 +88,5 @@ rule tmp_escape_aux_cop {
   commands {
     X.xpos = X.lemma;
     del_feat X.lemma
-  }
-}
-
-package foreign {
- rule upos_X {
-    pattern { X -[flat:foreign]-> Y }
-    without { X.upos=X; Y.upos=X }
-    commands { X.upos=X; Y.upos=X }
-  }
-
- rule DefiniteX {
-    pattern { X -[flat:foreign]-> Y; X[Definite] }
-    commands { del_feat X.Definite }
-  }
- rule DefiniteY {
-    pattern { X -[flat:foreign]-> Y; Y[Definite] }
-    commands { del_feat Y.Definite }
-  }
-
- rule Foreign_X {
-    pattern { X -[flat:foreign]-> Y; X[!Foreign] }
-    commands { X.Foreign = Yes }
-  }
- rule Foreign_Y {
-    pattern { X -[flat:foreign]-> Y; Y[!Foreign] }
-    commands { Y.Foreign = Yes }
   }
 }
