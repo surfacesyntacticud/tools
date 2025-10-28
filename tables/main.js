@@ -20,7 +20,7 @@ var app = new Vue({
     display_mode: 0, // 0 -> occurences, 1 -> ratio per sent, 2 -> ration per token
 
     collection: "ud_feats",  // "ud_feats", "ud_deps", "sud_deps", "meta"
-    features: ["PronType", "Gender", "VerbForm", "NumType", "Animacy", "Mood", "Poss", "NounClass", "Tense", "Reflex", "Number", "Aspect", "Foreign", "Case", "Voice", "Abbr", "Definite", "Evident", "Typo", "Degree", "Polarity", "Person", "Polite", "Clusivity"],
+    features: ["PronType", "Gender", "VerbForm", "NumType", "Animacy", "Mood", "Poss", "NounClass", "Tense", "Reflex", "Number", "Aspect", "Foreign", "Case", "Voice", "Abbr", "Definite", "Evident", "Typo", "Degree", "Polarity", "Person", "Polite", "Clusivity", "ExtPos", "Deixis", "DeixisRef"],
     ud_deps:["acl","advcl","advmod","amod","appos","_aux","case","cc","ccomp","clf","compound","conj","cop","csubj","dep","det","discourse","dislocated","expl","fixed","flat","goeswith","iobj","list","mark","nmod","nsubj","nummod","obj","obl","orphan","parataxis","punct","reparandum","root","vocative","xcomp"],
     sud_deps:["unk","subj","udep","mod","comp","vocative","dislocated","discourse","appos","det","clf","conj","cc","flat","compound","list","parataxis","orphan","goeswith","reparandum","punct"],
   },
