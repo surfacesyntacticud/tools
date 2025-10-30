@@ -6,7 +6,7 @@ strat say_main {
     Onf (say_pre),
     u_main,
     Onf(say_post),
-    % Onf(tmp_escape_aux_cop),
+    Onf(tmp_escape_aux_cop),
   )
 }
 
@@ -46,7 +46,7 @@ package say_post {
     commands { del_feat e.2 }
   }
   rule missing_extension {
-    pattern { e: N -[advcl:cleft|conj:svc|compound:svc|dep:comp|flat:num|iobj:expl|iobj:agent|iobj:top|nmod:top|nmod:emp|obl:mod|obl:expl]-> M }
+    pattern { e: N -[advcl:cleft|conj:svc|compound:svc|dep:comp|flat:num|iobj:expl|iobj:agent|iobj:top|nmod:top|nmod:emp|nmod:ethic|obl:mod|obl:expl]-> M }
     commands { del_feat e.2 }
   }
 
