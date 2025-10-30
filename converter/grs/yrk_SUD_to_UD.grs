@@ -1,5 +1,17 @@
 include "SUD_to_UD.grs"
 
 strat yrk_SUD_to_UD_main {
-	u_main
+	Seq(
+  	u_main,
+	  Onf (yrk_post),
+	)
+}
+
+package yrk_post {
+	rule dep_comp {
+		pattern { e: X -[dep:comp]-> Y }
+		commands {
+			del_feat e.2;
+		}
+	}
 }

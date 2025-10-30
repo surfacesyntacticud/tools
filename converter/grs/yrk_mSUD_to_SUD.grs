@@ -58,5 +58,23 @@ package yrk_pre {
 			X1.wordform = X1.form;
 		}
 	}
-}
 
+	rule hack_8_61 {
+		global {sent_id = "8"|"61" }
+		pattern { f: H -[comp:aux]-> V ; e:H -[1=subj]-> P }
+		commands {
+			del_edge e;
+			add_edge V -[subj]-> P;
+			f.type=m;
+
+		 }
+	}
+
+	rule hack_42 {
+		global {sent_id = "42" }
+		pattern { e: X -[comp:obj]-> Y ;  }
+		commands {
+			e.type=m;
+		}
+	}
+}
