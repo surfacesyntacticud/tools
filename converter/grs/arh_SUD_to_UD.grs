@@ -34,6 +34,10 @@ package arh_post {
     pattern { e: X -[1=cop|parataxis|dep, 2=*]-> Y }
     commands { del_feat e.2}
   }
+  rule obl_mod {
+    pattern { e: X -[obl:mod]-> Y }
+    commands { del_feat e.2}
+  }
 }
 
 
