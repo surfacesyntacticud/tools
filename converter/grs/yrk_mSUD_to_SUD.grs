@@ -66,7 +66,6 @@ package yrk_pre {
 			del_edge e;
 			add_edge V -[subj]-> P;
 			f.type=m;
-
 		 }
 	}
 
@@ -75,6 +74,14 @@ package yrk_pre {
 		pattern { e: X -[comp:obj]-> Y ;  }
 		commands {
 			e.type=m;
+		}
+	}
+
+	rule lemma_X {
+		pattern { X [lemma=X, form=re"-.*"] }
+		commands {
+			X.lemma_X = Yes;
+			X.lemma ="";
 		}
 	}
 }

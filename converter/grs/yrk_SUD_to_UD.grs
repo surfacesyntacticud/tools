@@ -14,4 +14,10 @@ package yrk_post {
 			del_feat e.2;
 		}
 	}
+
+  rule Cyrillic {
+		pattern { X[lemma = "ӈа"]}
+		commands { X.lemma = "ӈa"}
+	}
+
 }
