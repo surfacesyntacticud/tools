@@ -60,7 +60,7 @@ package yrk_pre {
 	}
 
 	rule hack_8_61 {
-		global {sent_id = "8"|"61" }
+		global {sent_id = "yrk_PearStory_8"|"yrk_PearStory_61" }
 		pattern { f: H -[comp:aux]-> V ; e:H -[1=subj]-> P }
 		commands {
 			del_edge e;
@@ -70,7 +70,7 @@ package yrk_pre {
 	}
 
 	rule hack_42 {
-		global {sent_id = "42" }
+		global {sent_id = "yrk_PearStory_42" }
 		pattern { e: X -[comp:obj]-> Y ;  }
 		commands {
 			e.type=m;
@@ -80,7 +80,6 @@ package yrk_pre {
 	rule lemma_X {
 		pattern { X [lemma=X, form=re"-.*"] }
 		commands {
-			X.lemma_X = Yes;
 			X.lemma ="";
 		}
 	}
