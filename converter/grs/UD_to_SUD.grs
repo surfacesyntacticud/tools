@@ -502,8 +502,19 @@ package reverse_relations {
       Onf (shift_out_features),
       Onf (cleaning),
       Onf (rename_rel),
+      Onf (clf),
     )
   }
+
+  rule clf {
+    pattern { e: N -[mod]-> NUM; f: NUM -[clf]-> CLF }
+    commands {
+      del_edge e; del_edge f;
+      add_edge N -[mod]-> CLF;
+      add_edge CLF -[mod]-> NUM;
+      CLF.NounType=Clf;
+    }
+  } 
 
   % ---------------------------------------------------------------------------------------------
   package set_level {
