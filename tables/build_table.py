@@ -8,26 +8,26 @@ import argparse
 from xml.dom.expatbuilder import parseString
 
 
-# The list of features used in UD 2.16 is needed or generated the right Grew pattern for the MISC case
+# The list of features used in UD 2.17 is needed or generated the right Grew pattern for the MISC case
 # See: https://grew.fr/doc/conllu/#how-the-misc-field-is-handled-by-grew
-ud_feats_2_16 = [
+ud_feats_2_17 = [
     "Abbr", "Accomp", "AdjType", "AdpType", "AdvType", "Advlz", "Agglutination", "Also", "Analyt", "Animacy", "Animacy[gram]", "Animacy[obj]", "Aspect",
     "Assoc", "BadStyle",
     "Case", "Caus", "Cfm", "Clas", "Class",
-    "CleftType", "Clitic", "Clusivity", "Clusivity[obj]", "Clusivity[psor]", "Clusivity[subj]", "Compound", "Comt", "Conces",
-    "ConjType", "Connegative", "Contrast", "Contv", "Corf", "Decl", "Definite", "Definitizer", "Degree", "Deixis",
+    "CleftType", "Clitic", "Clusivity", "Clusivity[obj]", "Clusivity[p]", "Clusivity[psor]", "Clusivity[subj]", "Compound", "Comt", "Conces",
+    "ConjType", "Connegative", "Contrast", "Contv", "ConvType", "Corf", "Decl", "Definite", "Definitizer", "Degree", "Deixis",
     "DeixisRef", "Deixis[psor]", "Delib", "Deo", "Derivation", "Determ", "Detrans", "Dev", "Dialect", "Dist", "Dyn", "Echo", "Emph",
-    "Emphatic", "Encl", "Ergative", "Evident", "Excl", "ExtPos", "Fact", "False", "Foc", "Focus", "FocusType", "Foreign", "Form", "Gender",
+    "Emphatic", "Encl", "Epenthesis", "Ergative", "Evident", "Excl", "ExtPos", "Fact", "False", "Foc", "Focus", "FocusType", "Foreign", "Form", "Fragment", "Gender",
     "Gender[abs]", "Gender[cs]", "Gender[dat]", "Gender[erg]", "Gender[io]", "Gender[lo]", "Gender[obj]", "Gender[po]", "Gender[psor]", "Gender[refl]", "Gender[ro]", "Gender[subj]",
     "HebBinyan", "HebExistential", "Hnfc", "Htp", "Hum", "Human", "Hyph",
-    "Imprs", "Incorp", "InfForm", "InflClass", "InflClass[nominal]", "Int", "Intens", "Intense", "Intension",
-    "Irr", "LangId", "Language", "Link", "LongForm", "Modal", "Modality", "Mood", "Morph", "Movement", "Mutation", "NameType", "NCount", "NegationType",
+    "Imprs", "Incorp", "InfForm", "InflClass", "InflClass[nominal]", "InfStruct", "Int", "Intens", "Intense", "Intension",
+    "Irr", "LangId", "Language", "Link", "LongForm", "Modal", "Modality", "Mood", "Movement", "Mutation", "NameType", "NCount", "NegationType",
     "Neutral", "Nmzr", "Nominal", "Nomzr", "NonFoc", "NounBase", "NounClass", "NounType", "Number", "Number[abs]", "Number[cs]", "Number[dat]",
-    "Number[erg]", "Number[grnd]", "Number[io]", "Number[lo]", "Number[obj]", "Number[po]", "Number[psed]", "Number[psor]", "Number[refl]",
+    "Number[erg]", "Number[grnd]", "Number[io]", "Number[lo]", "Number[obj]", "Number[p]", "Number[po]", "Number[psed]", "Number[psor]", "Number[refl]",
     "Number[ro]", "Number[subj]", "NumForm", "NumType", "NumValue", "Obl", "Orth", "PartForm", "PartType", "PartTypeQpm", "Pcl", "Person",
-    "Person[abs]", "Person[cs]", "Person[dat]", "Person[erg]", "Person[grnd]", "Person[io]", "Person[lo]", "Person[obj]", "Person[po]", "Person[psor]",
+    "Person[abs]", "Person[cs]", "Person[dat]", "Person[erg]", "Person[grnd]", "Person[io]", "Person[lo]", "Person[obj]", "Person[p]", "Person[po]", "Person[psor]",
     "Person[refl]", "Person[ro]", "Person[subj]", "Polarity", "Polite", "Polite[abs]", "Polite[dat]", "Polite[erg]", "Position", "Poss", "Possessed", "Pred",
-    "Prefix", "PrepCase", "PrepForm", "Priv", "PronClass", "PronType", "Proper", "Prp", "PunctSide", "PunctType", "Purp", "RcpType", "Recip", "Red", "Redup",
+    "Prefix", "PrepCase", "PrepForm", "Priv", "PronClass", "PronType", "Proper", "Prp", "PunctSide", "PunctType", "Purp", "RcpType", "Reach", "Recip", "Red", "Redup",
     "Reflex", "Reflex[obj]", "Reflex[subj]", "Rel", "Reln", "RelType", "Report", "Speech", "Strength", "Style", "Subcat", "SubForm", "SubGender", "Subord",
     "Subordinative", "Tense", "Top", "Trans", "Tv", "Typo", "Uninflect", "Valency", "Variant", "Ventive", "VerbClass", "VerbForm", "VerbStem", "VerbType", "Voice",
     "Shared"
@@ -42,7 +42,7 @@ parser.add_argument("-f", "--filter", help = "The template for selecting treeban
 parser.add_argument("-o", "--out_file", help = "The name of the output json file")
 parser.add_argument("-p", "--prefix", default="", help = "The prefix used in Grew-match naming of the corpus")
 parser.add_argument("-i", "--instance", default="universal", help = "Grew-match instance")
-parser.add_argument("-s", "--suffix", default="@2.16", help = "The suffix used in Grew-match naming of the corpus")
+parser.add_argument("-s", "--suffix", default="@2.17", help = "The suffix used in Grew-match naming of the corpus")
 parser.add_argument("-c", "--collection", help = "The name of the collection of corpora")
 parser.add_argument("-q", "--quiet", action="store_true", default = False, help = "turn off the progession info printing")
 args=parser.parse_args()
@@ -166,7 +166,7 @@ def pattern (x):
         grew_feature = grew_feat_name(x)
         return (['pattern { N [%s] }' % grew_feature], "N.%s" % grew_feature)
     elif args.columns == "MISC":
-        prefix = "__MISC__" if x in ud_feats_2_16 else ""
+        prefix = "__MISC__" if x in ud_feats_2_17 else ""
         grew_feature = prefix + grew_feat_name(x)
         return (['pattern { N [%s] }' % grew_feature], "N.%s" % grew_feature)
     elif args.columns[0:5] == "FEAT:":
