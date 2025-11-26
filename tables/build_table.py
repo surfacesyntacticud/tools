@@ -85,7 +85,7 @@ def add_corpus (corpus):
     elif args.columns == "FEATS":
         command = 'cat %s/%s/*.conllu | egrep "^[0-9]+\t" | cut -f 6 | grep -v "_" | tr "|" "\n" | cut -f 1 -d "=" | sort | uniq -c' % (args.basedir, corpus)
     elif args.columns == "MISC":
-        command = 'cat %s/%s/*.conllu | egrep "^[0-9]+\t" | cut -f 10 | tr "|" "\n" | grep "=" | cut -f 1 -d "=" | sort | uniq -c' % (args.basedir, corpus)
+        command = 'cat %s/%s/*.conllu | egrep "^[0-9]+\t" | cut -f 10 | tr "|" "\n" | grep "=." | cut -f 1 -d "=" | sort | uniq -c' % (args.basedir, corpus)
     elif args.columns[0:5] == "FEAT:":
         feat = args.columns[5:]
         command = 'cat %s/%s/*.conllu | egrep "^[0-9]+\t" | cut -f 6 | tr "|" "\n" | grep "^%s=" | cut -f 2 -d "=" | sort | uniq -c' % (args.basedir, corpus, feat)
