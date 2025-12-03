@@ -236,7 +236,7 @@ def table_DC(args):
   else:
     raise ValueError(f"Missing --treebank")
 
-  dc_full = corpus.count(grew_request, clustering_keys=[row_key, col_key])
+  dc_full = corpus.count(grew_request, clustering_keys=[row_key, col_key], flat=False)
   if dc_full == 0: # The pattern does not appear in the corpus
     return
   if args.filter:
