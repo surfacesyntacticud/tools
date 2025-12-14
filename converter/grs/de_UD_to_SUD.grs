@@ -25,16 +25,16 @@ strat de_main {
 
 package de_levels {
   rule zu {
-    pattern { e: V -[!level]-> A; A[upos=PART, lemma="zu"] }
+    pattern { e: V -[1=case|aux|mark|cop, !level]-> A; A[upos=PART, lemma="zu"] }
     commands { e.level = 2 }
   }
   rule aux_fin {
-    pattern { e: V -[!level]-> A; A[upos=AUX, VerbForm=Fin] }
+    pattern { e: V -[1=case|aux|mark|cop, !level]-> A; A[upos=AUX, VerbForm=Fin] }
     commands { e.level = 4 }
   }
   % à tester: est-ce que la règle ci-dessous est utile (diff avec/sans)
   rule aux_not_fin {
-    pattern { e: V -[!level]-> A; A[upos=AUX, VerbForm<>Fin] }
+    pattern { e: V -[1=case|aux|mark|cop, !level]-> A; A[upos=AUX, VerbForm<>Fin] }
     commands { e.level = 6 }
   }
 }
