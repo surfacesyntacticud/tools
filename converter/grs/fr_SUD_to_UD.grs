@@ -40,6 +40,12 @@ histoire	de
     pattern { X[upos=NUM, ExtPos] }
     commands { del_feat X.ExtPos }
   }
+
+  % Rule for correct handling of "attach" annotation
+  rule tmp_db_rhapsodie_attach {
+    pattern { e:X -[type=attach]-> Y }
+    commands { del_feat e.type; add_edge X -[__ATTACH__]-> Y }
+  }
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -236,6 +242,18 @@ package remove_Cxn {
   rule CxnElt {
     pattern { X [CxnElt] }
     commands { del_feat X.CxnElt }
+  }
+
+  % Rule for correct handling of "attach" annotation (direct relation)
+  rule tmp_db_rhapsodie_attach {
+    pattern { a: X -["__ATTACH__"]-> Y; e:X -[^"__ATTACH__"]-> Y }
+    commands { e.type=attach; del_edge a; }
+  }
+
+  % Rule for correct handling of "attach" annotation (inverted relation)
+  rule tmp_db_rhapsodie_attach_rev {
+    pattern { a: X -["__ATTACH__"]-> Y; e:Y -> X }
+    commands { e.type=attach; del_edge a; }
   }
 }
 
