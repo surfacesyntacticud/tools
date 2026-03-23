@@ -2,6 +2,7 @@ import datetime
 import argparse
 import sys
 import json
+import re
 from grewpy import CorpusDraft, Request, Corpus, set_config
 
 parser = argparse.ArgumentParser(description="Build a Grew table listing features by UPOS")
@@ -24,6 +25,8 @@ ud_tagset = [
     'PUNCT', 'SCONJ', 'SYM', 'VERB', 'X'
     ]
 
+feat_re = r'[A-Z][A-Za-z0-9]*(\[[a-z0-9]+\])?'
+
 def keep (f):
   '''
   decide which features should be kept in the final table
@@ -39,6 +42,9 @@ def keep (f):
     return False
   elif f.startswith('Syl'):
     # Feature used for syllables in pSUD
+    return False
+  elif not re.fullmatch(feat_re, f):
+    # Not valid feature 
     return False
   else:
     # Keep everthing else
