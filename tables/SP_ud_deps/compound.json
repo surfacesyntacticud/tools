@@ -1,5 +1,5 @@
 {
-  "title": "## Usage of subtypes of relation `compound` \u2022\u2022\u2022 SP_UD 2.16",
+  "title": "## Usage of subtypes of relation `compound` \u2022\u2022\u2022 SP_UD 2.17",
   "instance": "spoken",
   "grew_match": {
     "compound": {
@@ -7,14 +7,21 @@
         "pattern {M -[1=compound,!2]-> N}"
       ],
       "key": null,
-      "users": 26
+      "users": 29
     },
     "compound:prt": {
       "code": [
         "pattern {M -[1=compound,2=prt]-> N}"
       ],
       "key": null,
-      "users": 8
+      "users": 11
+    },
+    "compound:redup": {
+      "code": [
+        "pattern {M -[1=compound,2=redup]-> N}"
+      ],
+      "key": null,
+      "users": 6
     },
     "compound:svc": {
       "code": [
@@ -26,13 +33,6 @@
     "compound:lvc": {
       "code": [
         "pattern {M -[1=compound,2=lvc]-> N}"
-      ],
-      "key": null,
-      "users": 5
-    },
-    "compound:redup": {
-      "code": [
-        "pattern {M -[1=compound,2=redup]-> N}"
       ],
       "key": null,
       "users": 5
@@ -51,20 +51,6 @@
       "key": null,
       "users": 1
     },
-    "compound:affix": {
-      "code": [
-        "pattern {M -[1=compound,2=affix]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "compound:nn": {
-      "code": [
-        "pattern {M -[1=compound,2=nn]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
     "compound:ext": {
       "code": [
         "pattern {M -[1=compound,2=ext]-> N}"
@@ -79,9 +65,23 @@
       "key": null,
       "users": 1
     },
+    "compound:nn": {
+      "code": [
+        "pattern {M -[1=compound,2=nn]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
     "compound:vv": {
       "code": [
         "pattern {M -[1=compound,2=vv]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "compound:affix": {
+      "code": [
+        "pattern {M -[1=compound,2=affix]-> N}"
       ],
       "key": null,
       "users": 1
@@ -97,16 +97,16 @@
       "headerName": "compound:prt"
     },
     {
+      "field": "compound:redup",
+      "headerName": "compound:redup"
+    },
+    {
       "field": "compound:svc",
       "headerName": "compound:svc"
     },
     {
       "field": "compound:lvc",
       "headerName": "compound:lvc"
-    },
-    {
-      "field": "compound:redup",
-      "headerName": "compound:redup"
     },
     {
       "field": "compound:vo",
@@ -117,14 +117,6 @@
       "headerName": "compound:dir"
     },
     {
-      "field": "compound:affix",
-      "headerName": "compound:affix"
-    },
-    {
-      "field": "compound:nn",
-      "headerName": "compound:nn"
-    },
-    {
       "field": "compound:ext",
       "headerName": "compound:ext"
     },
@@ -133,13 +125,21 @@
       "headerName": "compound:quant"
     },
     {
+      "field": "compound:nn",
+      "headerName": "compound:nn"
+    },
+    {
       "field": "compound:vv",
       "headerName": "compound:vv"
+    },
+    {
+      "field": "compound:affix",
+      "headerName": "compound:affix"
     }
   ],
   "cells": [
     {
-      "treebank": "SP_UD_Gheg-GPS@2.16"
+      "treebank": "SP_UD_Gheg-GPS@2.17"
     },
     {
       "compound": [
@@ -152,13 +152,13 @@
         0.023239680887963927,
         0.0009998955333024907
       ],
-      "treebank": "SP_UD_Hebrew-IAHLTknesset@2.16"
+      "treebank": "SP_UD_Hebrew-IAHLTknesset@2.17"
     },
     {
-      "treebank": "SP_UD_Slovenian-SST@2.16"
+      "treebank": "SP_UD_Slovenian-SST@2.17"
     },
     {
-      "treebank": "SP_UD_Nenets-Tundra@2.16"
+      "treebank": "SP_UD_Nenets-Tundra@2.17"
     },
     {
       "compound": [
@@ -171,7 +171,7 @@
         0.017241379310344827,
         0.002580169553999263
       ],
-      "treebank": "SP_UD_Bokota-ChibErgIS@2.16"
+      "treebank": "SP_UD_Bokota-ChibErgIS@2.17"
     },
     {
       "compound:svc": [
@@ -179,7 +179,7 @@
         0.035386631716906945,
         0.0022592251694418877
       ],
-      "treebank": "SP_UD_Beja-Autogramm@2.16"
+      "treebank": "SP_UD_Beja-Autogramm@2.17"
     },
     {
       "compound": [
@@ -187,7 +187,7 @@
         0.005043227665706052,
         0.00032718689382785297
       ],
-      "treebank": "SP_UD_French-ParisStories@2.16"
+      "treebank": "SP_UD_French-ParisStories@2.17"
     },
     {
       "compound": [
@@ -210,7 +210,7 @@
         0.13818850773725788,
         0.00906721955168031
       ],
-      "treebank": "SP_UD_Naija-NSC@2.16"
+      "treebank": "SP_UD_Naija-NSC@2.17"
     },
     {
       "compound": [
@@ -223,20 +223,20 @@
         0.02586206896551724,
         0.002815315315315315
       ],
-      "treebank": "SP_UD_English-ESLSpok@2.16"
+      "treebank": "SP_UD_English-ESLSpok@2.17"
     },
     {
       "compound": [
-        2081,
-        0.05664588834145412,
-        0.009188855035987107
+        2932,
+        0.060851337608700165,
+        0.009684878113232476
       ],
       "compound:prt": [
-        1550,
-        0.042191795737267605,
-        0.006844173621230185
+        1768,
+        0.036693439594877864,
+        0.005839994714936909
       ],
-      "treebank": "SP_UD_English-CHILDES@2.16"
+      "treebank": "SP_UD_English-CHILDES@2.17"
     },
     {
       "compound": [
@@ -244,7 +244,7 @@
         0.0038461538461538464,
         0.0001475448536355052
       ],
-      "treebank": "SP_UD_Greek-GDT@2.16"
+      "treebank": "SP_UD_Greek-GDT@2.17"
     },
     {
       "compound": [
@@ -252,7 +252,7 @@
         0.03153988868274583,
         0.0021057847144803667
       ],
-      "treebank": "SP_UD_Spanish-COSER@2.16"
+      "treebank": "SP_UD_Spanish-COSER@2.17"
     },
     {
       "compound:lvc": [
@@ -260,25 +260,25 @@
         0.125,
         0.01818181818181818
       ],
-      "treebank": "SP_UD_Soi-AHA@2.16"
+      "treebank": "SP_UD_Soi-AHA@2.17"
     },
     {
       "compound": [
-        417,
-        0.22371244635193133,
-        0.023583305055989143
+        520,
+        0.24703087885985747,
+        0.025050582907794584
       ],
       "compound:prt": [
-        312,
-        0.16738197424892703,
-        0.017645062775704105
+        355,
+        0.16864608076009502,
+        0.017101840254359766
       ],
       "compound:redup": [
-        54,
-        0.028969957081545063,
-        0.003053953172718018
+        50,
+        0.023752969121140142,
+        0.0024087098949802485
       ],
-      "treebank": "SP_UD_Zaar-Autogramm@2.16"
+      "treebank": "SP_UD_Zaar-Autogramm@2.17"
     },
     {
       "compound": [
@@ -291,33 +291,33 @@
         0.25,
         0.012563983248022336
       ],
-      "treebank": "SP_UD_English-GENTLE@2.16"
+      "treebank": "SP_UD_English-GENTLE@2.17"
     },
     {
       "compound": [
         3,
         0.007444168734491315,
-        0.0011139992573338284
+        0.001114413075780089
       ],
       "compound:svc": [
         51,
         0.12655086848635236,
-        0.018937987374675083
+        0.018945022288261514
       ],
-      "treebank": "SP_UD_Northwest_Gbaya-Autogramm@2.16"
+      "treebank": "SP_UD_Northwest_Gbaya-Autogramm@2.17"
     },
     {
       "compound": [
         3,
-        0.00683371298405467,
-        0.0008094981111710739
+        0.004777070063694267,
+        0.0005652911249293386
       ],
       "compound:redup": [
-        10,
-        0.022779043280182234,
-        0.002698327037236913
+        16,
+        0.025477707006369428,
+        0.003014885999623139
       ],
-      "treebank": "SP_UD_Ika-ChibErgIS@2.16"
+      "treebank": "SP_UD_Ika-ChibErgIS@2.17"
     },
     {
       "compound": [
@@ -325,7 +325,7 @@
         0.015892801495793082,
         0.001152750779801998
       ],
-      "treebank": "SP_UD_French-Rhapsodie@2.16"
+      "treebank": "SP_UD_French-Rhapsodie@2.17"
     },
     {
       "compound": [
@@ -338,7 +338,7 @@
         0.022222222222222223,
         0.001378993334865548
       ],
-      "treebank": "SP_UD_Greek-Cretan@2.16"
+      "treebank": "SP_UD_Greek-Cretan@2.17"
     },
     {
       "compound": [
@@ -356,7 +356,44 @@
         0.15267175572519084,
         0.01871345029239766
       ],
-      "treebank": "SP_UD_Pesh-ChibErgIS@2.16"
+      "treebank": "SP_UD_Pesh-ChibErgIS@2.17"
+    },
+    {
+      "compound": [
+        5,
+        0.00511770726714432,
+        0.00025325431798612166
+      ],
+      "compound:prt": [
+        125,
+        0.12794268167860798,
+        0.006331357949653041
+      ],
+      "treebank": "SP_UD_Alemannic-DIVITAL@2.17"
+    },
+    {
+      "compound:redup": [
+        1,
+        0.00909090909090909,
+        0.0011123470522803114
+      ],
+      "treebank": "SP_UD_Greek-Messinian@2.17"
+    },
+    {
+      "compound": [
+        56,
+        0.056968463886063074,
+        0.0065237651444548
+      ],
+      "treebank": "SP_UD_Shanghainese-ShUD@2.17"
+    },
+    {
+      "compound": [
+        4,
+        0.003972194637537239,
+        0.0004278990158322636
+      ],
+      "treebank": "SP_UD_Italian-KIParlaForest@2.17"
     },
     {
       "compound": [
@@ -389,7 +426,7 @@
         0.11553784860557768,
         0.008334530823394165
       ],
-      "treebank": "SP_UD_Cantonese-HK@2.16"
+      "treebank": "SP_UD_Cantonese-HK@2.17"
     },
     {
       "compound": [
@@ -412,20 +449,20 @@
         0.022435897435897436,
         0.0013162489590888334
       ],
-      "treebank": "SP_UD_Turkish_German-SAGT@2.16"
+      "treebank": "SP_UD_Turkish_German-SAGT@2.17"
     },
     {
       "compound": [
-        1136,
-        0.29621903520208603,
-        0.021508226517977166
+        1139,
+        0.2970013037809648,
+        0.021565026411950697
       ],
       "compound:prt": [
-        251,
-        0.06544980443285528,
-        0.004752257795785448
+        247,
+        0.06440677966101695,
+        0.0046765246038207395
       ],
-      "treebank": "SP_UD_English-GUM@2.16"
+      "treebank": "SP_UD_English-GUM@2.17"
     },
     {
       "compound": [
@@ -433,10 +470,10 @@
         0.012024048096192385,
         0.0015455950540958269
       ],
-      "treebank": "SP_UD_Highland_Puebla_Nahuatl-ITML@2.16"
+      "treebank": "SP_UD_Highland_Puebla_Nahuatl-ITML@2.17"
     },
     {
-      "treebank": "SP_UD_Western_Sierra_Puebla_Nahuatl-ITML@2.16"
+      "treebank": "SP_UD_Western_Sierra_Puebla_Nahuatl-ITML@2.17"
     },
     {
       "compound": [
@@ -449,7 +486,7 @@
         0.2,
         0.02564102564102564
       ],
-      "treebank": "SP_UD_Nayini-AHA@2.16"
+      "treebank": "SP_UD_Nayini-AHA@2.17"
     },
     {
       "compound": [
@@ -462,10 +499,10 @@
         0.0425,
         0.004558862965942612
       ],
-      "treebank": "SP_UD_Frisian_Dutch-Fame@2.16"
+      "treebank": "SP_UD_Frisian_Dutch-Fame@2.17"
     },
     {
-      "treebank": "SP_UD_Abaza-ATB@2.16"
+      "treebank": "SP_UD_Abaza-ATB@2.17"
     },
     {
       "compound": [
@@ -478,28 +515,33 @@
         0.028037383177570093,
         0.00259852750108272
       ],
-      "treebank": "SP_UD_Komi_Zyrian-IKDP@2.16"
+      "treebank": "SP_UD_Komi_Zyrian-IKDP@2.17"
     },
     {
       "compound": [
-        85,
-        0.0443169968717414,
-        0.005827905382242029
+        91,
+        0.04722366372599896,
+        0.006319005624609402
+      ],
+      "compound:prt": [
+        19,
+        0.009859885832900882,
+        0.0013193528227206444
       ],
       "compound:svc": [
         3,
-        0.0015641293013555788,
-        0.00020569077819677752
+        0.0015568240788790867,
+        0.0002083188667453649
       ],
-      "treebank": "SP_UD_Hausa-SouthernAutogramm@2.16"
+      "treebank": "SP_UD_Hausa-SouthernAutogramm@2.17"
     },
     {
       "compound": [
         73,
         0.01884843790343403,
-        0.0010832628470521894
+        0.0010833110735167543
       ],
-      "treebank": "SP_UD_Scottish_Gaelic-ARCOSG@2.16"
+      "treebank": "SP_UD_Scottish_Gaelic-ARCOSG@2.17"
     },
     {
       "compound": [
@@ -512,18 +554,23 @@
         0.3,
         0.04054054054054054
       ],
-      "treebank": "SP_UD_Khunsari-AHA@2.16"
+      "treebank": "SP_UD_Khunsari-AHA@2.17"
     },
     {
       "compound": [
-        35,
-        0.08274231678486997,
-        0.008239171374764594
+        37,
+        0.08747044917257683,
+        0.008898508898508899
       ],
-      "treebank": "SP_UD_Hausa-NorthernAutogramm@2.16"
+      "compound:prt": [
+        26,
+        0.061465721040189124,
+        0.006253006253006253
+      ],
+      "treebank": "SP_UD_Hausa-NorthernAutogramm@2.17"
     },
     {
-      "treebank": "SP_UD_Chukchi-HSE@2.16"
+      "treebank": "SP_UD_Chukchi-HSE@2.17"
     }
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "title": "## Usage of `Voice` feature \u2022\u2022\u2022 SP_UD 2.16",
+  "title": "## Usage of `Voice` feature \u2022\u2022\u2022 SP_UD 2.17",
   "instance": "spoken",
   "grew_match": {
     "Pass": {
@@ -7,14 +7,14 @@
         "pattern { N [Voice=\"Pass\"] }"
       ],
       "key": null,
-      "users": 9
+      "users": 13
     },
     "Act": {
       "code": [
         "pattern { N [Voice=\"Act\"] }"
       ],
       "key": null,
-      "users": 6
+      "users": 9
     },
     "Cau": {
       "code": [
@@ -28,7 +28,7 @@
         "pattern { N [Voice=\"Mid\"] }"
       ],
       "key": null,
-      "users": 4
+      "users": 5
     },
     "Rcp": {
       "code": [
@@ -37,13 +37,6 @@
       "key": null,
       "users": 3
     },
-    "Stat": {
-      "code": [
-        "pattern { N [Voice=\"Stat\"] }"
-      ],
-      "key": null,
-      "users": 2
-    },
     "Rfl": {
       "code": [
         "pattern { N [Voice=\"Rfl\"] }"
@@ -51,19 +44,12 @@
       "key": null,
       "users": 2
     },
-    "Mid,Pass": {
+    "Stat": {
       "code": [
-        "pattern { N [Voice=\"Mid,Pass\"] }"
+        "pattern { N [Voice=\"Stat\"] }"
       ],
       "key": null,
-      "users": 1
-    },
-    "PassPass": {
-      "code": [
-        "pattern { N [Voice=\"PassPass\"] }"
-      ],
-      "key": null,
-      "users": 1
+      "users": 2
     },
     "Appl": {
       "code": [
@@ -72,16 +58,9 @@
       "key": null,
       "users": 1
     },
-    "Act,Mid": {
+    "Mid,Pass": {
       "code": [
-        "pattern { N [Voice=\"Act,Mid\"] }"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "CauPass": {
-      "code": [
-        "pattern { N [Voice=\"CauPass\"] }"
+        "pattern { N [Voice=\"Mid,Pass\"] }"
       ],
       "key": null,
       "users": 1
@@ -93,9 +72,30 @@
       "key": null,
       "users": 1
     },
+    "CauPass": {
+      "code": [
+        "pattern { N [Voice=\"CauPass\"] }"
+      ],
+      "key": null,
+      "users": 1
+    },
     "CauRcp": {
       "code": [
         "pattern { N [Voice=\"CauRcp\"] }"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "Act,Mid": {
+      "code": [
+        "pattern { N [Voice=\"Act,Mid\"] }"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "PassPass": {
+      "code": [
+        "pattern { N [Voice=\"PassPass\"] }"
       ],
       "key": null,
       "users": 1
@@ -123,40 +123,40 @@
       "headerName": "Rcp"
     },
     {
-      "field": "Stat",
-      "headerName": "Stat"
-    },
-    {
       "field": "Rfl",
       "headerName": "Rfl"
     },
     {
-      "field": "Mid,Pass",
-      "headerName": "Mid,Pass"
-    },
-    {
-      "field": "PassPass",
-      "headerName": "PassPass"
+      "field": "Stat",
+      "headerName": "Stat"
     },
     {
       "field": "Appl",
       "headerName": "Appl"
     },
     {
-      "field": "Act,Mid",
-      "headerName": "Act,Mid"
-    },
-    {
-      "field": "CauPass",
-      "headerName": "CauPass"
+      "field": "Mid,Pass",
+      "headerName": "Mid,Pass"
     },
     {
       "field": "CauCau",
       "headerName": "CauCau"
     },
     {
+      "field": "CauPass",
+      "headerName": "CauPass"
+    },
+    {
       "field": "CauRcp",
       "headerName": "CauRcp"
+    },
+    {
+      "field": "Act,Mid",
+      "headerName": "Act,Mid"
+    },
+    {
+      "field": "PassPass",
+      "headerName": "PassPass"
     }
   ],
   "cells": [
@@ -171,7 +171,7 @@
         0.008281573498964804,
         0.0005003126954346467
       ],
-      "treebank": "SP_UD_Gheg-GPS@2.16"
+      "treebank": "SP_UD_Gheg-GPS@2.17"
     },
     {
       "Act": [
@@ -199,16 +199,16 @@
         0.13250086715227194,
         0.005700896921217186
       ],
-      "treebank": "SP_UD_Hebrew-IAHLTknesset@2.16"
+      "treebank": "SP_UD_Hebrew-IAHLTknesset@2.17"
     },
     {
-      "treebank": "SP_UD_Slovenian-SST@2.16"
+      "treebank": "SP_UD_Slovenian-SST@2.17"
     },
     {
-      "treebank": "SP_UD_Nenets-Tundra@2.16"
+      "treebank": "SP_UD_Nenets-Tundra@2.17"
     },
     {
-      "treebank": "SP_UD_Bokota-ChibErgIS@2.16"
+      "treebank": "SP_UD_Bokota-ChibErgIS@2.17"
     },
     {
       "Mid": [
@@ -221,10 +221,20 @@
         0.001310615989515072,
         8.367500627562547e-05
       ],
-      "treebank": "SP_UD_Beja-Autogramm@2.16"
+      "treebank": "SP_UD_Beja-Autogramm@2.17"
     },
     {
-      "treebank": "SP_UD_French-ParisStories@2.16"
+      "Act": [
+        633,
+        0.22802593659942363,
+        0.014793521699502208
+      ],
+      "Pass": [
+        103,
+        0.03710374639769452,
+        0.0024071607188763467
+      ],
+      "treebank": "SP_UD_French-ParisStories@2.17"
     },
     {
       "Pass": [
@@ -232,13 +242,13 @@
         0.0008657071745482091,
         5.680325482650156e-05
       ],
-      "treebank": "SP_UD_Naija-NSC@2.16"
+      "treebank": "SP_UD_Naija-NSC@2.17"
     },
     {
-      "treebank": "SP_UD_English-ESLSpok@2.16"
+      "treebank": "SP_UD_English-ESLSpok@2.17"
     },
     {
-      "treebank": "SP_UD_English-CHILDES@2.16"
+      "treebank": "SP_UD_English-CHILDES@2.17"
     },
     {
       "Act": [
@@ -251,21 +261,26 @@
         1.03,
         0.03951251180358829
       ],
-      "treebank": "SP_UD_Greek-GDT@2.16"
+      "treebank": "SP_UD_Greek-GDT@2.17"
     },
     {
-      "treebank": "SP_UD_Spanish-COSER@2.16"
+      "treebank": "SP_UD_Spanish-COSER@2.17"
     },
     {
-      "treebank": "SP_UD_Soi-AHA@2.16"
+      "treebank": "SP_UD_Soi-AHA@2.17"
     },
     {
       "Cau": [
-        12,
-        0.006437768240343348,
-        0.0006786562606040041
+        16,
+        0.007600950118764846,
+        0.0007707871663936795
       ],
-      "treebank": "SP_UD_Zaar-Autogramm@2.16"
+      "Pass": [
+        4,
+        0.0019002375296912114,
+        0.00019269679159841988
+      ],
+      "treebank": "SP_UD_Zaar-Autogramm@2.17"
     },
     {
       "Pass": [
@@ -273,26 +288,36 @@
         0.12962962962962962,
         0.006514657980456026
       ],
-      "treebank": "SP_UD_English-GENTLE@2.16"
+      "treebank": "SP_UD_English-GENTLE@2.17"
     },
     {
       "Act": [
         3,
         0.007444168734491315,
-        0.0011139992573338284
+        0.001114413075780089
       ],
       "Mid": [
         1,
         0.0024813895781637717,
-        0.0003713330857779428
+        0.0003714710252600297
       ],
-      "treebank": "SP_UD_Northwest_Gbaya-Autogramm@2.16"
+      "treebank": "SP_UD_Northwest_Gbaya-Autogramm@2.17"
     },
     {
-      "treebank": "SP_UD_Ika-ChibErgIS@2.16"
+      "treebank": "SP_UD_Ika-ChibErgIS@2.17"
     },
     {
-      "treebank": "SP_UD_French-Rhapsodie@2.16"
+      "Act": [
+        447,
+        0.13929573075724525,
+        0.010103521540617513
+      ],
+      "Pass": [
+        134,
+        0.04175755687129947,
+        0.003028796166538583
+      ],
+      "treebank": "SP_UD_French-Rhapsodie@2.17"
     },
     {
       "Act": [
@@ -305,7 +330,7 @@
         0.46296296296296297,
         0.02872902780969892
       ],
-      "treebank": "SP_UD_Greek-Cretan@2.16"
+      "treebank": "SP_UD_Greek-Cretan@2.17"
     },
     {
       "Appl": [
@@ -328,10 +353,37 @@
         0.009541984732824428,
         0.0011695906432748538
       ],
-      "treebank": "SP_UD_Pesh-ChibErgIS@2.16"
+      "treebank": "SP_UD_Pesh-ChibErgIS@2.17"
     },
     {
-      "treebank": "SP_UD_Cantonese-HK@2.16"
+      "treebank": "SP_UD_Alemannic-DIVITAL@2.17"
+    },
+    {
+      "Act": [
+        148,
+        1.3454545454545455,
+        0.1646273637374861
+      ],
+      "Mid": [
+        1,
+        0.00909090909090909,
+        0.0011123470522803114
+      ],
+      "Pass": [
+        25,
+        0.22727272727272727,
+        0.027808676307007785
+      ],
+      "treebank": "SP_UD_Greek-Messinian@2.17"
+    },
+    {
+      "treebank": "SP_UD_Shanghainese-ShUD@2.17"
+    },
+    {
+      "treebank": "SP_UD_Italian-KIParlaForest@2.17"
+    },
+    {
+      "treebank": "SP_UD_Cantonese-HK@2.17"
     },
     {
       "Cau": [
@@ -374,27 +426,27 @@
         0.003205128205128205,
         0.00018803556558411906
       ],
-      "treebank": "SP_UD_Turkish_German-SAGT@2.16"
+      "treebank": "SP_UD_Turkish_German-SAGT@2.17"
     },
     {
       "Pass": [
-        513,
-        0.13376792698826598,
-        0.009712781869473844
+        515,
+        0.13428943937418514,
+        0.009750648465456199
       ],
-      "treebank": "SP_UD_English-GUM@2.16"
+      "treebank": "SP_UD_English-GUM@2.17"
     },
     {
-      "treebank": "SP_UD_Highland_Puebla_Nahuatl-ITML@2.16"
+      "treebank": "SP_UD_Highland_Puebla_Nahuatl-ITML@2.17"
     },
     {
-      "treebank": "SP_UD_Western_Sierra_Puebla_Nahuatl-ITML@2.16"
+      "treebank": "SP_UD_Western_Sierra_Puebla_Nahuatl-ITML@2.17"
     },
     {
-      "treebank": "SP_UD_Nayini-AHA@2.16"
+      "treebank": "SP_UD_Nayini-AHA@2.17"
     },
     {
-      "treebank": "SP_UD_Frisian_Dutch-Fame@2.16"
+      "treebank": "SP_UD_Frisian_Dutch-Fame@2.17"
     },
     {
       "Rcp": [
@@ -407,7 +459,7 @@
         0.04081632653061224,
         0.006134969325153374
       ],
-      "treebank": "SP_UD_Abaza-ATB@2.16"
+      "treebank": "SP_UD_Abaza-ATB@2.17"
     },
     {
       "Act": [
@@ -415,42 +467,42 @@
         0.014018691588785047,
         0.00129926375054136
       ],
-      "treebank": "SP_UD_Komi_Zyrian-IKDP@2.16"
+      "treebank": "SP_UD_Komi_Zyrian-IKDP@2.17"
     },
     {
       "Cau": [
         2,
-        0.0010427528675703858,
-        0.00013712718546451835
+        0.0010378827192527244,
+        0.00013887924449690992
       ],
       "Stat": [
-        12,
-        0.006256517205422315,
-        0.0008227631127871101
+        11,
+        0.005708354955889984,
+        0.0007638358447330046
       ],
-      "treebank": "SP_UD_Hausa-SouthernAutogramm@2.16"
+      "treebank": "SP_UD_Hausa-SouthernAutogramm@2.17"
     },
     {
-      "treebank": "SP_UD_Scottish_Gaelic-ARCOSG@2.16"
+      "treebank": "SP_UD_Scottish_Gaelic-ARCOSG@2.17"
     },
     {
-      "treebank": "SP_UD_Khunsari-AHA@2.16"
+      "treebank": "SP_UD_Khunsari-AHA@2.17"
     },
     {
       "Cau": [
         9,
         0.02127659574468085,
-        0.00211864406779661
+        0.0021645021645021645
       ],
       "Stat": [
-        22,
-        0.05200945626477541,
-        0.005178907721280603
+        21,
+        0.04964539007092199,
+        0.005050505050505051
       ],
-      "treebank": "SP_UD_Hausa-NorthernAutogramm@2.16"
+      "treebank": "SP_UD_Hausa-NorthernAutogramm@2.17"
     },
     {
-      "treebank": "SP_UD_Chukchi-HSE@2.16"
+      "treebank": "SP_UD_Chukchi-HSE@2.17"
     }
   ]
 }
