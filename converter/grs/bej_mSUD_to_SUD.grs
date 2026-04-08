@@ -1,5 +1,6 @@
 strat bej_mSUD_to_SUD_main { 
   Seq(
+    Onf (rm_filler),
     Onf (dep_on_InflAff),
     Onf (right_headeed_appos),
     Onf (init_MGloss_MSeg),
@@ -9,6 +10,13 @@ strat bej_mSUD_to_SUD_main {
     Onf (fix_rel),
     )
   }
+
+% Since 2.18, relation with `$` (ex: mod@relcl$obj) with fs representation [1=mod, deep=relcl, filler=obj])
+% ⚠ requires the "beja" config
+rule rm_filler {
+  pattern { e: X -[filler=*]-> Y }
+  commands { del_feat e.filler }
+}
 
 % In a few cases in mSUD_Beja-NSC, an InflAff which is dependent of a morph relation have another dep.
 % The rule [dep_on_InflAff] move the dependent one level up to prepare data for the main [morph2word] package
