@@ -185,11 +185,6 @@ package FR_final {
     commands { del_feat N.ExtPos }
   }
 
-  rule dislocated {
-    pattern { e: X -[1=dislocated, 2=*]-> Y }
-    commands { del_feat e.2 }
-  }
-
   % Added 2026_02_19, because of UD validation:
   % [Line 258792 Sent fr-ud-train_09227]: [L3 SYNTAX too-many-objects] Multiple direct objects [19, 22] ('se', 'gens') under the predicate 'rencontrer'.
   rule double_obj {
