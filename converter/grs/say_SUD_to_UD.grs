@@ -6,7 +6,6 @@ strat say_main {
     Onf (say_pre),
     u_main,
     Onf(say_post),
-    Onf(tmp_escape_aux_cop),
   )
 }
 
@@ -78,15 +77,5 @@ package say_post {
   rule advmod {
     pattern { X -[advmod]-> Y; Y[ExtPos=ADV, upos=VERB] }
     commands { Y.upos=ADV }
-  }
-}
-
-rule tmp_escape_aux_cop {
-  pattern { 
-    X [upos=AUX, lemma]
-  }
-  commands {
-    X.xpos = X.lemma;
-    del_feat X.lemma
   }
 }

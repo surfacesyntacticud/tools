@@ -471,6 +471,8 @@ package sub_relations {
     pattern {
       e:H -[1=comp, 2=obj|obl]-> D; D[upos<> AUX|VERB];
       D -[1=mark]-> CONJ}
+    without {e.deep=R} % conflict with ccomp_deep_R
+    without {e.deep=T} % conflict with ccomp_deep_T
     commands {e.1=ccomp}
   }
 
