@@ -6,8 +6,6 @@ strat ha_main {
     Onf (ha_pre),
     u_main,
     Onf (ha_post),
-    Onf (fixed_children),
-    Onf (case_children),
   )
 }
 
@@ -36,45 +34,17 @@ package ha_pre {
   }
 }
 
-% TMP rule for 2.11 --> remove non documented extension
 package ha_post {
   rule no_extension {
-    pattern { e: N -[1=dislocated|parataxis|discourse|conj|nmod, 2=*]-> M }
+    pattern { e: N -[1=dislocated|parataxis|discourse|conj, 2=*]-> M }
     commands { del_feat e.2 }
   }
+
   rule missing_extension {
-    pattern { e: N -[dep:comp|flat:num|obl:mod]-> M }
+    pattern { e: N -[dep:comp|flat:num|nmod:desc]-> M }
     commands { del_feat e.2 }
   }
-
-  rule advmod {
-    pattern { X -[advmod]-> Y; Y[upos=VERB, Voice, VerbForm] }
-    without { Y -[fixed]-> * }
-    commands { Y.upos=ADV; del_feat Y.Voice; del_feat Y.VerbForm }
-  }
 }
 
 
-rule fixed_children {
-  pattern {
-    X -[fixed]-> Y; 
-    e: Y -> Z;
-  }
-  commands {
-    add_edge f: X -> Z;
-    f.label = e.label;
-    del_edge e;
-  }
-}
 
-rule case_children {
-  pattern {
-    X -[case]-> Y; 
-    e: Y -[^fixed]-> Z;
-  }
-  commands {
-    add_edge f: X -> Z;
-    f.label = e.label;
-    del_edge e;
-  }
-}
