@@ -247,6 +247,12 @@ rule rm_unknown {
   commands { del_feat X.Gender__lex }
 }
 
+rule missing_extension {
+  pattern { e: N -[dislocated:unk]-> M }
+  commands { del_feat e.2 }
+}
+
+
 % Adding "Exponence" encoding to describe the "status" of morphosyntactic features
 % https://github.com/UniversalDependencies/docs/issues/985
 package exponence {
@@ -312,12 +318,13 @@ strat fr_main{
   Seq (
     FR_main_UDplus,
     flatten_idioms,
-    Onf(remove_UDplus_subtypes),
-    Onf(fix_punct),
-    Onf(FR_discontinuous_MWE),
-    % Onf(FR_spoken_tilde), disabled for UD validation
-    Onf(remove_Cxn),
+    Onf (remove_UDplus_subtypes),
+    Onf (fix_punct),
+    Onf (FR_discontinuous_MWE),
+    % Onf (FR_spoken_tilde), disabled for UD validation
+    Onf (remove_Cxn),
     Onf (ud_validation), % final modification to adapt to validation errors and warnings
+    Onf (missing_extension),
     Onf (rm_unknown),
     Onf (exponence),
   )
