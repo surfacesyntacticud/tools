@@ -242,6 +242,11 @@ package remove_Cxn {
   }
 }
 
+rule rm_unknown {
+  pattern { X [Gender__lex = Unknown] }
+  commands { del_feat X.Gender__lex }
+}
+
 % Adding "Exponence" encoding to describe the "status" of morphosyntactic features
 % https://github.com/UniversalDependencies/docs/issues/985
 package exponence {
@@ -313,6 +318,7 @@ strat fr_main{
     % Onf(FR_spoken_tilde), disabled for UD validation
     Onf(remove_Cxn),
     Onf (ud_validation), % final modification to adapt to validation errors and warnings
+    Onf (rm_unknown),
     Onf (exponence),
   )
 }
