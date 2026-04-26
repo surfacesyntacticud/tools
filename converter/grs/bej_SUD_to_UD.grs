@@ -11,6 +11,13 @@ strat bej_SUD_to_UD_main {
 
 package bej_pre {
 
+  % Since 2.18, relation with `$` (ex: mod@relcl$obj) with fs representation [1=mod, deep=relcl, filler=obj])
+  % ⚠ requires the "beja" config
+  rule rm_filler {
+    pattern { e: X -[filler=*]-> Y }
+    commands { del_feat e.filler }
+  }
+
   rule intern {
     pattern { e: X -[deep=intern]-> Y }
     commands { del_feat e.deep }
