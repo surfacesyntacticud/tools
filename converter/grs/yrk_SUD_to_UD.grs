@@ -8,8 +8,8 @@ strat yrk_SUD_to_UD_main {
 }
 
 package yrk_post {
-	rule dep_comp {
-		pattern { e: X -[dep:comp]-> Y }
+	rule unknown_extensions {
+		pattern { e: X -[dep:comp|acl:poss]-> Y }
 		commands {
 			del_feat e.2;
 		}
