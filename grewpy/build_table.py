@@ -52,20 +52,40 @@ def load_corpus (corpus_desc):
     return (corpus_id, Corpus (directory))
 
 
+def load_requests (requests):
+  grew_requests = dict()
+  text_requests = dict()
+  def add_req_file (req_file):
+    with open(req_file, 'r') as f:
+      text_request = f.read()
+    id = os.path.splitext(os.path.basename(req_file))[0]
+    grew_request = Request(text_request)
+    grew_requests[id] = grew_request
+    text_requests[id] = text_request.replace("\n", "%0A")
+
+  if os.path.isfile (requests):
+    match os.path.splitext(requests)[1]:
+      case ".json":
+        with open(requests, "rb") as f:
+          data_requests = json.load(f)
+        for id, request in data_requests.items():
+          (grew_request, text_request) = request_of_json (request)
+          grew_requests[id] = grew_request
+          text_requests[id] = text_request
+      case ".req":
+        add_req_file(requests)
+  if os.path.isdir (requests):
+    for file in os.listdir(requests):
+      if file.endswith(".req"):
+        add_req_file(os.path.join (requests, file))
+  return (grew_requests, text_requests)
+
 # ===============================================================================================
 # Table with several treebanks and several requests
 # ===============================================================================================
 def table_TBR(args):
   title = args.title if args.title else "## Table treebanks/request"
-  with open(args.requests, "rb") as f:
-    data_requests = json.load(f)
-  grew_requests = dict()
-  text_requests = dict()
-  for id, request in data_requests.items():
-    (grew_request, text_request) = request_of_json (request)
-    grew_requests[id] = grew_request
-    text_requests[id] = text_request
-
+  (grew_requests, text_requests) = load_requests (args.requests)
   corpora = treebanks(args)
   size = len(corpora)
   main_dict = {}
