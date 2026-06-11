@@ -1,0 +1,3731 @@
+{
+  "kind": "TBR",
+  "title": "## Constructions/grew_queries \u2022 English UD 2.18",
+  "grew_match_instance": "https://universal.grew.fr",
+  "requests": {
+    "itself_reflexive": "pattern {%0A  ITSELF [form=/^itself$/i];%0A}",
+    "take_off_intransitive": "pattern {%0A  V [lemma=\"take\", upos=\"VERB\"];%0A  OFF [form=/^off$/i, upos=/^(PART|ADV)$/];%0A  V -[compound:prt|advmod]-> OFF;%0A%0A}%0A%0Awithout { V -[obj]-> _; }%0A%0A",
+    "adjunct_base": "pattern {%0A  H [upos=VERB]|[upos=ADJ];%0A  A [upos=VERB, VerbForm=Part, Tense=Pres];%0A  H -[advcl]-> A;%0A}",
+    "general_past_plurals": "pattern {%0A  V [upos=\"VERB\", VerbForm=\"Fin\", Tense=\"Past\"];%0A  V -[nsubj]-> S;%0A  S [];%0A  S [Number=\"Plur\"];%0A}%0A",
+    "ditransitive_obj_inf": "pattern {%0A  V   [upos=/^(VERB|AUX)$/];%0A  S   [upos=/^(NOUN|PROPN|PRON)$/];%0A  R   [upos=/^(NOUN|PROPN|PRON)$/];%0A  INF [upos=\"VERB\"];%0A%0A  % soggetto della main clause%0A  V -[nsubj|nsubj:pass]-> S;%0A%0A  % oggetto (recipient/affected argument)%0A  V -[obj]-> R;%0A%0A  % xcomp (bare infinitive)%0A  V -[xcomp]-> INF;%0A}%0A%0A% bare infinitive: niente \"to\"%0Awithout {%0A  TO [lemma=\"to\"];%0A  INF -[mark]-> TO;%0A}",
+    "mass_np": "pattern {%0A  N [upos=\"NOUN\", Number=\"Sing\"];%0A}%0A%0A% niente determinanti%0Awithout { N -[det|det:poss]-> D; D []; }%0A%0A% niente numerali%0Awithout { N -[nummod]-> Q; Q []; }%0A%0A% niente possessori/genitivo%0Awithout { N -[nmod:poss]-> P; P []; }%0A%0A% IMPORTANT: N non deve essere un modificatore nominale/aggettivale di un altro nome%0Awithout { H [upos=\"NOUN\"|\"PROPN\"]; H -[compound|amod]-> N; }%0Awithout { H [upos=\"NOUN\"|\"PROPN\"]; H -[nmod]-> N; }%0Awithout { H []; H -[flat|name]-> N; }%0A% se N \u00e8 un congiunto e il head della coord ha un determinante, allora NON \u00e8 bare%0Awithout {%0A  H [];%0A  H -[conj]-> N;%0A  H -[det|det:poss]-> D;%0A  D [];%0A}",
+    "impersonal_evaluative": "pattern {%0A  ROOT [];%0A  ADJ [upos=\"ADJ\"];%0A  ROOT -[root]-> ADJ;%0A%0A  IT [lemma=\"it\", upos=\"PRON\"];%0A  ADJ -[nsubj]-> IT;%0A%0A  BE [lemma=\"be\", upos=\"AUX\"];%0A  ADJ -[cop]-> BE;%0A%0A  INF [upos=\"VERB\", VerbForm=Inf];%0A  ADJ -[xcomp]-> INF;%0A%0A  TO [lemma=\"to\", upos=\"PART\"];%0A  INF -[mark]-> TO;%0A}%0A%0Awithout {%0A  ADJ -[ccomp]-> C;%0A}",
+    "asyndetic_coordination": "pattern {%0A  H [];%0A  C1 [];%0A  H -[conj]-> C1;%0A%0A  P1 [upos=\"PUNCT\", form=\",\"];%0A  H -[punct]-> P1;%0A}%0A%0Awithout {%0A  CC [];%0A  H -[cc]-> CC;%0A}",
+    "demonstrative_singular": "pattern {%0A  N [upos=\"NOUN\", Number=\"Sing\"];%0A  D [upos=\"DET\", lemma=\"this\"|\"that\"];%0A%0A  N -[det]-> D;%0A}",
+    "attribute_construction_adj": "pattern {%0A  V [upos=\"VERB\"|\"AUX\"];%0A  O [upos=\"NOUN\"|\"PROPN\"|\"PRON\"];%0A  A [upos=\"ADJ\"];%0A%0A  V -[obj]-> O;%0A  V -[xcomp]-> A;%0A}",
+    "general_past_tense_you": "%0A  pattern {%0A    V [upos=\"VERB\"|\"AUX\", Tense=\"Past\"];%0A    S [upos=\"PRON\", lemma=\"you\"];%0A    V -[nsubj|nsubj:pass]-> S;%0A  }%0A",
+    "perfective_construction": "pattern {%0A  V [upos=\"VERB\", VerbForm=\"Part\"];%0A  H [lemma=\"have\", upos=/^(AUX|VERB)$/];%0A%0A  V -[aux]-> H;%0A}",
+    "wh-cleft": "pattern {%0A  ROOT [];%0A  H [upos=/^(NOUN|PROPN|PRON|ADJ|ADV|VERB)$/];%0A  ROOT -[root]-> H;%0A%0A  BE [lemma=\"be\", upos=\"AUX\"];%0A  H -[cop]-> BE;%0A%0A  % testa della wh-clause: deve essere FINITA%0A  C [upos=/^(VERB|AUX)$/, VerbForm=\"Fin\"];%0A  H -[csubj]-> C;%0A%0A  WH [lemma=/^(what|which|who|whom|whose|where|when|why|how)$/];%0A  C -[obj|iobj|obl|advmod|nsubj|nmod]-> WH;%0A}",
+    "adjectival_with_partner_base": "pattern {%0A  A [upos=\"ADJ\"];%0A  P [upos=/^(NOUN|PROPN|PRON)$/];%0A  W [upos=\"ADP\", form=\"with\"];%0A%0A  A -[obl]-> P;%0A  P -[case]-> W;%0A}",
+    "postmodifier_recl": "pattern {%0A  N [upos=\"NOUN\"|\"PROPN\"];%0A  R [upos=\"VERB\"|\"AUX\"];%0A  N -[acl:relcl]-> R;%0A}",
+    "left_dislocation": "pattern {%0A  V [upos=/^(VERB|AUX)$/];%0A%0A  TOP [upos=/^(NOUN|PROPN|PRON)$/];%0A  V -[dislocated]-> TOP;%0A%0A  PRO [upos=\"PRON\", PronType=\"Prs\"];%0A  V -[nsubj|obj|iobj|obl]-> PRO;%0A}",
+    "we_are_able_to_make": "pattern {%0A  ROOT [];%0A  R [];%0A  ROOT -[root]-> R;%0A%0A  % soggetto%0A  S [];%0A  R -[nsubj|nsubj:pass]-> S;%0A%0A  % copula BE: pu\u00f2 essere head (VERB) oppure aux (AUX) a seconda dell\u2019analisi%0A  BE [lemma=\"be\", upos=/^(AUX|VERB)$/];%0A%0A  % caso A: head = aggettivo, BE = copula (cop)%0A  ADJ [upos=\"ADJ\", lemma=/^(able|unable|ready|entitled|ideal|infitted|qualified|unsuitable|well-positioned)$/];%0A  ADJ -[cop]-> BE;%0A%0A  % infinito con \"to\"%0A  VINF [upos=\"VERB\"];%0A  ADJ -[xcomp]-> VINF;%0A  TO [form=\"to\"];%0A  VINF -[mark]-> TO;%0A}",
+    "to_recipient_about": "pattern {%0A  ROOT [];%0A  V [upos=/^(VERB|AUX)$/];%0A  ROOT -[root]-> V;%0A%0A  RECIP [];%0A  TOPIC  [];%0A%0A  V -[obl|iobj|nmod]-> RECIP;%0A  V -[obl|nmod]-> TOPIC;%0A%0A  TO    [form=\"to\"];%0A  ABOUT [form=\"about\"];%0A%0A  RECIP -[case|mark]-> TO;%0A  TOPIC -[case|mark]-> ABOUT;%0A}",
+    "the_cardinal_of_pron": "pattern {%0A  N [upos=\"NUM\", form=/^(two|three|four|five)$/];%0A%0A  PRON [upos=\"PRON\", form=/^(them|us|you)$/];%0A  OF [upos=\"ADP\", form=\"of\"];%0A  PRON -[case]-> OF;%0A%0A  N -[nmod|nmod:of]-> PRON;%0A}",
+    "definite_singular": "pattern {%0A  N [upos=\"NOUN\", Number=\"Sing\"];%0A  D [lemma=\"the\"];%0A  N -[det]-> D;%0A}",
+    "title_np": "pattern {%0A  T [form=/^(Mr\\.?|Mrs\\.?|Ms\\.?|Dr\\.?|Prof\\.?|Professor|Sir|Dame|Lord|Lady|Baroness|President)$/];%0A  N [upos=\"PROPN\"];%0A  T -[flat]-> N;%0A}",
+    "imperative_construction": "pattern {%0A  V [upos=\"VERB\"|\"AUX\", Mood=\"Imp\"];%0A}",
+    "valency_postmodifier": "pattern {%0A  % head noun%0A  N [upos=\"NOUN\"|\"PROPN\"];%0A%0A  % postmodifier head (usually NOUN/PROPN/PRON in PP)%0A  P [upos];%0A%0A  % preposition (case marker)%0A  C [upos=\"ADP\"];%0A%0A  % allow both nmod and obl as in your python%0A  N -[nmod|obl]-> P;%0A  P -[case]-> C;%0A}",
+    "third_person_singular_present": "pattern {%0A  V [upos=\"VERB\"|\"AUX\", Tense=Pres, Number=Sing, Person=3];%0A}",
+    "general_quantifier_singular": "pattern {%0A  Q [upos=\"DET\", lemma=\"every\"|\"no\"|\"any\"|\"each\"];%0A  N [upos=\"NOUN\", Number=\"Sing\"];%0A  N -[det]-> Q;%0A}",
+    "we_definite_reference": "pattern {%0A  W [upos=\"PRON\", lemma=\"we\"];%0A  V [upos=\"VERB\"|\"AUX\"];%0A%0A  V -[nsubj|nsubj:pass]-> W;%0A}",
+    "most_least": "pattern {%0A  A [upos=\"ADJ\"];%0A  ADV [upos=\"ADV\", lemma=/^(most|least)$/i, Degree=\"Sup\"];%0A  A -[advmod]-> ADV;%0A}",
+    "general_present_tense": "pattern {%0A  V [upos=\"VERB\"|\"AUX\", VerbForm=\"Fin\", Tense=\"Pres\"];%0A  S [];%0A  V -[nsubj|nsubj:pass]-> S;%0A}%0A%0Awithout {%0A  V [Person=\"3\", Number=\"Sing\"];%0A}",
+    "negative_imperative": "pattern {%0A  ROOT [];%0A  V [upos=\"VERB\", VerbForm=\"Fin\"];%0A  ROOT -[root]-> V;%0A%0A  % negazione (not / n't) come dipendente del verbo (advmod)%0A  NEG [lemma=\"not\"];%0A  V -[advmod]-> NEG;%0A}%0A%0A% escludi frasi con soggetto espresso (quindi non-imperativi)%0Awithout {%0A  V -[nsubj|nsubj:pass|csubj|expl]-> _;%0A}",
+    "intransitive": "pattern {%0A  % main predicate%0A  V [upos=\"VERB\"];%0A%0A  % subject%0A  S [];%0A  V -[nsubj|nsubj:pass]-> S;%0A}%0A%0A% exclude direct object%0Awithout {%0A  V -[obj]-> O;%0A  O [];%0A}%0A%0A% exclude indirect object%0Awithout {%0A  V -[iobj]-> I;%0A  I [];%0A}%0A%0A% exclude clausal complements (control/raising etc.)%0Awithout {%0A  V -[xcomp|ccomp]-> C;%0A  C [];%0A}",
+    "postmodifier_pp_base": "pattern {%0A  N [upos=\"NOUN\"|\"PROPN\"];%0A  P [upos];%0A  C [upos=\"ADP\"];%0A  N -[nmod]-> P;%0A  P -[case]-> C;%0A}",
+    "themselves_reflexive": "pattern {%0A  ROOT [];%0A  V [upos=/^(VERB|AUX)$/];%0A  ROOT -[root]-> V;%0A%0A  SELF [lemma=\"themselves\"];%0A  V -[obj|iobj|obl|nmod]-> SELF;%0A}%0A%0Awithout {%0A  V -[nsubj|nsubj:pass|csubj|csubj:pass]-> SELF;%0A}",
+    "with_partner": "pattern {%0A  V [upos=\"VERB\"|\"AUX\"];%0A  S [];%0A  P [upos=\"NOUN\"|\"PROPN\"|\"PRON\"];%0A  C [upos=\"ADP\", lemma=\"with\"];%0A%0A  V -[nsubj|nsubj:pass]-> S;%0A  V -[obl|nmod]-> P;%0A  P -[case]-> C;%0A}",
+    "myself_reflexive": "pattern {%0A  V [upos=/^(VERB|AUX)$/];%0A  V -[nsubj]-> S;%0A%0A  REFL [form=/^myself$/i, upos=\"PRON\"];%0A  V -[obj|iobj|obl]-> REFL;%0A}",
+    "superlative": "pattern {%0A  A [upos=\"ADJ\"];%0A  N [upos=\"NOUN\"|\"PROPN\"];%0A  N -[amod]-> A;%0A%0A  A.Degree = \"Sup\";%0A}",
+    "comparative_than": "pattern {%0A  H [upos=/^(ADJ|ADV)$/];                  % testa comparata%0A  COMP [];                                 % termine di confronto%0A  TH [lemma=\"than\", upos=\"ADP\"];           % than%0A%0A  H -[obl|nmod]-> COMP;%0A  COMP -[case]-> TH;%0A%0A  MORE [lemma=/^(more|less)$/ , upos=/^(ADV|ADJ)$/];%0A  H -[advmod]-> MORE;%0A}",
+    "affirmative_tag": "pattern {%0A  ROOT [];%0A  MAIN [upos=/^(VERB|AUX)$/];%0A  ROOT -[root]-> MAIN;%0A%0A  TAGV [upos=\"AUX\"];%0A  MAIN -[parataxis|discourse|conj]-> TAGV;%0A%0A  TAGS [upos=\"PRON\"];%0A  TAGV -[nsubj]-> TAGS;%0A%0A  Q [form=\"?\"];%0A  TAGV -[punct]-> Q;%0A}",
+    "object_attribute": "pattern {%0A  % predicate%0A  V [upos=\"VERB\", lemma=\"account\"|\"appoint\"|\"call\"|\"consider\"|\"count\"|\"create\"|\"declare\"|\"elect\"|\"excuse\"|\"find\"|\"imagine\"|\"judge\"|\"keep\"|\"label\"|\"leave\"|\"make\"|\"pronounce\"|\"prove\"|\"show\"|\"take\"|\"think\"|\"vote\"];%0A%0A  % subject (affector)%0A  S [];%0A  V -[nsubj|nsubj:pass]-> S;%0A%0A  % object (affected-attributee)%0A  O [upos=\"NOUN\"|\"PROPN\"|\"PRON\"];%0A  V -[obj]-> O;%0A%0A  % attribute as NP complement (object complement)%0A  A [upos=\"NOUN\"|\"PROPN\"|\"PRON\"];%0A  V -[xcomp]-> A;%0A}%0A%0A% optional: avoid cases where A is a clause head (keep it NP-ish)%0Awithout {%0A  A [upos=\"VERB\"|\"AUX\"];%0A}",
+    "us_definite_reference": "pattern {%0A  U [upos=\"PRON\", lemma=\"we\"];%0A}%0A%0Awithout {%0A  V [];%0A  V -[nsubj|nsubj:pass]-> U;%0A}",
+    "to_recipient_for": "pattern {%0A  ROOT [];%0A  V [upos=/^(VERB|AUX)$/, lemma=/^(answer|account)$/];%0A  ROOT -[root]-> V;%0A%0A  RECIP [];%0A  V -[obl|iobj|nmod]-> RECIP;%0A  TO [lemma=\"to\"];%0A  RECIP -[case|mark]-> TO;%0A%0A  FACT [];%0A  V -[obl|nmod]-> FACT;%0A  FOR [lemma=\"for\"];%0A  FACT -[case|mark]-> FOR;%0A}",
+    "it_that": "pattern {%0A  ROOT [];%0A  PRED [upos=/^(ADJ|NOUN|PROPN)$/];%0A  ROOT -[root]-> PRED;%0A%0A  IT [lemma=\"it\"];%0A  PRED -[nsubj]-> IT;%0A%0A  BE [lemma=/^(be)$/];%0A  PRED -[cop]-> BE;%0A%0A  C [upos=/^(VERB|AUX)$/];%0A  PRED -[ccomp]-> C;%0A%0A  M [lemma=/^(that|if|whether)$/];%0A  C -[mark]-> M;%0A}",
+    "me_definite": "pattern {%0A  M [upos=\"PRON\", lemma=\"me\"];%0A}%0A%0A% escludi i casi in cui \"me\" \u00e8 soggetto (nsubj / nsubj:pass)%0Awithout {%0A  V [upos=/^(VERB|AUX)$/];%0A  V -[nsubj|nsubj:pass]-> M;%0A}%0A%0A% (opzionale) escludi interrogative con \"?\"%0Awithout { Q [form=\"?\"]; M -[punct]-> Q; }",
+    "additive_coordination_base": "pattern {%0A  H  [];%0A  C  [];%0A  AND [upos=\"CCONJ\", lemma=\"and\"];%0A%0A  H -[conj]-> C;%0A  C -[cc]-> AND;%0A}",
+    "them_definite_reference": "pattern {%0A  T [upos=\"PRON\", form=\"them\"];%0A}%0A%0Awithout {%0A  V [];%0A  V -[nsubj|nsubj:pass]-> T;%0A}",
+    "monotransitive_clausal_objects": "pattern {%0A  V [upos=\"VERB\"|\"AUX\"];%0A  S [];%0A  V -[nsubj|nsubj:pass]-> S;%0A%0A  C [upos=\"VERB\"|\"AUX\"|\"ADJ\"|\"NOUN\"|\"PROPN\"|\"PRON\"];%0A  V -[ccomp|xcomp]-> C;%0A}",
+    "caused_motion": "pattern {%0A  % ---------- slots ----------%0A  S [];%0A  V [upos=\"VERB\",%0A     lemma=\"put\"|\"place\"|\"set\"|\"move\"|\"bring\"|\"take\"|\"send\"|\"carry\"|\"lead\"|\"drive\"|\"push\"|\"pull\"|\"throw\"|\"kick\"|\"boot\"|\"drop\"|\"lift\"|\"drag\"|\"dump\"|\"pack\"|\"ship\"|\"transfer\"];%0A%0A  O [upos=\"NOUN\"|\"PROPN\"|\"PRON\"];   % \u00c6FFECTED-THEME (direct object)%0A%0A  P [upos=\"NOUN\"|\"PROPN\"|\"PRON\"];   % head del PP (obl/nmod)%0A  C [upos=\"ADP\",%0A     lemma=\"to\"|\"into\"|\"onto\"|\"towards\"|\"toward\"|\"from\"|\"through\"|\"across\"|\"around\"|\"over\"|\"under\"|\"out\"|\"off\"];%0A%0A  % ---------- dependencies ----------%0A  V -[nsubj|nsubj:pass]-> S;%0A  V -[obj]-> O;%0A%0A  % PP goal/source/path (UD: obl o talvolta nmod)%0A  V -[obl|obl:npmod|nmod]-> P;%0A  P -[case]-> C;%0A}%0A%0A% (optional but useful) elimina i casi \u201cstrumentali/role\u201d tipo \"as ...\"%0Awithout {%0A  C [lemma=\"as\"];%0A}",
+    "ranking_np": "pattern {%0A  O [upos=\"ADJ\"|\"NUM\", lemma=/^(first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth|next|last|previous|following)$/];%0A  N [upos=\"NOUN\"|\"PROPN\"];%0A%0A  N -[amod|nummod]-> O;%0A}",
+    "adjective_base": "pattern {%0A  N [upos = NOUN|PROPN];%0A  A [upos = ADJ];%0A  N -[amod]-> A;%0A}",
+    "to_recipient_for_desired": "pattern {%0A  V [upos=\"VERB\"];%0A  S [];%0A  R [upos=\"NOUN\"|\"PROPN\"|\"PRON\"];   % recipient head (to-PP)%0A  D [upos=\"NOUN\"|\"PROPN\"|\"PRON\"];   % desired-object head (for-PP)%0A  TO  [upos=\"ADP\", lemma=\"to\"];%0A  FOR [upos=\"ADP\", lemma=\"for\"];%0A%0A  V -[nsubj|nsubj:pass]-> S;%0A%0A  V -[obl|nmod]-> R;%0A  R -[case]-> TO;%0A%0A  V -[obl|nmod]-> D;%0A  D -[case]-> FOR;%0A}",
+    "on_focus_area": "pattern {%0A  V [upos=\"VERB\"|\"AUX\"];%0A  S [];%0A  V -[nsubj]-> S;%0A%0A  P [upos=\"NOUN\"|\"PROPN\"|\"PRON\"];%0A  V -[obl]-> P;%0A%0A  C [upos=\"ADP\", lemma=\"on\"];%0A  P -[case]-> C;%0A}%0A%0Awithout { V -[aux:pass]-> AUXP; }%0Awithout { V -[nsubj:pass]-> SPASS; }",
+    "to_recipient_goal": "pattern {%0A  ROOT [];%0A  V [upos=/^(VERB|AUX)$/];%0A  ROOT -[root]-> V;%0A%0A  S [upos=/^(NOUN|PROPN|PRON)$/];%0A  V -[nsubj|nsubj:pass]-> S;%0A%0A  R [upos=/^(NOUN|PROPN|PRON)$/];%0A  V -[obl|nmod]-> R;%0A%0A  TO [upos=\"ADP\", lemma=\"to\"];%0A  R -[case]-> TO;%0A}%0A%0Awithout { Q [form=\"?\"]; V -[punct]-> Q; }%0A%0A% evita range marker \"from ... to ...\"%0Awithout {%0A  FROM [upos=\"ADP\", lemma=\"from\"];%0A}",
+    "she_was_surprised_to_hear": "pattern {%0A  ROOT [];%0A  R [];%0A  ROOT -[root]-> R;%0A%0A  % soggetto%0A  S [];%0A  R -[nsubj|nsubj:pass]-> S;%0A%0A  % aggettivo valutativo%0A  ADJ [upos=\"ADJ\", lemma=/^(happy|pleased|delighted|glad|surprised|proud)$/];%0A%0A  % copula \"be\" come cop%0A  BE [lemma=\"be\", upos=/^(AUX|VERB)$/];%0A  ADJ -[cop]-> BE;%0A%0A  % complemento infinitivo (to-INF)%0A  VINF [upos=\"VERB\"];%0A  ADJ -[xcomp]-> VINF;%0A%0A  TO [form=\"to\"];%0A  VINF -[mark]-> TO;%0A}",
+    "yourselves_reflexive": "pattern {%0A  Y [upos=\"PRON\", form=\"yourselves\"];%0A}",
+    "numerical_singular": "pattern {%0A  N [upos=\"NOUN\", feats=\"Number=Sing\"];%0A  D [lemma=\"one\", upos=/^(NUM|DET)$/];%0A  N -[det|nummod]-> D;%0A}",
+    "passive_construction": "pattern {%0A  % participio, testa della predicazione passiva%0A  V [upos=\"VERB\", VerbForm=\"Part\"];%0A%0A  % ausiliare be, che in ParlaMint pu\u00f2 essere AUX o VERB%0A  A [lemma=\"be\", upos=/^(AUX|VERB)$/];%0A  V -[aux:pass|aux]-> A;%0A%0A  % soggetto passivo%0A  S [];%0A  V -[nsubj:pass]-> S;%0A}%0A%0Awithout {%0A  A2 [lemma=\"get\", upos=/^(AUX|VERB)$/];%0A  V -[aux:pass|aux]-> A2;%0A}",
+    "i-definite_np": "pattern {%0A  I [form=\"I\", upos=\"PRON\"];%0A  V [upos=\"VERB\"|\"AUX\"];%0A%0A  V -[nsubj]-> I;%0A}",
+    "attribute_v-ing": "pattern {%0A  V [upos=/^(VERB|AUX)$/];%0A  V -[obj]-> OBJ;%0A  V -[xcomp]-> ING;%0A%0A  ING [upos=\"VERB\"];%0A  ING -[xcomp:subj|nsubj]-> OBJ;%0A}",
+    "it_for_event": "pattern {%0A  ROOT [];%0A  ADJ [upos=\"ADJ\"];%0A  ROOT -[root]-> ADJ;%0A%0A  IT [form=/^it$/i];%0A  ADJ -[nsubj]-> IT;%0A%0A  COP [upos=/^(AUX|VERB)$/];%0A  ADJ -[cop|aux]-> COP;%0A%0A  INF [upos=\"VERB\"];%0A  ADJ -[xcomp]-> INF;%0A%0A  TO [form=/^to$/i];%0A  INF -[mark]-> TO;%0A%0A  NP [];%0A  ADJ -[obl|nmod]-> NP;%0A%0A  FOR [form=/^for$/i];%0A  NP -[case|mark]-> FOR;%0A}",
+    "you_definite_reference": "pattern {%0A  ROOT [];%0A  R [];%0A  ROOT -[root]-> R;%0A%0A  YOU [lemma=\"you\", upos=\"PRON\"];%0A  R -[nsubj|nsubj:pass|obj|iobj|obl|nmod|nmod:poss|appos|conj]-> YOU;%0A}",
+    "focus_np": "pattern {%0A  ROOT [];%0A  N [upos=/^(NOUN|PROPN|PRON)$/];%0A  ROOT -[root]-> N;%0A}%0A%0A% niente verbi/ausiliari (taglia copulari e frasi vere)%0Awithout { V [upos=/^(VERB|AUX)$/]; }%0A%0A% taglia le citazioni editoriali tra parentesi quadre%0Awithout { LB [form=\"[\"]; }%0Awithout { RB [form=\"]\"]; }",
+    "wh-question_subject": "pattern {%0A  ROOT [];%0A  R [upos=\"VERB\"];%0A  ROOT -[root]-> R;%0A%0A  WH [lemma=/^(what|which|who|whom|whose|where|when|why|how)$/];%0A  R -[nsubj|nsubj:pass]-> WH;%0A%0A  Q [form=\"?\"];%0A  R -[punct]-> Q;%0A}",
+    "she_definite_reference": "pattern {%0A  ROOT [];%0A%0A  V [upos=/^(VERB|AUX)$/];%0A  ROOT -[root]-> V;%0A%0A  SHE [lemma=\"she\", upos=\"PRON\"];%0A  V -[nsubj|nsubj:pass]-> SHE;%0A}",
+    "subject_attribute_adjp": "pattern {%0A  V [upos=\"VERB\", lemma=\"be\"|\"seem\"|\"become\"|\"remain\"|\"appear\"|\"feel\"|\"look\"|\"sound\"];%0A  S [];%0A  V -[nsubj|nsubj:pass]-> S;%0A%0A  A [upos=\"ADJ\"];%0A  V -[xcomp]-> A;%0A}%0A%0Awithout {%0A  V -[obj|iobj]-> O;%0A  O [];%0A}",
+    "to_recipient_action": "pattern {%0A  ROOT [];%0A  V [upos=/^(VERB|AUX)$/];%0A  ROOT -[root]-> V;%0A%0A  % RECIPIENT: \"to NP\"%0A  REC [upos=/^(NOUN|PROPN|PRON)$/];%0A  V -[obl|iobj]-> REC;%0A%0A  TO1 [form=/^to$/i];%0A  REC -[case|mark]-> TO1;%0A%0A  % ACTION: \"to INF\"%0A  INF [upos=\"VERB\"];%0A  V -[xcomp]-> INF;%0A%0A  TO2 [form=/^to$/i];%0A  INF -[mark]-> TO2;%0A}",
+    "numerical_plural": "pattern {%0A  % Head plural noun%0A  N [upos=\"NOUN\", Number=\"Plur\"];%0A%0A  % Cardinal / numeric modifier (>1)%0A  Q [upos=\"NUM\"|\"DET\",%0A     lemma=\"two\"|\"three\"|\"four\"|\"five\"|\"six\"|\"seven\"|\"eight\"|\"nine\"|\"ten\"%0A          |\"eleven\"|\"twelve\"|\"thirteen\"|\"fourteen\"|\"fifteen\"|\"sixteen\"|\"seventeen\"%0A          |\"eighteen\"|\"nineteen\"|\"twenty\"|\"thirty\"|\"forty\"|\"fifty\"|\"sixty\"|\"seventy\"%0A          |\"eighty\"|\"ninety\"%0A          |\"hundred\"|\"thousand\"|\"million\"|\"billion\"|\"dozen\"%0A  ];%0A%0A  % UD: numeral as nummod OR det of the noun%0A  N -[nummod|det]-> Q;%0A}%0A%0A% Exclude \"one\" explicitly (in case it appears as lemma or gets mapped oddly)%0Awithout {%0A  N -[nummod|det]-> Q1;%0A  Q1 [lemma=\"one\"];%0A}",
+    "subject_attribute_thatcl": "pattern {%0A  % Predicato (nome o aggettivo) che regge la copula%0A  PRED [upos=/^(NOUN|PROPN|ADJ)$/];%0A%0A  % Copula \"be\"%0A  COP [upos=\"AUX\", lemma=\"be\"];%0A  PRED -[cop]-> COP;%0A%0A  % Soggetto (ATTRIBUTEE)%0A  S [];%0A  PRED -[nsubj]-> S;%0A%0A  % Clausola attributiva (that-clause)%0A  C [upos=/^(VERB|AUX)$/];%0A  PRED -[ccomp]-> C;%0A%0A  T [upos=\"SCONJ\", lemma=\"that\"];%0A  C -[mark]-> T;%0A}",
+    "indefinite_plural": "pattern {%0A  % Head noun (plural)%0A  N [upos=\"NOUN\", Number=\"Plur\"];%0A}%0A%0A% No determiner attached to the noun -> \u201cindefinite\u201d (operational definition)%0Awithout {%0A  D [deprel=\"det\"];%0A  N -[det]-> D;%0A}",
+    "change_of_state": "pattern {%0A  ROOT [];%0A  V [upos=\"VERB\"];%0A  ROOT -[root]-> V;%0A%0A  S [];%0A  V -[nsubj|nsubj:pass]-> S;%0A%0A  O [];%0A  V -[obj]-> O;%0A%0A  % SOURCE: from-PP%0A  SRC [];%0A  V -[obl|nmod]-> SRC;%0A  FROM [upos=\"ADP\", form=/^from$/i];%0A  SRC -[case]-> FROM;%0A%0A  % GOAL: into-PP o to-PP%0A  GOAL [];%0A  V -[obl|nmod]-> GOAL;%0A  TOINTO [upos=\"ADP\", form=/^(to|into)$/i];%0A  GOAL -[case]-> TOINTO;%0A}",
+    "more_than_type1": "pattern {%0A  ADJ [upos=\"ADJ\"];%0A  MORE [form=/^more$/i, upos=\"ADV\"];%0A  MORE -[advmod]-> ADJ;%0A%0A  ANCH [upos=/^(NOUN|PROPN|PRON|NUM)$/];%0A  ADJ -[obl|nmod]-> ANCH;%0A%0A  THAN [form=/^than$/i];%0A  ANCH -[case|mark]-> THAN;%0A}",
+    "yes_no_question": "pattern {%0A  ROOT [];%0A  V [];%0A  ROOT -[root]-> V;%0A%0A  S [];%0A  V -[nsubj|nsubj:pass]-> S;%0A%0A  Q [form=\"?\"];%0A  V -[punct]-> Q;%0A%0A  AUX [lemma=/^(be|do|have|can|could|will|would|shall|should|may|might|must)$/ ,%0A      upos=/^(AUX|VERB)$/];%0A  V -[aux|cop]-> AUX;%0A%0A  AUX < S;%0A}%0A%0Awithout {%0A  WH [lemma=/^(what|which|who|whom|whose|where|when|why|how)$/];%0A}",
+    "general_quantifier_mass": "pattern {%0A  % Head noun (mass-ish: usually singular NOUN)%0A  N [upos=\"NOUN\", Number=\"Sing\"];%0A%0A  % Quantifier as determiner%0A  Q [upos=\"DET\", lemma=\"enough\"|\"much\"|\"more\"|\"most\"|\"little\"|\"less\"|\"least\"|\"all\"|\"some\"|\"any\"|\"such\"];%0A%0A  N -[det]-> Q;%0A}",
+    "postmodifier_acl_partger": "pattern {%0A  N [upos=\"NOUN\"|\"PROPN\"];%0A  A [upos=\"VERB\", VerbForm=\"Ger\"|\"Part\"];%0A  N -[acl]-> A;%0A}",
+    "first_person_singular_present": "pattern {%0A  I [form=\"I\", upos=\"PRON\"];%0A  V [upos=\"VERB\"|\"AUX\", Tense=\"Pres\"];%0A%0A  V -[nsubj]-> I;%0A}",
+    "it_definite_reference": "pattern {%0A  I [upos=\"PRON\", lemma=\"it\"];%0A  V [upos=\"VERB\"|\"AUX\"];%0A  V -[nsubj]-> I;%0A}%0Awithout { V -[expl]-> I; }%0A%0A% escludi extraposition: \"It is ADJ/V-en that ...\"%0Awithout {%0A  V -[ccomp]-> C;%0A  C [upos=\"VERB\"|\"AUX\"];%0A}",
+    "alternative_coordination": "pattern {%0A  X1 [];%0A  X2 [];%0A  OR [upos=\"CCONJ\", lemma=\"or\"];%0A%0A  X1 -[conj]-> X2;%0A  X2 -[cc]-> OR;%0A}",
+    "subject_attribute_np": "pattern {%0A  S [];                       % attributee (subject)%0A  V [lemma=\"be\"];             % copula%0A  A [upos=\"NOUN\"|\"PROPN\"|\"PRON\"];   % attribute as NP head%0A%0A  V -[nsubj]-> S;%0A  V -[xcomp|attr]-> A;%0A}",
+    "realistic_condition": "pattern {%0A  ROOT [];%0A  MAIN [upos=\"VERB\"];%0A  ROOT -[root]-> MAIN;%0A%0A  COND [upos=\"VERB\", Tense=\"Pres\"];%0A  MAIN -[advcl]-> COND;%0A%0A  IF [lemma=\"if\", upos=\"SCONJ\"];%0A  COND -[mark]-> IF;%0A}%0A%0Awithout {%0A  W [lemma=\"would\"];%0A  MAIN -[aux]-> W;%0A}",
+    "for_desired_object": "pattern {%0A  V [upos=\"VERB\"];%0A%0A  S [upos=/^(NOUN|PROPN|PRON)$/];%0A  V -[nsubj|nsubj:pass]-> S;%0A%0A  O [upos=/^(NOUN|PROPN|PRON)$/];%0A  V -[obl]-> O;%0A%0A  FOR [lemma=\"for\", upos=\"ADP\"];%0A  O -[case]-> FOR;%0A}",
+    "right_dislocation": "pattern {%0A  ROOT [];%0A  V [];%0A%0A  % una clause qualsiasi%0A  ROOT -[root]-> V;%0A%0A  PRON [upos=\"PRON\"];%0A  V -[obj|iobj|obl|nsubj|nsubj:pass|expl|ccomp|xcomp|advcl|nmod]-> PRON;%0A%0A  TOPIC [upos=/^(NOUN|PROPN|PRON)$/];%0A  V -[dislocated]-> TOPIC;%0A}",
+    "exclamative": "pattern {%0A  ROOT [];%0A  R [];%0A  ROOT -[root]-> R;%0A%0A  WH [form=/^(What|what|How|how)$/];%0A%0A  % cosa modificata da WH:%0A  % - \"What a NOUN\"  -> det%0A  % - \"How ADJ/ADV\"  -> advmod%0A  T [upos=/^(NOUN|ADJ|ADV)$/];%0A  T -[det|advmod]-> WH;%0A%0A  % opzionale: \"a/an\" se \u00e8 \"What a ...\"%0A  D [upos=\"DET\", form=/^(a|an)$/];%0A  T -[det]-> D;%0A%0A  % opzionale: punteggiatura esclamativa/interrogativa (NON obbligatoria)%0A  P [form=/^[!?]$/];%0A  R -[punct]-> P;%0A}",
+    "indefinite_singular": "pattern {%0A  % Head noun (common noun)%0A  N [upos=\"NOUN\", Number=\"Sing\"];%0A%0A  % Indefinite article%0A  D [upos=\"DET\", lemma=\"a\"|\"an\"];%0A%0A  % a/an is determiner of the noun%0A  N -[det]-> D;%0A}",
+    "more_than_type2": "pattern {%0A  H [upos=/^(NOUN|PROPN)$/];%0A  MORE [form=/^more$/i];%0A  MORE -[det|amod|advmod|nummod]-> H;%0A%0A  THAN [form=/^than$/i];%0A  R2 [upos=/^(NOUN|PROPN|PRON|NUM)$/];%0A  R2 -[case|mark]-> THAN;%0A}",
+    "declarative_question": "pattern {%0A  ROOT [];%0A  R [upos=/^(VERB|AUX)$/];%0A  ROOT -[root]-> R;%0A%0A  S [];%0A  R -[nsubj|nsubj:pass]-> S;%0A%0A  Q [upos=\"PUNCT\", form=\"?\"];%0A  R -[punct]-> Q;%0A%0A  % ordine dichiarativo: soggetto prima del predicato lessicale%0A  S << R;%0A}%0Awithout {%0A  OP [upos=\"AUX\"];%0A  OP << S;%0A}%0Awithout { WH [PronType=\"Int\"]; }%0Awithout { WH [lemma=/^(what|which|who|whom|whose|where|when|why|how)$/]; }",
+    "ourselves_reflexive": "pattern {%0A  X [upos=\"PRON\", Reflex=Yes, Person=1, Number=Plur];%0A}",
+    "exchange_x_for_y": "pattern {%0A  V [upos=\"VERB\", lemma=\"exchange\"];%0A%0A  X [];%0A  V -[obj]-> X;%0A%0A  Y [];%0A  V -[obl|nmod]-> Y;%0A%0A  FOR [form=\"for\", upos=\"ADP\"];%0A  Y -[case]-> FOR;%0A}",
+    "resultative_attradj": "pattern {%0A  ROOT [];%0A  V [upos=/^(VERB|AUX)$/];%0A  ROOT -[root]-> V;%0A%0A  O [upos=/^(NOUN|PROPN|PRON)$/];%0A  V -[obj]-> O;%0A%0A  A [upos=\"ADJ\"];%0A  V -[xcomp]-> A;%0A}%0A%0A% evita \"to be ADJ\" (find O to be Adj / consider O to be Adj ecc.)%0Awithout {%0A  A -[cop]-> COP;%0A  COP [lemma=\"be\"];%0A}%0A%0A% evita interrogative%0Awithout { Q [form=\"?\"]; V -[punct]-> Q; }",
+    "about_reference_area": "pattern {%0A  V [upos=\"VERB\"];%0A%0A  % Affector (subject)%0A  S [upos=/^(NOUN|PROPN|PRON)$/];%0A  V -[nsubj|nsubj:pass]-> S;%0A%0A  % Referent (about-PP)%0A  O [upos=/^(NOUN|PROPN|PRON)$/];%0A  V -[obl]-> O;%0A%0A  ABOUT [lemma=\"about\", upos=\"ADP\"];%0A  O -[case]-> ABOUT;%0A}",
+    "more_than_type3": "pattern {%0A  ROOT [];%0A  R [];%0A  ROOT -[root]-> R;%0A%0A  MORE [form=/^more$/i];%0A  H [];%0A  MORE -[advmod|amod|det|nummod]-> H;%0A%0A  X [];%0A  H -[obl|nmod|advcl|ccomp|xcomp|conj]-> X;%0A%0A  THAN [form=\"than\"];%0A  X -[mark|case]-> THAN;%0A}",
+    "monotransitive": "pattern {%0A  V [upos=/^(VERB|AUX)$/, VerbForm=\"Fin\"];%0A  S [];%0A  O [];%0A%0A  V -[nsubj|nsubj:pass]-> S;%0A  V -[obj]-> O;%0A}",
+    "it_cleft": "pattern {%0A  F [];%0A  BE [lemma=\"be\"];%0A  IT [lemma=\"it\", upos=\"PRON\"];%0A%0A  F -[cop]-> BE;%0A  F -[expl|nsubj]-> IT;%0A%0A  RC [];%0A  F -[acl:relcl]-> RC;%0A%0A  W [lemma=/^(that|who|whom|which|whose|where|when)$/];%0A  RC -[mark|nsubj|obj|obl|det]-> W;%0A}",
+    "self_change_resultative_base": "pattern {%0A  V [upos=VERB, lemma=\"become\"|\"get\"|\"grow\"|\"turn\"|\"go\"|\"remain\"|\"stay\"|\"fall\"];%0A  S [];%0A  V -[nsubj]-> S;%0A%0A  R [upos=\"ADJ\"];%0A  V -[xcomp|obj]-> R;%0A}",
+    "ditransitive_objtoinf": "pattern {%0A  V [upos=/^(VERB|AUX)$/];%0A%0A  % SUBJECT%0A  S [upos=/^(NOUN|PROPN|PRON)$/];%0A  V -[nsubj|nsubj:pass]-> S;%0A%0A  % RECIPIENT: NP dipendente del verbo (iobj oppure obj per alcune annotazioni)%0A  R [upos=/^(NOUN|PROPN|PRON)$/];%0A  V -[iobj|obj]-> R;%0A%0A  % to-INF: in UD tipicamente xcomp/ccomp con mark \"to\"%0A  X [upos=\"VERB\"];%0A  V -[xcomp|ccomp]-> X;%0A%0A  TO [lemma=\"to\", upos=\"PART\"];%0A  X -[mark]-> TO;%0A}",
+    "caused_change_resultative": "pattern {%0A  V [upos=\"VERB\", lemma=\"make\"|\"render\"|\"turn\"|\"drive\"|\"get\"|\"keep\"|\"leave\"|\"bring\"|\"put\"];%0A  S [];%0A  O [upos=\"NOUN\"|\"PROPN\"|\"PRON\"];%0A  R [upos=\"ADJ\"|\"NOUN\"|\"PROPN\"];%0A%0A  V -[nsubj|nsubj:pass]-> S;%0A  V -[obj]-> O;%0A  V -[xcomp]-> R;%0A}",
+    "they_are_willing_to": "pattern {%0A  ADJ [upos=\"ADJ\", lemma=/^(willing|keen|eager|prepared)$/];%0A%0A  BE [upos=\"AUX\", lemma=\"be\"];%0A  ADJ -[cop]-> BE;%0A%0A  S [upos=/^(PRON|NOUN|PROPN)$/];%0A  ADJ -[nsubj]-> S;%0A%0A  VINF [upos=\"VERB\"];%0A  ADJ -[xcomp]-> VINF;%0A%0A  TO [form=\"to\"];%0A  VINF -[mark]-> TO;%0A}",
+    "nice_of_you": "pattern {%0A  BE [lemma=/^(be|seem)$/];%0A  IT [lemma=\"it\", upos=\"PRON\"];%0A  BE -[nsubj]-> IT;%0A%0A  ADJ [upos=\"ADJ\", lemma=/^(nice|good|stupid|wrong|sweet|typical|silly|clever|thoughtful|rude)$/];%0A  BE -[xcomp|cop|attr]-> ADJ;%0A%0A  % of + NP (AGENT)%0A  AGENT [upos=/^(NOUN|PROPN|PRON)$/];%0A  ADJ -[obl|nmod]-> AGENT;%0A  OF [form=/^of$/i];%0A  AGENT -[case]-> OF;%0A%0A  % to-INF (ACTION)%0A  INF [upos=\"VERB\"];%0A  ADJ -[xcomp|ccomp]-> INF;%0A  TO [form=/^to$/i];%0A  INF -[mark]-> TO;%0A}",
+    "demonstrative_plural": "pattern {%0A  D [upos=\"DET\", PronType=\"Dem\", Number=\"Plur\"];%0A  N [upos=\"NOUN\", Number=\"Plur\"];%0A  N -[det]-> D;%0A}",
+    "general_quantifier_plural": "pattern {%0A  Q [lemma=\"enough\"|\"several\"|\"many\"|\"more\"|\"most\"|\"few\"|\"fewer\"|\"fewest\"|\"all\"|\"both\"|\"some\"|\"any\"];%0A  N [upos=\"NOUN\", Number=Plur];%0A  N -[det]-> Q;%0A}",
+    "they_definite_reference": "pattern {%0A  T [upos=\"PRON\", lemma=\"they\"];%0A  V [upos=\"VERB\"|\"AUX\"];%0A  V -[nsubj|nsubj:pass]-> T;%0A}",
+    "wh-question_not_subject": "pattern {%0A  ROOT [];%0A  R [upos=/^(VERB|AUX)$/];%0A  ROOT -[root]-> R;%0A%0A  WH [form=/^(what|which|who|whom|whose|where|when|why|how)$/i];%0A  WH < R;%0A%0A  S [];%0A  R -[nsubj|nsubj:pass]-> S;%0A  R < S;%0A%0A  Q [form=\"?\"];%0A  R -[punct]-> Q;%0A}%0A%0Awithout { R -[nsubj|nsubj:pass]-> WH; }",
+    "first_third_past_tense": "pattern {%0A  V [upos=\"VERB\", VerbForm=\"Fin\", Tense=\"Past\"];%0A  V -[nsubj]-> S;%0A  S [];%0A}%0A%0A% escludi soggetti plurali%0Awithout { S [Number=\"Plur\"]; }",
+    "last_name": "pattern { N [upos=\"PROPN\"]; }%0A%0A% non deve far parte di un nome multi-token%0Awithout { N -[flat|flat:name|compound|name]-> X; X [upos=\"PROPN\"]; }%0Awithout { X -[flat|flat:name|compound|name]-> N; X [upos=\"PROPN\"]; }%0A%0A% (facoltativo) deve essere usato come argomento/NP, non come modificatore interno%0Awithout { H []; H -[flat|flat:name|compound|name|amod|nmod]-> N; }",
+    "comparative_correlative": "pattern {%0A  H1 [upos=\"ADJ|ADV\"];%0A  THE1 [upos=\"DET\", form=\"the\"];%0A  H1 -[det]-> THE1;%0A%0A  M1 [upos=\"ADV\", form=\"more|less\"];%0A  M1 -[advmod]-> H1;%0A%0A  H2 [upos=\"ADJ|ADV\"];%0A  THE2 [upos=\"DET\", form=\"the\"];%0A  H2 -[det]-> THE2;%0A%0A  M2 [upos=\"ADV\", form=\"more|less\"];%0A  M2 -[advmod]-> H2;%0A%0A  H1 -[parataxis|advcl|conj]-> H2;%0A}",
+    "topicalization": "pattern {%0A  ROOT [];%0A  V [upos=/^(VERB|AUX)$/];%0A  ROOT -[root]-> V;%0A%0A  TOPIC [upos=/^(NOUN|PROPN|PRON)$/];%0A  V -[obj|iobj]-> TOPIC;%0A%0A  % vincolo di ordine: TOPIC prima del verbo%0A  TOPIC << V;%0A%0A  % spesso c'\u00e8 la virgola dopo il topic (opzionale)%0A  C [form=\",\"];%0A  TOPIC -[punct]-> C;%0A}",
+    "with_emotion": "pattern {%0A  V [upos=\"VERB\"|\"AUX\"];%0A  S [];%0A  V -[nsubj|nsubj:pass]-> S;%0A%0A  E [upos=\"NOUN\",%0A     lemma=/^(love|joy|delight|happiness|sadness|sorrow|grief|anger|rage|fury|fear|terror|anxiety|worry|concern|pride|shame|guilt|regret|remorse|sympathy|empathy|compassion|respect|admiration|disgust|hatred|hope|relief|surprise|frustration)$/];%0A%0A  W [upos=\"ADP\", lemma=\"with\"];%0A%0A  V -[obl|nmod]-> E;%0A  E -[case]-> W;%0A}",
+    "ditransitive_objnp": "pattern {%0A  V [upos=/^(VERB|AUX)$/];%0A  S [upos=/^(NOUN|PROPN|PRON)$/];%0A  R [upos=/^(NOUN|PROPN|PRON)$/];%0A  O [upos=/^(NOUN|PROPN|PRON)$/];%0A%0A  V -[nsubj]-> S;%0A  V -[iobj]-> R;%0A  V -[obj]-> O;%0A}",
+    "to_judge_action": "pattern {%0A  V [lemma=/^(seem|appear)$/];%0A%0A  SUBJ [upos=/^(NOUN|PROPN|PRON)$/];%0A  V -[nsubj]-> SUBJ;%0A%0A  % JUDGE: \"to him\"%0A  J [upos=/^(NOUN|PROPN|PRON)$/];%0A  V -[obl|iobj]-> J;%0A  TO1 [form=/^to$/i];%0A  J -[case]-> TO1;%0A%0A  % ACTION: to-INF (xcomp)%0A  INF [upos=\"VERB\"];%0A  V -[xcomp]-> INF;%0A  TO2 [form=/^to$/i];%0A  INF -[mark]-> TO2;%0A}",
+    "general_postmodifier_of_adjective": "pattern {%0A  A [upos=\"ADJ\"];%0A  P [upos=/^(NOUN|PROPN|PRON)$/];%0A  C [upos=\"ADP\"];%0A%0A  A -[obl|nmod]-> P;%0A  P -[case]-> C;%0A  %0A  A << P;%0A%0A}",
+    "into_causative": "pattern {%0A  ROOT [];%0A  V [upos=/^(VERB|AUX)$/];%0A  ROOT -[root]-> V;%0A%0A  AFFECTED [];%0A  V -[obj]-> AFFECTED;%0A%0A  ACTION [upos=\"VERB\", VerbForm=\"Ger\"];%0A  V -[obl|xcomp|advcl]-> ACTION;%0A%0A  INTO [form=\"into\"];%0A  ACTION -[case]-> INTO;%0A}",
+    "yourself_reflexive_reference": "pattern {%0A  Y [upos=\"PRON\", form=/^yourself$/i];%0A  % non soggetto%0A}%0A%0Awithout { X []; X -[nsubj|nsubj:pass|csubj]-> Y; }%0A",
+    "complex_full_name": "pattern {%0A  F [upos=\"PROPN\"];%0A  M [upos=\"PROPN\"];%0A  L [upos=\"PROPN\"];%0A%0A  F -[flat|flat:name|name|compound]-> M;%0A  M -[flat|flat:name|name|compound]-> L;%0A}%0A%0A% evita che sia parte di una catena pi\u00f9 lunga (4+ token)%0Awithout { X [upos=\"PROPN\"]; X -[flat|flat:name|name|compound]-> F; }%0Awithout { Y [upos=\"PROPN\"]; L -[flat|flat:name|name|compound]-> Y; }",
+    "relative_postmodifier": "pattern {%0A  % Head noun%0A  N [upos=\"NOUN\"|\"PROPN\"];%0A%0A  % Head of relative clause (predicate)%0A  R [upos=\"VERB\"|\"AUX\"];%0A%0A  % Relative clause must modify the noun directly%0A  N -[acl:relcl]-> R;%0A}",
+    "x_is_likely_to": "pattern {%0A  ADJ [upos=\"ADJ\", lemma=/^(likely|unlikely|supposed)$/];%0A%0A  BE [lemma=\"be\", upos=/^(AUX|VERB)$/];%0A  ADJ -[cop]-> BE;%0A%0A  S [upos=/^(PRON|NOUN|PROPN)$/];%0A  ADJ -[nsubj|nsubj:pass]-> S;%0A%0A  VINF [upos=\"VERB\", VerbForm=\"Inf\"];%0A  ADJ -[xcomp]-> VINF;%0A%0A  TO [lemma=\"to\", upos=\"PART\"];%0A  VINF -[mark]-> TO;%0A}",
+    "premodifier_of_noun": "pattern {%0A  N [upos = NOUN|PROPN];%0A  M [upos = ADJ|NOUN|PROPN];%0A%0A  N -[amod|compound]-> M;%0A}",
+    "subject_attribute_pp": "pattern {%0A  % main predicate%0A  V [upos=\"VERB\"];%0A%0A  % subject%0A  S [];%0A  V -[nsubj|nsubj:pass]-> S;%0A%0A  % oblique nominal dependent (your \u201cPP\u201d proxy)%0A  P [upos=\"NOUN\"|\"PROPN\"|\"PRON\"];%0A  V -[obl|obl:npmod]-> P;%0A}%0A%0A% exclude direct object (transitive)%0Awithout {%0A  V -[obj]-> O;%0A  O [];%0A}",
+    "put_up_with": "pattern {%0A  V [lemma=\"put\", upos=\"VERB\"];%0A%0A  % particle \"up\"%0A  UP [form=/^up$/i];%0A  V -[compound:prt]-> UP;%0A%0A  % \"with\" + NP (thing disliked)%0A  THING [upos=/^(NOUN|PROPN|PRON)$/];%0A  V -[obl]-> THING;%0A%0A  WITH [form=/^with$/i];%0A  THING -[case]-> WITH;%0A}",
+    "definite_plural_np": "pattern {%0A  % determiner \"the\"%0A  D [upos=\"DET\", lemma=\"the\"];%0A%0A  % head noun plural%0A  N [upos=\"NOUN\", Number=\"Plur\"];%0A%0A  % link%0A  N -[det]-> D;%0A}",
+    "unrealistic_condition": "pattern {%0A  ROOT [];%0A  MAIN [upos=/^(VERB|AUX)$/];%0A  ROOT -[root]-> MAIN;%0A%0A  % ===== subordinate IF-clause =====%0A  IFCL [upos=/^(VERB|AUX)$/];%0A  MAIN -[advcl]-> IFCL;%0A%0A  IF [form=/^if$/i];%0A  IFCL -[mark]-> IF;%0A%0A  % Past perfect in IF-clause: aux \"had\" + participle head%0A  HAD [lemma=\"have\", upos=\"AUX\"];%0A  IFCL -[aux]-> HAD;%0A  IFCL [VerbForm=\"Part\"];%0A%0A  % ===== main clause: would/could/might have V-en =====%0A  MOD [lemma=/^(would|could|might)$/i, upos=\"AUX\"];%0A  MAIN -[aux]-> MOD;%0A%0A  HAVE [lemma=\"have\", upos=\"AUX\"];%0A  MAIN -[aux]-> HAVE;%0A%0A  MAIN [VerbForm=\"Part\"];%0A}",
+    "first_name_np": "pattern {%0A  N [upos=\"PROPN\"];%0A}%0A%0A% non deve essere dentro un nome multi-token (flat/compound/name)%0Awithout { N -[flat|flat:name|compound|name]-> X; X [upos=\"PROPN\"]; }%0Awithout { X -[flat|flat:name|compound|name]-> N; X [upos=\"PROPN\"]; }%0A%0A% opzionale: non deve essere un modificatore nominale/aggettivale di un altro nome%0Awithout { H []; H -[amod|compound|nmod|flat|flat:name|name]-> N; }",
+    "progressive": "pattern {%0A  V [upos=\"VERB\", VerbForm=\"Part\"];%0A  B [lemma=\"be\", upos=/^(AUX|VERB)$/];%0A%0A  V -[aux]-> B;%0A}%0A%0Awithout {%0A  V [lemma=\"be\"];%0A}",
+    "hypothetical": "pattern {%0A  ROOT [];%0A  MAIN [];%0A  ROOT -[root]-> MAIN;%0A%0A  COND [upos=/^(VERB|AUX)$/];%0A  MAIN -[advcl]-> COND;%0A%0A  IF [lemma=\"if\", upos=/^(SCONJ|ADP)$/];%0A  COND -[mark]-> IF;%0A}",
+    "full_name": "pattern {%0A  F [upos=\"PROPN\"];%0A  L [upos=\"PROPN\"];%0A%0A  F -[flat|flat:name|name]-> L;%0A}",
+    "god_knows_what": "pattern {%0A  AUTH [form=/^(God|god|goodness|heaven|lord)$/i];%0A  KNOW [lemma=\"know\"];%0A  AUTH -[nsubj]-> KNOW;%0A%0A  WH [upos=\"PRON\", PronType=\"Int\"];%0A  KNOW -[obj|ccomp|xcomp]-> WH;%0A}",
+    "he_was_brave_to_say": "pattern {%0A  ROOT [];%0A  ADJ [upos=\"ADJ\", lemma=/^(great|brave|wonderful|foolish|right|unwise|craze)$/];%0A  ROOT -[root]-> ADJ;%0A%0A  BE [upos=\"AUX\", lemma=/^(be|seem)$/i];%0A  ADJ -[cop]-> BE;%0A%0A  S [upos=/^(PRON|PROPN|NOUN)$/];%0A  ADJ -[nsubj]-> S;%0A%0A  INF [upos=\"VERB\", VerbForm=\"Inf\"];%0A  ADJ -[xcomp]-> INF;%0A%0A  TO [upos=\"PART\", lemma=\"to\"];%0A  INF -[mark]-> TO;%0A}",
+    "ditransitive_wh-cl": "pattern {%0A  ROOT [];%0A%0A  V [upos=\"VERB\", lemma=/^(advise|ask|inform|instruct|remind|show|teach|tell)$/];%0A  ROOT -[root]-> V;%0A%0A  % \u00c6FFECTOR (soggetto)%0A  A [];%0A  V -[nsubj|nsubj:pass]-> A;%0A%0A  % RECIPIENT (NP oggetto \u201chim/her/them/John/\u2026)%0A  R [upos=/^(PRON|PROPN|NOUN)$/];%0A  V -[obj|iobj]-> R;%0A%0A  % wh-CL (subordinata interrogativa)%0A  C [upos=\"VERB\"];%0A  V -[ccomp|xcomp]-> C;%0A%0A  % WH element nella subordinata (incl. whether)%0A  WH [lemma=/^(what|which|who|whom|whose|where|when|why|how|whether)$/];%0A%0A  % WH come dipendente della head verb della subordinata%0A  % - \"what happened\": WH \u00e8 nsubj/obj/etc di C%0A  % - \"whether to come\": whether \u00e8 mark di C%0A  C -[mark|nsubj|nsubj:pass|obj|iobj|obl|advmod|nmod]-> WH;%0A}",
+    "him_definite_reference": "pattern {%0A  ROOT [];%0A  V [upos=/^(VERB|AUX)$/];%0A  ROOT -[root]-> V;%0A%0A  HIM [form=/^him$/i, upos=\"PRON\"];%0A  V -[obj|iobj|obl|nmod]-> HIM;%0A}%0A%0Awithout {%0A  V -[nsubj|nsubj:pass|csubj|csubj:pass]-> HIM;%0A}",
+    "declarative_statement": "pattern {%0A  ROOT [];%0A  V [upos=/^(VERB|AUX)$/, VerbForm=\"Fin\"];%0A  ROOT -[root]-> V;%0A%0A  S [];%0A  V -[nsubj|nsubj:pass]-> S;%0A}%0A%0Awithout { V [Mood=\"Imp\"]; }",
+    "controversial_tag": "pattern {%0A  ROOT [];%0A%0A  % la clausola tag come parataxis (molto comune in UD)%0A  ROOT -[parataxis]-> TAG;%0A%0A  TAG [upos=\"AUX\"];%0A  TAG -[nsubj]-> PRON;%0A  PRON [upos=\"PRON\"];%0A%0A  Q [form=\"?\"];%0A  TAG -[punct]-> Q;%0A}",
+    "x_is_adj_to": "pattern {%0A  H [upos=\"ADJ\"];%0A%0A  BE [lemma=\"be\", upos=/^(AUX|VERB)$/];%0A  H -[cop]-> BE;%0A%0A  S [];%0A  H -[nsubj|nsubj:pass]-> S;%0A%0A  VINF [upos=\"VERB\", VerbForm=\"Inf\"];%0A  H -[xcomp]-> VINF;%0A%0A  TO [lemma=\"to\", upos=\"PART\"];%0A  VINF -[mark]-> TO;%0A}",
+    "self_motion": "pattern {%0A  % --- MOTION VERB (lista estendibile) ---%0A  V [upos=\"VERB\",%0A     lemma=\"go\"|\"come\"|\"walk\"|\"run\"|\"travel\"|\"move\"|\"drive\"|\"fly\"|\"sail\"|%0A           \"leave\"|\"arrive\"|\"return\"|\"head\"|\"enter\"|\"cross\"|\"reach\"|\"climb\"|%0A           \"fall\"|\"rise\"|\"step\"|\"march\"|\"advance\"%0A  ];%0A%0A  % --- SUBJECT ---%0A  S [];%0A  V -[nsubj|nsubj:pass]-> S;%0A%0A  % --- PP argument/adjunct of motion (obl/nmod + case=ADP) ---%0A  P [upos=\"NOUN\"|\"PROPN\"|\"PRON\"];%0A  C [upos=\"ADP\",%0A     lemma=\"to\"|\"into\"|\"onto\"|\"towards\"|\"toward\"|\"from\"|\"through\"|\"across\"|%0A           \"along\"|\"around\"|\"over\"|\"under\"|\"between\"|\"among\"|\"in\"|\"on\"|\"out\"%0A  ];%0A%0A  V -[obl|nmod]-> P;%0A  P -[case]-> C;%0A}%0A%0A% exclude direct object%0Awithout {%0A  V -[obj]-> O;%0A  O [];%0A}%0A%0A% exclude indirect object%0Awithout {%0A  V -[iobj]-> I;%0A  I [];%0A}",
+    "genitive_np": "pattern {%0A  % C) Possessor has explicit 's marker (optional audit)%0A  R [upos=\"NOUN\"|\"PROPN\"];%0A  P [upos=\"NOUN\"|\"PROPN\"|\"PRON\"];%0A  C [form=\"'s\"|\"\u2019s\"|\"s'\"|\"s\u2019\"];%0A%0A  R -[nmod:poss]-> P;%0A  P -[case]-> C;%0A}",
+    "ditransitive_that-cl": "pattern {%0A  ROOT [];%0A  V [upos=\"VERB\"];%0A  ROOT -[root]-> V;%0A%0A  AEF [];%0A  V -[nsubj|nsubj:pass]-> AEF;%0A%0A  REC [];%0A  V -[iobj|obj|obl:to]-> REC;%0A%0A  C [upos=/^(VERB|AUX)$/, VerbForm=\"Fin\"];%0A  V -[ccomp]-> C;%0A}",
+    "premodifier_of_adjective": "pattern {%0A  ADV [upos=\"ADV\"];%0A  ADJ [upos=\"ADJ\"];%0A%0A  ADJ -[advmod]-> ADV;%0A}",
+    "himself_reflexive": "pattern {%0A  X [form=\"himself\"];%0A}"
+  },
+  "col_key": "Request",
+  "columns": [
+    {
+      "field": "itself_reflexive",
+      "headerName": "itself_reflexive"
+    },
+    {
+      "field": "take_off_intransitive",
+      "headerName": "take_off_intransitive"
+    },
+    {
+      "field": "adjunct_base",
+      "headerName": "adjunct_base"
+    },
+    {
+      "field": "general_past_plurals",
+      "headerName": "general_past_plurals"
+    },
+    {
+      "field": "ditransitive_obj_inf",
+      "headerName": "ditransitive_obj_inf"
+    },
+    {
+      "field": "mass_np",
+      "headerName": "mass_np"
+    },
+    {
+      "field": "impersonal_evaluative",
+      "headerName": "impersonal_evaluative"
+    },
+    {
+      "field": "asyndetic_coordination",
+      "headerName": "asyndetic_coordination"
+    },
+    {
+      "field": "demonstrative_singular",
+      "headerName": "demonstrative_singular"
+    },
+    {
+      "field": "attribute_construction_adj",
+      "headerName": "attribute_construction_adj"
+    },
+    {
+      "field": "general_past_tense_you",
+      "headerName": "general_past_tense_you"
+    },
+    {
+      "field": "perfective_construction",
+      "headerName": "perfective_construction"
+    },
+    {
+      "field": "wh-cleft",
+      "headerName": "wh-cleft"
+    },
+    {
+      "field": "adjectival_with_partner_base",
+      "headerName": "adjectival_with_partner_base"
+    },
+    {
+      "field": "postmodifier_recl",
+      "headerName": "postmodifier_recl"
+    },
+    {
+      "field": "left_dislocation",
+      "headerName": "left_dislocation"
+    },
+    {
+      "field": "we_are_able_to_make",
+      "headerName": "we_are_able_to_make"
+    },
+    {
+      "field": "to_recipient_about",
+      "headerName": "to_recipient_about"
+    },
+    {
+      "field": "the_cardinal_of_pron",
+      "headerName": "the_cardinal_of_pron"
+    },
+    {
+      "field": "definite_singular",
+      "headerName": "definite_singular"
+    },
+    {
+      "field": "title_np",
+      "headerName": "title_np"
+    },
+    {
+      "field": "imperative_construction",
+      "headerName": "imperative_construction"
+    },
+    {
+      "field": "valency_postmodifier",
+      "headerName": "valency_postmodifier"
+    },
+    {
+      "field": "third_person_singular_present",
+      "headerName": "third_person_singular_present"
+    },
+    {
+      "field": "general_quantifier_singular",
+      "headerName": "general_quantifier_singular"
+    },
+    {
+      "field": "we_definite_reference",
+      "headerName": "we_definite_reference"
+    },
+    {
+      "field": "most_least",
+      "headerName": "most_least"
+    },
+    {
+      "field": "general_present_tense",
+      "headerName": "general_present_tense"
+    },
+    {
+      "field": "negative_imperative",
+      "headerName": "negative_imperative"
+    },
+    {
+      "field": "intransitive",
+      "headerName": "intransitive"
+    },
+    {
+      "field": "postmodifier_pp_base",
+      "headerName": "postmodifier_pp_base"
+    },
+    {
+      "field": "themselves_reflexive",
+      "headerName": "themselves_reflexive"
+    },
+    {
+      "field": "with_partner",
+      "headerName": "with_partner"
+    },
+    {
+      "field": "myself_reflexive",
+      "headerName": "myself_reflexive"
+    },
+    {
+      "field": "superlative",
+      "headerName": "superlative"
+    },
+    {
+      "field": "comparative_than",
+      "headerName": "comparative_than"
+    },
+    {
+      "field": "affirmative_tag",
+      "headerName": "affirmative_tag"
+    },
+    {
+      "field": "object_attribute",
+      "headerName": "object_attribute"
+    },
+    {
+      "field": "us_definite_reference",
+      "headerName": "us_definite_reference"
+    },
+    {
+      "field": "to_recipient_for",
+      "headerName": "to_recipient_for"
+    },
+    {
+      "field": "it_that",
+      "headerName": "it_that"
+    },
+    {
+      "field": "me_definite",
+      "headerName": "me_definite"
+    },
+    {
+      "field": "additive_coordination_base",
+      "headerName": "additive_coordination_base"
+    },
+    {
+      "field": "them_definite_reference",
+      "headerName": "them_definite_reference"
+    },
+    {
+      "field": "monotransitive_clausal_objects",
+      "headerName": "monotransitive_clausal_objects"
+    },
+    {
+      "field": "caused_motion",
+      "headerName": "caused_motion"
+    },
+    {
+      "field": "ranking_np",
+      "headerName": "ranking_np"
+    },
+    {
+      "field": "adjective_base",
+      "headerName": "adjective_base"
+    },
+    {
+      "field": "to_recipient_for_desired",
+      "headerName": "to_recipient_for_desired"
+    },
+    {
+      "field": "on_focus_area",
+      "headerName": "on_focus_area"
+    },
+    {
+      "field": "to_recipient_goal",
+      "headerName": "to_recipient_goal"
+    },
+    {
+      "field": "she_was_surprised_to_hear",
+      "headerName": "she_was_surprised_to_hear"
+    },
+    {
+      "field": "yourselves_reflexive",
+      "headerName": "yourselves_reflexive"
+    },
+    {
+      "field": "numerical_singular",
+      "headerName": "numerical_singular"
+    },
+    {
+      "field": "passive_construction",
+      "headerName": "passive_construction"
+    },
+    {
+      "field": "i-definite_np",
+      "headerName": "i-definite_np"
+    },
+    {
+      "field": "attribute_v-ing",
+      "headerName": "attribute_v-ing"
+    },
+    {
+      "field": "it_for_event",
+      "headerName": "it_for_event"
+    },
+    {
+      "field": "you_definite_reference",
+      "headerName": "you_definite_reference"
+    },
+    {
+      "field": "focus_np",
+      "headerName": "focus_np"
+    },
+    {
+      "field": "wh-question_subject",
+      "headerName": "wh-question_subject"
+    },
+    {
+      "field": "she_definite_reference",
+      "headerName": "she_definite_reference"
+    },
+    {
+      "field": "subject_attribute_adjp",
+      "headerName": "subject_attribute_adjp"
+    },
+    {
+      "field": "to_recipient_action",
+      "headerName": "to_recipient_action"
+    },
+    {
+      "field": "numerical_plural",
+      "headerName": "numerical_plural"
+    },
+    {
+      "field": "subject_attribute_thatcl",
+      "headerName": "subject_attribute_thatcl"
+    },
+    {
+      "field": "indefinite_plural",
+      "headerName": "indefinite_plural"
+    },
+    {
+      "field": "change_of_state",
+      "headerName": "change_of_state"
+    },
+    {
+      "field": "more_than_type1",
+      "headerName": "more_than_type1"
+    },
+    {
+      "field": "yes_no_question",
+      "headerName": "yes_no_question"
+    },
+    {
+      "field": "general_quantifier_mass",
+      "headerName": "general_quantifier_mass"
+    },
+    {
+      "field": "postmodifier_acl_partger",
+      "headerName": "postmodifier_acl_partger"
+    },
+    {
+      "field": "first_person_singular_present",
+      "headerName": "first_person_singular_present"
+    },
+    {
+      "field": "it_definite_reference",
+      "headerName": "it_definite_reference"
+    },
+    {
+      "field": "alternative_coordination",
+      "headerName": "alternative_coordination"
+    },
+    {
+      "field": "subject_attribute_np",
+      "headerName": "subject_attribute_np"
+    },
+    {
+      "field": "realistic_condition",
+      "headerName": "realistic_condition"
+    },
+    {
+      "field": "for_desired_object",
+      "headerName": "for_desired_object"
+    },
+    {
+      "field": "right_dislocation",
+      "headerName": "right_dislocation"
+    },
+    {
+      "field": "exclamative",
+      "headerName": "exclamative"
+    },
+    {
+      "field": "indefinite_singular",
+      "headerName": "indefinite_singular"
+    },
+    {
+      "field": "more_than_type2",
+      "headerName": "more_than_type2"
+    },
+    {
+      "field": "declarative_question",
+      "headerName": "declarative_question"
+    },
+    {
+      "field": "ourselves_reflexive",
+      "headerName": "ourselves_reflexive"
+    },
+    {
+      "field": "exchange_x_for_y",
+      "headerName": "exchange_x_for_y"
+    },
+    {
+      "field": "resultative_attradj",
+      "headerName": "resultative_attradj"
+    },
+    {
+      "field": "about_reference_area",
+      "headerName": "about_reference_area"
+    },
+    {
+      "field": "more_than_type3",
+      "headerName": "more_than_type3"
+    },
+    {
+      "field": "monotransitive",
+      "headerName": "monotransitive"
+    },
+    {
+      "field": "it_cleft",
+      "headerName": "it_cleft"
+    },
+    {
+      "field": "self_change_resultative_base",
+      "headerName": "self_change_resultative_base"
+    },
+    {
+      "field": "ditransitive_objtoinf",
+      "headerName": "ditransitive_objtoinf"
+    },
+    {
+      "field": "caused_change_resultative",
+      "headerName": "caused_change_resultative"
+    },
+    {
+      "field": "they_are_willing_to",
+      "headerName": "they_are_willing_to"
+    },
+    {
+      "field": "nice_of_you",
+      "headerName": "nice_of_you"
+    },
+    {
+      "field": "demonstrative_plural",
+      "headerName": "demonstrative_plural"
+    },
+    {
+      "field": "general_quantifier_plural",
+      "headerName": "general_quantifier_plural"
+    },
+    {
+      "field": "they_definite_reference",
+      "headerName": "they_definite_reference"
+    },
+    {
+      "field": "wh-question_not_subject",
+      "headerName": "wh-question_not_subject"
+    },
+    {
+      "field": "first_third_past_tense",
+      "headerName": "first_third_past_tense"
+    },
+    {
+      "field": "last_name",
+      "headerName": "last_name"
+    },
+    {
+      "field": "comparative_correlative",
+      "headerName": "comparative_correlative"
+    },
+    {
+      "field": "topicalization",
+      "headerName": "topicalization"
+    },
+    {
+      "field": "with_emotion",
+      "headerName": "with_emotion"
+    },
+    {
+      "field": "ditransitive_objnp",
+      "headerName": "ditransitive_objnp"
+    },
+    {
+      "field": "to_judge_action",
+      "headerName": "to_judge_action"
+    },
+    {
+      "field": "general_postmodifier_of_adjective",
+      "headerName": "general_postmodifier_of_adjective"
+    },
+    {
+      "field": "into_causative",
+      "headerName": "into_causative"
+    },
+    {
+      "field": "yourself_reflexive_reference",
+      "headerName": "yourself_reflexive_reference"
+    },
+    {
+      "field": "complex_full_name",
+      "headerName": "complex_full_name"
+    },
+    {
+      "field": "relative_postmodifier",
+      "headerName": "relative_postmodifier"
+    },
+    {
+      "field": "x_is_likely_to",
+      "headerName": "x_is_likely_to"
+    },
+    {
+      "field": "premodifier_of_noun",
+      "headerName": "premodifier_of_noun"
+    },
+    {
+      "field": "subject_attribute_pp",
+      "headerName": "subject_attribute_pp"
+    },
+    {
+      "field": "put_up_with",
+      "headerName": "put_up_with"
+    },
+    {
+      "field": "definite_plural_np",
+      "headerName": "definite_plural_np"
+    },
+    {
+      "field": "unrealistic_condition",
+      "headerName": "unrealistic_condition"
+    },
+    {
+      "field": "first_name_np",
+      "headerName": "first_name_np"
+    },
+    {
+      "field": "progressive",
+      "headerName": "progressive"
+    },
+    {
+      "field": "hypothetical",
+      "headerName": "hypothetical"
+    },
+    {
+      "field": "full_name",
+      "headerName": "full_name"
+    },
+    {
+      "field": "god_knows_what",
+      "headerName": "god_knows_what"
+    },
+    {
+      "field": "he_was_brave_to_say",
+      "headerName": "he_was_brave_to_say"
+    },
+    {
+      "field": "ditransitive_wh-cl",
+      "headerName": "ditransitive_wh-cl"
+    },
+    {
+      "field": "him_definite_reference",
+      "headerName": "him_definite_reference"
+    },
+    {
+      "field": "declarative_statement",
+      "headerName": "declarative_statement"
+    },
+    {
+      "field": "controversial_tag",
+      "headerName": "controversial_tag"
+    },
+    {
+      "field": "x_is_adj_to",
+      "headerName": "x_is_adj_to"
+    },
+    {
+      "field": "self_motion",
+      "headerName": "self_motion"
+    },
+    {
+      "field": "genitive_np",
+      "headerName": "genitive_np"
+    },
+    {
+      "field": "ditransitive_that-cl",
+      "headerName": "ditransitive_that-cl"
+    },
+    {
+      "field": "premodifier_of_adjective",
+      "headerName": "premodifier_of_adjective"
+    },
+    {
+      "field": "himself_reflexive",
+      "headerName": "himself_reflexive"
+    }
+  ],
+  "columns_total": {
+    "itself_reflexive": 110,
+    "take_off_intransitive": 3,
+    "adjunct_base": 2750,
+    "general_past_plurals": 2188,
+    "ditransitive_obj_inf": 609,
+    "mass_np": 22745,
+    "impersonal_evaluative": 7,
+    "asyndetic_coordination": 2384,
+    "demonstrative_singular": 3151,
+    "attribute_construction_adj": 604,
+    "general_past_tense_you": 605,
+    "perfective_construction": 3684,
+    "wh-cleft": 17,
+    "adjectival_with_partner_base": 292,
+    "postmodifier_recl": 6500,
+    "left_dislocation": 130,
+    "we_are_able_to_make": 132,
+    "to_recipient_about": 9,
+    "the_cardinal_of_pron": 22,
+    "definite_singular": 25174,
+    "title_np": 85,
+    "imperative_construction": 3052,
+    "valency_postmodifier": 34674,
+    "third_person_singular_present": 17037,
+    "general_quantifier_singular": 1601,
+    "we_definite_reference": 4553,
+    "most_least": 184,
+    "general_present_tense": 9020,
+    "negative_imperative": 112,
+    "intransitive": 27494,
+    "postmodifier_pp_base": 33953,
+    "themselves_reflexive": 14,
+    "with_partner": 1777,
+    "myself_reflexive": 56,
+    "superlative": 1286,
+    "comparative_than": 53,
+    "affirmative_tag": 1,
+    "object_attribute": 172,
+    "us_definite_reference": 1187,
+    "to_recipient_for": 0,
+    "it_that": 8,
+    "me_definite": 246,
+    "additive_coordination_base": 19363,
+    "them_definite_reference": 1737,
+    "monotransitive_clausal_objects": 17833,
+    "caused_motion": 312,
+    "ranking_np": 1749,
+    "adjective_base": 39797,
+    "to_recipient_for_desired": 72,
+    "on_focus_area": 1913,
+    "to_recipient_goal": 1236,
+    "she_was_surprised_to_hear": 8,
+    "yourselves_reflexive": 3,
+    "numerical_singular": 0,
+    "passive_construction": 4619,
+    "i-definite_np": 15460,
+    "attribute_v-ing": 0,
+    "it_for_event": 3,
+    "you_definite_reference": 11641,
+    "focus_np": 13067,
+    "wh-question_subject": 472,
+    "she_definite_reference": 1043,
+    "subject_attribute_adjp": 495,
+    "to_recipient_action": 22,
+    "numerical_plural": 1435,
+    "subject_attribute_thatcl": 79,
+    "indefinite_plural": 35037,
+    "change_of_state": 43,
+    "more_than_type1": 0,
+    "yes_no_question": 3560,
+    "general_quantifier_mass": 1057,
+    "postmodifier_acl_partger": 3683,
+    "first_person_singular_present": 2960,
+    "it_definite_reference": 3082,
+    "alternative_coordination": 2748,
+    "subject_attribute_np": 13,
+    "realistic_condition": 370,
+    "for_desired_object": 1936,
+    "right_dislocation": 182,
+    "exclamative": 1,
+    "indefinite_singular": 15732,
+    "more_than_type2": 0,
+    "declarative_question": 2776,
+    "ourselves_reflexive": 17,
+    "exchange_x_for_y": 4,
+    "resultative_attradj": 214,
+    "about_reference_area": 338,
+    "more_than_type3": 1,
+    "monotransitive": 11177,
+    "it_cleft": 61,
+    "self_change_resultative_base": 520,
+    "ditransitive_objtoinf": 714,
+    "caused_change_resultative": 248,
+    "they_are_willing_to": 39,
+    "nice_of_you": 0,
+    "demonstrative_plural": 882,
+    "general_quantifier_plural": 1706,
+    "they_definite_reference": 3152,
+    "wh-question_not_subject": 37,
+    "first_third_past_tense": 10247,
+    "last_name": 27670,
+    "comparative_correlative": 0,
+    "topicalization": 20,
+    "with_emotion": 36,
+    "ditransitive_objnp": 765,
+    "to_judge_action": 3,
+    "general_postmodifier_of_adjective": 3435,
+    "into_causative": 0,
+    "yourself_reflexive_reference": 166,
+    "complex_full_name": 399,
+    "relative_postmodifier": 6500,
+    "x_is_likely_to": 35,
+    "premodifier_of_noun": 64053,
+    "subject_attribute_pp": 14892,
+    "put_up_with": 5,
+    "definite_plural_np": 7074,
+    "unrealistic_condition": 3,
+    "first_name_np": 27670,
+    "progressive": 3357,
+    "hypothetical": 1187,
+    "full_name": 8047,
+    "god_knows_what": 0,
+    "he_was_brave_to_say": 0,
+    "ditransitive_wh-cl": 78,
+    "him_definite_reference": 539,
+    "declarative_statement": 13955,
+    "controversial_tag": 3,
+    "x_is_adj_to": 384,
+    "self_motion": 2038,
+    "genitive_np": 2735,
+    "ditransitive_that-cl": 80,
+    "premodifier_of_adjective": 7118,
+    "himself_reflexive": 239,
+    "row_header": "Treebank",
+    "row_type": "TOTAL"
+  },
+  "cells": [
+    {
+      "itself_reflexive": [
+        6
+      ],
+      "ditransitive_obj_inf": [
+        180
+      ],
+      "attribute_construction_adj": [
+        135
+      ],
+      "adjectival_with_partner_base": [
+        31
+      ],
+      "postmodifier_recl": [
+        419
+      ],
+      "we_are_able_to_make": [
+        5
+      ],
+      "to_recipient_about": [
+        1
+      ],
+      "the_cardinal_of_pron": [
+        7
+      ],
+      "title_np": [
+        78
+      ],
+      "valency_postmodifier": [
+        1724
+      ],
+      "we_definite_reference": [
+        1725
+      ],
+      "intransitive": [
+        8256
+      ],
+      "postmodifier_pp_base": [
+        1632
+      ],
+      "themselves_reflexive": [
+        4
+      ],
+      "with_partner": [
+        480
+      ],
+      "myself_reflexive": [
+        17
+      ],
+      "comparative_than": [
+        1
+      ],
+      "affirmative_tag": [
+        1
+      ],
+      "object_attribute": [
+        56
+      ],
+      "us_definite_reference": [
+        553
+      ],
+      "me_definite": [
+        246
+      ],
+      "additive_coordination_base": [
+        1989
+      ],
+      "them_definite_reference": [
+        679
+      ],
+      "monotransitive_clausal_objects": [
+        6073
+      ],
+      "caused_motion": [
+        69
+      ],
+      "ranking_np": [
+        141
+      ],
+      "adjective_base": [
+        3994
+      ],
+      "to_recipient_for_desired": [
+        3
+      ],
+      "on_focus_area": [
+        667
+      ],
+      "to_recipient_goal": [
+        203
+      ],
+      "i-definite_np": [
+        7209
+      ],
+      "it_for_event": [
+        1
+      ],
+      "you_definite_reference": [
+        9036
+      ],
+      "focus_np": [
+        7541
+      ],
+      "wh-question_subject": [
+        418
+      ],
+      "she_definite_reference": [
+        545
+      ],
+      "subject_attribute_adjp": [
+        73
+      ],
+      "to_recipient_action": [
+        2
+      ],
+      "subject_attribute_thatcl": [
+        6
+      ],
+      "change_of_state": [
+        1
+      ],
+      "yes_no_question": [
+        3049
+      ],
+      "it_definite_reference": [
+        1539
+      ],
+      "alternative_coordination": [
+        236
+      ],
+      "for_desired_object": [
+        348
+      ],
+      "right_dislocation": [
+        48
+      ],
+      "exclamative": [
+        1
+      ],
+      "declarative_question": [
+        2490
+      ],
+      "exchange_x_for_y": [
+        1
+      ],
+      "resultative_attradj": [
+        76
+      ],
+      "about_reference_area": [
+        94
+      ],
+      "it_cleft": [
+        16
+      ],
+      "self_change_resultative_base": [
+        160
+      ],
+      "ditransitive_objtoinf": [
+        258
+      ],
+      "caused_change_resultative": [
+        74
+      ],
+      "they_definite_reference": [
+        714
+      ],
+      "wh-question_not_subject": [
+        34
+      ],
+      "last_name": [
+        7191
+      ],
+      "with_emotion": [
+        1
+      ],
+      "ditransitive_objnp": [
+        291
+      ],
+      "general_postmodifier_of_adjective": [
+        323
+      ],
+      "yourself_reflexive_reference": [
+        69
+      ],
+      "complex_full_name": [
+        3
+      ],
+      "relative_postmodifier": [
+        419
+      ],
+      "premodifier_of_noun": [
+        6634
+      ],
+      "subject_attribute_pp": [
+        2344
+      ],
+      "first_name_np": [
+        7191
+      ],
+      "hypothetical": [
+        297
+      ],
+      "full_name": [
+        377
+      ],
+      "ditransitive_wh-cl": [
+        57
+      ],
+      "him_definite_reference": [
+        253
+      ],
+      "controversial_tag": [
+        1
+      ],
+      "self_motion": [
+        489
+      ],
+      "genitive_np": [
+        550
+      ],
+      "premodifier_of_adjective": [
+        1255
+      ],
+      "himself_reflexive": [
+        21
+      ],
+      "row_header": "bUD_English-CHILDES@2.18",
+      "row_total": 91111
+    },
+    {
+      "itself_reflexive": [
+        28
+      ],
+      "adjunct_base": [
+        960
+      ],
+      "general_past_plurals": [
+        757
+      ],
+      "ditransitive_obj_inf": [
+        171
+      ],
+      "mass_np": [
+        7553
+      ],
+      "impersonal_evaluative": [
+        4
+      ],
+      "asyndetic_coordination": [
+        586
+      ],
+      "demonstrative_singular": [
+        1095
+      ],
+      "attribute_construction_adj": [
+        170
+      ],
+      "general_past_tense_you": [
+        235
+      ],
+      "perfective_construction": [
+        1413
+      ],
+      "wh-cleft": [
+        1
+      ],
+      "adjectival_with_partner_base": [
+        139
+      ],
+      "postmodifier_recl": [
+        1696
+      ],
+      "left_dislocation": [
+        4
+      ],
+      "we_are_able_to_make": [
+        62
+      ],
+      "to_recipient_about": [
+        1
+      ],
+      "the_cardinal_of_pron": [
+        7
+      ],
+      "definite_singular": [
+        7501
+      ],
+      "imperative_construction": [
+        1663
+      ],
+      "valency_postmodifier": [
+        7596
+      ],
+      "third_person_singular_present": [
+        5808
+      ],
+      "general_quantifier_singular": [
+        589
+      ],
+      "we_definite_reference": [
+        1009
+      ],
+      "most_least": [
+        74
+      ],
+      "general_present_tense": [
+        3133
+      ],
+      "negative_imperative": [
+        68
+      ],
+      "intransitive": [
+        5641
+      ],
+      "postmodifier_pp_base": [
+        7381
+      ],
+      "themselves_reflexive": [
+        1
+      ],
+      "with_partner": [
+        430
+      ],
+      "myself_reflexive": [
+        4
+      ],
+      "superlative": [
+        376
+      ],
+      "comparative_than": [
+        19
+      ],
+      "object_attribute": [
+        37
+      ],
+      "us_definite_reference": [
+        211
+      ],
+      "it_that": [
+        6
+      ],
+      "additive_coordination_base": [
+        5940
+      ],
+      "them_definite_reference": [
+        420
+      ],
+      "monotransitive_clausal_objects": [
+        3988
+      ],
+      "caused_motion": [
+        82
+      ],
+      "ranking_np": [
+        465
+      ],
+      "adjective_base": [
+        11091
+      ],
+      "to_recipient_for_desired": [
+        33
+      ],
+      "on_focus_area": [
+        367
+      ],
+      "to_recipient_goal": [
+        295
+      ],
+      "she_was_surprised_to_hear": [
+        2
+      ],
+      "yourselves_reflexive": [
+        2
+      ],
+      "passive_construction": [
+        1420
+      ],
+      "i-definite_np": [
+        3241
+      ],
+      "you_definite_reference": [
+        1006
+      ],
+      "focus_np": [
+        2814
+      ],
+      "wh-question_subject": [
+        16
+      ],
+      "she_definite_reference": [
+        95
+      ],
+      "subject_attribute_adjp": [
+        146
+      ],
+      "to_recipient_action": [
+        2
+      ],
+      "numerical_plural": [
+        371
+      ],
+      "subject_attribute_thatcl": [
+        43
+      ],
+      "indefinite_plural": [
+        10106
+      ],
+      "change_of_state": [
+        2
+      ],
+      "yes_no_question": [
+        278
+      ],
+      "general_quantifier_mass": [
+        395
+      ],
+      "postmodifier_acl_partger": [
+        1056
+      ],
+      "first_person_singular_present": [
+        1307
+      ],
+      "it_definite_reference": [
+        443
+      ],
+      "alternative_coordination": [
+        809
+      ],
+      "realistic_condition": [
+        175
+      ],
+      "for_desired_object": [
+        605
+      ],
+      "right_dislocation": [
+        4
+      ],
+      "indefinite_singular": [
+        5041
+      ],
+      "declarative_question": [
+        96
+      ],
+      "ourselves_reflexive": [
+        7
+      ],
+      "resultative_attradj": [
+        40
+      ],
+      "about_reference_area": [
+        82
+      ],
+      "more_than_type3": [
+        1
+      ],
+      "monotransitive": [
+        3603
+      ],
+      "it_cleft": [
+        10
+      ],
+      "self_change_resultative_base": [
+        135
+      ],
+      "ditransitive_objtoinf": [
+        156
+      ],
+      "caused_change_resultative": [
+        51
+      ],
+      "they_are_willing_to": [
+        27
+      ],
+      "demonstrative_plural": [
+        276
+      ],
+      "general_quantifier_plural": [
+        462
+      ],
+      "they_definite_reference": [
+        1099
+      ],
+      "wh-question_not_subject": [
+        1
+      ],
+      "first_third_past_tense": [
+        2828
+      ],
+      "last_name": [
+        7467
+      ],
+      "topicalization": [
+        2
+      ],
+      "with_emotion": [
+        6
+      ],
+      "ditransitive_objnp": [
+        189
+      ],
+      "general_postmodifier_of_adjective": [
+        1049
+      ],
+      "yourself_reflexive_reference": [
+        38
+      ],
+      "complex_full_name": [
+        137
+      ],
+      "relative_postmodifier": [
+        1696
+      ],
+      "x_is_likely_to": [
+        13
+      ],
+      "premodifier_of_noun": [
+        19522
+      ],
+      "subject_attribute_pp": [
+        3236
+      ],
+      "put_up_with": [
+        4
+      ],
+      "definite_plural_np": [
+        1870
+      ],
+      "unrealistic_condition": [
+        1
+      ],
+      "first_name_np": [
+        7467
+      ],
+      "progressive": [
+        1353
+      ],
+      "hypothetical": [
+        401
+      ],
+      "full_name": [
+        1877
+      ],
+      "ditransitive_wh-cl": [
+        7
+      ],
+      "him_definite_reference": [
+        68
+      ],
+      "declarative_statement": [
+        3895
+      ],
+      "x_is_adj_to": [
+        182
+      ],
+      "self_motion": [
+        352
+      ],
+      "genitive_np": [
+        639
+      ],
+      "ditransitive_that-cl": [
+        27
+      ],
+      "premodifier_of_adjective": [
+        2237
+      ],
+      "himself_reflexive": [
+        19
+      ],
+      "row_header": "bUD_English-EWT@2.18",
+      "row_total": 171117
+    },
+    {
+      "itself_reflexive": [
+        2
+      ],
+      "adjunct_base": [
+        70
+      ],
+      "general_past_plurals": [
+        34
+      ],
+      "ditransitive_obj_inf": [
+        9
+      ],
+      "mass_np": [
+        1313
+      ],
+      "asyndetic_coordination": [
+        78
+      ],
+      "demonstrative_singular": [
+        78
+      ],
+      "attribute_construction_adj": [
+        12
+      ],
+      "general_past_tense_you": [
+        25
+      ],
+      "perfective_construction": [
+        59
+      ],
+      "adjectival_with_partner_base": [
+        19
+      ],
+      "postmodifier_recl": [
+        88
+      ],
+      "left_dislocation": [
+        8
+      ],
+      "we_are_able_to_make": [
+        1
+      ],
+      "definite_singular": [
+        439
+      ],
+      "imperative_construction": [
+        85
+      ],
+      "valency_postmodifier": [
+        570
+      ],
+      "third_person_singular_present": [
+        421
+      ],
+      "general_quantifier_singular": [
+        59
+      ],
+      "we_definite_reference": [
+        60
+      ],
+      "most_least": [
+        2
+      ],
+      "general_present_tense": [
+        129
+      ],
+      "negative_imperative": [
+        2
+      ],
+      "intransitive": [
+        295
+      ],
+      "postmodifier_pp_base": [
+        546
+      ],
+      "with_partner": [
+        24
+      ],
+      "myself_reflexive": [
+        3
+      ],
+      "superlative": [
+        12
+      ],
+      "us_definite_reference": [
+        9
+      ],
+      "additive_coordination_base": [
+        371
+      ],
+      "them_definite_reference": [
+        14
+      ],
+      "monotransitive_clausal_objects": [
+        186
+      ],
+      "caused_motion": [
+        3
+      ],
+      "ranking_np": [
+        69
+      ],
+      "adjective_base": [
+        805
+      ],
+      "to_recipient_for_desired": [
+        2
+      ],
+      "on_focus_area": [
+        15
+      ],
+      "to_recipient_goal": [
+        11
+      ],
+      "passive_construction": [
+        90
+      ],
+      "i-definite_np": [
+        127
+      ],
+      "you_definite_reference": [
+        45
+      ],
+      "focus_np": [
+        433
+      ],
+      "wh-question_subject": [
+        1
+      ],
+      "she_definite_reference": [
+        4
+      ],
+      "subject_attribute_adjp": [
+        6
+      ],
+      "numerical_plural": [
+        32
+      ],
+      "subject_attribute_thatcl": [
+        2
+      ],
+      "indefinite_plural": [
+        682
+      ],
+      "yes_no_question": [
+        2
+      ],
+      "general_quantifier_mass": [
+        35
+      ],
+      "postmodifier_acl_partger": [
+        96
+      ],
+      "first_person_singular_present": [
+        41
+      ],
+      "it_definite_reference": [
+        18
+      ],
+      "alternative_coordination": [
+        144
+      ],
+      "realistic_condition": [
+        7
+      ],
+      "for_desired_object": [
+        37
+      ],
+      "right_dislocation": [
+        6
+      ],
+      "indefinite_singular": [
+        302
+      ],
+      "declarative_question": [
+        3
+      ],
+      "ourselves_reflexive": [
+        1
+      ],
+      "resultative_attradj": [
+        5
+      ],
+      "about_reference_area": [
+        5
+      ],
+      "monotransitive": [
+        204
+      ],
+      "self_change_resultative_base": [
+        6
+      ],
+      "ditransitive_objtoinf": [
+        8
+      ],
+      "caused_change_resultative": [
+        3
+      ],
+      "they_are_willing_to": [
+        1
+      ],
+      "demonstrative_plural": [
+        9
+      ],
+      "general_quantifier_plural": [
+        23
+      ],
+      "they_definite_reference": [
+        17
+      ],
+      "first_third_past_tense": [
+        141
+      ],
+      "last_name": [
+        459
+      ],
+      "with_emotion": [
+        2
+      ],
+      "ditransitive_objnp": [
+        8
+      ],
+      "general_postmodifier_of_adjective": [
+        102
+      ],
+      "yourself_reflexive_reference": [
+        4
+      ],
+      "complex_full_name": [
+        6
+      ],
+      "relative_postmodifier": [
+        88
+      ],
+      "premodifier_of_noun": [
+        1371
+      ],
+      "subject_attribute_pp": [
+        182
+      ],
+      "definite_plural_np": [
+        89
+      ],
+      "first_name_np": [
+        459
+      ],
+      "progressive": [
+        68
+      ],
+      "hypothetical": [
+        16
+      ],
+      "full_name": [
+        57
+      ],
+      "him_definite_reference": [
+        6
+      ],
+      "declarative_statement": [
+        224
+      ],
+      "x_is_adj_to": [
+        5
+      ],
+      "self_motion": [
+        11
+      ],
+      "genitive_np": [
+        33
+      ],
+      "premodifier_of_adjective": [
+        81
+      ],
+      "himself_reflexive": [
+        3
+      ],
+      "row_header": "bUD_English-GENTLE@2.18",
+      "row_total": 11738
+    },
+    {
+      "itself_reflexive": [
+        38
+      ],
+      "adjunct_base": [
+        1126
+      ],
+      "general_past_plurals": [
+        738
+      ],
+      "ditransitive_obj_inf": [
+        138
+      ],
+      "mass_np": [
+        6544
+      ],
+      "impersonal_evaluative": [
+        2
+      ],
+      "asyndetic_coordination": [
+        867
+      ],
+      "demonstrative_singular": [
+        1194
+      ],
+      "attribute_construction_adj": [
+        161
+      ],
+      "general_past_tense_you": [
+        228
+      ],
+      "perfective_construction": [
+        1190
+      ],
+      "wh-cleft": [
+        2
+      ],
+      "adjectival_with_partner_base": [
+        59
+      ],
+      "postmodifier_recl": [
+        1773
+      ],
+      "left_dislocation": [
+        33
+      ],
+      "we_are_able_to_make": [
+        43
+      ],
+      "to_recipient_about": [
+        3
+      ],
+      "the_cardinal_of_pron": [
+        3
+      ],
+      "definite_singular": [
+        7882
+      ],
+      "title_np": [
+        1
+      ],
+      "imperative_construction": [
+        1091
+      ],
+      "valency_postmodifier": [
+        9182
+      ],
+      "third_person_singular_present": [
+        6290
+      ],
+      "general_quantifier_singular": [
+        459
+      ],
+      "we_definite_reference": [
+        1253
+      ],
+      "most_least": [
+        99
+      ],
+      "general_present_tense": [
+        3460
+      ],
+      "negative_imperative": [
+        41
+      ],
+      "intransitive": [
+        6057
+      ],
+      "postmodifier_pp_base": [
+        8928
+      ],
+      "themselves_reflexive": [
+        6
+      ],
+      "with_partner": [
+        435
+      ],
+      "myself_reflexive": [
+        8
+      ],
+      "superlative": [
+        260
+      ],
+      "comparative_than": [
+        20
+      ],
+      "object_attribute": [
+        48
+      ],
+      "us_definite_reference": [
+        312
+      ],
+      "it_that": [
+        1
+      ],
+      "additive_coordination_base": [
+        5853
+      ],
+      "them_definite_reference": [
+        331
+      ],
+      "monotransitive_clausal_objects": [
+        3646
+      ],
+      "caused_motion": [
+        64
+      ],
+      "ranking_np": [
+        536
+      ],
+      "adjective_base": [
+        11909
+      ],
+      "to_recipient_for_desired": [
+        17
+      ],
+      "on_focus_area": [
+        401
+      ],
+      "to_recipient_goal": [
+        287
+      ],
+      "she_was_surprised_to_hear": [
+        5
+      ],
+      "yourselves_reflexive": [
+        1
+      ],
+      "passive_construction": [
+        1695
+      ],
+      "i-definite_np": [
+        2628
+      ],
+      "you_definite_reference": [
+        918
+      ],
+      "focus_np": [
+        1246
+      ],
+      "wh-question_subject": [
+        22
+      ],
+      "she_definite_reference": [
+        216
+      ],
+      "subject_attribute_adjp": [
+        140
+      ],
+      "to_recipient_action": [
+        3
+      ],
+      "numerical_plural": [
+        571
+      ],
+      "subject_attribute_thatcl": [
+        17
+      ],
+      "indefinite_plural": [
+        11725
+      ],
+      "change_of_state": [
+        11
+      ],
+      "yes_no_question": [
+        173
+      ],
+      "general_quantifier_mass": [
+        285
+      ],
+      "postmodifier_acl_partger": [
+        1289
+      ],
+      "first_person_singular_present": [
+        1202
+      ],
+      "it_definite_reference": [
+        659
+      ],
+      "alternative_coordination": [
+        927
+      ],
+      "realistic_condition": [
+        118
+      ],
+      "for_desired_object": [
+        493
+      ],
+      "right_dislocation": [
+        37
+      ],
+      "indefinite_singular": [
+        4956
+      ],
+      "declarative_question": [
+        123
+      ],
+      "ourselves_reflexive": [
+        5
+      ],
+      "exchange_x_for_y": [
+        3
+      ],
+      "resultative_attradj": [
+        51
+      ],
+      "about_reference_area": [
+        98
+      ],
+      "monotransitive": [
+        3877
+      ],
+      "it_cleft": [
+        23
+      ],
+      "self_change_resultative_base": [
+        132
+      ],
+      "ditransitive_objtoinf": [
+        141
+      ],
+      "caused_change_resultative": [
+        68
+      ],
+      "they_are_willing_to": [
+        10
+      ],
+      "demonstrative_plural": [
+        383
+      ],
+      "general_quantifier_plural": [
+        347
+      ],
+      "they_definite_reference": [
+        784
+      ],
+      "first_third_past_tense": [
+        2945
+      ],
+      "last_name": [
+        5784
+      ],
+      "topicalization": [
+        1
+      ],
+      "with_emotion": [
+        15
+      ],
+      "ditransitive_objnp": [
+        106
+      ],
+      "to_judge_action": [
+        1
+      ],
+      "general_postmodifier_of_adjective": [
+        906
+      ],
+      "yourself_reflexive_reference": [
+        38
+      ],
+      "complex_full_name": [
+        235
+      ],
+      "relative_postmodifier": [
+        1773
+      ],
+      "x_is_likely_to": [
+        16
+      ],
+      "premodifier_of_noun": [
+        18679
+      ],
+      "subject_attribute_pp": [
+        3794
+      ],
+      "put_up_with": [
+        1
+      ],
+      "definite_plural_np": [
+        2105
+      ],
+      "first_name_np": [
+        5784
+      ],
+      "progressive": [
+        1203
+      ],
+      "hypothetical": [
+        275
+      ],
+      "full_name": [
+        1747
+      ],
+      "ditransitive_wh-cl": [
+        2
+      ],
+      "him_definite_reference": [
+        68
+      ],
+      "declarative_statement": [
+        4628
+      ],
+      "x_is_adj_to": [
+        145
+      ],
+      "self_motion": [
+        352
+      ],
+      "genitive_np": [
+        740
+      ],
+      "ditransitive_that-cl": [
+        14
+      ],
+      "premodifier_of_adjective": [
+        1878
+      ],
+      "himself_reflexive": [
+        37
+      ],
+      "row_header": "bUD_English-GUM@2.18",
+      "row_total": 171673
+    },
+    {
+      "itself_reflexive": [
+        3
+      ],
+      "adjunct_base": [
+        4
+      ],
+      "general_past_plurals": [
+        77
+      ],
+      "ditransitive_obj_inf": [
+        3
+      ],
+      "mass_np": [
+        512
+      ],
+      "asyndetic_coordination": [
+        95
+      ],
+      "demonstrative_singular": [
+        72
+      ],
+      "attribute_construction_adj": [
+        11
+      ],
+      "general_past_tense_you": [
+        2
+      ],
+      "perfective_construction": [
+        151
+      ],
+      "wh-cleft": [
+        1
+      ],
+      "adjectival_with_partner_base": [
+        2
+      ],
+      "postmodifier_recl": [
+        171
+      ],
+      "left_dislocation": [
+        1
+      ],
+      "we_are_able_to_make": [
+        5
+      ],
+      "to_recipient_about": [
+        1
+      ],
+      "definite_singular": [
+        952
+      ],
+      "title_np": [
+        5
+      ],
+      "valency_postmodifier": [
+        994
+      ],
+      "third_person_singular_present": [
+        438
+      ],
+      "general_quantifier_singular": [
+        26
+      ],
+      "we_definite_reference": [
+        29
+      ],
+      "general_present_tense": [
+        127
+      ],
+      "intransitive": [
+        544
+      ],
+      "postmodifier_pp_base": [
+        968
+      ],
+      "with_partner": [
+        51
+      ],
+      "superlative": [
+        25
+      ],
+      "comparative_than": [
+        2
+      ],
+      "object_attribute": [
+        4
+      ],
+      "us_definite_reference": [
+        6
+      ],
+      "additive_coordination_base": [
+        446
+      ],
+      "them_definite_reference": [
+        12
+      ],
+      "monotransitive_clausal_objects": [
+        324
+      ],
+      "caused_motion": [
+        6
+      ],
+      "ranking_np": [
+        54
+      ],
+      "adjective_base": [
+        1232
+      ],
+      "on_focus_area": [
+        37
+      ],
+      "to_recipient_goal": [
+        54
+      ],
+      "passive_construction": [
+        238
+      ],
+      "i-definite_np": [
+        41
+      ],
+      "you_definite_reference": [
+        4
+      ],
+      "focus_np": [
+        5
+      ],
+      "wh-question_subject": [
+        2
+      ],
+      "she_definite_reference": [
+        17
+      ],
+      "subject_attribute_adjp": [
+        11
+      ],
+      "numerical_plural": [
+        77
+      ],
+      "subject_attribute_thatcl": [
+        2
+      ],
+      "indefinite_plural": [
+        1071
+      ],
+      "yes_no_question": [
+        4
+      ],
+      "general_quantifier_mass": [
+        8
+      ],
+      "postmodifier_acl_partger": [
+        141
+      ],
+      "first_person_singular_present": [
+        16
+      ],
+      "it_definite_reference": [
+        41
+      ],
+      "alternative_coordination": [
+        35
+      ],
+      "realistic_condition": [
+        2
+      ],
+      "for_desired_object": [
+        32
+      ],
+      "right_dislocation": [
+        1
+      ],
+      "indefinite_singular": [
+        435
+      ],
+      "declarative_question": [
+        1
+      ],
+      "resultative_attradj": [
+        4
+      ],
+      "about_reference_area": [
+        4
+      ],
+      "monotransitive": [
+        353
+      ],
+      "self_change_resultative_base": [
+        10
+      ],
+      "ditransitive_objtoinf": [
+        14
+      ],
+      "caused_change_resultative": [
+        4
+      ],
+      "demonstrative_plural": [
+        17
+      ],
+      "general_quantifier_plural": [
+        21
+      ],
+      "they_definite_reference": [
+        46
+      ],
+      "first_third_past_tense": [
+        423
+      ],
+      "last_name": [
+        733
+      ],
+      "with_emotion": [
+        1
+      ],
+      "general_postmodifier_of_adjective": [
+        77
+      ],
+      "complex_full_name": [
+        9
+      ],
+      "relative_postmodifier": [
+        171
+      ],
+      "x_is_likely_to": [
+        1
+      ],
+      "premodifier_of_noun": [
+        1954
+      ],
+      "subject_attribute_pp": [
+        489
+      ],
+      "definite_plural_np": [
+        216
+      ],
+      "unrealistic_condition": [
+        1
+      ],
+      "first_name_np": [
+        733
+      ],
+      "progressive": [
+        45
+      ],
+      "hypothetical": [
+        8
+      ],
+      "full_name": [
+        174
+      ],
+      "him_definite_reference": [
+        5
+      ],
+      "declarative_statement": [
+        509
+      ],
+      "x_is_adj_to": [
+        12
+      ],
+      "self_motion": [
+        33
+      ],
+      "genitive_np": [
+        93
+      ],
+      "ditransitive_that-cl": [
+        2
+      ],
+      "premodifier_of_adjective": [
+        116
+      ],
+      "himself_reflexive": [
+        4
+      ],
+      "row_header": "bUD_English-PUD@2.18",
+      "row_total": 15913
+    },
+    {
+      "take_off_intransitive": [
+        1
+      ],
+      "adjunct_base": [
+        32
+      ],
+      "general_past_plurals": [
+        12
+      ],
+      "mass_np": [
+        2336
+      ],
+      "impersonal_evaluative": [
+        1
+      ],
+      "demonstrative_singular": [
+        21
+      ],
+      "attribute_construction_adj": [
+        1
+      ],
+      "adjectival_with_partner_base": [
+        5
+      ],
+      "postmodifier_recl": [
+        1133
+      ],
+      "left_dislocation": [
+        21
+      ],
+      "definite_singular": [
+        1164
+      ],
+      "valency_postmodifier": [
+        8182
+      ],
+      "third_person_singular_present": [
+        1249
+      ],
+      "general_quantifier_singular": [
+        34
+      ],
+      "we_definite_reference": [
+        3
+      ],
+      "most_least": [
+        8
+      ],
+      "general_present_tense": [
+        774
+      ],
+      "intransitive": [
+        804
+      ],
+      "postmodifier_pp_base": [
+        8155
+      ],
+      "with_partner": [
+        22
+      ],
+      "superlative": [
+        508
+      ],
+      "additive_coordination_base": [
+        849
+      ],
+      "them_definite_reference": [
+        1
+      ],
+      "monotransitive_clausal_objects": [
+        458
+      ],
+      "caused_motion": [
+        3
+      ],
+      "ranking_np": [
+        139
+      ],
+      "adjective_base": [
+        1673
+      ],
+      "on_focus_area": [
+        86
+      ],
+      "to_recipient_goal": [
+        8
+      ],
+      "it_for_event": [
+        1
+      ],
+      "you_definite_reference": [
+        192
+      ],
+      "focus_np": [
+        520
+      ],
+      "numerical_plural": [
+        14
+      ],
+      "indefinite_plural": [
+        3334
+      ],
+      "change_of_state": [
+        20
+      ],
+      "general_quantifier_mass": [
+        40
+      ],
+      "postmodifier_acl_partger": [
+        25
+      ],
+      "it_definite_reference": [
+        21
+      ],
+      "alternative_coordination": [
+        76
+      ],
+      "for_desired_object": [
+        26
+      ],
+      "right_dislocation": [
+        25
+      ],
+      "indefinite_singular": [
+        1047
+      ],
+      "about_reference_area": [
+        3
+      ],
+      "monotransitive": [
+        419
+      ],
+      "ditransitive_objtoinf": [
+        4
+      ],
+      "general_quantifier_plural": [
+        600
+      ],
+      "they_definite_reference": [
+        1
+      ],
+      "first_third_past_tense": [
+        4
+      ],
+      "last_name": [
+        2835
+      ],
+      "ditransitive_objnp": [
+        69
+      ],
+      "general_postmodifier_of_adjective": [
+        300
+      ],
+      "complex_full_name": [
+        4
+      ],
+      "relative_postmodifier": [
+        1133
+      ],
+      "premodifier_of_noun": [
+        3879
+      ],
+      "subject_attribute_pp": [
+        884
+      ],
+      "definite_plural_np": [
+        944
+      ],
+      "first_name_np": [
+        2835
+      ],
+      "progressive": [
+        71
+      ],
+      "hypothetical": [
+        2
+      ],
+      "full_name": [
+        3058
+      ],
+      "ditransitive_wh-cl": [
+        1
+      ],
+      "declarative_statement": [
+        852
+      ],
+      "x_is_adj_to": [
+        3
+      ],
+      "self_motion": [
+        493
+      ],
+      "genitive_np": [
+        15
+      ],
+      "ditransitive_that-cl": [
+        8
+      ],
+      "premodifier_of_adjective": [
+        111
+      ],
+      "row_header": "UD_English-Atis@2.18",
+      "row_total": 51552
+    },
+    {
+      "mass_np": [
+        514
+      ],
+      "asyndetic_coordination": [
+        32
+      ],
+      "demonstrative_singular": [
+        21
+      ],
+      "attribute_construction_adj": [
+        2
+      ],
+      "adjectival_with_partner_base": [
+        3
+      ],
+      "postmodifier_recl": [
+        22
+      ],
+      "we_are_able_to_make": [
+        1
+      ],
+      "definite_singular": [
+        491
+      ],
+      "valency_postmodifier": [
+        338
+      ],
+      "general_quantifier_singular": [
+        31
+      ],
+      "intransitive": [
+        139
+      ],
+      "postmodifier_pp_base": [
+        334
+      ],
+      "with_partner": [
+        11
+      ],
+      "additive_coordination_base": [
+        188
+      ],
+      "monotransitive_clausal_objects": [
+        46
+      ],
+      "caused_motion": [
+        8
+      ],
+      "ranking_np": [
+        37
+      ],
+      "adjective_base": [
+        494
+      ],
+      "to_recipient_for_desired": [
+        2
+      ],
+      "on_focus_area": [
+        4
+      ],
+      "to_recipient_goal": [
+        11
+      ],
+      "i-definite_np": [
+        2
+      ],
+      "focus_np": [
+        2
+      ],
+      "numerical_plural": [
+        17
+      ],
+      "subject_attribute_thatcl": [
+        1
+      ],
+      "indefinite_plural": [
+        424
+      ],
+      "general_quantifier_mass": [
+        21
+      ],
+      "it_definite_reference": [
+        11
+      ],
+      "alternative_coordination": [
+        55
+      ],
+      "for_desired_object": [
+        19
+      ],
+      "indefinite_singular": [
+        185
+      ],
+      "ditransitive_objtoinf": [
+        13
+      ],
+      "general_quantifier_plural": [
+        31
+      ],
+      "they_definite_reference": [
+        1
+      ],
+      "last_name": [
+        119
+      ],
+      "ditransitive_objnp": [
+        8
+      ],
+      "general_postmodifier_of_adjective": [
+        19
+      ],
+      "relative_postmodifier": [
+        22
+      ],
+      "premodifier_of_noun": [
+        912
+      ],
+      "subject_attribute_pp": [
+        78
+      ],
+      "definite_plural_np": [
+        95
+      ],
+      "first_name_np": [
+        119
+      ],
+      "hypothetical": [
+        20
+      ],
+      "full_name": [
+        2
+      ],
+      "self_motion": [
+        1
+      ],
+      "premodifier_of_adjective": [
+        26
+      ],
+      "row_header": "UD_English-CTeTex@2.18",
+      "row_total": 4932
+    },
+    {
+      "ditransitive_obj_inf": [
+        16
+      ],
+      "asyndetic_coordination": [
+        69
+      ],
+      "attribute_construction_adj": [
+        3
+      ],
+      "adjectival_with_partner_base": [
+        3
+      ],
+      "postmodifier_recl": [
+        47
+      ],
+      "to_recipient_about": [
+        1
+      ],
+      "valency_postmodifier": [
+        257
+      ],
+      "intransitive": [
+        687
+      ],
+      "postmodifier_pp_base": [
+        236
+      ],
+      "myself_reflexive": [
+        2
+      ],
+      "them_definite_reference": [
+        25
+      ],
+      "monotransitive_clausal_objects": [
+        442
+      ],
+      "adjective_base": [
+        565
+      ],
+      "i-definite_np": [
+        915
+      ],
+      "it_for_event": [
+        1
+      ],
+      "focus_np": [
+        226
+      ],
+      "to_recipient_action": [
+        10
+      ],
+      "right_dislocation": [
+        10
+      ],
+      "declarative_question": [
+        17
+      ],
+      "resultative_attradj": [
+        1
+      ],
+      "last_name": [
+        287
+      ],
+      "ditransitive_objnp": [
+        14
+      ],
+      "general_postmodifier_of_adjective": [
+        59
+      ],
+      "yourself_reflexive_reference": [
+        2
+      ],
+      "complex_full_name": [
+        4
+      ],
+      "relative_postmodifier": [
+        47
+      ],
+      "premodifier_of_noun": [
+        872
+      ],
+      "subject_attribute_pp": [
+        412
+      ],
+      "first_name_np": [
+        287
+      ],
+      "full_name": [
+        23
+      ],
+      "him_definite_reference": [
+        12
+      ],
+      "genitive_np": [
+        25
+      ],
+      "premodifier_of_adjective": [
+        297
+      ],
+      "row_header": "UD_English-ESLSpok@2.18",
+      "row_total": 5874
+    },
+    {
+      "itself_reflexive": [
+        24
+      ],
+      "take_off_intransitive": [
+        1
+      ],
+      "adjunct_base": [
+        531
+      ],
+      "general_past_plurals": [
+        459
+      ],
+      "ditransitive_obj_inf": [
+        80
+      ],
+      "mass_np": [
+        2220
+      ],
+      "asyndetic_coordination": [
+        492
+      ],
+      "demonstrative_singular": [
+        345
+      ],
+      "attribute_construction_adj": [
+        82
+      ],
+      "general_past_tense_you": [
+        93
+      ],
+      "perfective_construction": [
+        532
+      ],
+      "wh-cleft": [
+        11
+      ],
+      "adjectival_with_partner_base": [
+        12
+      ],
+      "postmodifier_recl": [
+        770
+      ],
+      "left_dislocation": [
+        59
+      ],
+      "we_are_able_to_make": [
+        10
+      ],
+      "to_recipient_about": [
+        2
+      ],
+      "the_cardinal_of_pron": [
+        5
+      ],
+      "definite_singular": [
+        4228
+      ],
+      "imperative_construction": [
+        130
+      ],
+      "valency_postmodifier": [
+        3184
+      ],
+      "third_person_singular_present": [
+        1591
+      ],
+      "general_quantifier_singular": [
+        243
+      ],
+      "we_definite_reference": [
+        292
+      ],
+      "general_present_tense": [
+        814
+      ],
+      "intransitive": [
+        3664
+      ],
+      "postmodifier_pp_base": [
+        3149
+      ],
+      "themselves_reflexive": [
+        2
+      ],
+      "with_partner": [
+        218
+      ],
+      "myself_reflexive": [
+        17
+      ],
+      "superlative": [
+        57
+      ],
+      "object_attribute": [
+        14
+      ],
+      "us_definite_reference": [
+        90
+      ],
+      "it_that": [
+        1
+      ],
+      "additive_coordination_base": [
+        2419
+      ],
+      "them_definite_reference": [
+        196
+      ],
+      "monotransitive_clausal_objects": [
+        1857
+      ],
+      "caused_motion": [
+        68
+      ],
+      "ranking_np": [
+        165
+      ],
+      "adjective_base": [
+        4765
+      ],
+      "to_recipient_for_desired": [
+        8
+      ],
+      "on_focus_area": [
+        251
+      ],
+      "to_recipient_goal": [
+        222
+      ],
+      "she_was_surprised_to_hear": [
+        1
+      ],
+      "passive_construction": [
+        692
+      ],
+      "i-definite_np": [
+        1007
+      ],
+      "you_definite_reference": [
+        342
+      ],
+      "focus_np": [
+        198
+      ],
+      "wh-question_subject": [
+        12
+      ],
+      "she_definite_reference": [
+        144
+      ],
+      "subject_attribute_adjp": [
+        89
+      ],
+      "to_recipient_action": [
+        3
+      ],
+      "numerical_plural": [
+        211
+      ],
+      "subject_attribute_thatcl": [
+        4
+      ],
+      "indefinite_plural": [
+        4487
+      ],
+      "change_of_state": [
+        3
+      ],
+      "yes_no_question": [
+        45
+      ],
+      "general_quantifier_mass": [
+        169
+      ],
+      "postmodifier_acl_partger": [
+        482
+      ],
+      "first_person_singular_present": [
+        292
+      ],
+      "it_definite_reference": [
+        259
+      ],
+      "alternative_coordination": [
+        277
+      ],
+      "subject_attribute_np": [
+        7
+      ],
+      "realistic_condition": [
+        48
+      ],
+      "for_desired_object": [
+        255
+      ],
+      "right_dislocation": [
+        44
+      ],
+      "indefinite_singular": [
+        2744
+      ],
+      "declarative_question": [
+        40
+      ],
+      "ourselves_reflexive": [
+        4
+      ],
+      "resultative_attradj": [
+        28
+      ],
+      "about_reference_area": [
+        45
+      ],
+      "monotransitive": [
+        1870
+      ],
+      "it_cleft": [
+        8
+      ],
+      "self_change_resultative_base": [
+        54
+      ],
+      "ditransitive_objtoinf": [
+        67
+      ],
+      "caused_change_resultative": [
+        27
+      ],
+      "they_are_willing_to": [
+        1
+      ],
+      "demonstrative_plural": [
+        97
+      ],
+      "general_quantifier_plural": [
+        129
+      ],
+      "they_definite_reference": [
+        379
+      ],
+      "wh-question_not_subject": [
+        2
+      ],
+      "first_third_past_tense": [
+        3110
+      ],
+      "last_name": [
+        1785
+      ],
+      "topicalization": [
+        17
+      ],
+      "with_emotion": [
+        4
+      ],
+      "ditransitive_objnp": [
+        59
+      ],
+      "to_judge_action": [
+        2
+      ],
+      "general_postmodifier_of_adjective": [
+        371
+      ],
+      "yourself_reflexive_reference": [
+        12
+      ],
+      "relative_postmodifier": [
+        770
+      ],
+      "x_is_likely_to": [
+        1
+      ],
+      "premodifier_of_noun": [
+        6839
+      ],
+      "subject_attribute_pp": [
+        2344
+      ],
+      "definite_plural_np": [
+        1059
+      ],
+      "unrealistic_condition": [
+        1
+      ],
+      "first_name_np": [
+        1785
+      ],
+      "progressive": [
+        513
+      ],
+      "hypothetical": [
+        123
+      ],
+      "full_name": [
+        395
+      ],
+      "ditransitive_wh-cl": [
+        9
+      ],
+      "him_definite_reference": [
+        103
+      ],
+      "declarative_statement": [
+        2676
+      ],
+      "controversial_tag": [
+        2
+      ],
+      "x_is_adj_to": [
+        21
+      ],
+      "self_motion": [
+        242
+      ],
+      "genitive_np": [
+        312
+      ],
+      "ditransitive_that-cl": [
+        25
+      ],
+      "premodifier_of_adjective": [
+        712
+      ],
+      "himself_reflexive": [
+        132
+      ],
+      "row_header": "UD_English-LinES@2.18",
+      "row_total": 71363
+    },
+    {
+      "itself_reflexive": [
+        1
+      ],
+      "adjunct_base": [
+        4
+      ],
+      "general_past_plurals": [
+        7
+      ],
+      "ditransitive_obj_inf": [
+        6
+      ],
+      "mass_np": [
+        86
+      ],
+      "asyndetic_coordination": [
+        18
+      ],
+      "demonstrative_singular": [
+        37
+      ],
+      "attribute_construction_adj": [
+        5
+      ],
+      "general_past_tense_you": [
+        12
+      ],
+      "perfective_construction": [
+        49
+      ],
+      "adjectival_with_partner_base": [
+        8
+      ],
+      "postmodifier_recl": [
+        34
+      ],
+      "left_dislocation": [
+        3
+      ],
+      "we_are_able_to_make": [
+        1
+      ],
+      "definite_singular": [
+        233
+      ],
+      "imperative_construction": [
+        25
+      ],
+      "valency_postmodifier": [
+        130
+      ],
+      "third_person_singular_present": [
+        103
+      ],
+      "general_quantifier_singular": [
+        22
+      ],
+      "we_definite_reference": [
+        5
+      ],
+      "general_present_tense": [
+        78
+      ],
+      "negative_imperative": [
+        1
+      ],
+      "intransitive": [
+        175
+      ],
+      "postmodifier_pp_base": [
+        123
+      ],
+      "themselves_reflexive": [
+        1
+      ],
+      "with_partner": [
+        17
+      ],
+      "myself_reflexive": [
+        5
+      ],
+      "superlative": [
+        3
+      ],
+      "comparative_than": [
+        1
+      ],
+      "object_attribute": [
+        1
+      ],
+      "us_definite_reference": [
+        5
+      ],
+      "additive_coordination_base": [
+        60
+      ],
+      "them_definite_reference": [
+        13
+      ],
+      "monotransitive_clausal_objects": [
+        172
+      ],
+      "caused_motion": [
+        1
+      ],
+      "ranking_np": [
+        17
+      ],
+      "adjective_base": [
+        245
+      ],
+      "to_recipient_for_desired": [
+        1
+      ],
+      "on_focus_area": [
+        18
+      ],
+      "to_recipient_goal": [
+        26
+      ],
+      "passive_construction": [
+        26
+      ],
+      "i-definite_np": [
+        119
+      ],
+      "you_definite_reference": [
+        45
+      ],
+      "focus_np": [
+        28
+      ],
+      "wh-question_subject": [
+        1
+      ],
+      "she_definite_reference": [
+        20
+      ],
+      "subject_attribute_adjp": [
+        7
+      ],
+      "numerical_plural": [
+        19
+      ],
+      "indefinite_plural": [
+        210
+      ],
+      "change_of_state": [
+        1
+      ],
+      "yes_no_question": [
+        3
+      ],
+      "general_quantifier_mass": [
+        10
+      ],
+      "postmodifier_acl_partger": [
+        13
+      ],
+      "first_person_singular_present": [
+        35
+      ],
+      "it_definite_reference": [
+        15
+      ],
+      "alternative_coordination": [
+        10
+      ],
+      "realistic_condition": [
+        1
+      ],
+      "for_desired_object": [
+        10
+      ],
+      "right_dislocation": [
+        4
+      ],
+      "indefinite_singular": [
+        119
+      ],
+      "declarative_question": [
+        4
+      ],
+      "resultative_attradj": [
+        2
+      ],
+      "about_reference_area": [
+        1
+      ],
+      "monotransitive": [
+        137
+      ],
+      "self_change_resultative_base": [
+        3
+      ],
+      "ditransitive_objtoinf": [
+        14
+      ],
+      "caused_change_resultative": [
+        3
+      ],
+      "demonstrative_plural": [
+        3
+      ],
+      "general_quantifier_plural": [
+        7
+      ],
+      "they_definite_reference": [
+        20
+      ],
+      "first_third_past_tense": [
+        225
+      ],
+      "last_name": [
+        17
+      ],
+      "ditransitive_objnp": [
+        4
+      ],
+      "general_postmodifier_of_adjective": [
+        28
+      ],
+      "yourself_reflexive_reference": [
+        3
+      ],
+      "relative_postmodifier": [
+        34
+      ],
+      "premodifier_of_noun": [
+        260
+      ],
+      "subject_attribute_pp": [
+        115
+      ],
+      "definite_plural_np": [
+        51
+      ],
+      "first_name_np": [
+        17
+      ],
+      "progressive": [
+        21
+      ],
+      "hypothetical": [
+        10
+      ],
+      "full_name": [
+        1
+      ],
+      "ditransitive_wh-cl": [
+        1
+      ],
+      "him_definite_reference": [
+        14
+      ],
+      "declarative_statement": [
+        230
+      ],
+      "x_is_adj_to": [
+        6
+      ],
+      "self_motion": [
+        13
+      ],
+      "genitive_np": [
+        8
+      ],
+      "ditransitive_that-cl": [
+        3
+      ],
+      "premodifier_of_adjective": [
+        79
+      ],
+      "himself_reflexive": [
+        12
+      ],
+      "row_header": "UD_English-LittlePrince@2.18",
+      "row_total": 3794
+    },
+    {
+      "itself_reflexive": [
+        8
+      ],
+      "take_off_intransitive": [
+        1
+      ],
+      "adjunct_base": [
+        23
+      ],
+      "general_past_plurals": [
+        79
+      ],
+      "ditransitive_obj_inf": [
+        6
+      ],
+      "mass_np": [
+        1657
+      ],
+      "asyndetic_coordination": [
+        137
+      ],
+      "demonstrative_singular": [
+        288
+      ],
+      "attribute_construction_adj": [
+        22
+      ],
+      "general_past_tense_you": [
+        10
+      ],
+      "perfective_construction": [
+        290
+      ],
+      "wh-cleft": [
+        2
+      ],
+      "adjectival_with_partner_base": [
+        11
+      ],
+      "postmodifier_recl": [
+        347
+      ],
+      "left_dislocation": [
+        1
+      ],
+      "we_are_able_to_make": [
+        4
+      ],
+      "definite_singular": [
+        2124
+      ],
+      "title_np": [
+        1
+      ],
+      "imperative_construction": [
+        53
+      ],
+      "valency_postmodifier": [
+        2497
+      ],
+      "third_person_singular_present": [
+        1048
+      ],
+      "general_quantifier_singular": [
+        133
+      ],
+      "we_definite_reference": [
+        177
+      ],
+      "most_least": [
+        1
+      ],
+      "general_present_tense": [
+        463
+      ],
+      "intransitive": [
+        1102
+      ],
+      "postmodifier_pp_base": [
+        2481
+      ],
+      "with_partner": [
+        89
+      ],
+      "superlative": [
+        45
+      ],
+      "comparative_than": [
+        10
+      ],
+      "object_attribute": [
+        12
+      ],
+      "us_definite_reference": [
+        1
+      ],
+      "additive_coordination_base": [
+        1238
+      ],
+      "them_definite_reference": [
+        46
+      ],
+      "monotransitive_clausal_objects": [
+        586
+      ],
+      "caused_motion": [
+        8
+      ],
+      "ranking_np": [
+        126
+      ],
+      "adjective_base": [
+        3014
+      ],
+      "to_recipient_for_desired": [
+        6
+      ],
+      "on_focus_area": [
+        67
+      ],
+      "to_recipient_goal": [
+        114
+      ],
+      "passive_construction": [
+        458
+      ],
+      "i-definite_np": [
+        171
+      ],
+      "you_definite_reference": [
+        53
+      ],
+      "focus_np": [
+        54
+      ],
+      "she_definite_reference": [
+        2
+      ],
+      "subject_attribute_adjp": [
+        23
+      ],
+      "to_recipient_action": [
+        2
+      ],
+      "numerical_plural": [
+        123
+      ],
+      "subject_attribute_thatcl": [
+        4
+      ],
+      "indefinite_plural": [
+        2933
+      ],
+      "change_of_state": [
+        5
+      ],
+      "yes_no_question": [
+        6
+      ],
+      "general_quantifier_mass": [
+        89
+      ],
+      "postmodifier_acl_partger": [
+        581
+      ],
+      "first_person_singular_present": [
+        67
+      ],
+      "it_definite_reference": [
+        76
+      ],
+      "alternative_coordination": [
+        179
+      ],
+      "subject_attribute_np": [
+        1
+      ],
+      "realistic_condition": [
+        19
+      ],
+      "for_desired_object": [
+        111
+      ],
+      "right_dislocation": [
+        3
+      ],
+      "indefinite_singular": [
+        903
+      ],
+      "declarative_question": [
+        2
+      ],
+      "resultative_attradj": [
+        7
+      ],
+      "about_reference_area": [
+        6
+      ],
+      "monotransitive": [
+        674
+      ],
+      "it_cleft": [
+        4
+      ],
+      "self_change_resultative_base": [
+        20
+      ],
+      "ditransitive_objtoinf": [
+        39
+      ],
+      "caused_change_resultative": [
+        18
+      ],
+      "demonstrative_plural": [
+        97
+      ],
+      "general_quantifier_plural": [
+        86
+      ],
+      "they_definite_reference": [
+        91
+      ],
+      "first_third_past_tense": [
+        446
+      ],
+      "last_name": [
+        993
+      ],
+      "with_emotion": [
+        7
+      ],
+      "ditransitive_objnp": [
+        12
+      ],
+      "general_postmodifier_of_adjective": [
+        201
+      ],
+      "complex_full_name": [
+        1
+      ],
+      "relative_postmodifier": [
+        347
+      ],
+      "x_is_likely_to": [
+        4
+      ],
+      "premodifier_of_noun": [
+        3121
+      ],
+      "subject_attribute_pp": [
+        974
+      ],
+      "definite_plural_np": [
+        625
+      ],
+      "first_name_np": [
+        993
+      ],
+      "progressive": [
+        83
+      ],
+      "hypothetical": [
+        35
+      ],
+      "full_name": [
+        336
+      ],
+      "ditransitive_wh-cl": [
+        1
+      ],
+      "him_definite_reference": [
+        10
+      ],
+      "declarative_statement": [
+        766
+      ],
+      "x_is_adj_to": [
+        10
+      ],
+      "self_motion": [
+        52
+      ],
+      "genitive_np": [
+        320
+      ],
+      "ditransitive_that-cl": [
+        1
+      ],
+      "premodifier_of_adjective": [
+        326
+      ],
+      "himself_reflexive": [
+        11
+      ],
+      "row_header": "UD_English-ParTUT@2.18",
+      "row_total": 34910
+    },
+    {
+      "general_past_plurals": [
+        25
+      ],
+      "mass_np": [
+        10
+      ],
+      "asyndetic_coordination": [
+        10
+      ],
+      "definite_singular": [
+        160
+      ],
+      "imperative_construction": [
+        5
+      ],
+      "valency_postmodifier": [
+        20
+      ],
+      "third_person_singular_present": [
+        89
+      ],
+      "general_quantifier_singular": [
+        5
+      ],
+      "general_present_tense": [
+        42
+      ],
+      "intransitive": [
+        130
+      ],
+      "postmodifier_pp_base": [
+        20
+      ],
+      "additive_coordination_base": [
+        10
+      ],
+      "monotransitive_clausal_objects": [
+        55
+      ],
+      "adjective_base": [
+        10
+      ],
+      "to_recipient_goal": [
+        5
+      ],
+      "indefinite_plural": [
+        65
+      ],
+      "general_quantifier_mass": [
+        5
+      ],
+      "subject_attribute_np": [
+        5
+      ],
+      "monotransitive": [
+        40
+      ],
+      "first_third_past_tense": [
+        125
+      ],
+      "ditransitive_objnp": [
+        5
+      ],
+      "premodifier_of_noun": [
+        10
+      ],
+      "subject_attribute_pp": [
+        40
+      ],
+      "definite_plural_np": [
+        20
+      ],
+      "declarative_statement": [
+        175
+      ],
+      "row_header": "UD_English-Pronouns@2.18",
+      "row_total": 1086
+    }
+  ],
+  "display_modes": [
+    [
+      "occ",
+      "NUM"
+    ]
+  ],
+  "timestamp": "2026-06-11T08:12:22.616688"
+}
