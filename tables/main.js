@@ -19,6 +19,11 @@ var app = new Vue({
     columns: [],
     display_mode: 0, // 0 -> occurences, 1 -> ratio per sent, 2 -> ration per token
 
+    nb_cols: 0,
+    nb_rows: 0,
+    nb_filtered_cols: 0,
+    nb_filtered_rows: 0,
+
     collection: "ud_feats",  // "ud_feats", "ud_deps", "sud_deps", "meta"
     features: ["PronType", "Gender", "VerbForm", "NumType", "Animacy", "Mood", "Poss", "NounClass", "Tense", "Reflex", "Number", "Aspect", "Foreign", "Case", "Voice", "Abbr", "Definite", "Evident", "Typo", "Degree", "Polarity", "Person", "Polite", "Clusivity", "ExtPos", "Deixis", "DeixisRef"],
     ud_deps:["acl","advcl","advmod","amod","appos","_aux","case","cc","ccomp","clf","compound","conj","cop","csubj","dep","det","discourse","dislocated","expl","fixed","flat","goeswith","iobj","list","mark","nmod","nsubj","nummod","obj","obl","orphan","parataxis","punct","reparandum","root","vocative","xcomp"],
@@ -48,6 +53,7 @@ var app = new Vue({
       if (app.filter_kind == "rows") {
         const re = new RegExp(this.filter_value, 'i');
         let filtered_rows = this.cells.filter(l => l.treebank.match(re));
+        app.nb_filtered_rows = filtered_rows.length
         this.gridApi.setRowData(filtered_rows);
         const cols = new Set()
         filtered_rows.forEach((item, i) => {
@@ -55,16 +61,19 @@ var app = new Vue({
           keys.forEach(cols.add, cols);
         });
         let filtered_cols = this.columns.filter(l => cols.has(l.field));
-        this.gridApi.setColumnDefs([col0].concat(filtered_cols));
+        app.nb_filtered_cols = filtered_cols.length
+        this.gridApi.setColumnDefs([app.col0()].concat(filtered_cols));
       } else {
         const re = new RegExp(this.filter_value, 'i');
         let filtered_cols = this.columns.filter(function (l) { console.log (l); return l.field.match(re)});
-        this.gridApi.setColumnDefs([col0].concat(filtered_cols));
+        app.nb_filtered_cols = filtered_cols.length
         const fields = new Set()
         filtered_cols.forEach((item, i) => {
           fields.add(item.field)
         });
         let filtered_rows = this.cells.filter(l => Object.keys(l).some(k => fields.has(k)));
+        app.nb_filtered_rows = filtered_rows.length
+        this.gridApi.setColumnDefs([app.col0()].concat(filtered_cols));
         this.gridApi.setRowData(filtered_rows);
       }
     },
@@ -88,18 +97,22 @@ var app = new Vue({
           }
         }
       }
+    },
+    col0() {
+      // the top left cell content is build dynamically to show filtered sizes
+      const hn = `TB: ${app.nb_filtered_rows}/${app.nb_rows} ••• Cols: ${app.nb_filtered_cols}/${app.nb_cols}`
+      return {
+        field: "treebank",
+        headerName: hn,
+        width: 240,
+        sortingOrder: ['asc', 'desc', null],
+        pinned: "left",
+        lockPinned: true,
+        cellClass: "lock-pinned"
+      }
     }
   }
 })
-
-const col0 = {
-  field: "treebank",
-  width: 240,
-  sortingOrder: ['asc', 'desc', null],
-  pinned: "left",
-  lockPinned: true,
-  cellClass: "lock-pinned"
-}
 
 function build_grid(data) {
   app.portal = false;
@@ -107,10 +120,12 @@ function build_grid(data) {
   app.instance = data.instance;
   app.cells = data.cells;
   app.columns = data.columns;
+  app.nb_filtered_cols = app.nb_cols = app.columns.length;
+  app.nb_filtered_rows = app.nb_rows = app.cells.length;
   app.update_sorting(); // ensure that sorting is done on the right component
   global_grew_match = data.grew_match;
   const gridOptions = {
-    columnDefs: [col0].concat(app.columns),
+    columnDefs: [app.col0()].concat(app.columns),
     defaultColDef: {
       width: 150,
       sortable: true,
