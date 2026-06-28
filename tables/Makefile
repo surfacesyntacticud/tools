@@ -10,27 +10,30 @@ SUD_LIST=unk subj udep mod comp vocative dislocated discourse appos det clf conj
 FILTER=*UD_*
 
 selfdoc:
-	@echo "${UD}"
 	@echo "make all"
 	@echo "make build_sud_deps"
 	@echo "make build_ud_deps"
 	@echo "make build_ud_feats"
-	@echo "make build_meta"
+	@echo "make build_ud_meta"
 	@echo "make build_SP_ud_deps"
 	@echo "make build_SP_ud_feats"
 	@echo "make build_SP_meta"
 	@echo "make count"
 
-univ: build_sud_deps build_ud_deps build_ud_feats build_meta count
+univ: build_sud_deps build_ud_deps build_ud_feats build_ud_meta count
 spoken: build_SP_meta build_SP_ud_deps build_SP_ud_feats count
 all: univ spoken
 
 count:
 	python count.py
 
-build_meta:
-	mkdir -p meta
-	python build_table.py -c "UD ${VERSION}" -f "${FILTER}" -o meta/META.json ${UD} META
+build_ud_meta:
+	mkdir -p ud_meta
+	python build_table.py -c "UD ${VERSION}" -f "${FILTER}" -o ud_meta/META.json ${UD} META
+
+build_sud_meta:
+	mkdir -p sud_meta
+	python build_table.py -c "SUD ${VERSION}" -f "${FILTER}" -o sud_meta/META.json ${SUD} META
 
 build_SP_meta:
 	mkdir -p SP_meta
@@ -71,6 +74,15 @@ build_ud_feats:
 	@for feat in ${FEAT_LIST} ; do \
 		echo "================= Building table for feature: $$feat =================" ; \
 		python build_table.py -c "UD ${VERSION}" -f "${FILTER}" -o ud_feats/$$feat.json ${UD} FEAT:$$feat ; \
+	done
+
+build_sud_feats:
+	mkdir -p sud_feats
+	python build_table.py -c "SUD ${VERSION}" -f "${FILTER}" -o sud_feats/FEATS.json ${SUD} FEATS
+	python build_table.py -c "SUD ${VERSION}" -f "${FILTER}" -o sud_feats/MISC.json ${SUD} MISC
+	@for feat in ${FEAT_LIST} ; do \
+		echo "================= Building table for feature: $$feat =================" ; \
+		python build_table.py -c "SUD ${VERSION}" -f "${FILTER}" -o sud_feats/$$feat.json ${SUD} FEAT:$$feat ; \
 	done
 
 build_SP_ud_feats:

@@ -72,7 +72,7 @@
             <div class="alert alert-danger" role="alert" v-if='alert != ""' v-html="alert"></div>
 
             <p>This page proposes a set of tables which describe the global usage of dependency relations, features and
-              feature values in the treebanks from the <a href="http://universaldependencies.org/">UD</a> and <a href="https://surfacesyntacticud.org/">SUD</a> projects.</p>
+              feature values in the treebanks from the <a href="https://surfacesyntacticud.org/">SUD</a> and <a href="http://universaldependencies.org/">UD</a> projects.</p> 
       
             <p>See the 
               <a href="https://github.com/surfacesyntacticud/tools/blob/master/tables/README.md">README</a>
@@ -82,20 +82,12 @@
               <a href="https://github.com/surfacesyntacticud/tools/tree/master/tables">Github project</a>.
              </p>
 
-            <p>Pick one of the four collections below for all (S)UD treebanks (version 2.18):</p>
+            <p>Pick one of the collections below for all (S)UD treebanks (version 2.18):</p>
+
+
 
              <div class="row" style="margin-bottom: 20px;">
-              <div class="col-sm-6">
-                <a href="?data=ud_deps/DEPS">
-                  <div class="card">
-                    <div class="card-header">Dependencies in UD ({{count["ud_deps"]}} tables)</div>
-                    <div class="card-body" style="text-align: center;">
-                      <img src="https://universaldependencies.org/logos/logo-ud.png" style="height: 50px;" alt="UD">
-                    </div>
-                  </div>
-                </a>
-              </div>
-              <div class="col-sm-6">
+              <div class="col-sm-4">
                 <a href="?data=sud_deps/DEPS">
                   <div class="card">
                     <div class="card-header">Dependencies in SUD ({{count["sud_deps"]}} tables)</div>
@@ -105,11 +97,40 @@
                   </div>
                 </a>
               </div>
+              <div class="col-sm-4">
+                <a href="?data=sud_feats/FEATS">
+                  <div class="card">
+                    <div class="card-header">Features in SUD  ({{count["sud_feats"]}} tables)</div>
+                    <div class="card-body" style="text-align: center;">
+                      <img src="https://surfacesyntacticud.org/images/sud.svg" style="height: 50px;" alt="SUD">
+                    </div>
+                  </div>
+                </a>
+              </div>
+              <div class="col-sm-4">
+                <a href="?data=sud_meta/META">
+                  <div class="card">
+                    <div class="card-header">Metadata in SUD ({{count["sud_meta"]}} table)</div>
+                    <div class="card-body" style="text-align: center;">
+                      <img src="https://surfacesyntacticud.org/images/sud.svg" style="height: 50px;" alt="SUD">
+                    </div>
+                  </div>
+                </a>
+              </div>
             </div>
 
-
-            <div class="row" style="margin-bottom: 20px;">
-              <div class="col-sm-6">
+             <div class="row" style="margin-bottom: 20px;">
+              <div class="col-sm-4">
+                <a href="?data=ud_deps/DEPS">
+                  <div class="card">
+                    <div class="card-header">Dependencies in UD ({{count["ud_deps"]}} tables)</div>
+                    <div class="card-body" style="text-align: center;">
+                      <img src="https://universaldependencies.org/logos/logo-ud.png" style="height: 50px;" alt="UD">
+                    </div>
+                  </div>
+                </a>
+              </div>
+              <div class="col-sm-4">
                 <a href="?data=ud_feats/FEATS">
                   <div class="card">
                     <div class="card-header">Features in UD  ({{count["ud_feats"]}} tables)</div>
@@ -119,10 +140,10 @@
                   </div>
                 </a>
               </div>
-              <div class="col-sm-6">
-                <a href="?data=meta/META">
+              <div class="col-sm-4">
+                <a href="?data=ud_meta/META">
                   <div class="card">
-                    <div class="card-header">Metadata in UD ({{count["meta"]}} table)</div>
+                    <div class="card-header">Metadata in UD ({{count["ud_meta"]}} table)</div>
                     <div class="card-body" style="text-align: center;">
                       <img src="https://universaldependencies.org/logos/logo-ud.png" style="height: 50px;" alt="UD">
                     </div>
@@ -130,6 +151,8 @@
                 </a>
               </div>
             </div>
+
+
 
             <p>Pick one of the three collections below for UD spoken data only (version 2.17)</p>
 
@@ -184,6 +207,43 @@
     </div> 
 
     <div v-show='!portal && alert==""'>
+
+    <!---------------------------- SUD + FEATS ----------------------------->
+    <div v-show='collection=="sud_feats"' style="margin-bottom: 10px;">
+      <a href='?data=sud_feats/FEATS'>
+        <button
+          type="button"
+          class="btn btn-sm"
+          data-toggle="tooltip"
+          title="All feature names used in the column 6 in CoNLL"
+          :class="{ 'btn-warning': table=='FEATS', 'btn-secondary' : table!='FEATS' }">
+          FEATS
+          <span class="badge badge-light">{{ count["sud_feats/FEATS"] }}</span>
+        </button>
+      </a>
+      •••
+      <a href='?data=sud_feats/MISC'>
+        <button 
+          type="button" 
+          class="btn btn-sm" 
+          data-toggle="tooltip" 
+          title="All feature names used in the column 10 in CoNLL" 
+          :class="{ 'btn-warning': table=='MISC', 'btn-secondary' : table!='MISC' }">
+          MISC
+          <span class="badge badge-light">{{ count["sud_feats/MISC"] }}</span>
+        </button>
+      </a>
+      •••
+      <a v-for="feat in features" v-bind:href='"?data=" + collection + "/" + feat'>
+        <button 
+          type="button"
+          class="btn btn-sm" 
+          :class="{ 'btn-warning': table==feat, 'btn-secondary' : table!=feat }">
+          {{feat}}
+          <span class="badge badge-light">{{ count["sud_feats/"+feat] }}</span>
+        </button>
+      </a>
+    </div>
 
     <!---------------------------- UD + FEATS ----------------------------->
     <div v-show='collection=="ud_feats"' style="margin-bottom: 10px;">
