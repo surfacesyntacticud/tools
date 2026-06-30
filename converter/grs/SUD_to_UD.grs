@@ -91,10 +91,12 @@ package shared_2 {
   rule move_compobj_distant-relation {
     pattern {
       N1 -[1=conj]-> N2;
-      N1 -[1=comp,2=obj]-> D1; N1 << D1;
-      N2 -[1=comp,2=obj]-> D2; N2 << D2;
+      e1: N1 -[1=comp]-> D1; N1 << D1;
+      e2: N2 -[1=comp]-> D2; N2 << D2;
       N1.upos=N2.upos;
       e: D2 -[1=comp|mod|udep]-> D; D[Shared=Yes]; D2 << D; }
+    without { e1.2 <> obj } % update after change comp:obj --> comp
+    without { e2.2 <> obj }
     without{D2 -[1=comp]-> D; D1 -[1=comp]-> D3} %Ex: fr-ud-test_00145 - quand on en détruit et qu' on en créé 20.000
     commands {
       add_edge f: D1 -> D; f.label = e.label;
@@ -144,7 +146,8 @@ rule remove_shared {
 package nom_init {
   % All adverbs, numbers and symbols that are direct objects are considered nominal.
   rule nom_comp {
-    pattern {A[upos=ADJ|ADV|INTJ|NUM|SYM,!nom]; H -[1=comp, 2=obj]-> A}
+    pattern {A[upos=ADJ|ADV|INTJ|NUM|SYM,!nom]; e: H -[1=comp]-> A}
+    without { e.2 <> obj }
     without{ H[upos=ADP|SCONJ]; A[upos=ADJ|ADV]}
     without{A[upos=ADV]; * -[IDIOM]-> A}
     commands {A.nom=y}
@@ -223,7 +226,7 @@ package unchained_relations {
 package reverse_case_mark {
   % The heads are reversed from the most internal to the most external. The source and the target of the reversed relation are marked "rev = y" so that loops are not possible.
   rule rev_head {
-    pattern {e:H -[comp:obj|comp:aff]-> D; H[upos= ADP|CCONJ|PART|SCONJ]}
+    pattern {e:H -[comp|comp:obj|comp:aff]-> D; H[upos= ADP|CCONJ|PART|SCONJ]}
     without{D[upos= ADP|CCONJ|PART|SCONJ]; D -[1=comp,2=obj|aff]-> D1}
     % the following without was added for the conversion of LAG_11_Adeniyi-Lifestory_MG__131 in SUD_Naija-NSC
     without {H -[comp:obj|comp:aff]-> D2; H[upos= ADP|CCONJ|PART|SCONJ]; D << D2} 
@@ -329,14 +332,16 @@ package case_mark_relations {
   % Adpositions introducing nominals are case dependent.
   % Ex: à Paris - comme à Paris - il ira plutôt à Lyon qu'à Paris.
   rule case_nom_adp{
-    pattern{ e:H -[1=comp,2=obj|aff,rev=y]-> D; H[nom=y]; D[upos=ADP|PART] }
+    pattern{ e:H -[1=comp,rev=y]-> D; H[nom=y]; D[upos=ADP|PART] }
+    without { e.2 <> re"aff\|obj"}
     commands {e.1=case}
   }
 
   % Conjunctions introducing nominals without adpositions between them and the conjunction are case dependent.
   % Ex: Lyon est plus près que Paris.
   rule case_nom_conj{
-    pattern{ e:H -[1=comp,2=obj|aff,rev=y]-> D; H[nom=y];D[upos=CCONJ|SCONJ] }
+    pattern{ e:H -[1=comp,rev=y]-> D; H[nom=y];D[upos=CCONJ|SCONJ] }
+    without { e.2 <> re"aff\|obj"}
     without{H -> ADP; ADP[upos=ADP|PART]; D << ADP; ADP << H}
     without{H -> ADP; ADP[upos=ADP|PART]; D >> ADP; ADP >> H}
     commands {e.1=case}
@@ -345,8 +350,9 @@ package case_mark_relations {
   % Adpositions introducing adjectives or adverbs are case dependent.
   % Ex: dès demain - en continu
   rule case_pred_adp{
-    pattern{ e:H -[1=comp,2=obj|aff,rev=y]-> D; H[upos=ADV|ADJ];D[upos=ADP|PART] }
+    pattern{ e:H -[1=comp,rev=y]-> D; H[upos=ADV|ADJ];D[upos=ADP|PART] }
     % There is no conjunction between the adposition and its governor. Ex: dès que possible.
+    without { e.2 <> re"aff\|obj"}
     without{ H -[1=comp|mark]-> CONJ; CONJ[upos=CCONJ|SCONJ]; D << CONJ; CONJ << H}
     without{ H -[1=comp|mark]-> CONJ; CONJ[upos=CCONJ|SCONJ]; D >> CONJ; CONJ >> H}
     commands {e.1=case}
@@ -355,16 +361,18 @@ package case_mark_relations {
   % Adpositions or conjunctions introducing verbs are mark dependent.
   rule mark_verb_adp-conj{
     pattern{
-      e:H -[1=comp,2=obj|aff,rev=y]-> D;
+      e:H -[1=comp,rev=y]-> D;
       H[upos=AUX|VERB|PART,!nom];
       D[upos=ADP|CCONJ|PART|SCONJ] }
+    without { e.2 <> re"aff\|obj"}
     commands {e.1=mark}
   }
 
   % Conjunctions introducing adjectives or adverbs that are not considered nominal are mark dependent.
   % Ex: si possible
   rule mark_pred_conj{
-    pattern{ e:H -[1=comp,2=obj|aff,rev=y]-> D; H[upos=ADJ|ADV,!nom];D[upos=CCONJ|SCONJ] }
+    pattern{ e:H -[1=comp,rev=y]-> D; H[upos=ADJ|ADV,!nom];D[upos=CCONJ|SCONJ] }
+    without { e.2 <> re"aff\|obj"}
     commands {e.1=mark}
   }
 
@@ -372,16 +380,18 @@ package case_mark_relations {
   % Ex: dès que possible
   rule mark_pred_adp-left{
     pattern{
-      e:H -[1=comp,2=obj|aff,rev=y]-> D; D[upos=ADP|PART];
+      e:H -[1=comp,rev=y]-> D; D[upos=ADP|PART];
       H -[1=mark]-> CONJ; CONJ[upos=CCONJ|SCONJ]; D << CONJ; CONJ << H}
+    without { e.2 <> re"aff\|obj"}
     commands {e.1=mark}
   }
 
   % Adpositions introducing a clause marked with conjunction between the clause head and the adposition are mark dependent.
   rule mark_pred_adp-right{
     pattern{
-      e:H -[1=comp,2=obj|aff,rev=y]-> D; D[upos=ADP|PART];
+      e:H -[1=comp,rev=y]-> D; D[upos=ADP|PART];
       H -[1=mark]-> CONJ; CONJ[upos=CCONJ|SCONJ]; D >> CONJ; CONJ >> H}
+    without { e.2 <> re"aff\|obj"}
     commands {e.1=mark}
   }
 
@@ -389,17 +399,19 @@ package case_mark_relations {
   % Ex: comme à Paris
   rule mark_nom_conj-left{
     pattern{
-      e:H -[1=comp,2=obj|aff,rev=y]-> D;
+      e:H -[1=comp,rev=y]-> D;
       H[nom=y];D[upos=CCONJ|SCONJ];
       H -[1=case]-> ADP; D << ADP; ADP << H}
+    without { e.2 <> re"aff\|obj"}
     commands {e.1=mark}
   }
 
   rule mark_nom_conj-right{
     pattern{
-      e:H -[1=comp,2=obj|aff,rev=y]-> D;
+      e:H -[1=comp,rev=y]-> D;
       H[nom=y];D[upos=CCONJ|SCONJ];
       H -[1=case]-> ADP; D >> ADP; ADP >> H}
+    without { e.2 <> re"aff\|obj"}
     commands {e.1=mark}
   }
 }
@@ -453,7 +465,8 @@ package sub_relations {
 
   % Clausal argument without control of its subject.
   rule ccomp {
-    pattern {d:H -[1=comp, 2=obj|obl|pred]-> D; D[upos = AUX|VERB,!nom]}
+    pattern {d:H -[1=comp]-> D; D[upos = AUX|VERB,!nom]}
+    without { d.2 <> re"obj\|obl\|pred" }
     without{D[Subject=ObjRaising|OblRaising|SubjRaising|Raising]}
     without {d.deep=pass } % Impersonal diathesis
     without {d.deep=agent} % Impersonal diathesis
