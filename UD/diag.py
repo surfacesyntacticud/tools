@@ -30,6 +30,7 @@ tests = [
 
 	# MORPHO
 	("feature-value-unknown","]", ""),
+	("feature-unknown","]", "("),
 	("goeswith-lemma", "]", ""),
 	("goeswith-upos", "]", ""),
 	("goeswith-missing-typo", "]", ""),
