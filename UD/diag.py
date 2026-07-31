@@ -76,6 +76,11 @@ def test(lines, text, sep, sep2):
 def main(path):
 	with open(path, "r", encoding="utf-8") as f:
 		lines = f.readlines()
+
+	print ("The text below is a compressed version of the UD diagnostic report.")
+	print ("It mainly merges similar lines from the validation output and prints them with a count.")
+	print ("")
+
 	for (name, sep1, sep2) in tests:
 		test (lines, name, sep1, sep2)
 
