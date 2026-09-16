@@ -1,3 +1,0 @@
-verb	concept
-%------------
-voir	have
