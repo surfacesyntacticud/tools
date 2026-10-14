@@ -51,6 +51,9 @@ tests = [
 	("spaceafter-value", "]", ""),
 	("nospaceafter-yes", "]", ""),
 	("non-unique-sent-id", "]", "'"),
+
+	# WARNING
+	("WARNING pron-det-without-prontype", "]", "(")
 ]
 
 def extract_after_second_sep(line: str, sep: str) -> str:
