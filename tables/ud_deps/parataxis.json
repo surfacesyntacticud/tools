@@ -1,5 +1,5 @@
 {
-  "title": "## Usage of subtypes of relation `parataxis` \u2022\u2022\u2022 UD 2.18",
+  "title": "## Usage of subtypes of relation `parataxis` \u2022\u2022\u2022 UD 2.19",
   "instance": "universal",
   "grew_match": {
     "parataxis": {
@@ -7,7 +7,7 @@
         "pattern {M -[1=parataxis,!2]-> N}"
       ],
       "key": null,
-      "users": 313
+      "users": 359
     },
     "parataxis:discourse": {
       "code": [
@@ -21,7 +21,14 @@
         "pattern {M -[1=parataxis,2=insert]-> N}"
       ],
       "key": null,
-      "users": 11
+      "users": 12
+    },
+    "parataxis:parenth": {
+      "code": [
+        "pattern {M -[1=parataxis,2=parenth]-> N}"
+      ],
+      "key": null,
+      "users": 7
     },
     "parataxis:obj": {
       "code": [
@@ -30,12 +37,12 @@
       "key": null,
       "users": 6
     },
-    "parataxis:parenth": {
+    "parataxis:rep": {
       "code": [
-        "pattern {M -[1=parataxis,2=parenth]-> N}"
+        "pattern {M -[1=parataxis,2=rep]-> N}"
       ],
       "key": null,
-      "users": 5
+      "users": 3
     },
     "parataxis:hashtag": {
       "code": [
@@ -44,12 +51,12 @@
       "key": null,
       "users": 3
     },
-    "parataxis:rep": {
+    "parataxis:rel": {
       "code": [
-        "pattern {M -[1=parataxis,2=rep]-> N}"
+        "pattern {M -[1=parataxis,2=rel]-> N}"
       ],
       "key": null,
-      "users": 3
+      "users": 2
     },
     "parataxis:mod": {
       "code": [
@@ -65,9 +72,9 @@
       "key": null,
       "users": 2
     },
-    "parataxis:reporting": {
+    "parataxis:restart": {
       "code": [
-        "pattern {M -[1=parataxis,2=reporting]-> N}"
+        "pattern {M -[1=parataxis,2=restart]-> N}"
       ],
       "key": null,
       "users": 2
@@ -79,16 +86,16 @@
       "key": null,
       "users": 2
     },
-    "parataxis:rel": {
+    "parataxis:reporting": {
       "code": [
-        "pattern {M -[1=parataxis,2=rel]-> N}"
+        "pattern {M -[1=parataxis,2=reporting]-> N}"
       ],
       "key": null,
       "users": 2
     },
-    "parataxis:conj": {
+    "parataxis:url": {
       "code": [
-        "pattern {M -[1=parataxis,2=conj]-> N}"
+        "pattern {M -[1=parataxis,2=url]-> N}"
       ],
       "key": null,
       "users": 1
@@ -100,13 +107,6 @@
       "key": null,
       "users": 1
     },
-    "parataxis:dislocated": {
-      "code": [
-        "pattern {M -[1=parataxis,2=dislocated]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
     "parataxis:sentence": {
       "code": [
         "pattern {M -[1=parataxis,2=sentence]-> N}"
@@ -114,9 +114,16 @@
       "key": null,
       "users": 1
     },
-    "parataxis:restart": {
+    "parataxis:rt": {
       "code": [
-        "pattern {M -[1=parataxis,2=restart]-> N}"
+        "pattern {M -[1=parataxis,2=rt]-> N}"
+      ],
+      "key": null,
+      "users": 1
+    },
+    "parataxis:conj": {
+      "code": [
+        "pattern {M -[1=parataxis,2=conj]-> N}"
       ],
       "key": null,
       "users": 1
@@ -128,16 +135,9 @@
       "key": null,
       "users": 1
     },
-    "parataxis:url": {
+    "parataxis:dislocated": {
       "code": [
-        "pattern {M -[1=parataxis,2=url]-> N}"
-      ],
-      "key": null,
-      "users": 1
-    },
-    "parataxis:rt": {
-      "code": [
-        "pattern {M -[1=parataxis,2=rt]-> N}"
+        "pattern {M -[1=parataxis,2=dislocated]-> N}"
       ],
       "key": null,
       "users": 1
@@ -157,20 +157,24 @@
       "headerName": "parataxis:insert"
     },
     {
+      "field": "parataxis:parenth",
+      "headerName": "parataxis:parenth"
+    },
+    {
       "field": "parataxis:obj",
       "headerName": "parataxis:obj"
     },
     {
-      "field": "parataxis:parenth",
-      "headerName": "parataxis:parenth"
+      "field": "parataxis:rep",
+      "headerName": "parataxis:rep"
     },
     {
       "field": "parataxis:hashtag",
       "headerName": "parataxis:hashtag"
     },
     {
-      "field": "parataxis:rep",
-      "headerName": "parataxis:rep"
+      "field": "parataxis:rel",
+      "headerName": "parataxis:rel"
     },
     {
       "field": "parataxis:mod",
@@ -181,48 +185,44 @@
       "headerName": "parataxis:nsubj"
     },
     {
-      "field": "parataxis:reporting",
-      "headerName": "parataxis:reporting"
+      "field": "parataxis:restart",
+      "headerName": "parataxis:restart"
     },
     {
       "field": "parataxis:appos",
       "headerName": "parataxis:appos"
     },
     {
-      "field": "parataxis:rel",
-      "headerName": "parataxis:rel"
-    },
-    {
-      "field": "parataxis:conj",
-      "headerName": "parataxis:conj"
-    },
-    {
-      "field": "parataxis:trans",
-      "headerName": "parataxis:trans"
-    },
-    {
-      "field": "parataxis:dislocated",
-      "headerName": "parataxis:dislocated"
-    },
-    {
-      "field": "parataxis:sentence",
-      "headerName": "parataxis:sentence"
-    },
-    {
-      "field": "parataxis:restart",
-      "headerName": "parataxis:restart"
-    },
-    {
-      "field": "parataxis:newsent",
-      "headerName": "parataxis:newsent"
+      "field": "parataxis:reporting",
+      "headerName": "parataxis:reporting"
     },
     {
       "field": "parataxis:url",
       "headerName": "parataxis:url"
     },
     {
+      "field": "parataxis:trans",
+      "headerName": "parataxis:trans"
+    },
+    {
+      "field": "parataxis:sentence",
+      "headerName": "parataxis:sentence"
+    },
+    {
       "field": "parataxis:rt",
       "headerName": "parataxis:rt"
+    },
+    {
+      "field": "parataxis:conj",
+      "headerName": "parataxis:conj"
+    },
+    {
+      "field": "parataxis:newsent",
+      "headerName": "parataxis:newsent"
+    },
+    {
+      "field": "parataxis:dislocated",
+      "headerName": "parataxis:dislocated"
     }
   ],
   "cells": [
@@ -232,7 +232,7 @@
         0.010138740661686232,
         0.0008202028922944097
       ],
-      "treebank": "UD_Akkadian-RIAO@2.18"
+      "treebank": "UD_Akkadian-RIAO@2.19"
     },
     {
       "parataxis": [
@@ -240,7 +240,7 @@
         0.050724637681159424,
         0.009150326797385621
       ],
-      "treebank": "UD_Central_Kurdish-Mukri@2.18"
+      "treebank": "UD_Central_Kurdish-Mukri@2.19"
     },
     {
       "parataxis": [
@@ -248,7 +248,7 @@
         0.19449972860502984,
         0.010307499065133806
       ],
-      "treebank": "UD_Armenian-ArmTDP@2.18"
+      "treebank": "UD_Armenian-ArmTDP@2.19"
     },
     {
       "parataxis": [
@@ -256,7 +256,7 @@
         0.03459698196540302,
         0.0017180874396841644
       ],
-      "treebank": "UD_Welsh-CCG@2.18"
+      "treebank": "UD_Welsh-CCG@2.19"
     },
     {
       "parataxis": [
@@ -264,7 +264,7 @@
         0.10248447204968944,
         0.006191369606003753
       ],
-      "treebank": "UD_Gheg-GPS@2.18"
+      "treebank": "UD_Gheg-GPS@2.19"
     },
     {
       "parataxis": [
@@ -272,7 +272,15 @@
         0.028165007112375535,
         0.0016425919104837185
       ],
-      "treebank": "UD_Norwegian-Nynorsk@2.18"
+      "treebank": "UD_Norwegian-Nynorsk@2.19"
+    },
+    {
+      "parataxis": [
+        12,
+        0.04938271604938271,
+        0.00259852750108272
+      ],
+      "treebank": "UD_Punjabi-DYZ@2.19"
     },
     {
       "parataxis": [
@@ -280,7 +288,7 @@
         0.23829344432882413,
         0.010252660169833002
       ],
-      "treebank": "UD_Hebrew-IAHLTknesset@2.18"
+      "treebank": "UD_Hebrew-IAHLTknesset@2.19"
     },
     {
       "parataxis": [
@@ -288,7 +296,7 @@
         0.05,
         0.005649717514124294
       ],
-      "treebank": "UD_Esperanto-Cairo@2.18"
+      "treebank": "UD_Esperanto-Cairo@2.19"
     },
     {
       "parataxis": [
@@ -296,7 +304,7 @@
         0.01373792270531401,
         0.0014745797042738506
       ],
-      "treebank": "UD_Old_East_Slavic-TOROT@2.18"
+      "treebank": "UD_Old_East_Slavic-TOROT@2.19"
     },
     {
       "parataxis": [
@@ -304,7 +312,7 @@
         0.11306179775280899,
         0.006057926571157121
       ],
-      "treebank": "UD_English-LinES@2.18"
+      "treebank": "UD_English-LinES@2.19"
     },
     {
       "parataxis": [
@@ -312,7 +320,7 @@
         0.072,
         0.0060708263069139965
       ],
-      "treebank": "UD_Uzbek-UT@2.18"
+      "treebank": "UD_Uzbek-UT@2.19"
     },
     {
       "parataxis": [
@@ -320,34 +328,47 @@
         0.1724137931034483,
         0.022675736961451247
       ],
-      "treebank": "UD_Turkish_English-BUTR@2.18"
+      "treebank": "UD_Turkish_English-BUTR@2.19"
     },
     {
-      "treebank": "UD_Albanian-TSA@2.18"
+      "treebank": "UD_Albanian-TSA@2.19"
     },
     {
-      "treebank": "UD_Tswana-Popapolelo@2.18"
+      "parataxis": [
+        10,
+        0.2,
+        0.017241379310344827
+      ],
+      "treebank": "UD_Tswana-Popapolelo@2.19"
     },
     {
       "parataxis": [
         164,
         0.05292029686995805,
-        0.002324757247147211
+        0.002326175143967547
       ],
       "parataxis:insert": [
         126,
         0.04065827686350436,
-        0.0017860939825643206
+        0.00178718334231653
       ],
-      "treebank": "UD_French-Sequoia@2.18"
+      "treebank": "UD_French-Sequoia@2.19"
+    },
+    {
+      "parataxis": [
+        56,
+        0.030303030303030304,
+        0.0015042845246729525
+      ],
+      "treebank": "UD_Old_Occitan-CronOc@2.19"
     },
     {
       "parataxis": [
         273,
         0.05710102489019034,
-        0.002739203724514368
+        0.0027390663094843935
       ],
-      "treebank": "UD_Classical_Armenian-CAVaL@2.18"
+      "treebank": "UD_Classical_Armenian-CAVaL@2.19"
     },
     {
       "parataxis": [
@@ -355,20 +376,28 @@
         0.02027027027027027,
         0.003289473684210526
       ],
-      "treebank": "UD_Azerbaijani-TueCL@2.18"
+      "treebank": "UD_Azerbaijani-TueCL@2.19"
     },
     {
       "parataxis": [
-        557,
-        0.1038210624417521,
-        0.004055835086978366
+        6,
+        0.03333333333333333,
+        0.002791996277338297
+      ],
+      "treebank": "UD_Kashmiri-Zaan@2.19"
+    },
+    {
+      "parataxis": [
+        556,
+        0.10363466915191052,
+        0.004048553515906592
       ],
       "parataxis:discourse": [
         24,
         0.004473438956197577,
         0.0001747577057225867
       ],
-      "treebank": "UD_Old_East_Slavic-Ruthenian@2.18"
+      "treebank": "UD_Old_East_Slavic-Ruthenian@2.19"
     },
     {
       "parataxis": [
@@ -386,7 +415,7 @@
         0.03806567554321189,
         0.0023680546380331936
       ],
-      "treebank": "UD_Slovenian-SST@2.18"
+      "treebank": "UD_Slovenian-SST@2.19"
     },
     {
       "parataxis": [
@@ -394,7 +423,7 @@
         0.08242612752721618,
         0.004864616796695732
       ],
-      "treebank": "UD_Swedish-SweLL@2.18"
+      "treebank": "UD_Swedish-SweLL@2.19"
     },
     {
       "parataxis": [
@@ -402,7 +431,7 @@
         0.13197062909307403,
         0.004717616929505324
       ],
-      "treebank": "UD_Hebrew-IAHLTwiki@2.18"
+      "treebank": "UD_Hebrew-IAHLTwiki@2.19"
     },
     {
       "parataxis": [
@@ -410,7 +439,7 @@
         0.03807106598984772,
         0.0049126637554585155
       ],
-      "treebank": "UD_Guajajara-TuDeT@2.18"
+      "treebank": "UD_Guajajara-TuDeT@2.19"
     },
     {
       "parataxis": [
@@ -418,7 +447,7 @@
         0.28823529411764703,
         0.03852201257861635
       ],
-      "treebank": "UD_Nenets-Tundra@2.18"
+      "treebank": "UD_Nenets-Tundra@2.19"
     },
     {
       "parataxis": [
@@ -426,7 +455,7 @@
         0.07690164391195319,
         0.009514944668528286
       ],
-      "treebank": "UD_Khoekhoe-KDT@2.18"
+      "treebank": "UD_Khoekhoe-KDT@2.19"
     },
     {
       "parataxis": [
@@ -434,15 +463,23 @@
         0.07850467289719626,
         0.00558659217877095
       ],
-      "treebank": "UD_Bavarian-MaiBaam@2.18"
+      "treebank": "UD_Bavarian-MaiBaam@2.19"
     },
     {
       "parataxis": [
         99,
         0.099,
-        0.004171582673183886
+        0.004162637177816087
       ],
-      "treebank": "UD_Italian-PUD@2.18"
+      "treebank": "UD_Italian-PUD@2.19"
+    },
+    {
+      "parataxis": [
+        4,
+        0.009324009324009324,
+        0.000869376222560313
+      ],
+      "treebank": "UD_Kullvi-KDTB@2.19"
     },
     {
       "parataxis": [
@@ -450,10 +487,18 @@
         0.01840277777777778,
         0.00308552133667113
       ],
-      "treebank": "UD_Turkish-GB@2.18"
+      "treebank": "UD_Turkish-GB@2.19"
     },
     {
-      "treebank": "UD_Finnish-FTB@2.18"
+      "treebank": "UD_Finnish-FTB@2.19"
+    },
+    {
+      "parataxis": [
+        5,
+        0.13157894736842105,
+        0.012853470437017995
+      ],
+      "treebank": "UD_Gujarati-ShabdaSetu@2.19"
     },
     {
       "parataxis": [
@@ -461,7 +506,7 @@
         0.07270453733476241,
         0.003335546103475688
       ],
-      "treebank": "UD_Indonesian-GSD@2.18"
+      "treebank": "UD_Indonesian-GSD@2.19"
     },
     {
       "parataxis": [
@@ -484,7 +529,7 @@
         0.006627185561195714,
         0.0003828920570264766
       ],
-      "treebank": "UD_Ukrainian-IU@2.18"
+      "treebank": "UD_Ukrainian-IU@2.19"
     },
     {
       "parataxis": [
@@ -492,7 +537,7 @@
         0.02025036818851252,
         0.0017776628581586645
       ],
-      "treebank": "UD_English-Atis@2.18"
+      "treebank": "UD_English-Atis@2.19"
     },
     {
       "parataxis": [
@@ -500,7 +545,7 @@
         0.20449766355140186,
         0.01178529951357447
       ],
-      "treebank": "UD_Dutch-LassySmall@2.18"
+      "treebank": "UD_Dutch-LassySmall@2.19"
     },
     {
       "parataxis": [
@@ -509,16 +554,16 @@
         0.0008086222562561075
       ],
       "parataxis:insert": [
-        749,
-        0.03381184543156374,
-        0.0021401345227414293
+        715,
+        0.03227699530516432,
+        0.0020429855590922857
       ],
       "parataxis:obj": [
         2071,
         0.0934904297580354,
         0.005917514815216957
       ],
-      "treebank": "UD_Polish-PDB@2.18"
+      "treebank": "UD_Polish-PDB@2.19"
     },
     {
       "parataxis": [
@@ -526,7 +571,7 @@
         0.18627923155134585,
         0.019484154082100996
       ],
-      "treebank": "UD_Turkish-Kenet@2.18"
+      "treebank": "UD_Turkish-Kenet@2.19"
     },
     {
       "parataxis": [
@@ -534,7 +579,10 @@
         0.11948274019450679,
         0.0049072322420081905
       ],
-      "treebank": "UD_Portuguese-Bosque@2.18"
+      "treebank": "UD_Portuguese-Bosque@2.19"
+    },
+    {
+      "treebank": "UD_Mongolian-GDUD@2.19"
     },
     {
       "parataxis": [
@@ -542,7 +590,7 @@
         0.07421150278293136,
         0.007593014426727411
       ],
-      "treebank": "UD_Kazakh-KTB@2.18"
+      "treebank": "UD_Kazakh-KTB@2.19"
     },
     {
       "parataxis": [
@@ -580,7 +628,7 @@
         0.0032777115613825984,
         0.0001766855398947918
       ],
-      "treebank": "UD_Italian-PoSTWITA@2.18"
+      "treebank": "UD_Italian-PoSTWITA@2.19"
     },
     {
       "parataxis": [
@@ -588,7 +636,7 @@
         0.07863695937090433,
         0.012302645068689768
       ],
-      "treebank": "UD_Chintang-CTNTB@2.18"
+      "treebank": "UD_Chintang-CTNTB@2.19"
     },
     {
       "parataxis": [
@@ -601,7 +649,15 @@
         7.413722800904474e-05,
         4.439344131298042e-06
       ],
-      "treebank": "UD_Latin-ITTB@2.18"
+      "treebank": "UD_Latin-ITTB@2.19"
+    },
+    {
+      "parataxis": [
+        12,
+        0.3076923076923077,
+        0.04819277108433735
+      ],
+      "treebank": "UD_Evenki-GDUD@2.19"
     },
     {
       "parataxis": [
@@ -609,7 +665,7 @@
         0.05,
         0.008695652173913044
       ],
-      "treebank": "UD_Madi-Jarawara@2.18"
+      "treebank": "UD_Madi-Jarawara@2.19"
     },
     {
       "parataxis": [
@@ -617,7 +673,7 @@
         0.105,
         0.00450972812781858
       ],
-      "treebank": "UD_Spanish-PUD@2.18"
+      "treebank": "UD_Spanish-PUD@2.19"
     },
     {
       "parataxis": [
@@ -625,7 +681,7 @@
         0.2977346278317152,
         0.027093354275056443
       ],
-      "treebank": "UD_Buryat-BDT@2.18"
+      "treebank": "UD_Buryat-BDT@2.19"
     },
     {
       "parataxis": [
@@ -633,7 +689,7 @@
         0.042796005706134094,
         0.001466275659824047
       ],
-      "treebank": "UD_Italian-ParlaMint@2.18"
+      "treebank": "UD_Italian-ParlaMint@2.19"
     },
     {
       "parataxis": [
@@ -641,21 +697,29 @@
         0.012048192771084338,
         0.00273224043715847
       ],
-      "treebank": "UD_Kaapor-TuDeT@2.18"
+      "treebank": "UD_Kaapor-TuDeT@2.19"
     },
     {
-      "treebank": "UD_Bokota-ChibErgIS@2.18"
-    },
-    {
-      "treebank": "UD_Korean-PUD@2.18"
+      "treebank": "UD_Bokota-ChibErgIS@2.19"
     },
     {
       "parataxis": [
-        27,
-        1.0,
-        0.024702653247941447
+        93,
+        0.060903732809430254,
+        0.005535714285714285
       ],
-      "treebank": "UD_Middle_Armenian-ArmTDP@2.18"
+      "treebank": "UD_Portuguese-PPrincipe@2.19"
+    },
+    {
+      "treebank": "UD_Korean-PUD@2.19"
+    },
+    {
+      "parataxis": [
+        83,
+        0.32936507936507936,
+        0.01469806977156012
+      ],
+      "treebank": "UD_Middle_Armenian-ArmTDP@2.19"
     },
     {
       "parataxis": [
@@ -673,7 +737,7 @@
         0.047,
         0.0025565709312445604
       ],
-      "treebank": "UD_Polish-PUD@2.18"
+      "treebank": "UD_Polish-PUD@2.19"
     },
     {
       "parataxis": [
@@ -681,7 +745,7 @@
         0.020237571491421028,
         0.0015741025904253499
       ],
-      "treebank": "UD_Latin-Perseus@2.18"
+      "treebank": "UD_Latin-Perseus@2.19"
     },
     {
       "parataxis": [
@@ -689,15 +753,15 @@
         0.001,
         5.019525955968718e-05
       ],
-      "treebank": "UD_Icelandic-GC@2.18"
+      "treebank": "UD_Icelandic-GC@2.19"
     },
     {
       "parataxis": [
-        4619,
-        0.14933721306175235,
-        0.010550768865295532
+        4617,
+        0.1492725509214355,
+        0.010546200444050545
       ],
-      "treebank": "UD_Estonian-EDT@2.18"
+      "treebank": "UD_Estonian-EDT@2.19"
     },
     {
       "parataxis": [
@@ -705,7 +769,7 @@
         0.2548279689234184,
         0.0115140239407449
       ],
-      "treebank": "UD_Croatian-SET@2.18"
+      "treebank": "UD_Croatian-SET@2.19"
     },
     {
       "parataxis": [
@@ -713,7 +777,7 @@
         0.019996296982040362,
         0.001951713170449617
       ],
-      "treebank": "UD_Gothic-PROIEL@2.18"
+      "treebank": "UD_Gothic-PROIEL@2.19"
     },
     {
       "parataxis": [
@@ -721,7 +785,7 @@
         0.02845208845208845,
         0.0024091372459275596
       ],
-      "treebank": "UD_Old_French-PROFITEROLE@2.18"
+      "treebank": "UD_Old_French-PROFITEROLE@2.19"
     },
     {
       "parataxis": [
@@ -729,7 +793,15 @@
         0.17568569310600446,
         0.024657961816573894
       ],
-      "treebank": "UD_Turkish-FrameNet@2.18"
+      "treebank": "UD_Turkish-FrameNet@2.19"
+    },
+    {
+      "parataxis": [
+        46,
+        0.40707964601769914,
+        0.05602923264311815
+      ],
+      "treebank": "UD_Nanai-GDUD@2.19"
     },
     {
       "parataxis": [
@@ -737,7 +809,7 @@
         0.1,
         0.0072971395213076475
       ],
-      "treebank": "UD_English-LittlePrince@2.18"
+      "treebank": "UD_English-LittlePrince@2.19"
     },
     {
       "parataxis": [
@@ -745,33 +817,41 @@
         0.024160478776460156,
         0.0008992991242146603
       ],
-      "treebank": "UD_Latin-LLCT@2.18"
+      "treebank": "UD_Latin-LLCT@2.19"
     },
     {
-      "treebank": "UD_Swedish_Sign_Language-SSLC@2.18"
+      "treebank": "UD_Swedish_Sign_Language-SSLC@2.19"
+    },
+    {
+      "parataxis": [
+        1,
+        0.0125,
+        0.0036496350364963502
+      ],
+      "treebank": "UD_Peripheral_Mongolian-Ordos@2.19"
     },
     {
       "parataxis": [
         2,
-        0.002621231979030144,
-        0.00016739203213927018
+        0.002631578947368421,
+        0.00016767270288397049
       ],
       "parataxis:insert": [
         1,
-        0.001310615989515072,
-        8.369601606963509e-05
+        0.0013157894736842105,
+        8.383635144198524e-05
       ],
       "parataxis:mod": [
         3,
-        0.003931847968545216,
-        0.00025108804820890524
+        0.003947368421052632,
+        0.00025150905432595576
       ],
       "parataxis:parenth": [
         5,
-        0.00655307994757536,
-        0.0004184800803481754
+        0.006578947368421052,
+        0.00041918175720992624
       ],
-      "treebank": "UD_Beja-Autogramm@2.18"
+      "treebank": "UD_Beja-Autogramm@2.19"
     },
     {
       "parataxis": [
@@ -779,15 +859,15 @@
         0.022520817562452687,
         0.002686472819216182
       ],
-      "treebank": "UD_Turkish-Atis@2.18"
+      "treebank": "UD_Turkish-Atis@2.19"
     },
     {
       "parataxis": [
-        285,
-        0.047730698375481495,
-        0.0023949378576650616
+        383,
+        0.04549774293181278,
+        0.0024400965845018828
       ],
-      "treebank": "UD_Middle_French-PROFITEROLE@2.18"
+      "treebank": "UD_Middle_French-PROFITEROLE@2.19"
     },
     {
       "parataxis": [
@@ -795,10 +875,15 @@
         0.03508771929824561,
         0.004415011037527594
       ],
-      "treebank": "UD_Assyrian-AS@2.18"
+      "treebank": "UD_Assyrian-AS@2.19"
     },
     {
-      "treebank": "UD_Kadiweu-Unicamp@2.18"
+      "parataxis": [
+        2,
+        0.010050251256281407,
+        0.0021810250817884407
+      ],
+      "treebank": "UD_Kadiweu-Unicamp@2.19"
     },
     {
       "parataxis": [
@@ -806,7 +891,7 @@
         0.032540410813863205,
         0.001545227225495914
       ],
-      "treebank": "UD_Italian-ISDT@2.18"
+      "treebank": "UD_Italian-ISDT@2.19"
     },
     {
       "parataxis": [
@@ -814,7 +899,7 @@
         0.10345932094811018,
         0.012032035760849321
       ],
-      "treebank": "UD_North_Sami-Giella@2.18"
+      "treebank": "UD_North_Sami-Giella@2.19"
     },
     {
       "parataxis": [
@@ -822,20 +907,28 @@
         0.012821792057473557,
         0.000828441659333185
       ],
-      "treebank": "UD_Norwegian-Bokmaal@2.18"
+      "treebank": "UD_Norwegian-Bokmaal@2.19"
     },
     {
       "parataxis": [
-        18,
-        0.006484149855907781,
-        0.0004206688634929538
+        6,
+        0.07792207792207792,
+        0.010050251256281407
+      ],
+      "treebank": "UD_Tu-GDUD@2.19"
+    },
+    {
+      "parataxis": [
+        29,
+        0.010446685878962535,
+        0.0006779661016949153
       ],
       "parataxis:parenth": [
-        27,
-        0.009726224783861672,
-        0.0006310032952394307
+        30,
+        0.010806916426512969,
+        0.0007013442431326709
       ],
-      "treebank": "UD_French-ParisStories@2.18"
+      "treebank": "UD_French-ParisStories@2.19"
     },
     {
       "parataxis": [
@@ -868,7 +961,15 @@
         0.01395952818958987,
         0.0009159524840773376
       ],
-      "treebank": "UD_Naija-NSC@2.18"
+      "treebank": "UD_Naija-NSC@2.19"
+    },
+    {
+      "parataxis": [
+        5,
+        0.08064516129032258,
+        0.017793594306049824
+      ],
+      "treebank": "UD_Negidal-GDUD@2.19"
     },
     {
       "parataxis": [
@@ -876,7 +977,7 @@
         0.06666666666666667,
         0.008298755186721992
       ],
-      "treebank": "UD_Romanian-MolDoRo@2.18"
+      "treebank": "UD_Romanian-MolDoRo@2.19"
     },
     {
       "parataxis": [
@@ -884,7 +985,7 @@
         0.047844827586206895,
         0.005208333333333333
       ],
-      "treebank": "UD_English-ESLSpok@2.18"
+      "treebank": "UD_English-ESLSpok@2.19"
     },
     {
       "parataxis": [
@@ -892,7 +993,7 @@
         0.234375,
         0.011124845488257108
       ],
-      "treebank": "UD_German-LIT@2.18"
+      "treebank": "UD_German-LIT@2.19"
     },
     {
       "parataxis": [
@@ -900,7 +1001,7 @@
         0.05185758513931889,
         0.0016548113021142067
       ],
-      "treebank": "UD_Italian-MarkIT@2.18"
+      "treebank": "UD_Italian-MarkIT@2.19"
     },
     {
       "parataxis": [
@@ -908,7 +1009,7 @@
         0.06424923391215526,
         0.0038084512500075685
       ],
-      "treebank": "UD_Latvian-LVTB@2.18"
+      "treebank": "UD_Latvian-LVTB@2.19"
     },
     {
       "parataxis": [
@@ -916,15 +1017,15 @@
         0.4644786872123274,
         0.018825685989828776
       ],
-      "treebank": "UD_Chinese-GSDSimp@2.18"
+      "treebank": "UD_Chinese-GSDSimp@2.19"
     },
     {
       "parataxis": [
-        3057,
-        0.06344561359815702,
-        0.010097773667173153
+        3056,
+        0.06342485939024137,
+        0.010094503846547686
       ],
-      "treebank": "UD_English-CHILDES@2.18"
+      "treebank": "UD_English-CHILDES@2.19"
     },
     {
       "parataxis": [
@@ -932,7 +1033,7 @@
         0.37305699481865284,
         0.015053313819778381
       ],
-      "treebank": "UD_Irish-Cadhan@2.18"
+      "treebank": "UD_Irish-Cadhan@2.19"
     },
     {
       "parataxis": [
@@ -940,7 +1041,7 @@
         0.145679012345679,
         0.007661840140250633
       ],
-      "treebank": "UD_Xibe-XDT@2.18"
+      "treebank": "UD_Xibe-XDT@2.19"
     },
     {
       "parataxis": [
@@ -948,7 +1049,7 @@
         0.11702127659574468,
         0.010027347310847767
       ],
-      "treebank": "UD_Tagalog-Ugnayan@2.18"
+      "treebank": "UD_Tagalog-Ugnayan@2.19"
     },
     {
       "parataxis": [
@@ -961,7 +1062,10 @@
         0.28167641325536064,
         0.020907183679374955
       ],
-      "treebank": "UD_Bambara-CRB@2.18"
+      "treebank": "UD_Bambara-CRB@2.19"
+    },
+    {
+      "treebank": "UD_Oroch-GDUD@2.19"
     },
     {
       "parataxis": [
@@ -969,7 +1073,7 @@
         0.109375,
         0.005932203389830509
       ],
-      "treebank": "UD_Pashto-Prince@2.18"
+      "treebank": "UD_Pashto-Prince@2.19"
     },
     {
       "parataxis": [
@@ -977,15 +1081,15 @@
         0.2144,
         0.0195906432748538
       ],
-      "treebank": "UD_Greek-Lesbian@2.18"
+      "treebank": "UD_Greek-Lesbian@2.19"
     },
     {
       "parataxis": [
-        606,
-        0.16639209225700163,
-        0.008651334104244294
+        311,
+        0.1013029315960912,
+        0.005493243839971739
       ],
-      "treebank": "UD_Lithuanian-ALKSNIS@2.18"
+      "treebank": "UD_Lithuanian-ALKSNIS@2.19"
     },
     {
       "parataxis": [
@@ -993,7 +1097,7 @@
         0.04046242774566474,
         0.0056
       ],
-      "treebank": "UD_Kyrgyz-TueCL@2.18"
+      "treebank": "UD_Kyrgyz-TueCL@2.19"
     },
     {
       "parataxis": [
@@ -1001,7 +1105,15 @@
         0.27220812182741116,
         0.010858285453947202
       ],
-      "treebank": "UD_Ancient_Greek-PTNK@2.18"
+      "treebank": "UD_Ancient_Greek-PTNK@2.19"
+    },
+    {
+      "parataxis": [
+        45,
+        0.13196480938416422,
+        0.005658953722334004
+      ],
+      "treebank": "UD_Sardinian-ContSar@2.19"
     },
     {
       "parataxis": [
@@ -1009,7 +1121,7 @@
         0.103505291005291,
         0.016022523675454314
       ],
-      "treebank": "UD_Western_Sierra_Puebla_Nahuatl-MesoTree@2.18"
+      "treebank": "UD_Western_Sierra_Puebla_Nahuatl-MesoTree@2.19"
     },
     {
       "parataxis": [
@@ -1017,7 +1129,7 @@
         0.005509641873278237,
         0.00015813458690933137
       ],
-      "treebank": "UD_Galician-CTG@2.18"
+      "treebank": "UD_Galician-CTG@2.19"
     },
     {
       "parataxis": [
@@ -1030,7 +1142,7 @@
         0.027777777777777776,
         0.001219884111009454
       ],
-      "treebank": "UD_Haitian_Creole-Autogramm@2.18"
+      "treebank": "UD_Haitian_Creole-Autogramm@2.19"
     },
     {
       "parataxis": [
@@ -1038,15 +1150,15 @@
         0.099601593625498,
         0.010127607859023698
       ],
-      "treebank": "UD_Chinese-HK@2.18"
+      "treebank": "UD_Chinese-HK@2.19"
     },
     {
       "parataxis": [
-        6,
-        0.030303030303030304,
-        0.00430416068866571
+        7,
+        0.03365384615384615,
+        0.004608294930875576
       ],
-      "treebank": "UD_Cebuano-GJA@2.18"
+      "treebank": "UD_Cebuano-GJA@2.19"
     },
     {
       "parataxis": [
@@ -1054,7 +1166,7 @@
         0.15949443274149866,
         0.009127072964921042
       ],
-      "treebank": "UD_Vietnamese-VTB@2.18"
+      "treebank": "UD_Vietnamese-VTB@2.19"
     },
     {
       "parataxis": [
@@ -1062,15 +1174,15 @@
         0.136986301369863,
         0.011481056257175661
       ],
-      "treebank": "UD_Assamese-AiW@2.18"
+      "treebank": "UD_Assamese-AiW@2.19"
     },
     {
       "parataxis": [
         1,
         0.00015775358889414735,
-        1.2449889195986155e-05
+        1.2450044197656902e-05
       ],
-      "treebank": "UD_Korean-GSD@2.18"
+      "treebank": "UD_Korean-GSD@2.19"
     },
     {
       "parataxis": [
@@ -1078,7 +1190,7 @@
         0.006517690875232775,
         0.0006993006993006993
       ],
-      "treebank": "UD_Amharic-ATT@2.18"
+      "treebank": "UD_Amharic-ATT@2.19"
     },
     {
       "parataxis": [
@@ -1086,7 +1198,7 @@
         0.03570011900039667,
         0.0014186409419775854
       ],
-      "treebank": "UD_Greek-GDT@2.18"
+      "treebank": "UD_Greek-GDT@2.19"
     },
     {
       "parataxis": [
@@ -1094,15 +1206,15 @@
         0.08462680594751695,
         0.004651317579103942
       ],
-      "treebank": "UD_German-HDT@2.18"
+      "treebank": "UD_German-HDT@2.19"
     },
     {
       "parataxis": [
-        1666,
-        0.10404046712046462,
-        0.0038611470341477433
+        1646,
+        0.10279148192093923,
+        0.003812576871139071
       ],
-      "treebank": "UD_Spanish-GSD@2.18"
+      "treebank": "UD_Spanish-GSD@2.19"
     },
     {
       "parataxis": [
@@ -1110,7 +1222,7 @@
         0.03471639285286005,
         0.001057994160018419
       ],
-      "treebank": "UD_Catalan-AnCora@2.18"
+      "treebank": "UD_Catalan-AnCora@2.19"
     },
     {
       "parataxis": [
@@ -1118,18 +1230,18 @@
         0.054,
         0.0025495750708215297
       ],
-      "treebank": "UD_English-PUD@2.18"
+      "treebank": "UD_English-PUD@2.19"
     },
     {
       "parataxis": [
-        37,
-        0.0686456400742115,
-        0.004583178496221974
+        38,
+        0.07050092764378478,
+        0.004707048185309055
       ],
-      "treebank": "UD_Spanish-COSER@2.18"
+      "treebank": "UD_Spanish-COSER@2.19"
     },
     {
-      "treebank": "UD_Telugu_English-TECT@2.18"
+      "treebank": "UD_Telugu_English-TECT@2.19"
     },
     {
       "parataxis": [
@@ -1137,7 +1249,7 @@
         0.008547008547008548,
         0.0004014763970731076
       ],
-      "treebank": "UD_Thai-TUD@2.18"
+      "treebank": "UD_Thai-TUD@2.19"
     },
     {
       "parataxis": [
@@ -1150,7 +1262,7 @@
         0.029695181907571287,
         0.002355253306713252
       ],
-      "treebank": "UD_Russian-Poetry@2.18"
+      "treebank": "UD_Russian-Poetry@2.19"
     },
     {
       "parataxis": [
@@ -1158,33 +1270,28 @@
         0.038834951456310676,
         0.0030698388334612432
       ],
-      "treebank": "UD_Veps-VWT@2.18"
+      "treebank": "UD_Veps-VWT@2.19"
     },
     {
       "parataxis": [
-        2031,
-        0.12218746239922994,
-        0.007970331999058158
+        2030,
+        0.1221273011671279,
+        0.007966407660309238
       ],
-      "treebank": "UD_English-EWT@2.18"
+      "treebank": "UD_English-EWT@2.19"
     },
     {
       "parataxis": [
-        2021,
-        0.28297395687482496,
-        0.018513090156275763
-      ],
-      "parataxis:discourse": [
-        1,
-        0.00014001680201624196,
-        9.160361284649067e-06
+        2058,
+        0.28815457854942594,
+        0.018852196216736134
       ],
       "parataxis:rel": [
         9,
         0.0012601512181461775,
-        8.24432515618416e-05
+        8.244400677872945e-05
       ],
-      "treebank": "UD_Ukrainian-ParlaMint@2.18"
+      "treebank": "UD_Ukrainian-ParlaMint@2.19"
     },
     {
       "parataxis": [
@@ -1192,7 +1299,7 @@
         0.18,
         0.010103845074375527
       ],
-      "treebank": "UD_Albanian-STAF@2.18"
+      "treebank": "UD_Albanian-STAF@2.19"
     },
     {
       "parataxis": [
@@ -1200,7 +1307,7 @@
         0.08783783783783784,
         0.0032382613027774317
       ],
-      "treebank": "UD_Hebrew-PostRab@2.18"
+      "treebank": "UD_Hebrew-PostRab@2.19"
     },
     {
       "parataxis": [
@@ -1213,7 +1320,7 @@
         0.009426161733090788,
         0.00033915651180502665
       ],
-      "treebank": "UD_Old_East_Slavic-RNC@2.18"
+      "treebank": "UD_Old_East_Slavic-RNC@2.19"
     },
     {
       "parataxis": [
@@ -1221,34 +1328,34 @@
         0.11499297752808989,
         0.006387751121513556
       ],
-      "treebank": "UD_Swedish-LinES@2.18"
+      "treebank": "UD_Swedish-LinES@2.19"
     },
     {
-      "treebank": "UD_Yupik-SLI@2.18"
+      "treebank": "UD_Yupik-SLI@2.19"
     },
     {
-      "treebank": "UD_Phrygian-KUL@2.18"
+      "treebank": "UD_Phrygian-KUL@2.19"
     },
     {
       "parataxis": [
-        19240,
-        0.2202960944387831,
-        0.01269498581051612
+        19244,
+        0.22034189404261653,
+        0.012697625100705417
       ],
       "parataxis:discourse": [
         12109,
         0.1386468507047414,
         0.0079897912255478
       ],
-      "treebank": "UD_Russian-SynTagRus@2.18"
+      "treebank": "UD_Russian-SynTagRus@2.19"
     },
     {
       "parataxis": [
-        4,
-        0.0026917900403768506,
-        7.613391956451398e-05
+        3,
+        0.0015037593984962407,
+        4.109701635661251e-05
       ],
-      "treebank": "UD_Old_Occitan-CorAG@2.18"
+      "treebank": "UD_Old_Occitan-CorAG@2.19"
     },
     {
       "parataxis": [
@@ -1256,7 +1363,7 @@
         0.14355110538316646,
         0.005168622747651275
       ],
-      "treebank": "UD_Italian-VIT@2.18"
+      "treebank": "UD_Italian-VIT@2.19"
     },
     {
       "parataxis": [
@@ -1264,7 +1371,15 @@
         0.1008364312267658,
         0.01042818011437359
       ],
-      "treebank": "UD_Erzya-JR@2.18"
+      "treebank": "UD_Erzya-JR@2.19"
+    },
+    {
+      "parataxis": [
+        9,
+        0.0054811205846528625,
+        0.0009026175910139405
+      ],
+      "treebank": "UD_Czech-CzeSL@2.19"
     },
     {
       "parataxis": [
@@ -1272,7 +1387,7 @@
         0.0064516129032258064,
         0.0007352941176470588
       ],
-      "treebank": "UD_Macedonian-MTB@2.18"
+      "treebank": "UD_Macedonian-MTB@2.19"
     },
     {
       "parataxis": [
@@ -1280,13 +1395,13 @@
         0.12524772096710265,
         0.006844567665915786
       ],
-      "treebank": "UD_Armenian-BSUT@2.18"
+      "treebank": "UD_Armenian-BSUT@2.19"
     },
     {
-      "treebank": "UD_Bhojpuri-BHTB@2.18"
+      "treebank": "UD_Bhojpuri-BHTB@2.19"
     },
     {
-      "treebank": "UD_Polish-LFG@2.18"
+      "treebank": "UD_Polish-LFG@2.19"
     },
     {
       "parataxis": [
@@ -1294,10 +1409,10 @@
         0.19477434679334918,
         0.019568537609774724
       ],
-      "treebank": "UD_Zaar-Autogramm@2.18"
+      "treebank": "UD_Zaar-Autogramm@2.19"
     },
     {
-      "treebank": "UD_Umbrian-IKUVINA@2.18"
+      "treebank": "UD_Umbrian-IKUVINA@2.19"
     },
     {
       "parataxis": [
@@ -1305,7 +1420,7 @@
         0.005,
         0.0002239140170174653
       ],
-      "treebank": "UD_Thai-PUD@2.18"
+      "treebank": "UD_Thai-PUD@2.19"
     },
     {
       "parataxis": [
@@ -1313,7 +1428,7 @@
         0.1630901287553648,
         0.019755653756173643
       ],
-      "treebank": "UD_Marathi-UFAL@2.18"
+      "treebank": "UD_Marathi-UFAL@2.19"
     },
     {
       "parataxis": [
@@ -1321,7 +1436,7 @@
         0.00633826309351718,
         0.0004693559941701045
       ],
-      "treebank": "UD_Basque-BDT@2.18"
+      "treebank": "UD_Basque-BDT@2.19"
     },
     {
       "parataxis": [
@@ -1329,7 +1444,7 @@
         0.006129762353828744,
         0.0006110630617079683
       ],
-      "treebank": "UD_Slovak-SNK@2.18"
+      "treebank": "UD_Slovak-SNK@2.19"
     },
     {
       "parataxis": [
@@ -1337,7 +1452,7 @@
         0.067,
         0.004671268214460015
       ],
-      "treebank": "UD_Javanese-CSUI@2.18"
+      "treebank": "UD_Javanese-CSUI@2.19"
     },
     {
       "parataxis": [
@@ -1345,7 +1460,7 @@
         0.06759581881533101,
         0.009687406371716768
       ],
-      "treebank": "UD_Kiche-IU@2.18"
+      "treebank": "UD_Kiche-IU@2.19"
     },
     {
       "parataxis": [
@@ -1353,7 +1468,7 @@
         0.20464767616191903,
         0.015337940333726614
       ],
-      "treebank": "UD_English-GENTLE@2.18"
+      "treebank": "UD_English-GENTLE@2.19"
     },
     {
       "parataxis": [
@@ -1361,23 +1476,23 @@
         0.03,
         0.002077562326869806
       ],
-      "treebank": "UD_Alemannic-UZH@2.18"
+      "treebank": "UD_Alemannic-UZH@2.19"
     },
     {
-      "treebank": "UD_Japanese-GSDLUW@2.18"
+      "treebank": "UD_Japanese-GSDLUW@2.19"
     },
     {
       "parataxis": [
-        29908,
-        0.2452138693253093,
-        0.017003451516455676
+        29912,
+        0.24524666508153845,
+        0.01700572561723359
       ],
       "parataxis:discourse": [
         9868,
         0.08090713061729812,
         0.005610206619111429
       ],
-      "treebank": "UD_Russian-Taiga@2.18"
+      "treebank": "UD_Russian-Taiga@2.19"
     },
     {
       "parataxis": [
@@ -1385,7 +1500,7 @@
         0.17391304347826086,
         0.0149812734082397
       ],
-      "treebank": "UD_Nepali-BK@2.18"
+      "treebank": "UD_Nepali-BK@2.19"
     },
     {
       "parataxis": [
@@ -1393,18 +1508,18 @@
         0.01694915254237288,
         0.004608294930875576
       ],
-      "treebank": "UD_Guarani-OldTuDeT@2.18"
+      "treebank": "UD_Guarani-OldTuDeT@2.19"
     },
     {
       "parataxis": [
         67,
         0.2113564668769716,
-        0.008128108698289458
+        0.008129094879883524
       ],
-      "treebank": "UD_Yoruba-YTB@2.18"
+      "treebank": "UD_Yoruba-YTB@2.19"
     },
     {
-      "treebank": "UD_Warlpiri-UFAL@2.18"
+      "treebank": "UD_Warlpiri-UFAL@2.19"
     },
     {
       "parataxis": [
@@ -1412,15 +1527,15 @@
         0.327,
         0.014444100887848404
       ],
-      "treebank": "UD_Low_Saxon-LSDC@2.18"
+      "treebank": "UD_Low_Saxon-LSDC@2.19"
     },
     {
       "parataxis": [
-        20,
-        0.1,
-        0.003658313517468447
+        27,
+        0.1148936170212766,
+        0.0038949798038084246
       ],
-      "treebank": "UD_Pashto-Sikaram@2.18"
+      "treebank": "UD_Pashto-Sikaram@2.19"
     },
     {
       "parataxis": [
@@ -1428,20 +1543,20 @@
         0.2171945701357466,
         0.028486646884272996
       ],
-      "treebank": "UD_Southern_Kurdish-Garrusi@2.18"
+      "treebank": "UD_Southern_Kurdish-Garrusi@2.19"
     },
     {
       "parataxis": [
-        4,
-        0.009925558312655087,
-        0.0014858841010401188
+        12,
+        0.017777777777777778,
+        0.002582866982350409
       ],
       "parataxis:parenth": [
         1,
-        0.0024813895781637717,
-        0.0003714710252600297
+        0.0014814814814814814,
+        0.00021523891519586742
       ],
-      "treebank": "UD_Northwest_Gbaya-Autogramm@2.18"
+      "treebank": "UD_Northwest_Gbaya-Autogramm@2.19"
     },
     {
       "parataxis": [
@@ -1449,7 +1564,7 @@
         0.017543859649122806,
         0.002932551319648094
       ],
-      "treebank": "UD_English-Pronouns@2.18"
+      "treebank": "UD_English-Pronouns@2.19"
     },
     {
       "parataxis": [
@@ -1457,15 +1572,31 @@
         0.1649387370405278,
         0.01805706031058144
       ],
-      "treebank": "UD_Finnish-OOD@2.18"
+      "treebank": "UD_Finnish-OOD@2.19"
     },
     {
       "parataxis": [
-        121,
-        0.038869257950530034,
-        0.004268378721602935
+        46,
+        0.10900473933649289,
+        0.0072055137844611525
       ],
-      "treebank": "UD_Yiddish-YiTB@2.18"
+      "treebank": "UD_Old_Georgian-MidGLauRo@2.19"
+    },
+    {
+      "parataxis": [
+        122,
+        0.036869144756724086,
+        0.00407972177635099
+      ],
+      "treebank": "UD_Yiddish-YiTB@2.19"
+    },
+    {
+      "parataxis": [
+        20,
+        0.21052631578947367,
+        0.030349013657056147
+      ],
+      "treebank": "UD_Daur-GDUD@2.19"
     },
     {
       "parataxis": [
@@ -1473,7 +1604,7 @@
         0.008333333333333333,
         0.0005218661935079845
       ],
-      "treebank": "UD_Tamil-TTB@2.18"
+      "treebank": "UD_Tamil-TTB@2.19"
     },
     {
       "parataxis": [
@@ -1481,13 +1612,13 @@
         0.027070063694267517,
         0.0032033163745995856
       ],
-      "treebank": "UD_Ika-ChibErgIS@2.18"
+      "treebank": "UD_Ika-ChibErgIS@2.19"
     },
     {
-      "treebank": "UD_Swedish-Old@2.18"
+      "treebank": "UD_Swedish-Old@2.19"
     },
     {
-      "treebank": "UD_Latvian-Cairo@2.18"
+      "treebank": "UD_Latvian-Cairo@2.19"
     },
     {
       "parataxis": [
@@ -1495,7 +1626,7 @@
         0.12989886219974717,
         0.006829284503672194
       ],
-      "treebank": "UD_Georgian-GLC@2.18"
+      "treebank": "UD_Georgian-GLC@2.19"
     },
     {
       "parataxis": [
@@ -1503,15 +1634,23 @@
         0.15714285714285714,
         0.013414634146341463
       ],
-      "treebank": "UD_Cappadocian-AMGiC@2.18"
+      "treebank": "UD_Cappadocian-AMGiC@2.19"
     },
     {
       "parataxis": [
-        498,
-        0.02819612727890386,
-        0.0008890682100986009
+        495,
+        0.02802627109047673,
+        0.0008837107998386111
       ],
-      "treebank": "UD_Spanish-AnCora@2.18"
+      "treebank": "UD_Spanish-AnCora@2.19"
+    },
+    {
+      "parataxis": [
+        18,
+        0.2222222222222222,
+        0.04035874439461883
+      ],
+      "treebank": "UD_Manchu-GDUD@2.19"
     },
     {
       "parataxis": [
@@ -1519,7 +1658,7 @@
         0.08919961427193829,
         0.004189121869480549
       ],
-      "treebank": "UD_Maltese-MUDT@2.18"
+      "treebank": "UD_Maltese-MUDT@2.19"
     },
     {
       "parataxis": [
@@ -1527,25 +1666,25 @@
         0.05437367864693446,
         0.004070368410380182
       ],
-      "treebank": "UD_Finnish-TDT@2.18"
+      "treebank": "UD_Finnish-TDT@2.19"
     },
     {
       "parataxis": [
-        5,
-        0.0015581177937052041,
-        0.00011303522177510512
+        8,
+        0.0024929884699283265,
+        0.00018086862155501798
       ],
       "parataxis:insert": [
         15,
         0.004674353381115612,
-        0.0003391056653253154
+        0.00033912866541565873
       ],
       "parataxis:parenth": [
-        39,
-        0.012153318790900591,
-        0.00088167472984582
+        40,
+        0.012464942349641633,
+        0.0009043431077750899
       ],
-      "treebank": "UD_French-Rhapsodie@2.18"
+      "treebank": "UD_French-Rhapsodie@2.19"
     },
     {
       "parataxis": [
@@ -1553,7 +1692,7 @@
         0.3018668545262416,
         0.031920441001191895
       ],
-      "treebank": "UD_Nheengatu-CompLin@2.18"
+      "treebank": "UD_Nheengatu-CompLin@2.19"
     },
     {
       "parataxis": [
@@ -1561,15 +1700,15 @@
         0.8877419354838709,
         0.04948572250593397
       ],
-      "treebank": "UD_Hausa-WesternAutogramm@2.18"
+      "treebank": "UD_Hausa-WesternAutogramm@2.19"
     },
     {
       "parataxis": [
         10,
         0.15625,
-        0.023923444976076555
+        0.023752969121140142
       ],
-      "treebank": "UD_Old_Irish-DipSGG@2.18"
+      "treebank": "UD_Old_Irish-DipSGG@2.19"
     },
     {
       "parataxis": [
@@ -1577,7 +1716,7 @@
         0.24951456310679612,
         0.009093160669426458
       ],
-      "treebank": "UD_Indonesian-CSUI@2.18"
+      "treebank": "UD_Indonesian-CSUI@2.19"
     },
     {
       "parataxis": [
@@ -1585,15 +1724,20 @@
         0.0073281126517709605,
         0.0005024902827246797
       ],
-      "treebank": "UD_Ancient_Greek-Perseus@2.18"
+      "treebank": "UD_Ancient_Greek-Perseus@2.19"
     },
     {
       "parataxis": [
-        305,
-        0.09579145728643217,
-        0.010929157559035367
+        195,
+        0.05736981465136805,
+        0.006570966437525273
       ],
-      "treebank": "UD_Old_East_Slavic-Birchbark@2.18"
+      "parataxis:discourse": [
+        1,
+        0.0002942041776993233,
+        3.3697263782180885e-05
+      ],
+      "treebank": "UD_Old_East_Slavic-Birchbark@2.19"
     },
     {
       "parataxis": [
@@ -1601,7 +1745,7 @@
         0.31330242510699,
         0.012045301852385065
       ],
-      "treebank": "UD_Ancient_Hebrew-PTNK@2.18"
+      "treebank": "UD_Ancient_Hebrew-PTNK@2.19"
     },
     {
       "parataxis": [
@@ -1609,7 +1753,7 @@
         0.25,
         0.016228070175438595
       ],
-      "treebank": "UD_Tatar-NMCTT@2.18"
+      "treebank": "UD_Tatar-NMCTT@2.19"
     },
     {
       "parataxis": [
@@ -1617,10 +1761,10 @@
         0.04135910422675963,
         0.0018486446318243005
       ],
-      "treebank": "UD_Icelandic-IcePaHC@2.18"
+      "treebank": "UD_Icelandic-IcePaHC@2.19"
     },
     {
-      "treebank": "UD_Gorontalo-BungoLoLombi@2.18"
+      "treebank": "UD_Gorontalo-BungoLoLombi@2.19"
     },
     {
       "parataxis": [
@@ -1633,10 +1777,10 @@
         0.02040816326530612,
         0.0015174506828528073
       ],
-      "treebank": "UD_Mbya_Guarani-Thomas@2.18"
+      "treebank": "UD_Mbya_Guarani-Thomas@2.19"
     },
     {
-      "treebank": "UD_Urdu-UDTB@2.18"
+      "treebank": "UD_Urdu-UDTB@2.19"
     },
     {
       "parataxis": [
@@ -1644,10 +1788,10 @@
         0.16453170936581268,
         0.007172806503588692
       ],
-      "treebank": "UD_Romanian-RRT@2.18"
+      "treebank": "UD_Romanian-RRT@2.19"
     },
     {
-      "treebank": "UD_Tagalog-TRG@2.18"
+      "treebank": "UD_Tagalog-TRG@2.19"
     },
     {
       "parataxis": [
@@ -1655,7 +1799,7 @@
         0.3465346534653465,
         0.018898488120950324
       ],
-      "treebank": "UD_Akkadian-PISANDUB@2.18"
+      "treebank": "UD_Akkadian-PISANDUB@2.19"
     },
     {
       "parataxis": [
@@ -1663,7 +1807,7 @@
         0.14074074074074075,
         0.008733624454148471
       ],
-      "treebank": "UD_Greek-Cretan@2.18"
+      "treebank": "UD_Greek-Cretan@2.19"
     },
     {
       "parataxis": [
@@ -1671,15 +1815,26 @@
         0.0070921985815602835,
         0.0008055067369654365
       ],
-      "treebank": "UD_Korean-LittlePrince@2.18"
+      "treebank": "UD_Korean-LittlePrince@2.19"
     },
     {
       "parataxis": [
-        88,
-        0.16793893129770993,
-        0.020584795321637428
+        135,
+        0.3879310344827586,
+        0.014441591784338896
       ],
-      "treebank": "UD_Pesh-ChibErgIS@2.18"
+      "treebank": "UD_Ukrainian-Zhelekhivka@2.19"
+    },
+    {
+      "treebank": "UD_Udihe-GDUD@2.19"
+    },
+    {
+      "parataxis": [
+        93,
+        0.17580340264650285,
+        0.021473100900484876
+      ],
+      "treebank": "UD_Pesh-ChibErgIS@2.19"
     },
     {
       "parataxis": [
@@ -1687,7 +1842,7 @@
         0.02322221627695436,
         0.002111244077327963
       ],
-      "treebank": "UD_Latin-PROIEL@2.18"
+      "treebank": "UD_Latin-PROIEL@2.19"
     },
     {
       "parataxis": [
@@ -1695,13 +1850,21 @@
         0.00281719174081836,
         0.00016341953381588596
       ],
-      "treebank": "UD_Persian-PerDT@2.18"
+      "treebank": "UD_Persian-PerDT@2.19"
     },
     {
-      "treebank": "UD_Apurina-UFPA@2.18"
+      "treebank": "UD_Apurina-UFPA@2.19"
     },
     {
-      "treebank": "UD_Sinhala-STB@2.18"
+      "parataxis": [
+        19,
+        0.20430107526881722,
+        0.08189655172413793
+      ],
+      "treebank": "UD_Ulch-GDUD@2.19"
+    },
+    {
+      "treebank": "UD_Sinhala-STB@2.19"
     },
     {
       "parataxis": [
@@ -1709,7 +1872,7 @@
         0.114,
         0.005862388151804999
       ],
-      "treebank": "UD_Indonesian-PUD@2.18"
+      "treebank": "UD_Indonesian-PUD@2.19"
     },
     {
       "parataxis": [
@@ -1717,7 +1880,7 @@
         0.006862745098039216,
         0.000244926522043387
       ],
-      "treebank": "UD_French-ParTUT@2.18"
+      "treebank": "UD_French-ParTUT@2.19"
     },
     {
       "parataxis": [
@@ -1725,7 +1888,7 @@
         0.05770862800565771,
         0.0025375027987163223
       ],
-      "treebank": "UD_Icelandic-Modern@2.18"
+      "treebank": "UD_Icelandic-Modern@2.19"
     },
     {
       "parataxis": [
@@ -1733,7 +1896,15 @@
         0.015625,
         0.001221001221001221
       ],
-      "treebank": "UD_Brahui-Kholum@2.18"
+      "treebank": "UD_Brahui-Kholum@2.19"
+    },
+    {
+      "parataxis": [
+        287,
+        0.35830212234706615,
+        0.013846005403319182
+      ],
+      "treebank": "UD_Portuguese-Alienista@2.19"
     },
     {
       "parataxis": [
@@ -1741,10 +1912,10 @@
         0.09888888888888889,
         0.00423486867148839
       ],
-      "treebank": "UD_Hungarian-Szeged@2.18"
+      "treebank": "UD_Hungarian-Szeged@2.19"
     },
     {
-      "treebank": "UD_Hindi-HDTB@2.18"
+      "treebank": "UD_Hindi-HDTB@2.19"
     },
     {
       "parataxis": [
@@ -1752,7 +1923,15 @@
         0.09789074548638087,
         0.01948892926317442
       ],
-      "treebank": "UD_Classical_Chinese-Kyoto@2.18"
+      "treebank": "UD_Classical_Chinese-Kyoto@2.19"
+    },
+    {
+      "parataxis": [
+        101,
+        0.20079522862823063,
+        0.007282953562157485
+      ],
+      "treebank": "UD_Tangut-MiCA@2.19"
     },
     {
       "parataxis": [
@@ -1760,7 +1939,7 @@
         0.00010410160316468874,
         8.460380040271409e-06
       ],
-      "treebank": "UD_Marathi-CMUPAN@2.18"
+      "treebank": "UD_Marathi-CMUPAN@2.19"
     },
     {
       "parataxis": [
@@ -1768,7 +1947,7 @@
         0.05,
         0.006081668114682885
       ],
-      "treebank": "UD_Komi_Permyak-UH@2.18"
+      "treebank": "UD_Komi_Permyak-UH@2.19"
     },
     {
       "parataxis": [
@@ -1776,7 +1955,7 @@
         0.05737704918032787,
         0.020100502512562814
       ],
-      "treebank": "UD_Spanish_Sign_Language-LSE@2.18"
+      "treebank": "UD_Spanish_Sign_Language-LSE@2.19"
     },
     {
       "parataxis": [
@@ -1784,7 +1963,7 @@
         0.17195496417604914,
         0.008509345084333687
       ],
-      "treebank": "UD_Alemannic-DIVITAL@2.18"
+      "treebank": "UD_Alemannic-DIVITAL@2.19"
     },
     {
       "parataxis": [
@@ -1792,7 +1971,7 @@
         0.3835920177383592,
         0.02384233737596472
       ],
-      "treebank": "UD_Chinese-CFL@2.18"
+      "treebank": "UD_Chinese-CFL@2.19"
     },
     {
       "parataxis": [
@@ -1800,7 +1979,7 @@
         0.006169031462060457,
         0.0002470111649046537
       ],
-      "treebank": "UD_Faroese-FarPaHC@2.18"
+      "treebank": "UD_Faroese-FarPaHC@2.19"
     },
     {
       "parataxis": [
@@ -1808,7 +1987,7 @@
         0.05669192848208373,
         0.007464638635923271
       ],
-      "treebank": "UD_Sanskrit-Vedic@2.18"
+      "treebank": "UD_Sanskrit-Vedic@2.19"
     },
     {
       "parataxis": [
@@ -1816,7 +1995,7 @@
         0.0225377107364685,
         0.0021860369044340404
       ],
-      "treebank": "UD_Turkish-IMST@2.18"
+      "treebank": "UD_Turkish-IMST@2.19"
     },
     {
       "parataxis": [
@@ -1824,7 +2003,7 @@
         0.02727272727272727,
         0.0033370411568409346
       ],
-      "treebank": "UD_Greek-Messinian@2.18"
+      "treebank": "UD_Greek-Messinian@2.19"
     },
     {
       "parataxis": [
@@ -1832,7 +2011,7 @@
         0.10477548111190306,
         0.005247501189909567
       ],
-      "treebank": "UD_Portuguese-Porttinari@2.18"
+      "treebank": "UD_Portuguese-Porttinari@2.19"
     },
     {
       "parataxis": [
@@ -1840,7 +2019,7 @@
         0.6425855513307985,
         0.03155339805825243
       ],
-      "treebank": "UD_Lithuanian-HSE@2.18"
+      "treebank": "UD_Lithuanian-HSE@2.19"
     },
     {
       "parataxis": [
@@ -1848,7 +2027,7 @@
         0.2847785634536658,
         0.014324384025279205
       ],
-      "treebank": "UD_Slovenian-SSJ@2.18"
+      "treebank": "UD_Slovenian-SSJ@2.19"
     },
     {
       "parataxis": [
@@ -1856,7 +2035,23 @@
         0.376,
         0.028799019607843136
       ],
-      "treebank": "UD_Livvi-KKPP@2.18"
+      "treebank": "UD_Livvi-KKPP@2.19"
+    },
+    {
+      "parataxis": [
+        12,
+        0.0379746835443038,
+        0.004197271773347324
+      ],
+      "treebank": "UD_Mandyali-MDTB@2.19"
+    },
+    {
+      "parataxis": [
+        72,
+        0.09795918367346938,
+        0.004380627889997567
+      ],
+      "treebank": "UD_Swedish-Modern@2.19"
     },
     {
       "parataxis": [
@@ -1864,15 +2059,15 @@
         0.08333333333333333,
         0.007517805328409391
       ],
-      "treebank": "UD_Uzbek-UzUDT@2.18"
+      "treebank": "UD_Uzbek-UzUDT@2.19"
     },
     {
       "parataxis": [
-        32,
-        0.014247551202137132,
-        0.0014527625187270169
+        35,
+        0.01371473354231975,
+        0.0013994402239104358
       ],
-      "treebank": "UD_Ottoman_Turkish-DUDU@2.18"
+      "treebank": "UD_Ottoman_Turkish-DUDU@2.19"
     },
     {
       "parataxis": [
@@ -1880,7 +2075,15 @@
         0.4885114885114885,
         0.014943617638969533
       ],
-      "treebank": "UD_Coptic-Bohairic@2.18"
+      "treebank": "UD_Coptic-Bohairic@2.19"
+    },
+    {
+      "parataxis": [
+        16,
+        0.3404255319148936,
+        0.05947955390334572
+      ],
+      "treebank": "UD_Gedeo-GDT@2.19"
     },
     {
       "parataxis": [
@@ -1888,7 +2091,7 @@
         0.0162748643761302,
         0.0005888125613346418
       ],
-      "treebank": "UD_Old_French-ALTM@2.18"
+      "treebank": "UD_Old_French-ALTM@2.19"
     },
     {
       "parataxis": [
@@ -1896,10 +2099,18 @@
         0.0697250745279894,
         0.004348275149762446
       ],
-      "treebank": "UD_Swedish-Talbanken@2.18"
+      "treebank": "UD_Swedish-Talbanken@2.19"
     },
     {
-      "treebank": "UD_Arabic-NYUAD@2.18"
+      "parataxis": [
+        6,
+        0.09836065573770492,
+        0.011538461538461539
+      ],
+      "treebank": "UD_Gorani-Hawrami@2.19"
+    },
+    {
+      "treebank": "UD_Arabic-NYUAD@2.19"
     },
     {
       "parataxis": [
@@ -1907,7 +2118,7 @@
         0.1847710330138445,
         0.014813233724653149
       ],
-      "treebank": "UD_Georgian-GNC@2.18"
+      "treebank": "UD_Georgian-GNC@2.19"
     },
     {
       "parataxis": [
@@ -1915,7 +2126,7 @@
         0.13854748603351955,
         0.007577609386458079
       ],
-      "treebank": "UD_English-GUMReddit@2.18"
+      "treebank": "UD_English-GUMReddit@2.19"
     },
     {
       "parataxis": [
@@ -1923,7 +2134,7 @@
         0.00861244019138756,
         0.0003239857446272364
       ],
-      "treebank": "UD_Italian-ParTUT@2.18"
+      "treebank": "UD_Italian-ParTUT@2.19"
     },
     {
       "parataxis": [
@@ -1931,10 +2142,10 @@
         0.009482758620689655,
         0.0007243080164735179
       ],
-      "treebank": "UD_Czech-FicTree@2.18"
+      "treebank": "UD_Czech-FicTree@2.19"
     },
     {
-      "treebank": "UD_Punjabi-CS@2.18"
+      "treebank": "UD_Punjabi-CS@2.19"
     },
     {
       "parataxis": [
@@ -1942,7 +2153,7 @@
         0.4601449275362319,
         0.013695675617383803
       ],
-      "treebank": "UD_English-CTeTex@2.18"
+      "treebank": "UD_English-CTeTex@2.19"
     },
     {
       "parataxis": [
@@ -1950,15 +2161,23 @@
         0.19553868058851448,
         0.009309051470920511
       ],
-      "treebank": "UD_Wolof-WTB@2.18"
+      "treebank": "UD_Wolof-WTB@2.19"
     },
     {
       "parataxis": [
-        381,
-        0.12334088701845257,
-        0.011129286674066718
+        1,
+        0.004524886877828055,
+        0.0006257822277847309
       ],
-      "treebank": "UD_Egyptian-PC@2.18"
+      "treebank": "UD_Tigrinya-TiTB@2.19"
+    },
+    {
+      "parataxis": [
+        421,
+        0.11184909670563231,
+        0.009807575828169407
+      ],
+      "treebank": "UD_Egyptian-PC@2.19"
     },
     {
       "parataxis": [
@@ -1966,7 +2185,7 @@
         0.039504399353564375,
         0.002817821439778673
       ],
-      "treebank": "UD_Bulgarian-BTB@2.18"
+      "treebank": "UD_Bulgarian-BTB@2.19"
     },
     {
       "parataxis": [
@@ -1974,7 +2193,7 @@
         0.009900990099009901,
         0.001984126984126984
       ],
-      "treebank": "UD_Paumari-TueCL@2.18"
+      "treebank": "UD_Paumari-TueCL@2.19"
     },
     {
       "parataxis": [
@@ -1987,7 +2206,7 @@
         0.003,
         0.00015499870834409713
       ],
-      "treebank": "UD_Russian-PUD@2.18"
+      "treebank": "UD_Russian-PUD@2.19"
     },
     {
       "parataxis": [
@@ -1995,7 +2214,7 @@
         0.102,
         0.004357670782244628
       ],
-      "treebank": "UD_Portuguese-PUD@2.18"
+      "treebank": "UD_Portuguese-PUD@2.19"
     },
     {
       "parataxis": [
@@ -2003,7 +2222,7 @@
         0.033783783783783786,
         0.0055309734513274336
       ],
-      "treebank": "UD_Turkish-TueCL@2.18"
+      "treebank": "UD_Turkish-TueCL@2.19"
     },
     {
       "parataxis": [
@@ -2011,7 +2230,7 @@
         0.08,
         0.006980802792321117
       ],
-      "treebank": "UD_Romanian-ArT@2.18"
+      "treebank": "UD_Romanian-ArT@2.19"
     },
     {
       "parataxis": [
@@ -2019,7 +2238,7 @@
         0.2400860456416012,
         0.03201626381301604
       ],
-      "treebank": "UD_Bororo-BDT@2.18"
+      "treebank": "UD_Bororo-BDT@2.19"
     },
     {
       "parataxis": [
@@ -2027,7 +2246,7 @@
         0.20699708454810495,
         0.048365122615803814
       ],
-      "treebank": "UD_Akuntsu-TuDeT@2.18"
+      "treebank": "UD_Akuntsu-TuDeT@2.19"
     },
     {
       "parataxis": [
@@ -2035,15 +2254,15 @@
         0.15358819584171696,
         0.00548273178907045
       ],
-      "treebank": "UD_Portuguese-PetroGold@2.18"
+      "treebank": "UD_Portuguese-PetroGold@2.19"
     },
     {
       "parataxis": [
-        8,
-        0.061068702290076333,
-        0.002526847757422615
+        9,
+        0.06164383561643835,
+        0.002348643006263048
       ],
-      "treebank": "UD_Esperanto-Prago@2.18"
+      "treebank": "UD_Esperanto-Prago@2.19"
     },
     {
       "parataxis": [
@@ -2051,7 +2270,7 @@
         0.3997965412004069,
         0.045782851817334574
       ],
-      "treebank": "UD_Shanghainese-ShUD@2.18"
+      "treebank": "UD_Shanghainese-ShUD@2.19"
     },
     {
       "parataxis": [
@@ -2059,7 +2278,7 @@
         0.16,
         0.00847457627118644
       ],
-      "treebank": "UD_Vietnamese-TueCL@2.18"
+      "treebank": "UD_Vietnamese-TueCL@2.19"
     },
     {
       "parataxis": [
@@ -2067,7 +2286,7 @@
         0.43243243243243246,
         0.0898876404494382
       ],
-      "treebank": "UD_Makurap-TuDeT@2.18"
+      "treebank": "UD_Makurap-TuDeT@2.19"
     },
     {
       "parataxis": [
@@ -2080,7 +2299,7 @@
         0.0012070006035003018,
         5.576156355424206e-05
       ],
-      "treebank": "UD_Haitian_Creole-Adolphe@2.18"
+      "treebank": "UD_Haitian_Creole-Adolphe@2.19"
     },
     {
       "parataxis": [
@@ -2088,7 +2307,7 @@
         0.04306190911863373,
         0.003845064592728144
       ],
-      "treebank": "UD_Turkish-Penn@2.18"
+      "treebank": "UD_Turkish-Penn@2.19"
     },
     {
       "parataxis": [
@@ -2096,7 +2315,7 @@
         0.1533769063180828,
         0.0176008800440022
       ],
-      "treebank": "UD_Chinese-Beginner@2.18"
+      "treebank": "UD_Chinese-Beginner@2.19"
     },
     {
       "parataxis": [
@@ -2104,7 +2323,7 @@
         1.6662543295398318,
         0.08315020123953677
       ],
-      "treebank": "UD_Portuguese-DANTEStocks@2.18"
+      "treebank": "UD_Portuguese-DANTEStocks@2.19"
     },
     {
       "parataxis": [
@@ -2112,10 +2331,18 @@
         0.033783783783783786,
         0.005382131324004306
       ],
-      "treebank": "UD_Ottoman_Turkish-TueCL@2.18"
+      "treebank": "UD_Ottoman_Turkish-TueCL@2.19"
     },
     {
-      "treebank": "UD_Kangri-KDTB@2.18"
+      "parataxis": [
+        31,
+        0.29523809523809524,
+        0.03471444568868981
+      ],
+      "treebank": "UD_Dongxiang-GDUD@2.19"
+    },
+    {
+      "treebank": "UD_Kangri-KDTB@2.19"
     },
     {
       "parataxis": [
@@ -2123,7 +2350,7 @@
         0.06756756756756757,
         0.010649627263045794
       ],
-      "treebank": "UD_Uzbek-TueCL@2.18"
+      "treebank": "UD_Uzbek-TueCL@2.19"
     },
     {
       "parataxis": [
@@ -2131,10 +2358,26 @@
         0.2236180904522613,
         0.013119103773584906
       ],
-      "treebank": "UD_Italian-Valico@2.18"
+      "treebank": "UD_Italian-Valico@2.19"
     },
     {
-      "treebank": "UD_Gwichin-TueCL@2.18"
+      "treebank": "UD_Gwichin-TueCL@2.19"
+    },
+    {
+      "parataxis": [
+        2,
+        0.018518518518518517,
+        0.0032520325203252032
+      ],
+      "treebank": "UD_French_Sign_Language-STKAutogramm@2.19"
+    },
+    {
+      "parataxis": [
+        552,
+        0.31597023468803664,
+        0.012083798515794313
+      ],
+      "treebank": "UD_Serbian-ParCoLab@2.19"
     },
     {
       "parataxis": [
@@ -2142,7 +2385,7 @@
         0.19402985074626866,
         0.006852925672113864
       ],
-      "treebank": "UD_Hausa-EasternAutogramm@2.18"
+      "treebank": "UD_Hausa-EasternAutogramm@2.19"
     },
     {
       "parataxis": [
@@ -2150,10 +2393,10 @@
         0.11926605504587157,
         0.010819808572617561
       ],
-      "treebank": "UD_Malayalam-UFAL@2.18"
+      "treebank": "UD_Malayalam-UFAL@2.19"
     },
     {
-      "treebank": "UD_Japanese-BCCWJ@2.18"
+      "treebank": "UD_Japanese-BCCWJ@2.19"
     },
     {
       "parataxis": [
@@ -2161,7 +2404,7 @@
         0.03571428571428571,
         0.00625
       ],
-      "treebank": "UD_Bengali-BRU@2.18"
+      "treebank": "UD_Bengali-BRU@2.19"
     },
     {
       "parataxis": [
@@ -2199,7 +2442,7 @@
         0.011235955056179775,
         0.0005405040199986487
       ],
-      "treebank": "UD_Italian-TWITTIRO@2.18"
+      "treebank": "UD_Italian-TWITTIRO@2.19"
     },
     {
       "parataxis": [
@@ -2207,7 +2450,7 @@
         0.01990399250673223,
         0.0015887479264503166
       ],
-      "treebank": "UD_Ancient_Greek-PROIEL@2.18"
+      "treebank": "UD_Ancient_Greek-PROIEL@2.19"
     },
     {
       "parataxis": [
@@ -2215,33 +2458,48 @@
         0.04072398190045249,
         0.003597841295222866
       ],
-      "treebank": "UD_Breton-KEB@2.18"
+      "treebank": "UD_Breton-KEB@2.19"
     },
     {
       "parataxis": [
         1,
-        0.0004955401387512388,
-        2.1153724113130116e-05
+        0.00039761431411530816,
+        1.6863406408094435e-05
       ],
       "parataxis:insert": [
-        133,
-        0.06590683845391476,
-        0.0028134453070463054
+        153,
+        0.060834990059642144,
+        0.0025801011804384485
       ],
       "parataxis:obj": [
-        86,
-        0.04261645193260654,
-        0.00181922027372919
+        108,
+        0.04294234592445328,
+        0.001821247892074199
       ],
-      "treebank": "UD_Polish-MPDT@2.18"
+      "treebank": "UD_Polish-MPDT@2.19"
     },
     {
       "parataxis": [
-        247,
-        0.11121116614137776,
-        0.013222698072805138
+        75,
+        0.030229746070133012,
+        0.0030359455958549222
       ],
-      "treebank": "UD_Italian-KIParlaForest@2.18"
+      "parataxis:insert": [
+        5,
+        0.002015316404675534,
+        0.0002023963730569948
+      ],
+      "parataxis:parenth": [
+        99,
+        0.03990326481257558,
+        0.004007448186528498
+      ],
+      "parataxis:restart": [
+        65,
+        0.026199113260781944,
+        0.0026311528497409324
+      ],
+      "treebank": "UD_Italian-KIParlaForest@2.19"
     },
     {
       "parataxis": [
@@ -2249,13 +2507,13 @@
         0.02768222105305759,
         0.0013835427189041695
       ],
-      "treebank": "UD_Czech-CAC@2.18"
+      "treebank": "UD_Czech-CAC@2.19"
     },
     {
-      "treebank": "UD_Japanese-GSD@2.18"
+      "treebank": "UD_Japanese-GSD@2.19"
     },
     {
-      "treebank": "UD_Neapolitan-RB@2.18"
+      "treebank": "UD_Neapolitan-RB@2.19"
     },
     {
       "parataxis": [
@@ -2263,7 +2521,7 @@
         0.09,
         0.0038281582305401958
       ],
-      "treebank": "UD_Galician-PUD@2.18"
+      "treebank": "UD_Galician-PUD@2.19"
     },
     {
       "parataxis": [
@@ -2271,7 +2529,7 @@
         0.02108433734939759,
         0.004331013147718484
       ],
-      "treebank": "UD_Telugu-MTG@2.18"
+      "treebank": "UD_Telugu-MTG@2.19"
     },
     {
       "parataxis": [
@@ -2279,7 +2537,7 @@
         0.5367066393682364,
         0.015038025306497083
       ],
-      "treebank": "UD_Italian-Old@2.18"
+      "treebank": "UD_Italian-Old@2.19"
     },
     {
       "parataxis": [
@@ -2287,7 +2545,7 @@
         3.6545700398348135e-05,
         2.8564083521380216e-06
       ],
-      "treebank": "UD_Korean-Kaist@2.18"
+      "treebank": "UD_Korean-Kaist@2.19"
     },
     {
       "parataxis": [
@@ -2295,7 +2553,7 @@
         0.14243027888446216,
         0.010274464721942808
       ],
-      "treebank": "UD_Cantonese-HK@2.18"
+      "treebank": "UD_Cantonese-HK@2.19"
     },
     {
       "parataxis": [
@@ -2313,7 +2571,7 @@
         0.018772893772893772,
         0.0011013511698498401
       ],
-      "treebank": "UD_Turkish_German-SAGT@2.18"
+      "treebank": "UD_Turkish_German-SAGT@2.19"
     },
     {
       "parataxis": [
@@ -2321,7 +2579,7 @@
         0.04293187842746743,
         0.0026694363922405823
       ],
-      "treebank": "UD_Czech-PDTC@2.18"
+      "treebank": "UD_Czech-PDTC@2.19"
     },
     {
       "parataxis": [
@@ -2329,7 +2587,7 @@
         0.11391018619934283,
         0.03591160220994475
       ],
-      "treebank": "UD_Teko-TuDeT@2.18"
+      "treebank": "UD_Teko-TuDeT@2.19"
     },
     {
       "parataxis": [
@@ -2337,7 +2595,7 @@
         0.15843377691075036,
         0.008857244127304383
       ],
-      "treebank": "UD_English-GUM@2.18"
+      "treebank": "UD_English-GUM@2.19"
     },
     {
       "parataxis": [
@@ -2345,7 +2603,7 @@
         0.05701754385964912,
         0.00446888965280165
       ],
-      "treebank": "UD_Odia-ODTB@2.18"
+      "treebank": "UD_Odia-ODTB@2.19"
     },
     {
       "parataxis": [
@@ -2353,7 +2611,7 @@
         0.003,
         0.00014008872285780995
       ],
-      "treebank": "UD_Chinese-PUD@2.18"
+      "treebank": "UD_Chinese-PUD@2.19"
     },
     {
       "parataxis": [
@@ -2361,23 +2619,23 @@
         0.03911111111111111,
         0.002562012344241295
       ],
-      "treebank": "UD_Pomak-Philotis@2.18"
+      "treebank": "UD_Pomak-Philotis@2.19"
     },
     {
       "parataxis": [
-        103,
-        0.06666666666666667,
-        0.007890301823195955
+        109,
+        0.06558363417569193,
+        0.007669575007036307
       ],
-      "treebank": "UD_Abkhaz-AbNC@2.18"
+      "treebank": "UD_Abkhaz-AbNC@2.19"
     },
     {
       "parataxis": [
-        3450,
-        0.1315538608198284,
-        0.006026874620044861
+        3454,
+        0.13170638703527168,
+        0.006033862300763753
       ],
-      "treebank": "UD_Romanian-Nonstandard@2.18"
+      "treebank": "UD_Romanian-Nonstandard@2.19"
     },
     {
       "parataxis": [
@@ -2385,7 +2643,7 @@
         0.03650009622169478,
         0.001943598081678941
       ],
-      "treebank": "UD_German-GSD@2.18"
+      "treebank": "UD_German-GSD@2.19"
     },
     {
       "parataxis": [
@@ -2393,7 +2651,7 @@
         0.020947498674208944,
         0.0023837902264600714
       ],
-      "treebank": "UD_Old_Church_Slavonic-PROIEL@2.18"
+      "treebank": "UD_Old_Church_Slavonic-PROIEL@2.19"
     },
     {
       "parataxis": [
@@ -2401,7 +2659,7 @@
         0.24686192468619247,
         0.010758570386579139
       ],
-      "treebank": "UD_French-PoitevinDIVITAL@2.18"
+      "treebank": "UD_French-PoitevinDIVITAL@2.19"
     },
     {
       "parataxis": [
@@ -2409,7 +2667,7 @@
         0.09210526315789473,
         0.006787330316742082
       ],
-      "treebank": "UD_Karelian-KKPP@2.18"
+      "treebank": "UD_Karelian-KKPP@2.19"
     },
     {
       "parataxis": [
@@ -2417,7 +2675,7 @@
         1.6052836052836053,
         0.10438033648259486
       ],
-      "treebank": "UD_Maghrebi_Arabic_French-Arabizi@2.18"
+      "treebank": "UD_Maghrebi_Arabic_French-Arabizi@2.19"
     },
     {
       "parataxis": [
@@ -2425,7 +2683,7 @@
         0.07861979166666666,
         0.006344302946244694
       ],
-      "treebank": "UD_Portuguese-CINTIL@2.18"
+      "treebank": "UD_Portuguese-CINTIL@2.19"
     },
     {
       "parataxis": [
@@ -2438,7 +2696,7 @@
         0.002028397565922921,
         0.00013766993632765445
       ],
-      "treebank": "UD_Latin-CIRCSE@2.18"
+      "treebank": "UD_Latin-CIRCSE@2.19"
     },
     {
       "parataxis": [
@@ -2446,7 +2704,7 @@
         0.107,
         0.004327428617649438
       ],
-      "treebank": "UD_French-PUD@2.18"
+      "treebank": "UD_French-PUD@2.19"
     },
     {
       "parataxis": [
@@ -2454,7 +2712,7 @@
         0.09161490683229814,
         0.005283424375391779
       ],
-      "treebank": "UD_Upper_Sorbian-UFAL@2.18"
+      "treebank": "UD_Upper_Sorbian-UFAL@2.19"
     },
     {
       "parataxis": [
@@ -2462,15 +2720,39 @@
         0.001451378809869376,
         7.941786703463612e-05
       ],
-      "treebank": "UD_Danish-DDT@2.18"
+      "treebank": "UD_Danish-DDT@2.19"
     },
     {
       "parataxis": [
-        28,
-        0.04794520547945205,
-        0.008965738072366315
+        27,
+        0.04671280276816609,
+        0.008760545100584036
       ],
-      "treebank": "UD_Naga-Suansu@2.18"
+      "treebank": "UD_Naga-Suansu@2.19"
+    },
+    {
+      "parataxis": [
+        5,
+        0.05434782608695652,
+        0.010330578512396695
+      ],
+      "treebank": "UD_Kalmyk-GDUD@2.19"
+    },
+    {
+      "parataxis": [
+        221,
+        0.11022443890274314,
+        0.0021816817706173863
+      ],
+      "treebank": "UD_Portuguese-PortJur@2.19"
+    },
+    {
+      "parataxis": [
+        116,
+        0.10060711188204684,
+        0.014496375906023495
+      ],
+      "treebank": "UD_Bonan-GDUD@2.19"
     },
     {
       "parataxis": [
@@ -2478,7 +2760,7 @@
         0.276984126984127,
         0.034595559080095165
       ],
-      "treebank": "UD_Highland_Puebla_Nahuatl-ITML@2.18"
+      "treebank": "UD_Highland_Puebla_Nahuatl-ITML@2.19"
     },
     {
       "parataxis": [
@@ -2486,7 +2768,7 @@
         0.085,
         0.004513354218658738
       ],
-      "treebank": "UD_Icelandic-PUD@2.18"
+      "treebank": "UD_Icelandic-PUD@2.19"
     },
     {
       "parataxis": [
@@ -2494,7 +2776,15 @@
         0.064,
         0.002505088460936277
       ],
-      "treebank": "UD_Galician-TreeGal@2.18"
+      "treebank": "UD_Galician-TreeGal@2.19"
+    },
+    {
+      "parataxis": [
+        517,
+        0.10089773614363778,
+        0.005292738608327106
+      ],
+      "treebank": "UD_English-ESL@2.19"
     },
     {
       "parataxis": [
@@ -2502,10 +2792,10 @@
         0.094,
         0.0039447731755424065
       ],
-      "treebank": "UD_Hindi-PUD@2.18"
+      "treebank": "UD_Hindi-PUD@2.19"
     },
     {
-      "treebank": "UD_Japanese-PUDLUW@2.18"
+      "treebank": "UD_Japanese-PUDLUW@2.19"
     },
     {
       "parataxis": [
@@ -2513,18 +2803,26 @@
         0.05,
         0.0063371356147021544
       ],
-      "treebank": "UD_South_Levantine_Arabic-MADAR@2.18"
+      "treebank": "UD_South_Levantine_Arabic-MADAR@2.19"
     },
     {
       "parataxis": [
         68,
-        0.10104011887072809,
-        0.008296730112249878
+        0.10059171597633136,
+        0.00827250608272506
       ],
-      "treebank": "UD_Komi_Zyrian-Lattice@2.18"
+      "treebank": "UD_Komi_Zyrian-Lattice@2.19"
     },
     {
-      "treebank": "UD_Middle_French-ALTM@2.18"
+      "treebank": "UD_Middle_French-ALTM@2.19"
+    },
+    {
+      "parataxis": [
+        8,
+        0.08,
+        0.006339144215530904
+      ],
+      "treebank": "UD_Greek-Griko@2.19"
     },
     {
       "parataxis": [
@@ -2532,7 +2830,7 @@
         0.06951871657754011,
         0.006896551724137931
       ],
-      "treebank": "UD_Gujarati-GujTB@2.18"
+      "treebank": "UD_Gujarati-GujTB@2.19"
     },
     {
       "parataxis": [
@@ -2540,10 +2838,10 @@
         0.0391304347826087,
         0.0048833423765599565
       ],
-      "treebank": "UD_Sanskrit-UFAL@2.18"
+      "treebank": "UD_Sanskrit-UFAL@2.19"
     },
     {
-      "treebank": "UD_Tamil-MWTT@2.18"
+      "treebank": "UD_Tamil-MWTT@2.19"
     },
     {
       "parataxis": [
@@ -2551,7 +2849,7 @@
         0.015,
         0.000888572951839346
       ],
-      "treebank": "UD_Turkish-PUD@2.18"
+      "treebank": "UD_Turkish-PUD@2.19"
     },
     {
       "parataxis": [
@@ -2559,7 +2857,7 @@
         0.1539714867617108,
         0.006517803258901629
       ],
-      "treebank": "UD_Irish-IDT@2.18"
+      "treebank": "UD_Irish-IDT@2.19"
     },
     {
       "parataxis": [
@@ -2567,7 +2865,7 @@
         0.09549071618037135,
         0.007018227897455893
       ],
-      "treebank": "UD_Northern_Kurdish-Kurmanji@2.18"
+      "treebank": "UD_Northern_Kurdish-Kurmanji@2.19"
     },
     {
       "parataxis": [
@@ -2575,7 +2873,15 @@
         0.0027635442454948473,
         0.0003094697751186301
       ],
-      "treebank": "UD_Korean-KSL@2.18"
+      "treebank": "UD_Korean-KSL@2.19"
+    },
+    {
+      "parataxis": [
+        17,
+        0.034764826175869123,
+        0.005379746835443038
+      ],
+      "treebank": "UD_Chechen-MottDT@2.19"
     },
     {
       "parataxis": [
@@ -2583,7 +2889,7 @@
         0.3063973063973064,
         0.014469709015741771
       ],
-      "treebank": "UD_Czech-Poetry@2.18"
+      "treebank": "UD_Czech-Poetry@2.19"
     },
     {
       "parataxis": [
@@ -2591,7 +2897,15 @@
         0.11092715231788079,
         0.013397320535892822
       ],
-      "treebank": "UD_Faroese-OFT@2.18"
+      "treebank": "UD_Faroese-OFT@2.19"
+    },
+    {
+      "parataxis": [
+        32,
+        0.049079754601226995,
+        0.002707963104002708
+      ],
+      "treebank": "UD_Old_Georgian-OGLauRo@2.19"
     },
     {
       "parataxis": [
@@ -2599,7 +2913,7 @@
         0.0525,
         0.0056315366049879325
       ],
-      "treebank": "UD_Frisian_Dutch-Fame@2.18"
+      "treebank": "UD_Frisian_Dutch-Fame@2.19"
     },
     {
       "parataxis": [
@@ -2607,7 +2921,7 @@
         0.2468354430379747,
         0.03816046966731898
       ],
-      "treebank": "UD_Munduruku-TuDeT@2.18"
+      "treebank": "UD_Munduruku-TuDeT@2.19"
     },
     {
       "parataxis": [
@@ -2615,7 +2929,7 @@
         0.09558823529411764,
         0.009931245225362872
       ],
-      "treebank": "UD_Hittite-HitTB@2.18"
+      "treebank": "UD_Hittite-HitTB@2.19"
     },
     {
       "parataxis": [
@@ -2623,7 +2937,7 @@
         0.04965753424657534,
         0.005597104945717732
       ],
-      "treebank": "UD_Manx-Cadhan@2.18"
+      "treebank": "UD_Manx-Cadhan@2.19"
     },
     {
       "parataxis": [
@@ -2631,15 +2945,23 @@
         0.007905138339920948,
         0.0008289124668435014
       ],
-      "treebank": "UD_Kyrgyz-KTMU@2.18"
+      "treebank": "UD_Kyrgyz-KTMU@2.19"
     },
     {
       "parataxis": [
         17,
-        0.06513409961685823,
-        0.0055755985569039025
+        0.06367041198501873,
+        0.005459216441875401
       ],
-      "treebank": "UD_Skolt_Sami-Giellagas@2.18"
+      "treebank": "UD_Skolt_Sami-Giellagas@2.19"
+    },
+    {
+      "parataxis": [
+        31,
+        0.03225806451612903,
+        0.007040654099477629
+      ],
+      "treebank": "UD_Dargwa-Mehweb@2.19"
     },
     {
       "parataxis": [
@@ -2647,7 +2969,7 @@
         0.108,
         0.006829823562891292
       ],
-      "treebank": "UD_Finnish-PUD@2.18"
+      "treebank": "UD_Finnish-PUD@2.19"
     },
     {
       "parataxis": [
@@ -2655,29 +2977,40 @@
         0.019455252918287938,
         0.001129815840018077
       ],
-      "treebank": "UD_Ottoman_Turkish-BOUN@2.18"
+      "treebank": "UD_Ottoman_Turkish-BOUN@2.19"
     },
     {
       "parataxis": [
-        207,
-        0.03451725862931466,
-        0.0013536224112788789
+        211,
+        0.035184258796064696,
+        0.0013797793660862002
       ],
-      "treebank": "UD_Persian-Seraji@2.18"
+      "treebank": "UD_Persian-Seraji@2.19"
+    },
+    {
+      "treebank": "UD_Uspanteko-MesoTree@2.19"
     },
     {
       "parataxis": [
-        83,
-        0.2626582278481013,
-        0.011980369515011547
+        84,
+        0.26582278481012656,
+        0.012154536246563449
       ],
-      "treebank": "UD_Ligurian-GLT@2.18"
+      "treebank": "UD_Ligurian-GLT@2.19"
     },
     {
-      "treebank": "UD_Afrikaans-AfriBooms@2.18"
+      "treebank": "UD_Afrikaans-AfriBooms@2.19"
     },
     {
-      "treebank": "UD_Japanese-PUD@2.18"
+      "parataxis": [
+        11,
+        0.28205128205128205,
+        0.03900709219858156
+      ],
+      "treebank": "UD_Even-GDUD@2.19"
+    },
+    {
+      "treebank": "UD_Japanese-PUD@2.19"
     },
     {
       "parataxis": [
@@ -2685,20 +3018,36 @@
         0.05263157894736842,
         0.0016382972815372227
       ],
-      "treebank": "UD_Czech-CLTT@2.18"
+      "treebank": "UD_Czech-CLTT@2.19"
+    },
+    {
+      "treebank": "UD_Avestan-Old@2.19"
     },
     {
       "parataxis": [
-        933,
-        0.05709215518296414,
-        0.002330257127514767
+        4,
+        0.017777777777777778,
+        0.0019502681618722574
+      ],
+      "treebank": "UD_Pali-PaliCanon@2.19"
+    },
+    {
+      "parataxis": [
+        932,
+        0.05703096316240362,
+        0.0023288181248016632
       ],
       "parataxis:insert": [
         183,
         0.01119813976257496,
-        0.00045706007967331446
+        0.000457267936522215
       ],
-      "treebank": "UD_French-GSD@2.18"
+      "parataxis:parenth": [
+        1,
+        6.119202056051891e-05,
+        2.4987318935640162e-06
+      ],
+      "treebank": "UD_French-GSD@2.19"
     },
     {
       "parataxis": [
@@ -2706,7 +3055,15 @@
         0.03060217176702863,
         0.0009105863000822465
       ],
-      "treebank": "UD_French-ALTS@2.18"
+      "treebank": "UD_French-ALTS@2.19"
+    },
+    {
+      "parataxis": [
+        1,
+        0.001736111111111111,
+        0.0004336513443191674
+      ],
+      "treebank": "UD_Laz-BOUN@2.19"
     },
     {
       "parataxis": [
@@ -2714,7 +3071,7 @@
         0.008902077151335312,
         0.00258732212160414
       ],
-      "treebank": "UD_Karo-TuDeT@2.18"
+      "treebank": "UD_Karo-TuDeT@2.19"
     },
     {
       "parataxis": [
@@ -2722,7 +3079,7 @@
         0.068,
         0.00318769923120195
       ],
-      "treebank": "UD_German-PUD@2.18"
+      "treebank": "UD_German-PUD@2.19"
     },
     {
       "parataxis": [
@@ -2750,7 +3107,7 @@
         0.41602465331278893,
         0.022598870056497175
       ],
-      "treebank": "UD_Irish-TwittIrish@2.18"
+      "treebank": "UD_Irish-TwittIrish@2.19"
     },
     {
       "parataxis": [
@@ -2758,15 +3115,15 @@
         0.057971014492753624,
         0.005979073243647235
       ],
-      "treebank": "UD_Sinhala-Appuwa@2.18"
+      "treebank": "UD_Sinhala-Appuwa@2.19"
     },
     {
       "parataxis": [
-        1632,
-        0.1199735352495773,
-        0.007823060772527252
+        1569,
+        0.11534220392560465,
+        0.007521103670432811
       ],
-      "treebank": "UD_Dutch-Alpino@2.18"
+      "treebank": "UD_Dutch-Alpino@2.19"
     },
     {
       "parataxis": [
@@ -2774,7 +3131,7 @@
         0.134,
         0.007024533445166702
       ],
-      "treebank": "UD_Swedish-PUD@2.18"
+      "treebank": "UD_Swedish-PUD@2.19"
     },
     {
       "parataxis": [
@@ -2782,15 +3139,31 @@
         0.4644786872123274,
         0.018825685989828776
       ],
-      "treebank": "UD_Chinese-GSD@2.18"
+      "treebank": "UD_Chinese-GSD@2.19"
+    },
+    {
+      "parataxis": [
+        8,
+        0.00400200100050025,
+        0.0008086525826341858
+      ],
+      "treebank": "UD_Cuicatec-MesoTree@2.19"
+    },
+    {
+      "parataxis": [
+        14,
+        0.14,
+        0.0068560235063663075
+      ],
+      "treebank": "UD_Greek-Cypriot@2.19"
     },
     {
       "parataxis": [
         56,
-        0.009728978457261988,
-        0.0005880685099814129
+        0.009712105445716268,
+        0.0005872606388556807
       ],
-      "treebank": "UD_Sindhi-Isra@2.18"
+      "treebank": "UD_Sindhi-Isra@2.19"
     },
     {
       "parataxis": [
@@ -2798,15 +3171,23 @@
         0.24823755607776116,
         0.007957813998082455
       ],
-      "treebank": "UD_Romanian-SiMoNERo@2.18"
+      "treebank": "UD_Romanian-SiMoNERo@2.19"
     },
     {
       "parataxis": [
-        50,
-        0.04051863857374392,
-        0.007935248373274084
+        53,
+        0.03802008608321377,
+        0.006486354179415004
       ],
-      "treebank": "UD_Ruuli-RDT@2.18"
+      "treebank": "UD_Ruuli-RDT@2.19"
+    },
+    {
+      "parataxis": [
+        11,
+        0.13095238095238096,
+        0.01131687242798354
+      ],
+      "treebank": "UD_Prakrit-DIPI@2.19"
     },
     {
       "parataxis": [
@@ -2814,7 +3195,7 @@
         0.024,
         0.001156793753313732
       ],
-      "treebank": "UD_Arabic-PUD@2.18"
+      "treebank": "UD_Arabic-PUD@2.19"
     },
     {
       "parataxis": [
@@ -2822,7 +3203,7 @@
         0.31669535283993117,
         0.04081632653061224
       ],
-      "treebank": "UD_Tupinamba-TuDeT@2.18"
+      "treebank": "UD_Tupinamba-TuDeT@2.19"
     },
     {
       "parataxis": [
@@ -2835,7 +3216,7 @@
         0.00027743648686140063,
         2.2942620506114208e-05
       ],
-      "treebank": "UD_Belarusian-HSE@2.18"
+      "treebank": "UD_Belarusian-HSE@2.19"
     },
     {
       "parataxis": [
@@ -2843,7 +3224,7 @@
         0.3285968028419183,
         0.012547902465493269
       ],
-      "treebank": "UD_Coptic-Scriptorium@2.18"
+      "treebank": "UD_Coptic-Scriptorium@2.19"
     },
     {
       "parataxis": [
@@ -2851,7 +3232,7 @@
         0.033444816053511704,
         0.00684931506849315
       ],
-      "treebank": "UD_Yakut-YKTDT@2.18"
+      "treebank": "UD_Yakut-YKTDT@2.19"
     },
     {
       "parataxis": [
@@ -2859,7 +3240,7 @@
         0.00043687199650502403,
         4.1848008034817545e-05
       ],
-      "treebank": "UD_French-FQB@2.18"
+      "treebank": "UD_French-FQB@2.19"
     },
     {
       "parataxis": [
@@ -2867,7 +3248,7 @@
         0.09183673469387756,
         0.013803680981595092
       ],
-      "treebank": "UD_Abaza-ATB@2.18"
+      "treebank": "UD_Abaza-ATB@2.19"
     },
     {
       "parataxis": [
@@ -2875,7 +3256,7 @@
         0.06542056074766354,
         0.006063230835859679
       ],
-      "treebank": "UD_Komi_Zyrian-IKDP@2.18"
+      "treebank": "UD_Komi_Zyrian-IKDP@2.19"
     },
     {
       "parataxis": [
@@ -2883,7 +3264,7 @@
         0.2789689781021898,
         0.012521372334217235
       ],
-      "treebank": "UD_Serbian-SET@2.18"
+      "treebank": "UD_Serbian-SET@2.19"
     },
     {
       "parataxis": [
@@ -2891,24 +3272,24 @@
         0.11734745335350479,
         0.025528787080919782
       ],
-      "treebank": "UD_Turkish-Tourism@2.18"
+      "treebank": "UD_Turkish-Tourism@2.19"
     },
     {
       "parataxis": [
-        1871,
-        0.2602225312934631,
-        0.020654861785745826
+        1870,
+        0.26008344923504867,
+        0.020643822308575466
       ],
-      "treebank": "UD_Estonian-EWT@2.18"
+      "treebank": "UD_Estonian-EWT@2.19"
     },
     {
-      "treebank": "UD_Luxembourgish-LuxBank@2.18"
+      "treebank": "UD_Luxembourgish-LuxBank@2.19"
     },
     {
-      "treebank": "UD_Latgalian-Cairo@2.18"
+      "treebank": "UD_Latgalian-Cairo@2.19"
     },
     {
-      "treebank": "UD_Old_English-Cairo@2.18"
+      "treebank": "UD_Old_English-Cairo@2.19"
     },
     {
       "parataxis": [
@@ -2916,7 +3297,7 @@
         0.1292163985469642,
         0.017294068620641756
       ],
-      "treebank": "UD_Hausa-SouthernAutogramm@2.18"
+      "treebank": "UD_Hausa-SouthernAutogramm@2.19"
     },
     {
       "parataxis": [
@@ -2924,7 +3305,7 @@
         0.06326530612244897,
         0.006770037126010046
       ],
-      "treebank": "UD_Moksha-JR@2.18"
+      "treebank": "UD_Moksha-JR@2.19"
     },
     {
       "parataxis": [
@@ -2932,7 +3313,7 @@
         0.16375677302829622,
         0.008863399374348279
       ],
-      "treebank": "UD_Western_Armenian-ArmTDP@2.18"
+      "treebank": "UD_Western_Armenian-ArmTDP@2.19"
     },
     {
       "parataxis": [
@@ -2940,15 +3321,15 @@
         0.023,
         0.0012359610940942554
       ],
-      "treebank": "UD_Czech-PUD@2.18"
+      "treebank": "UD_Czech-PUD@2.19"
     },
     {
       "parataxis": [
         1,
         0.029411764705882353,
-        0.00228310502283105
+        0.0022675736961451248
       ],
-      "treebank": "UD_Old_Irish-DipWBG@2.18"
+      "treebank": "UD_Old_Irish-DipWBG@2.19"
     },
     {
       "parataxis": [
@@ -2956,7 +3337,7 @@
         0.15714285714285714,
         0.013355998057309373
       ],
-      "treebank": "UD_Cappadocian-TueCL@2.18"
+      "treebank": "UD_Cappadocian-TueCL@2.19"
     },
     {
       "parataxis": [
@@ -2964,7 +3345,7 @@
         0.18049705139005898,
         0.009520529683611802
       ],
-      "treebank": "UD_Scottish_Gaelic-ARCOSG@2.18"
+      "treebank": "UD_Scottish_Gaelic-ARCOSG@2.19"
     },
     {
       "parataxis": [
@@ -2972,7 +3353,7 @@
         0.20302233902759526,
         0.012061360708848902
       ],
-      "treebank": "UD_Occitan-TTB@2.18"
+      "treebank": "UD_Occitan-TTB@2.19"
     },
     {
       "parataxis": [
@@ -2980,7 +3361,7 @@
         0.06772046589018303,
         0.0025543986493695593
       ],
-      "treebank": "UD_Portuguese-GSD@2.18"
+      "treebank": "UD_Portuguese-GSD@2.19"
     },
     {
       "parataxis": [
@@ -2988,7 +3369,7 @@
         0.69,
         0.028846153846153848
       ],
-      "treebank": "UD_Chinese-PatentChar@2.18"
+      "treebank": "UD_Chinese-PatentChar@2.19"
     },
     {
       "parataxis": [
@@ -2997,11 +3378,11 @@
         0.00856174867849052
       ],
       "parataxis:discourse": [
-        13,
-        0.002584493041749503,
-        0.00013266118333775536
+        35,
+        0.006958250497017893,
+        0.00035716472437087983
       ],
-      "treebank": "UD_Russian-GSD@2.18"
+      "treebank": "UD_Russian-GSD@2.19"
     },
     {
       "parataxis": [
@@ -3009,7 +3390,7 @@
         0.06569343065693431,
         0.0047194546407970635
       ],
-      "treebank": "UD_Punjabi-Rang@2.18"
+      "treebank": "UD_Punjabi-Rang@2.19"
     },
     {
       "parataxis": [
@@ -3017,7 +3398,7 @@
         0.02602192398319844,
         0.002028559562981184
       ],
-      "treebank": "UD_Turkish-BOUN@2.18"
+      "treebank": "UD_Turkish-BOUN@2.19"
     },
     {
       "parataxis": [
@@ -3025,7 +3406,7 @@
         0.7116388308977035,
         0.019314125446200918
       ],
-      "treebank": "UD_Arabic-PADT@2.18"
+      "treebank": "UD_Arabic-PADT@2.19"
     },
     {
       "parataxis": [
@@ -3033,7 +3414,7 @@
         0.3839080459770115,
         0.03248184647302905
       ],
-      "treebank": "UD_Hausa-NorthernAutogramm@2.18"
+      "treebank": "UD_Hausa-NorthernAutogramm@2.19"
     },
     {
       "parataxis": [
@@ -3041,7 +3422,7 @@
         0.04785935210809051,
         0.00183526327288617
       ],
-      "treebank": "UD_Hebrew-HTB@2.18"
+      "treebank": "UD_Hebrew-HTB@2.19"
     },
     {
       "parataxis": [
@@ -3049,7 +3430,7 @@
         0.3504950495049505,
         0.01579792931096037
       ],
-      "treebank": "UD_Sicilian-STB@2.18"
+      "treebank": "UD_Sicilian-STB@2.19"
     },
     {
       "parataxis": [
@@ -3057,7 +3438,7 @@
         0.1,
         0.015432098765432098
       ],
-      "treebank": "UD_Classical_Chinese-TueCL@2.18"
+      "treebank": "UD_Classical_Chinese-TueCL@2.19"
     },
     {
       "parataxis": [
@@ -3065,7 +3446,7 @@
         0.5476190476190477,
         0.02603577088521621
       ],
-      "treebank": "UD_Romanian-TueCL@2.18"
+      "treebank": "UD_Romanian-TueCL@2.19"
     },
     {
       "parataxis": [
@@ -3073,7 +3454,7 @@
         0.014388489208633094,
         0.0010198878123406426
       ],
-      "treebank": "UD_Greek-GUD@2.18"
+      "treebank": "UD_Greek-GUD@2.19"
     },
     {
       "parataxis": [
@@ -3081,15 +3462,15 @@
         0.019617224880382776,
         0.0008286511176684588
       ],
-      "treebank": "UD_English-ParTUT@2.18"
+      "treebank": "UD_English-ParTUT@2.19"
     },
     {
       "parataxis": [
-        18,
-        0.11920529801324503,
-        0.0026147588611272515
+        253,
+        0.20535714285714285,
+        0.00752304490038656
       ],
-      "treebank": "UD_Old_Georgian-GLC@2.18"
+      "treebank": "UD_Old_Georgian-GLC@2.19"
     },
     {
       "parataxis": [
@@ -3097,23 +3478,39 @@
         0.1171875,
         0.010065612883984491
       ],
-      "treebank": "UD_Uyghur-UDT@2.18"
+      "treebank": "UD_Uyghur-UDT@2.19"
     },
     {
       "parataxis": [
         5,
         0.002901915264074289,
-        9.000414019044876e-05
+        9.000090000900009e-05
       ],
       "parataxis:reporting": [
         11,
         0.006384213580963436,
-        0.00019800910841898727
+        0.0001980019800198002
       ],
-      "treebank": "UD_Latin-UDante@2.18"
+      "treebank": "UD_Latin-UDante@2.19"
     },
     {
-      "treebank": "UD_Japanese-BCCWJLUW@2.18"
+      "parataxis": [
+        3,
+        0.024,
+        0.003432494279176201
+      ],
+      "treebank": "UD_Tagabawa-GJA@2.19"
+    },
+    {
+      "parataxis": [
+        2,
+        0.008368200836820083,
+        0.0003444712366517396
+      ],
+      "treebank": "UD_Thai-TDT@2.19"
+    },
+    {
+      "treebank": "UD_Japanese-BCCWJLUW@2.19"
     },
     {
       "parataxis": [
@@ -3126,7 +3523,7 @@
         0.049800796812749,
         0.008164598301763554
       ],
-      "treebank": "UD_Chukchi-HSE@2.18"
+      "treebank": "UD_Chukchi-HSE@2.19"
     },
     {
       "parataxis": [
@@ -3134,7 +3531,7 @@
         0.11475409836065574,
         0.007802999594649372
       ],
-      "treebank": "UD_Greek-GLCII@2.18"
+      "treebank": "UD_Greek-GLCII@2.19"
     },
     {
       "parataxis": [
@@ -3142,10 +3539,10 @@
         0.035,
         0.004857737682165163
       ],
-      "treebank": "UD_Zazaki-ZSD@2.18"
+      "treebank": "UD_Zazaki-ZSD@2.19"
     },
     {
-      "treebank": "UD_Old_Turkish-Clausal@2.18"
+      "treebank": "UD_Old_Turkish-Clausal@2.19"
     },
     {
       "parataxis": [
@@ -3153,7 +3550,7 @@
         0.1774193548387097,
         0.01965163019205002
       ],
-      "treebank": "UD_Xavante-XDT@2.18"
+      "treebank": "UD_Xavante-XDT@2.19"
     }
   ]
 }

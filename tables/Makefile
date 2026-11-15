@@ -1,28 +1,34 @@
-VERSION=2.18
+VERSION=2.19
 UD=/users/guillaum/resources/ud-treebanks-v${VERSION}
 SUD=/users/guillaum/resources/sud-treebanks-v${VERSION}
 SP_UD=/users/guillaum/resources/SP_ud-treebanks-v${VERSION}
 
-FEAT_LIST=PronType Gender VerbForm NumType Animacy Mood Poss NounClass Tense Reflex Number Aspect Foreign Case Voice Abbr Definite xcomp Typo Degree Polarity Person Polite Clusivity ExtPos Deixis DeixisRef
+FEAT_LIST=PronType Gender VerbForm NumType Animacy Mood Poss NounClass Tense Reflex Number Aspect Foreign Case Voice Abbr Definite Typo Degree Polarity Person Polite Clusivity ExtPos Deixis DeixisRef
 UD_LIST=acl advcl advmod amod appos _aux case cc ccomp clf compound conj cop csubj dep det discourse dislocated expl fixed flat goeswith iobj list mark nmod nsubj nummod obj obl orphan parataxis punct reparandum root vocative xcomp
 SUD_LIST=unk subj udep mod comp vocative dislocated discourse appos det clf conj cc flat compound list parataxis orphan goeswith reparandum punct
 
 FILTER=*UD_*
 
 selfdoc:
-	@echo "make all"
-	@echo "make build_sud_deps"
-	@echo "make build_ud_deps"
-	@echo "make build_ud_feats"
-	@echo "make build_ud_meta"
-	@echo "make build_SP_ud_deps"
-	@echo "make build_SP_ud_feats"
-	@echo "make build_SP_meta"
+	@echo "make univ"
+	@echo "  make build_sud_deps"
+	@echo "  make build_sud_feats"
+	@echo "  make build_sud_meta"
+	@echo "  make build_ud_deps"
+	@echo "  make build_ud_feats"
+	@echo "  make build_ud_meta"
+	@echo "make spoken"
+	@echo "  make build_SP_ud_deps"
+	@echo "  make build_SP_ud_feats"
+	@echo "  make build_SP_meta"
 	@echo "make count"
+	@echo "make purge"
+	@echo "make start"
+	@echo "make stop"
 
-univ: build_sud_deps build_ud_deps build_ud_feats build_ud_meta count
+
+univ: build_sud_deps build_sud_feats build_sud_meta build_ud_deps build_ud_feats build_ud_meta count
 spoken: build_SP_meta build_SP_ud_deps build_SP_ud_feats count
-all: univ spoken
 
 count:
 	python count.py
@@ -97,16 +103,18 @@ build_SP_ud_feats:
 purge:
 	rm -rf ud_feats
 	rm -rf ud_deps
+	rm -rf ud_meta
+	rm -rf sud_feats
 	rm -rf sud_deps
-	rm -rf SP_ud_feats
+	rm -rf sud_meta
 	rm -rf SP_ud_deps
-	rm -rf meta
+	rm -rf SP_ud_feats
 	rm -rf SP_meta
 	rm -f count.json
 
 start:
 	python -m http.server &
-	open "http://localhost:8000?data=ud/feats"
+	open "http://localhost:8000/?data=sud_deps/DEPS"
 
 stop:
 	kill `lsof -t -i :8000`
