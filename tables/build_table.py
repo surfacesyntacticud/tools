@@ -8,7 +8,7 @@ import argparse
 from xml.dom.expatbuilder import parseString
 
 
-# The list of features used in UD 2.18 is needed or generated the right Grew pattern for the MISC case
+# The list of features used in UD 2.19 is needed or generated the right Grew pattern for the MISC case
 # See: https://grew.fr/doc/conllu/#how-the-misc-field-is-handled-by-grew
 ud_feats_2_19 = [
     "Abbr", "Accomp", "AdjType", "AdpType", "AdvType", "Advlz", "Agglutination", "Also", "Analyt", "Animacy", "Animacy[gram]", "Animacy[obj]", "Aspect", "Aspect[add]", 
